@@ -1,18 +1,21 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { act } from 'react-dom/test-utils';
 import Home from '../page';
 
 describe('Home', () => {
   it('最初の質問が表示される', () => {
     render(<Home />);
     expect(screen.getByText('質問 1 / 10')).toBeInTheDocument();
-    expect(screen.getByText('新しいプロジェクトでチームを組む際、あなたはどのように行動しますか？')).toBeInTheDocument();
+    expect(screen.getByText('英語の勉強会で、あなたはどのように参加しますか？')).toBeInTheDocument();
   });
 
   it('質問に回答すると次の質問に進む', async () => {
     render(<Home />);
-    const firstOption = screen.getByText('チームメンバーの成功を支援することに喜びを感じる');
-    await userEvent.click(firstOption);
+    const firstOption = screen.getByText('他の参加者の学習をサポートしながら自分も学ぶ');
+    await act(async () => {
+      await userEvent.click(firstOption);
+    });
     expect(screen.getByText('質問 2 / 10')).toBeInTheDocument();
   });
 
@@ -50,12 +53,13 @@ describe('Home', () => {
 
   it('進捗バーが正しく更新される', async () => {
     render(<Home />);
-    const progressBar = screen.getByRole('progressbar');
+    const progressBar = screen.getByTestId('progress-bar');
     expect(progressBar).toHaveStyle({ width: '10%' });
 
-    // 質問に回答
-    const firstOption = screen.getByText('チームメンバーの成功を支援することに喜びを感じる');
-    await userEvent.click(firstOption);
+    const firstOption = screen.getByText('他の参加者の学習をサポートしながら自分も学ぶ');
+    await act(async () => {
+      await userEvent.click(firstOption);
+    });
     expect(progressBar).toHaveStyle({ width: '20%' });
   });
 }); 

@@ -1,24 +1,156 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { questions } from '@/data/questions';
-import { results } from '@/data/results';
 import { PersonalityType } from '@/types/quiz';
 import { motion } from 'framer-motion';
+import { results } from '@/data/results';
+
+const questions = [
+  {
+    text: '英語の勉強会で、あなたはどのように参加しますか？',
+    options: [
+      { text: '他の参加者の学習をサポートしながら自分も学ぶ', type: 'giver' as PersonalityType },
+      { text: '自分の学習に集中して、効率よく進める', type: 'matcher' as PersonalityType },
+      { text: 'お互いに教え合いながら進める', type: 'taker' as PersonalityType },
+    ],
+  },
+  {
+    text: 'オンライン英会話で、どのようなアプローチを取りますか？',
+    options: [
+      { text: '講師の話を注意深く聞き、効率的に学習する', type: 'matcher' as PersonalityType },
+      { text: '講師と友好的な関係を築きながら学ぶ', type: 'taker' as PersonalityType },
+      { text: '講師の指導方法に合わせて柔軟に対応する', type: 'giver' as PersonalityType },
+    ],
+  },
+  {
+    text: 'グループプロジェクトでの役割として、どれが最も自然ですか？',
+    options: [
+      { text: 'チームのまとめ役として、全員の意見を調整する', type: 'giver' as PersonalityType },
+      { text: 'プロジェクトのリーダーとして、目標達成に向けて指揮を取る', type: 'matcher' as PersonalityType },
+      { text: 'チームメンバーと協力しながら、相互に学び合う', type: 'taker' as PersonalityType },
+    ],
+  },
+  {
+    text: '英語の教材を選ぶ際、何を重視しますか？',
+    options: [
+      { text: '効率的に学習できる、体系的な教材', type: 'matcher' as PersonalityType },
+      { text: '他の学習者と共有できる、インタラクティブな教材', type: 'taker' as PersonalityType },
+      { text: '様々なレベルの学習者に対応できる、柔軟な教材', type: 'giver' as PersonalityType },
+    ],
+  },
+  {
+    text: '英語学習の目標設定について、どのように考えますか？',
+    options: [
+      { text: '明確な目標を立て、計画的に達成を目指す', type: 'matcher' as PersonalityType },
+      { text: '周囲の成長に合わせて、柔軟に目標を調整する', type: 'taker' as PersonalityType },
+      { text: '他者の目標達成もサポートしながら、共に成長する', type: 'giver' as PersonalityType },
+    ],
+  },
+  {
+    text: '英語でのコミュニケーションで最も重視することは？',
+    options: [
+      { text: '正確さと流暢さのバランスを取りながら効果的に伝える', type: 'matcher' as PersonalityType },
+      { text: '相手の理解度に合わせて、分かりやすく伝える', type: 'giver' as PersonalityType },
+      { text: '相互理解を深めながら、自然な会話を楽しむ', type: 'taker' as PersonalityType },
+    ],
+  },
+  {
+    text: '英語学習でつまずいた時、どのように対処しますか？',
+    options: [
+      { text: '他の学習者と情報を共有し、一緒に解決策を見つける', type: 'taker' as PersonalityType },
+      { text: '自分で問題を分析し、効率的な解決方法を見つける', type: 'matcher' as PersonalityType },
+      { text: '経験を共有して、同じ悩みを持つ人をサポートする', type: 'giver' as PersonalityType },
+    ],
+  },
+  {
+    text: '英語学習のモチベーションを保つために、何を重視しますか？',
+    options: [
+      { text: '目標達成に向けての進捗を確認する', type: 'matcher' as PersonalityType },
+      { text: '他の学習者との交流や励まし合い', type: 'taker' as PersonalityType },
+      { text: '他者の成長をサポートすることでの達成感', type: 'giver' as PersonalityType },
+    ],
+  },
+  {
+    text: '英語学習コミュニティでの理想的な役割は？',
+    options: [
+      { text: 'メンバーのサポートと学習環境の改善', type: 'giver' as PersonalityType },
+      { text: '積極的な参加と建設的な意見の提供', type: 'matcher' as PersonalityType },
+      { text: 'メンバー間の交流促進と相互学習', type: 'taker' as PersonalityType },
+    ],
+  },
+  {
+    text: '新しい英語学習法を試す際の姿勢は？',
+    options: [
+      { text: '効果を検証しながら、自分に最適な方法を見つける', type: 'matcher' as PersonalityType },
+      { text: '他の学習者と共有し、フィードバックを交換する', type: 'taker' as PersonalityType },
+      { text: '様々な学習者のニーズに対応できる方法を探る', type: 'giver' as PersonalityType },
+    ],
+  },
+];
+
+type SavedResult = {
+  type: PersonalityType;
+  date: string;
+};
 
 export default function Home() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [showResult, setShowResult] = useState(false);
   const [personalityType, setPersonalityType] = useState<PersonalityType | null>(null);
-  const [savedResults, setSavedResults] = useState<Array<{ type: PersonalityType; date: string }>>([]);
+  const [savedResults, setSavedResults] = useState<SavedResult[]>([]);
+  const [typeTotals, setTypeTotals] = useState<Record<PersonalityType, number>>({
+    giver: 0,
+    taker: 0,
+    matcher: 0,
+  });
 
   useEffect(() => {
-    const saved = localStorage.getItem('quizResults');
-    if (saved) {
-      setSavedResults(JSON.parse(saved));
+    const savedData = localStorage.getItem('quizResults');
+    if (savedData) {
+      const results = JSON.parse(savedData) as SavedResult[];
+      setSavedResults(results);
+      
+      const totals = results.reduce((acc, result) => {
+        acc[result.type] = (acc[result.type] || 0) + 1;
+        return acc;
+      }, { giver: 0, taker: 0, matcher: 0 } as Record<PersonalityType, number>);
+      
+      setTypeTotals(totals);
     }
   }, []);
+
+  const calculateResult = (answers: number[]) => {
+    const scores = {
+      giver: 0,
+      taker: 0,
+      matcher: 0,
+    };
+
+    answers.forEach((answerIndex, questionIndex) => {
+      const selectedOption = questions[questionIndex].options[answerIndex];
+      scores[selectedOption.type] += 1;
+    });
+
+    let type: PersonalityType = 'matcher';
+    const maxScore = Math.max(...Object.values(scores));
+    if (maxScore === scores.giver) type = 'giver';
+    if (maxScore === scores.taker) type = 'taker';
+
+    setPersonalityType(type);
+    setShowResult(true);
+
+    const newResult = { type, date: new Date().toISOString() };
+    const updatedResults = [...savedResults, newResult];
+    setSavedResults(updatedResults);
+    
+    setTypeTotals(prev => ({
+      ...prev,
+      [type]: (prev[type] || 0) + 1
+    }));
+    
+    localStorage.setItem('quizResults', JSON.stringify(updatedResults));
+  };
 
   const handleAnswer = (optionIndex: number) => {
     const newAnswers = [...answers, optionIndex];
@@ -29,32 +161,6 @@ export default function Home() {
     } else {
       calculateResult(newAnswers);
     }
-  };
-
-  const calculateResult = (answers: number[]) => {
-    const scores = { giver: 0, taker: 0, matcher: 0 };
-
-    answers.forEach((answerIndex, questionIndex) => {
-      const question = questions[questionIndex];
-      const option = question.options[answerIndex];
-      scores.giver += option.score.giver;
-      scores.taker += option.score.taker;
-      scores.matcher += option.score.matcher;
-    });
-
-    const maxScore = Math.max(scores.giver, scores.taker, scores.matcher);
-    let type: PersonalityType = 'matcher';
-
-    if (maxScore === scores.giver) type = 'giver';
-    if (maxScore === scores.taker) type = 'taker';
-
-    setPersonalityType(type);
-    setShowResult(true);
-
-    const newResult = { type, date: new Date().toISOString() };
-    const updatedResults = [...savedResults, newResult];
-    setSavedResults(updatedResults);
-    localStorage.setItem('quizResults', JSON.stringify(updatedResults));
   };
 
   const resetQuiz = () => {
@@ -68,7 +174,7 @@ export default function Home() {
     if (!personalityType) return;
     
     const result = results[personalityType];
-    const text = `私は「${result.type === 'giver' ? 'ギバー' : result.type === 'taker' ? 'テイカー' : 'マッチャー'}型学習者」です！\n${result.description}\n\nあなたも診断してみませんか？`;
+    const text = `私は「${personalityType === 'giver' ? 'サポーター型' : personalityType === 'taker' ? '協調学習型' : 'バランス型'}」の英語学習者です！\n${result.description}\n\nあなたも診断してみませんか？`;
     
     if (navigator.share) {
       try {
@@ -83,206 +189,172 @@ export default function Home() {
     }
   };
 
-  if (showResult && personalityType) {
-    const result = results[personalityType];
-    const typeColors = {
-      giver: 'bg-green-500',
-      taker: 'bg-blue-500',
-      matcher: 'bg-purple-500'
-    };
+  const progress = ((currentQuestion + 1) / questions.length) * 100;
 
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-6 px-4 sm:px-6 lg:px-8"
-      >
-        <div className="max-w-3xl mx-auto space-y-6">
-          <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
-            <div className={`w-16 h-16 mx-auto mb-6 rounded-full ${typeColors[personalityType]} flex items-center justify-center text-white text-2xl font-bold`}>
-              {personalityType === 'giver' ? 'G' : personalityType === 'taker' ? 'T' : 'M'}
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-center mb-6 text-gray-900">あなたの結果</h1>
-            <p className="text-lg text-gray-800 text-center mb-8">{result.description}</p>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-              <div className="bg-gray-50 rounded-xl p-6">
-                <h2 className="text-xl font-semibold mb-4 text-gray-900">長所</h2>
-                <ul className="space-y-3">
-                  {result.strengths.map((strength, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-green-500 mr-2">✓</span>
-                      <span className="text-gray-800">{strength}</span>
-                    </li>
-                  ))}
-                </ul>
+  return (
+    <main className="min-h-screen p-8 bg-gray-50">
+      <div className="max-w-3xl mx-auto">
+        {!showResult ? (
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="mb-4">
+              <div className="text-sm text-gray-600 mb-2">
+                質問 {currentQuestion + 1} / {questions.length}
               </div>
-              <div className="bg-gray-50 rounded-xl p-6">
-                <h2 className="text-xl font-semibold mb-4 text-gray-900">短所</h2>
-                <ul className="space-y-3">
-                  {result.weaknesses.map((weakness, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-red-500 mr-2">×</span>
-                      <span className="text-gray-800">{weakness}</span>
-                    </li>
-                  ))}
-                </ul>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <motion.div
+                  className="bg-blue-600 h-2 rounded-full"
+                  style={{ width: `${progress}%` }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.5 }}
+                  data-testid="progress-bar"
+                  role="progressbar"
+                  aria-valuenow={progress}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                />
               </div>
             </div>
-
-            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-              <button
-                onClick={shareResult}
-                className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center space-x-3 relative overflow-hidden group"
-              >
-                <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-300"></div>
-                <div className="relative flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-                  </svg>
-                  <span className="ml-2">結果をシェア</span>
-                </div>
-              </button>
-              <button
-                onClick={resetQuiz}
-                className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white py-4 px-6 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center space-x-3 relative overflow-hidden group"
-              >
-                <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-300"></div>
-                <div className="relative flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
-                  </svg>
-                  <span className="ml-2">もう一度テストを受ける</span>
-                </div>
-              </button>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
-            <h2 className="text-2xl font-bold text-center mb-8 text-gray-900">学習アドバイス</h2>
-            <div className="space-y-8">
-              {result.learningAdvice.map((advice, index) => (
-                <div key={index} className="border-b border-gray-100 pb-8 last:border-0">
-                  <h3 className="text-xl font-semibold mb-3 text-gray-900">{advice.title}</h3>
-                  <p className="text-gray-800 mb-4">{advice.description}</p>
-                  <div className="bg-gray-50 rounded-xl p-4">
-                    <h4 className="font-medium mb-3 text-gray-900">具体的なアドバイス：</h4>
-                    <ul className="space-y-2">
-                      {advice.tips.map((tip, tipIndex) => (
-                        <li key={tipIndex} className="flex items-start">
-                          <span className="text-blue-500 mr-2">•</span>
-                          <span className="text-gray-800">{tip}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
+            <h2 className="text-xl font-bold mb-4">{questions[currentQuestion].text}</h2>
+            <div className="space-y-3">
+              {questions[currentQuestion].options.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleAnswer(index)}
+                  className="w-full p-4 text-left border rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  {option.text}
+                </button>
               ))}
             </div>
           </div>
+        ) : personalityType && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+          >
+            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+              <h2 className="text-2xl font-bold mb-4">診断結果</h2>
+              <div className="mb-6">
+                <p className="text-lg mb-4">
+                  あなたの英語学習タイプは「
+                  {personalityType === 'giver' && 'サポーター型'}
+                  {personalityType === 'taker' && '協調学習型'}
+                  {personalityType === 'matcher' && 'バランス型'}
+                  」です
+                </p>
+                <p className="text-gray-600">{results[personalityType].description}</p>
+              </div>
 
-          <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
-            <h2 className="text-2xl font-bold text-center mb-8 text-gray-900">詳細な分析</h2>
-            <div className="space-y-6">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-gray-50 rounded-xl">
-                  <div className="text-2xl font-bold text-green-600 mb-2">
-                    {savedResults.filter(r => r.type === 'giver').length}
-                  </div>
-                  <div className="text-sm text-gray-600">ギバー型</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="bg-gray-50 rounded-xl p-6">
+                  <h3 className="text-xl font-semibold mb-4">長所</h3>
+                  <ul className="space-y-2">
+                    {results[personalityType].strengths.map((strength, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="text-green-500 mr-2">✓</span>
+                        <span>{strength}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <div className="text-center p-4 bg-gray-50 rounded-xl">
-                  <div className="text-2xl font-bold text-blue-600 mb-2">
-                    {savedResults.filter(r => r.type === 'taker').length}
-                  </div>
-                  <div className="text-sm text-gray-600">テイカー型</div>
-                </div>
-                <div className="text-center p-4 bg-gray-50 rounded-xl">
-                  <div className="text-2xl font-bold text-purple-600 mb-2">
-                    {savedResults.filter(r => r.type === 'matcher').length}
-                  </div>
-                  <div className="text-sm text-gray-600">マッチャー型</div>
+                <div className="bg-gray-50 rounded-xl p-6">
+                  <h3 className="text-xl font-semibold mb-4">短所</h3>
+                  <ul className="space-y-2">
+                    {results[personalityType].weaknesses.map((weakness, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="text-red-500 mr-2">×</span>
+                        <span>{weakness}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-4 text-gray-900">最近の診断履歴</h3>
-                <div className="space-y-2">
-                  {savedResults.slice(-5).reverse().map((saved, index) => (
-                    <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
-                      <span className="text-gray-800 font-medium">
-                        {saved.type === 'giver' ? 'ギバー型' : saved.type === 'taker' ? 'テイカー型' : 'マッチャー型'}
-                      </span>
-                      <span className="text-sm text-gray-600">
-                        {new Date(saved.date).toLocaleDateString('ja-JP')}
-                      </span>
+
+              <div className="mb-6">
+                <h3 className="text-xl font-bold mb-4">学習アドバイス</h3>
+                <div className="space-y-6">
+                  {results[personalityType].learningAdvice.map((advice, index) => (
+                    <div key={index} className="bg-gray-50 rounded-xl p-6">
+                      <h4 className="text-lg font-semibold mb-2">{advice.title}</h4>
+                      <p className="text-gray-600 mb-4">{advice.description}</p>
+                      <ul className="space-y-2">
+                        {advice.tips.map((tip, tipIndex) => (
+                          <li key={tipIndex} className="flex items-start">
+                            <span className="text-blue-500 mr-2">•</span>
+                            <span>{tip}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   ))}
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    );
-  }
 
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-6 px-4 sm:px-6 lg:px-8"
-    >
-      <div className="max-w-3xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
-          <div className="mb-8">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-sm font-medium text-gray-600">
-                質問 {currentQuestion + 1} / {questions.length}
-              </span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <motion.div
-                role="progressbar"
-                className="bg-blue-600 h-2 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
-                transition={{ duration: 0.3 }}
-              ></motion.div>
-            </div>
-          </div>
-
-          <motion.h2
-            key={currentQuestion}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            className="text-xl sm:text-2xl font-bold mb-8 text-gray-900"
-          >
-            {questions[currentQuestion].text}
-          </motion.h2>
-          <div className="space-y-4">
-            {questions[currentQuestion].options.map((option, index) => (
-              <motion.button
-                key={index}
-                onClick={() => handleAnswer(index)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full text-left p-6 bg-white border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-300 text-gray-800 font-medium shadow-sm hover:shadow-md group relative overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/5 group-hover:to-blue-500/5 transition-all duration-300"></div>
-                <div className="relative flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-4 group-hover:bg-blue-100 transition-colors duration-300">
-                    <span className="text-gray-600 group-hover:text-blue-600 font-medium">{String.fromCharCode(65 + index)}</span>
+              <div className="mb-6">
+                <h3 className="text-xl font-bold mb-4">全体の統計</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="bg-gray-50 rounded-xl p-4 text-center">
+                    <div className="text-2xl font-bold text-green-600 mb-2">
+                      {typeTotals.giver}
+                    </div>
+                    <div className="text-sm text-gray-600">サポーター型</div>
                   </div>
-                  <span className="text-gray-800 group-hover:text-blue-900 transition-colors duration-300">{option.text}</span>
+                  <div className="bg-gray-50 rounded-xl p-4 text-center">
+                    <div className="text-2xl font-bold text-blue-600 mb-2">
+                      {typeTotals.taker}
+                    </div>
+                    <div className="text-sm text-gray-600">協調学習型</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-4 text-center">
+                    <div className="text-2xl font-bold text-purple-600 mb-2">
+                      {typeTotals.matcher}
+                    </div>
+                    <div className="text-sm text-gray-600">バランス型</div>
+                  </div>
                 </div>
-              </motion.button>
-            ))}
-          </div>
-        </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={shareResult}
+                  className="flex-1 bg-green-600 text-white rounded-lg px-6 py-3 hover:bg-green-700 transition-colors flex items-center justify-center"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                  </svg>
+                  結果をシェア
+                </button>
+                <button
+                  onClick={resetQuiz}
+                  className="flex-1 bg-blue-600 text-white rounded-lg px-6 py-3 hover:bg-blue-700 transition-colors"
+                >
+                  もう一度診断する
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h3 className="text-xl font-bold mb-4">最近の診断履歴</h3>
+              <div className="space-y-2">
+                {savedResults.slice(-5).reverse().map((saved, index) => (
+                  <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span className="font-medium">
+                      {saved.type === 'giver' && 'サポーター型'}
+                      {saved.type === 'taker' && '協調学習型'}
+                      {saved.type === 'matcher' && 'バランス型'}
+                    </span>
+                    <span className="text-sm text-gray-600">
+                      {new Date(saved.date).toLocaleDateString('ja-JP')}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
       </div>
-    </motion.div>
+    </main>
   );
 }
