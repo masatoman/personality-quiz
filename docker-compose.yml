@@ -1,0 +1,134 @@
+version: '3.8'
+
+services:
+  # PostgreSQL データベース
+  postgres:
+    image: postgres:14-alpine
+    container_name: giver-english-postgres
+    restart: always
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/init-scripts:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: giver_english_db
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Supabase認証サービス
+  supabase-auth:
+    image: supabase/gotrue:latest
+    container_name: giver-english-auth
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+    environment:
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_HOST: postgres
+      GOTRUE_DB_PORT: 5432
+      GOTRUE_DB_USER: postgres
+      GOTRUE_DB_PASSWORD: postgres
+      GOTRUE_DB_NAME: giver_english_db
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_SITE_URL: http://localhost:3000
+      GOTRUE_JWT_SECRET: super-secret-jwt-token-with-at-least-32-characters-long
+      GOTRUE_JWT_EXP: 3600
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_DISABLE_SIGNUP: "false"
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_MAILER_AUTOCONFIRM: "true"
+      PORT: 9999
+      GOTRUE_EXTERNAL_GOOGLE_ENABLED: "false"
+      GOTRUE_EXTERNAL_APPLE_ENABLED: "false"
+    ports:
+      - "9999:9999"
+
+  # Supabase ストレージサービス
+  supabase-storage:
+    image: supabase/storage-api:latest
+    container_name: giver-english-storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+    environment:
+      ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.ZopqoUt20nEV9cklpv9jtLgXMv3cJYAYfdv-q2I9t0c
+      SERVICE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIn0.M2d2z4SFn5C7HlJlaSLfrzuYim9nbY_XI40uWFN3hEE
+      POSTGREST_URL: http://supabase-rest:3000
+      POSTGRES_CONNECTION: postgres://postgres:postgres@postgres:5432/giver_english_db
+      REGION: us-east-1
+      STORAGE_BACKEND: file
+      FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+      TENANT_ID: stub
+      GLOBAL_S3_BUCKET: stub
+      ENABLE_IMAGE_TRANSFORMATION: "true"
+      IMGPROXY_URL: http://imgproxy:5001
+    volumes:
+      - storage-data:/var/lib/storage
+    ports:
+      - "9000:9000"
+
+  # Supabase REST API
+  supabase-rest:
+    image: postgrest/postgrest:latest
+    container_name: giver-english-rest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+    environment:
+      PGRST_DB_URI: postgres://postgres:postgres@postgres:5432/giver_english_db
+      PGRST_DB_SCHEMA: public,storage
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: super-secret-jwt-token-with-at-least-32-characters-long
+    ports:
+      - "3001:3000"
+
+  # イメージ処理サービス(imgproxy)
+  imgproxy:
+    image: darthsim/imgproxy:latest
+    container_name: giver-english-imgproxy
+    restart: always
+    environment:
+      IMGPROXY_BIND: ":5001"
+      IMGPROXY_LOCAL_FILESYSTEM_ROOT: /var/lib/storage
+    volumes:
+      - storage-data:/var/lib/storage
+    ports:
+      - "5001:5001"
+
+  # Next.js アプリ開発サーバー (オプション)
+  nextjs:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.dev
+    container_name: giver-english-nextjs
+    restart: always
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_SUPABASE_URL=http://localhost:3001
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.ZopqoUt20nEV9cklpv9jtLgXMv3cJYAYfdv-q2I9t0c
+      - NEXT_PUBLIC_AUTH_URL=http://localhost:9999
+      - NEXT_PUBLIC_STORAGE_URL=http://localhost:9000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - supabase-auth
+      - supabase-rest
+      - supabase-storage
+
+volumes:
+  postgres-data:
+  storage-data: 

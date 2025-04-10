@@ -1,0 +1,197 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "text": "英語の授業で新しい単語を覚えるとき、どの方法が最も自然に感じますか？",
+      "options": [
+        {
+          "text": "単語の意味を他の人に説明しながら覚える",
+          "score": { "giver": 3, "taker": 0, "matcher": 1 }
+        },
+        {
+          "text": "自分だけのオリジナルの例文を作って覚える",
+          "score": { "giver": 0, "taker": 3, "matcher": 1 }
+        },
+        {
+          "text": "友達と例文を出し合って覚える",
+          "score": { "giver": 1, "taker": 1, "matcher": 3 }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "text": "休み時間、クラスメイトが英語の宿題で困っているのを見かけました。その時あなたは？",
+      "options": [
+        {
+          "text": "「一緒にやろう！」と声をかける",
+          "score": { "giver": 3, "taker": 0, "matcher": 1 }
+        },
+        {
+          "text": "自分の勉強を優先して、後で教えてあげる",
+          "score": { "giver": 0, "taker": 3, "matcher": 1 }
+        },
+        {
+          "text": "近くにいる友達と一緒に教えてあげる",
+          "score": { "giver": 1, "taker": 1, "matcher": 3 }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "text": "英語の映画を見るとき、どの視聴方法が最も楽しいですか？",
+      "options": [
+        {
+          "text": "友達と一緒に見て、セリフの意味を教え合う",
+          "score": { "giver": 3, "taker": 0, "matcher": 1 }
+        },
+        {
+          "text": "一人で字幕なしで集中して見る",
+          "score": { "giver": 0, "taker": 3, "matcher": 1 }
+        },
+        {
+          "text": "字幕付きで見て、気になるフレーズをメモする",
+          "score": { "giver": 1, "taker": 1, "matcher": 3 }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "text": "英語の教科書に載っていない表現を見つけたとき、あなたは？",
+      "options": [
+        {
+          "text": "クラスのグループチャットでシェアする",
+          "score": { "giver": 3, "taker": 0, "matcher": 1 }
+        },
+        {
+          "text": "自分のノートに書き留めて覚える",
+          "score": { "giver": 0, "taker": 3, "matcher": 1 }
+        },
+        {
+          "text": "友達と話題にして使ってみる",
+          "score": { "giver": 1, "taker": 1, "matcher": 3 }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "text": "英語の授業で難しい文法が出てきました。あなたならどうする？",
+      "options": [
+        {
+          "text": "グループ学習を提案して、みんなで理解を深める",
+          "score": { "giver": 3, "taker": 0, "matcher": 1 }
+        },
+        {
+          "text": "自分で問題を解いて、理解を確認する",
+          "score": { "giver": 0, "taker": 3, "matcher": 1 }
+        },
+        {
+          "text": "分からないところを友達と確認し合う",
+          "score": { "giver": 1, "taker": 1, "matcher": 3 }
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "text": "スマートフォンで英語学習アプリを使うなら、どれが魅力的ですか？",
+      "options": [
+        {
+          "text": "他のユーザーと交流できる学習コミュニティ機能付き",
+          "score": { "giver": 3, "taker": 0, "matcher": 1 }
+        },
+        {
+          "text": "自分のペースで進められる個人学習に特化",
+          "score": { "giver": 0, "taker": 3, "matcher": 1 }
+        },
+        {
+          "text": "ライバルと競争しながら学べる機能付き",
+          "score": { "giver": 1, "taker": 1, "matcher": 3 }
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "text": "英語の歌を聴くとき、どんな聴き方をしますか？",
+      "options": [
+        {
+          "text": "友達とカラオケで歌って発音を確認し合う",
+          "score": { "giver": 3, "taker": 0, "matcher": 1 }
+        },
+        {
+          "text": "一人でヘッドフォンをして歌詞に集中する",
+          "score": { "giver": 0, "taker": 3, "matcher": 1 }
+        },
+        {
+          "text": "気に入ったフレーズを友達とシェアする",
+          "score": { "giver": 1, "taker": 1, "matcher": 3 }
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "text": "英語でメッセージを書くとき、どんな方法を取りますか？",
+      "options": [
+        {
+          "text": "友達と添削し合いながら書く",
+          "score": { "giver": 3, "taker": 0, "matcher": 1 }
+        },
+        {
+          "text": "辞書を使って一人で丁寧に書く",
+          "score": { "giver": 0, "taker": 3, "matcher": 1 }
+        },
+        {
+          "text": "AIツールを使って表現をチェックする",
+          "score": { "giver": 1, "taker": 1, "matcher": 3 }
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "text": "英語の資格試験の勉強中、モチベーションが下がってきました。どうする？",
+      "options": [
+        {
+          "text": "同じ試験を受ける友達を誘って励まし合う",
+          "score": { "giver": 3, "taker": 0, "matcher": 1 }
+        },
+        {
+          "text": "過去の成功体験を思い出して自分を奮い立たせる",
+          "score": { "giver": 0, "taker": 3, "matcher": 1 }
+        },
+        {
+          "text": "オンライン勉強会に参加して刺激をもらう",
+          "score": { "giver": 1, "taker": 1, "matcher": 3 }
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "text": "英語の発音で自信がないフレーズがあります。どうしますか？",
+      "options": [
+        {
+          "text": "ネイティブの友達に直接聞いて練習する",
+          "score": { "giver": 3, "taker": 0, "matcher": 1 }
+        },
+        {
+          "text": "発音アプリで何度も確認して練習する",
+          "score": { "giver": 0, "taker": 3, "matcher": 1 }
+        },
+        {
+          "text": "オンライン英会話で講師に確認する",
+          "score": { "giver": 1, "taker": 1, "matcher": 3 }
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "types": {
+      "giver": "共感型学習者",
+      "taker": "没入型学習者",
+      "matcher": "適応型学習者"
+    },
+    "scoring": {
+      "max_score": 3,
+      "min_score": 0
+    },
+    "version": "1.0.0",
+    "last_updated": "2024-02-20"
+  }
+} 
