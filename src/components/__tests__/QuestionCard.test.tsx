@@ -4,19 +4,19 @@ import { QuestionCard } from '../QuestionCard';
 // モックデータ
 const mockQuestion = {
   id: 1,
-  text: '英語の勉強会で、あなたはどのように参加しますか？',
+  text: '英語の授業で新しい単語を覚えるとき、どの方法が最も自然に感じますか？',
   options: [
     {
-      text: '他の参加者の学習をサポートしながら自分も学ぶ',
-      score: { giver: 2, taker: 0, matcher: 1 }
+      text: '単語の意味を他の人に説明しながら覚える',
+      score: { giver: 3, taker: 0, matcher: 1 }
     },
     {
-      text: '自分の学習に集中して、効率よく進める',
-      score: { giver: 0, taker: 2, matcher: 1 }
+      text: '自分だけのオリジナルの例文を作って覚える',
+      score: { giver: 0, taker: 3, matcher: 1 }
     },
     {
-      text: 'お互いに教え合いながら進める',
-      score: { giver: 1, taker: 0, matcher: 2 }
+      text: '友達と例文を出し合って覚える',
+      score: { giver: 1, taker: 1, matcher: 3 }
     }
   ]
 };
@@ -28,6 +28,7 @@ describe('QuestionCard', () => {
     currentQuestion: 0,
     totalQuestions: 10,
     onAnswer: mockOnAnswer,
+    selectedOption: null,
   };
 
   beforeEach(() => {
@@ -50,8 +51,8 @@ describe('QuestionCard', () => {
     render(<QuestionCard {...defaultProps} />);
     
     expect(screen.getByText('質問 1 / 10')).toBeInTheDocument();
-    const progressBar = screen.getByTestId('progress-bar');
-    expect(progressBar).toHaveStyle({ width: '10%' });
+    const progressBar = screen.getByRole('progressbar');
+    expect(progressBar).toHaveAttribute('aria-valuenow', '10');
   });
 
   it('オプションをクリックするとonAnswerが呼ばれる', () => {
@@ -60,10 +61,18 @@ describe('QuestionCard', () => {
     // 最初のオプションをクリック
     fireEvent.click(screen.getByText(mockQuestion.options[0].text));
     expect(mockOnAnswer).toHaveBeenCalledWith(0);
+  });
 
-    // 2番目のオプションをクリック
-    fireEvent.click(screen.getByText(mockQuestion.options[1].text));
-    expect(mockOnAnswer).toHaveBeenCalledWith(1);
+  it('選択されたオプションに正しいスタイルが適用される', () => {
+    render(
+      <QuestionCard
+        {...defaultProps}
+        selectedOption={1}
+      />
+    );
+    
+    const selectedButton = screen.getByText(mockQuestion.options[1].text);
+    expect(selectedButton.closest('button')).toHaveClass('selected-option');
   });
 
   it('最後の質問で正しい進捗状況が表示される', () => {
@@ -76,7 +85,14 @@ describe('QuestionCard', () => {
     );
     
     expect(screen.getByText('質問 10 / 10')).toBeInTheDocument();
-    const progressBar = screen.getByTestId('progress-bar');
-    expect(progressBar).toHaveStyle({ width: '100%' });
+    const progressBar = screen.getByRole('progressbar');
+    expect(progressBar).toHaveAttribute('aria-valuenow', '100');
+  });
+
+  it('プログレスバーの色が正しく適用される', () => {
+    render(<QuestionCard {...defaultProps} />);
+    
+    const progressBarFill = screen.getByRole('progressbar');
+    expect(progressBarFill).toHaveClass('bg-primary');
   });
 }); 

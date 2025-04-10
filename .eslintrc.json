@@ -1,0 +1,15 @@
+{
+  "extends": ["next/core-web-vitals", "eslint:recommended"],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": "warn",
+    "react/no-unescaped-entities": "off"
+  },
+  "env": {
+    "jest": true,
+    "browser": true,
+    "node": true
+  },
+  "ignorePatterns": ["**/*.test.*", "**/*.stories.*"]
+} 

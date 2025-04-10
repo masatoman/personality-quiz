@@ -22,12 +22,23 @@ export const QuestionCard = ({
             <span className="text-sm font-medium text-gray-500">
               質問 {currentQuestion + 1} / {totalQuestions}
             </span>
-            <div className="w-24 h-2 bg-gray-200 rounded-full">
-              <div
-                data-testid="progress-bar"
-                className="h-2 bg-blue-500 rounded-full transition-all duration-300"
-                style={{ width: `${((currentQuestion + 1) / totalQuestions) * 100}%` }}
-              />
+            <div className="progress-container">
+              <div className="progress-info">
+                <span>Question {currentQuestion + 1} of {totalQuestions}</span>
+                <span>{Math.round((currentQuestion + 1) / totalQuestions * 100)}%</span>
+              </div>
+              <div 
+                className="progress-bar" 
+                role="progressbar"
+                aria-valuenow={Math.round((currentQuestion + 1) / totalQuestions * 100)}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              >
+                <div 
+                  className="progress-fill" 
+                  style={{ width: `${((currentQuestion + 1) / totalQuestions) * 100}%` }} 
+                />
+              </div>
             </div>
           </div>
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">{question.text}</h2>
