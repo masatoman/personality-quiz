@@ -1,0 +1,21 @@
+# BEGIN WordPress
+RewriteEngine On
+RewriteBase /
+
+# APIリクエストの処理
+RewriteRule ^api/(.*)$ src/api/$1 [L,QSA]
+
+# その他のリクエストはNext.jsに転送
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /index.html [L]
+
+# CORS設定
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+Header set Access-Control-Allow-Headers "Content-Type"
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+# END WordPress 

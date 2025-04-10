@@ -1,65 +1,252 @@
+/// <reference types="@testing-library/jest-dom" />
+import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import Home from '../page';
+import { useRouter } from 'next/navigation';
+import { test, expect } from '@playwright/test';
+
+// useRouterのモック
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn(() => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+  })),
+}));
+
+// window.openのモック
+const mockOpen = jest.fn();
+window.open = mockOpen;
+
+// fetchのモック
+const mockFetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true,
+    status: 200,
+    headers: new Headers(),
+    json: () => Promise.resolve({ 
+      stats: {
+        giver: { count: 4, percentage: 23.5 },
+        taker: { count: 6, percentage: 35.3 },
+        matcher: { count: 7, percentage: 41.2 }
+      }
+    })
+  } as Response)
+);
+
+global.fetch = mockFetch;
 
 describe('Home', () => {
-  it('最初の質問が表示される', () => {
+  const mockRouter = {
+    push: jest.fn(),
+    replace: jest.fn(),
+  };
+
+  beforeEach(() => {
+    (useRouter as jest.Mock).mockReturnValue(mockRouter);
+    jest.spyOn(window, 'open').mockImplementation(jest.fn());
+    // 各テストの前にモックをリセット
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const startDiagnosis = async () => {
+    const startButton = screen.getByText('診断を始める');
+    await act(async () => {
+      await userEvent.click(startButton);
+    });
+  };
+
+  it('最初の質問が表示される', async () => {
     render(<Home />);
-    expect(screen.getByText('質問 1 / 10')).toBeInTheDocument();
-    expect(screen.getByText('英語の勉強会で、あなたはどのように参加しますか？')).toBeInTheDocument();
+    await startDiagnosis();
+    
+    const questionText = screen.getByText((content, element) => {
+      return element?.textContent === '質問 1 / 10';
+    });
+    
+    expect(questionText).toBeInTheDocument();
+    expect(screen.getByText('英語の授業で新しい単語を覚えるとき、どの方法が最も自然に感じますか？')).toBeInTheDocument();
   });
 
   it('質問に回答すると次の質問に進む', async () => {
     render(<Home />);
-    const firstOption = screen.getByText('他の参加者の学習をサポートしながら自分も学ぶ');
+    await startDiagnosis();
+    
+    const firstOption = screen.getByText('単語の意味を他の人に説明しながら覚える');
     await act(async () => {
       await userEvent.click(firstOption);
     });
-    expect(screen.getByText('質問 2 / 10')).toBeInTheDocument();
+
+    // 選択後すぐには次の質問に進まないことを確認
+    expect(screen.getByText('質問 1 / 10')).toBeInTheDocument();
+
+    // 次へボタンをクリック
+    const nextButton = screen.getByText('次へ');
+    await act(async () => {
+      await userEvent.click(nextButton);
+    });
+
+    const questionText = screen.getByText((content, element) => {
+      return element?.textContent === '質問 2 / 10';
+    });
+    
+    expect(questionText).toBeInTheDocument();
   });
 
   it('すべての質問に回答すると結果が表示される', async () => {
     render(<Home />);
+    await startDiagnosis();
     
     // すべての質問に回答
     for (let i = 0; i < 10; i++) {
-      const options = screen.getAllByRole('button');
-      await userEvent.click(options[0]);
+      const options = screen.getAllByRole('button').filter(button => 
+        !button.textContent?.includes('診断を始める') &&
+        !button.textContent?.includes('もう一度テストを受ける') &&
+        !button.textContent?.includes('次へ')
+      );
+      await act(async () => {
+        await userEvent.click(options[0]);
+      });
+      
+      // 次へボタンをクリック（最後の質問以外）
+      if (i < 9) {
+        const nextButton = screen.getByText('次へ');
+        await act(async () => {
+          await userEvent.click(nextButton);
+        });
+      }
     }
 
     // 結果が表示されることを確認
     expect(screen.getByText('あなたの結果')).toBeInTheDocument();
-    expect(screen.getByText('長所')).toBeInTheDocument();
-    expect(screen.getByText('短所')).toBeInTheDocument();
+    expect(screen.getByText('あなたへのアドバイス')).toBeInTheDocument();
   });
 
   it('「もう一度テストを受ける」ボタンをクリックすると最初に戻る', async () => {
     render(<Home />);
+    await startDiagnosis();
     
     // すべての質問に回答
     for (let i = 0; i < 10; i++) {
-      const options = screen.getAllByRole('button');
-      await userEvent.click(options[0]);
+      const options = screen.getAllByRole('button').filter(button => 
+        !button.textContent?.includes('診断を始める') &&
+        !button.textContent?.includes('もう一度テストを受ける') &&
+        !button.textContent?.includes('次へ')
+      );
+      await act(async () => {
+        await userEvent.click(options[0]);
+      });
+      
+      // 次へボタンをクリック（最後の質問以外）
+      if (i < 9) {
+        const nextButton = screen.getByText('次へ');
+        await act(async () => {
+          await userEvent.click(nextButton);
+        });
+      }
     }
 
     // もう一度テストを受けるボタンをクリック
     const resetButton = screen.getByText('もう一度テストを受ける');
-    await userEvent.click(resetButton);
+    await act(async () => {
+      await userEvent.click(resetButton);
+    });
 
-    // 最初の質問が表示されることを確認
-    expect(screen.getByText('質問 1 / 10')).toBeInTheDocument();
+    // 最初の画面が表示されることを確認
+    expect(screen.getByText('英語学習スタイル診断')).toBeInTheDocument();
+    expect(screen.getByText('診断を始める')).toBeInTheDocument();
   });
 
   it('進捗バーが正しく更新される', async () => {
     render(<Home />);
-    const progressBar = screen.getByTestId('progress-bar');
-    expect(progressBar).toHaveStyle({ width: '10%' });
+    await startDiagnosis();
 
-    const firstOption = screen.getByText('他の参加者の学習をサポートしながら自分も学ぶ');
+    const progressBar = screen.getByRole('progressbar');
+    expect(progressBar).toHaveAttribute('aria-valuenow', '10');
+
+    // 最初の質問に回答
+    const firstOption = screen.getByText('単語の意味を他の人に説明しながら覚える');
     await act(async () => {
       await userEvent.click(firstOption);
     });
-    expect(progressBar).toHaveStyle({ width: '20%' });
+
+    // 次へボタンをクリック
+    const nextButton = screen.getByText('次へ');
+    await act(async () => {
+      await userEvent.click(nextButton);
+    });
+
+    expect(progressBar).toHaveAttribute('aria-valuenow', '20');
+  });
+
+  it('SNSシェアボタンが正しく機能する', async () => {
+    mockOpen.mockClear();
+    render(<Home />);
+    await startDiagnosis();
+    
+    // すべての質問に回答
+    for (let i = 0; i < 10; i++) {
+      const options = screen.getAllByRole('button').filter(button => 
+        !button.textContent?.includes('診断を始める') &&
+        !button.textContent?.includes('もう一度テストを受ける') &&
+        !button.textContent?.includes('次へ')
+      );
+      await act(async () => {
+        await userEvent.click(options[0]);
+      });
+      
+      // 次へボタンをクリック（最後の質問以外）
+      if (i < 9) {
+        const nextButton = screen.getByText('次へ');
+        await act(async () => {
+          await userEvent.click(nextButton);
+        });
+      }
+    }
+
+    // SNSシェアボタンをクリック
+    const twitterButton = screen.getByText('X (Twitter)');
+    await userEvent.click(twitterButton);
+    
+    expect(mockOpen).toHaveBeenCalledTimes(1);
+    expect(mockOpen).toHaveBeenCalledWith(expect.stringContaining('twitter.com/intent/tweet'), '_blank');
+  });
+
+  it('選択したオプションに正しいスタイルが適用される', async () => {
+    render(<Home />);
+    await startDiagnosis();
+
+    const firstOption = screen.getByText('単語の意味を他の人に説明しながら覚える');
+    await act(async () => {
+      await userEvent.click(firstOption);
+    });
+
+    expect(firstOption.closest('button')).toHaveClass('selected-option');
+  });
+
+  it('renders progress bar with correct accessibility attributes', () => {
+    render(<Home />);
+    const progressBar = screen.getByRole('progressbar');
+    
+    expect(progressBar).toBeInTheDocument();
+    expect(progressBar).toHaveAttribute('aria-valuemin', '0');
+    expect(progressBar).toHaveAttribute('aria-valuemax', '100');
+    expect(progressBar).toHaveAttribute('aria-valuenow', '10'); // 最初の質問は10%
+  });
+
+  it('プログレスバーが適切なアクセシビリティ属性を持っている', () => {
+    render(<Home />);
+    const progressBar = screen.getByRole('progressbar');
+    
+    expect(progressBar).toBeInTheDocument();
+    expect(progressBar).toHaveAttribute('aria-valuemin', '0');
+    expect(progressBar).toHaveAttribute('aria-valuemax', '100');
+    expect(progressBar).toHaveAttribute('aria-valuenow');
   });
 }); 

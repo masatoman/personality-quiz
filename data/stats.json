@@ -1,0 +1,17 @@
+{
+  "stats": {
+    "giver": {
+      "count": 1,
+      "percentage": 33
+    },
+    "taker": {
+      "count": 1,
+      "percentage": 33
+    },
+    "matcher": {
+      "count": 1,
+      "percentage": 33
+    }
+  },
+  "total": 3
+}

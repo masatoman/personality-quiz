@@ -1,0 +1,31 @@
+# PHPのエラー表示を有効化
+php_flag display_errors on
+
+# WordPressのルーティングをバイパス
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /api/
+    
+    # 実際のファイルまたはディレクトリが存在する場合は、それを使用
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+    
+    # PHPファイルへのアクセスを許可
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.+)\.php$ $1.php [L]
+</IfModule>
+
+# PHPファイルへの直接アクセスを許可
+<FilesMatch "\.php$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# セキュリティヘッダーの設定
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule> 

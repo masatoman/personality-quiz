@@ -1,0 +1,44 @@
+RewriteEngine On
+RewriteBase /quiz/
+
+# MIMEタイプの設定
+AddType application/javascript .js
+AddType text/css .css
+AddType application/font-woff2 .woff2
+AddType image/svg+xml .svg
+AddType image/x-icon .ico
+
+# 静的ファイルの処理
+RewriteCond %{REQUEST_URI} !^/quiz/_next/static/
+RewriteRule ^_next/static/(.*)$ static/$1 [L]
+
+# その他のリクエストをindex.htmlにリダイレクト
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.html [L]
+
+# PHPファイルへのアクセスを許可
+<FilesMatch "\.php$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# 基本的なセキュリティヘッダー
+Header set X-Content-Type-Options "nosniff"
+Header set X-Frame-Options "SAMEORIGIN"
+Header set X-XSS-Protection "1; mode=block"
+
+# CORS設定
+Header set Access-Control-Allow-Origin "*"
+
+# デバッグ用のログ設定
+RewriteLog "/home/u969053517/logs/rewrite.log"
+RewriteLogLevel 9
+
+# ディレクトリ構造の表示を無効化
+Options -Indexes
+
+# 静的ファイルのキャッシュ設定
+<FilesMatch "\.(js|css|woff2|svg|ico)$">
+    Header set Cache-Control "public, max-age=31536000"
+</FilesMatch> 
