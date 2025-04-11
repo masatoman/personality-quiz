@@ -39,7 +39,41 @@ export type LearningAdvice = {
   tools: Tool[];
 };
 
-export type PersonalityType = {
+// パーソナリティタイプ
+export type PersonalityType = 'giver' | 'taker' | 'matcher';
+
+// パーソナリティタイプの説明
+export interface PersonalityDescription {
+  title: string;
+  description: string;
+  strengths: string[];
+  weaknesses: string[];
+  learningAdvice: {
+    title: string;
+    tips: string[];
+    tools: string[];
+  };
+}
+
+export type TypeStats = {
+  count: number;
+  percentage: number;
+};
+
+export type TypeTotals = {
+  giver: number;
+  matcher: number;
+  taker: number;
+};
+
+export type Stats = {
+  giver: TypeStats;
+  matcher: TypeStats;
+  taker: TypeStats;
+  total: number;
+};
+
+export type PersonalityTypeInfo = {
   title: string;
   short_title: string;
   color: string;
@@ -59,7 +93,7 @@ export type TypeCombination = {
 };
 
 export type ResultsData = {
-  personality_types: Record<LearningType, PersonalityType>;
+  personality_types: Record<LearningType, PersonalityTypeInfo>;
   type_combinations: {
     giver_taker: TypeCombination;
     giver_matcher: TypeCombination;
@@ -69,3 +103,73 @@ export type ResultsData = {
 
 // タブの種類
 export type TabType = 'strengths' | 'weaknesses' | 'advice' | 'tools' | 'scenarios';
+
+// スコア変更オブジェクト
+export interface ScoreChange {
+  giver: number;
+  taker: number;
+  matcher: number;
+}
+
+// 活動タイプ
+export type ActivityType = 
+  | 'CREATE_CONTENT'
+  | 'PROVIDE_FEEDBACK'
+  | 'CONSUME_CONTENT'
+  | 'RECEIVE_FEEDBACK'
+  | 'SHARE_RESOURCE'
+  | 'ASK_QUESTION';
+
+// 教材タイプ
+export type MaterialType = 
+  | 'ARTICLE'
+  | 'VIDEO'
+  | 'QUIZ'
+  | 'FLASHCARD'
+  | 'EXERCISE'
+  | 'EBOOK'
+  | 'AUDIO'
+  | 'OTHER';
+
+// クイズの質問
+export interface QuizQuestion {
+  id: string;
+  text: string;
+  options: QuizOption[];
+}
+
+// クイズの選択肢
+export interface QuizOption {
+  text: string;
+  scores: ScoreChange;
+  id: string;
+}
+
+// クイズの結果
+export interface QuizResult {
+  personalityType: PersonalityType;
+  giverScore: number;
+  takerScore: number;
+  matcherScore: number;
+  description: string;
+  recommendations: string[];
+}
+
+// ポイント履歴項目
+export interface PointHistoryItem {
+  id: string;
+  userId: string;
+  points: number;
+  actionType: string;
+  referenceId?: string;
+  referenceType?: string;
+  description?: string;
+  createdAt: Date;
+}
+
+// ギバースコア履歴項目
+export interface GiverScoreHistoryItem {
+  userId: string;
+  score: number;
+  timestamp: Date;
+}

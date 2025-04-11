@@ -1,0 +1,30 @@
+dbeee344d5e8fbe975617108667c434e
+// Jest-DOMの拡張機能を読み込み
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+require("@testing-library/jest-dom");
+// タイムアウト設定
+jest.setTimeout(30000);
+// カスタムマッチャー
+expect.extend({
+    // 基本的なカスタムマッチャー例
+    toBeWithinRange (received, floor, ceiling) {
+        const pass = received >= floor && received <= ceiling;
+        if (pass) {
+            return {
+                message: ()=>`expected ${received} not to be within range ${floor} - ${ceiling}`,
+                pass: true
+            };
+        } else {
+            return {
+                message: ()=>`expected ${received} to be within range ${floor} - ${ceiling}`,
+                pass: false
+            };
+        }
+    }
+}); // 注: TypeScriptの型定義はJSDocコメントで代用するか、
+ // 別の.d.tsファイルに記述することをお勧めします。 
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9qZXN0LnNldHVwLmpzIl0sInNvdXJjZXNDb250ZW50IjpbIi8vIEplc3QtRE9N44Gu5ouh5by15qmf6IO944KS6Kqt44G/6L6844G/XG5pbXBvcnQgJ0B0ZXN0aW5nLWxpYnJhcnkvamVzdC1kb20nO1xuXG4vLyDjgr/jgqTjg6DjgqLjgqbjg4joqK3lrppcbmplc3Quc2V0VGltZW91dCgzMDAwMCk7XG5cbi8vIOOCq+OCueOCv+ODoOODnuODg+ODgeODo+ODvFxuZXhwZWN0LmV4dGVuZCh7XG4gIC8vIOWfuuacrOeahOOBquOCq+OCueOCv+ODoOODnuODg+ODgeODo+ODvOS+i1xuICB0b0JlV2l0aGluUmFuZ2UocmVjZWl2ZWQsIGZsb29yLCBjZWlsaW5nKSB7XG4gICAgY29uc3QgcGFzcyA9IHJlY2VpdmVkID49IGZsb29yICYmIHJlY2VpdmVkIDw9IGNlaWxpbmc7XG4gICAgaWYgKHBhc3MpIHtcbiAgICAgIHJldHVybiB7XG4gICAgICAgIG1lc3NhZ2U6ICgpID0+IGBleHBlY3RlZCAke3JlY2VpdmVkfSBub3QgdG8gYmUgd2l0aGluIHJhbmdlICR7Zmxvb3J9IC0gJHtjZWlsaW5nfWAsXG4gICAgICAgIHBhc3M6IHRydWUsXG4gICAgICB9O1xuICAgIH0gZWxzZSB7XG4gICAgICByZXR1cm4ge1xuICAgICAgICBtZXNzYWdlOiAoKSA9PiBgZXhwZWN0ZWQgJHtyZWNlaXZlZH0gdG8gYmUgd2l0aGluIHJhbmdlICR7Zmxvb3J9IC0gJHtjZWlsaW5nfWAsXG4gICAgICAgIHBhc3M6IGZhbHNlLFxuICAgICAgfTtcbiAgICB9XG4gIH1cbn0pO1xuXG4vLyDms6g6IFR5cGVTY3JpcHTjga7lnovlrprnvqnjga9KU0RvY+OCs+ODoeODs+ODiOOBp+S7o+eUqOOBmeOCi+OBi+OAgVxuLy8g5Yil44GuLmQudHPjg5XjgqHjgqTjg6vjgavoqJjov7DjgZnjgovjgZPjgajjgpLjgYrli6fjgoHjgZfjgb7jgZnjgIIgIl0sIm5hbWVzIjpbImplc3QiLCJzZXRUaW1lb3V0IiwiZXhwZWN0IiwiZXh0ZW5kIiwidG9CZVdpdGhpblJhbmdlIiwicmVjZWl2ZWQiLCJmbG9vciIsImNlaWxpbmciLCJwYXNzIiwibWVzc2FnZSJdLCJtYXBwaW5ncyI6IkFBQUEscUJBQXFCOzs7OztRQUNkO0FBRVAsV0FBVztBQUNYQSxLQUFLQyxVQUFVLENBQUM7QUFFaEIsWUFBWTtBQUNaQyxPQUFPQyxNQUFNLENBQUM7SUFDWixpQkFBaUI7SUFDakJDLGlCQUFnQkMsUUFBUSxFQUFFQyxLQUFLLEVBQUVDLE9BQU87UUFDdEMsTUFBTUMsT0FBT0gsWUFBWUMsU0FBU0QsWUFBWUU7UUFDOUMsSUFBSUMsTUFBTTtZQUNSLE9BQU87Z0JBQ0xDLFNBQVMsSUFBTSxDQUFDLFNBQVMsRUFBRUosU0FBUyx3QkFBd0IsRUFBRUMsTUFBTSxHQUFHLEVBQUVDLFFBQVEsQ0FBQztnQkFDbEZDLE1BQU07WUFDUjtRQUNGLE9BQU87WUFDTCxPQUFPO2dCQUNMQyxTQUFTLElBQU0sQ0FBQyxTQUFTLEVBQUVKLFNBQVMsb0JBQW9CLEVBQUVDLE1BQU0sR0FBRyxFQUFFQyxRQUFRLENBQUM7Z0JBQzlFQyxNQUFNO1lBQ1I7UUFDRjtJQUNGO0FBQ0YsSUFFQSxxQ0FBcUM7Q0FDckMsOEJBQThCIn0=

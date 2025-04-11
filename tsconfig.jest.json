@@ -2,16 +2,18 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "module": "commonjs",
-    "isolatedModules": false,
+    "target": "ES2018",
+    "module": "CommonJS",
     "esModuleInterop": true,
-    "types": ["jest", "node", "@testing-library/jest-dom"]
+    "types": ["node", "jest", "@testing-library/jest-dom"],
+    "isolatedModules": true
   },
   "include": [
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.spec.ts",
-    "**/*.spec.tsx",
-    "jest.setup.ts"
-  ]
+    "**/*.ts",
+    "**/*.tsx",
+    "src/types/*.d.ts",
+    "jest.setup.js",
+    "src/setupTests.ts"
+  ],
+  "exclude": ["node_modules", ".next", "out"]
 } 

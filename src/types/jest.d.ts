@@ -1,1 +1,97 @@
 /// <reference types="@testing-library/jest-dom" />
+
+import '@testing-library/jest-dom';
+
+declare global {
+  namespace jest {
+    interface Matchers<R> {
+      toBeInTheDocument(): R;
+      toHaveAttribute(attr: string, value?: string): R;
+      toHaveTextContent(text: string | RegExp): R;
+      toBeVisible(): R;
+      toHaveClass(className: string): R;
+      toHaveProperty(keyPath: string, value?: any): R;
+      toHaveLength(length: number): R;
+      toHaveBeenCalledWith(...args: any[]): R;
+      toHaveBeenCalledTimes(count: number): R;
+      toHaveBeenCalled(): R;
+      toHaveBeenLastCalledWith(...args: any[]): R;
+      toHaveBeenNthCalledWith(nthCall: number, ...args: any[]): R;
+      toBe(expected: any): R;
+      toEqual(expected: any): R;
+      toBeDefined(): R;
+      toBeNull(): R;
+      toBeUndefined(): R;
+      toBeTruthy(): R;
+      toBeFalsy(): R;
+      toBeInstanceOf(expected: any): R;
+      toBeGreaterThan(expected: number): R;
+      toBeGreaterThanOrEqual(expected: number): R;
+      toBeLessThan(expected: number): R;
+      toBeLessThanOrEqual(expected: number): R;
+      toContain(expected: any): R;
+      toMatch(expected: string | RegExp): R;
+      toThrow(expected?: string | Error | RegExp): R;
+      toBeCloseTo(expected: number, precision?: number): R;
+    }
+
+    interface Expect {
+      assertions(count: number): void;
+    }
+
+    interface MockInstance<T = any, Y extends any[] = any[]> {
+      mockReturnValue(value: T): this;
+      mockReturnValueOnce(value: T): this;
+      mockImplementation(fn: (...args: Y) => T): this;
+      mockImplementationOnce(fn: (...args: Y) => T): this;
+      mockResolvedValue(value: Awaited<T>): this;
+      mockResolvedValueOnce(value: Awaited<T>): this;
+      mockRejectedValue(value: any): this;
+      mockRejectedValueOnce(value: any): this;
+      mockClear(): void;
+      mockReset(): void;
+      mockRestore(): void;
+    }
+
+    function fn<T = any, Y extends any[] = any[]>(): MockInstance<T, Y>;
+    function fn<T = any, Y extends any[] = any[]>(implementation?: (...args: Y) => T): MockInstance<T, Y>;
+    function spyOn<T extends {}, M extends PropertyKey>(object: T, method: M): MockInstance<any, any[]>;
+    function clearAllMocks(): void;
+    function resetAllMocks(): void;
+    function restoreAllMocks(): void;
+    function useFakeTimers(): typeof jest;
+    function useRealTimers(): typeof jest;
+  }
+
+  interface ExpectStatic {
+    objectContaining(expected: object): any;
+    stringContaining(expected: string): any;
+    stringMatching(expected: string | RegExp): any;
+    arrayContaining(expected: any[]): any;
+    any(constructor: any): any;
+    anything(): any;
+    assertions(count: number): void;
+  }
+
+  interface Promise<T> {
+    resolves: any;
+    rejects: {
+      toThrow(expected?: string | Error | RegExp): Promise<void>;
+      toThrowError(expected?: string | Error | RegExp): Promise<void>;
+    };
+  }
+
+  interface Global {
+    fetch: jest.Mock<Promise<any>> | any;
+    TextEncoder: any;
+    TextDecoder: any;
+  }
+
+  // グローバルなfetch関数の型定義を修正
+  let fetch: jest.MockInstance<Promise<any>, [input: RequestInfo | URL, init?: RequestInit]>;
+}
+
+// これにより、Jest.Mockがグローバルスコープに確実に定義されます
+interface Mock<T = any, Y extends any[] = any[]> extends Function, jest.MockInstance<T, Y> {}
+
+export {};
