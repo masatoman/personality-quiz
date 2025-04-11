@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { PointHistoryItem } from '@/types/quiz';
@@ -30,7 +30,7 @@ const PointsHistoryList: React.FC<PointsHistoryListProps> = ({
   const [totalItems, setTotalItems] = useState(0);
   const [selectedActionType, setSelectedActionType] = useState<string>('');
   
-  const fetchHistory = async (page: number = 1, actionType: string = '') => {
+  const fetchHistory = useCallback(async (page: number = 1, actionType: string = '') => {
     setLoading(true);
     try {
       const offset = (page - 1) * limit;
@@ -56,7 +56,7 @@ const PointsHistoryList: React.FC<PointsHistoryListProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [limit]);
   
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -71,7 +71,7 @@ const PointsHistoryList: React.FC<PointsHistoryListProps> = ({
   
   useEffect(() => {
     fetchHistory(currentPage, selectedActionType);
-  }, []);
+  }, [currentPage, selectedActionType, fetchHistory]);
   
   // 一意のアクションタイプを取得
   const uniqueActionTypes = Array.from(
