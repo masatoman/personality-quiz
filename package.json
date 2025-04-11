@@ -27,7 +27,11 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:ui": "playwright test --ui",
     "playwright:install": "playwright install --with-deps",
-    "playwright:report": "playwright show-report"
+    "playwright:report": "playwright show-report",
+    "test:unit": "jest --testPathPattern=.unit.test.ts",
+    "test:integration": "jest --testPathPattern=.integration.test.tsx",
+    "test:cypress": "cypress run",
+    "generate:test": "ts-node src/utils/scripts/generate-test.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
