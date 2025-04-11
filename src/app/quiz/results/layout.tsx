@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import React from 'react';
 
 export const metadata: Metadata = {
   title: '英語学習タイプ診断結果 | あなたに最適な学習方法',

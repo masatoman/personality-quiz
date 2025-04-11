@@ -53,8 +53,8 @@ declare global {
       mockRestore(): void;
     }
 
-    function fn<T = any, Y extends any[] = any[]>(): MockInstance<T, Y>;
-    function fn<T = any, Y extends any[] = any[]>(implementation?: (...args: Y) => T): MockInstance<T, Y>;
+    function fn(): MockInstance;
+    function fn(implementation?: (...args: any[]) => any): MockInstance;
     function spyOn<T extends {}, M extends PropertyKey>(object: T, method: M): MockInstance<any, any[]>;
     function clearAllMocks(): void;
     function resetAllMocks(): void;
@@ -88,10 +88,10 @@ declare global {
   }
 
   // グローバルなfetch関数の型定義を修正
-  let fetch: jest.MockInstance<Promise<any>, [input: RequestInfo | URL, init?: RequestInit]>;
+  let fetch: jest.MockInstance<Promise<any>, [input: string | URL, init?: any]>;
 }
 
 // これにより、Jest.Mockがグローバルスコープに確実に定義されます
-interface Mock<T = any, Y extends any[] = any[]> extends Function, jest.MockInstance<T, Y> {}
+interface Mock extends Function, jest.MockInstance {}
 
 export {};

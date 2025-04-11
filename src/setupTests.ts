@@ -1,6 +1,10 @@
 // テスト環境のセットアップ
 import '@testing-library/jest-dom';
 
+// 型定義の追加
+type IntersectionObserverCallbackType = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => void;
+type ResizeObserverCallbackType = (entries: ResizeObserverEntry[], observer: ResizeObserver) => void;
+
 // グローバルなモックの設定
 global.fetch = jest.fn() as jest.MockedFunction<typeof fetch>;
 
@@ -26,10 +30,10 @@ global.MutationObserver = MockMutationObserver as unknown as typeof MutationObse
 
 // IntersectionObserverのモック
 class MockIntersectionObserver {
-  constructor(callback: IntersectionObserverCallback) {
+  constructor(callback: IntersectionObserverCallbackType) {
     this.callback = callback;
   }
-  callback: IntersectionObserverCallback;
+  callback: IntersectionObserverCallbackType;
   observe = jest.fn();
   unobserve = jest.fn();
   disconnect = jest.fn();
@@ -39,10 +43,10 @@ global.IntersectionObserver = MockIntersectionObserver as unknown as typeof Inte
 
 // ResizeObserverのモック
 class MockResizeObserver {
-  constructor(callback: ResizeObserverCallback) {
+  constructor(callback: ResizeObserverCallbackType) {
     this.callback = callback;
   }
-  callback: ResizeObserverCallback;
+  callback: ResizeObserverCallbackType;
   observe = jest.fn();
   unobserve = jest.fn();
   disconnect = jest.fn();
