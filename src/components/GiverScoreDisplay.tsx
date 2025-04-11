@@ -1,157 +1,116 @@
-import React, { useState, useEffect } from 'react';
-import { FaStar, FaStarHalfAlt, FaRegStar, FaTrophy, FaMedal, FaAward } from 'react-icons/fa';
+import React from 'react';
+import { HiGift, HiStar, HiLightningBolt, HiUser } from 'react-icons/hi';
+
+interface UserData {
+  id: string;
+  name: string;
+  email: string;
+  score: number;
+  activities: number;
+  level: number;
+  nextLevelScore: number;
+  progressPercentage: number;
+  personalityType: 'giver' | 'taker' | 'matcher';
+}
 
 interface GiverScoreDisplayProps {
-  score: number;
-  showDetails?: boolean;
+  userData: UserData;
 }
 
-// レベルの型定義
-interface GiverLevel {
-  min: number;
-  max: number;
-  name: string;
-  icon: JSX.Element;
-  color: string;
-}
+// レベルごとの特典マップ（実際の実装に合わせて調整してください）
+const LEVEL_BENEFITS: Record<number, string[]> = {
+  1: ['基本機能の利用'],
+  2: ['詳細フィードバック機能', 'ポイント2倍デー'],
+  3: ['教材ブックマーク機能', 'バッジシステムのロック解除'],
+  4: ['教材作成機能のロック解除', 'ギバーコミュニティへのアクセス'],
+  5: ['他ユーザーのメンター登録', 'カスタムテーマ'],
+  6: ['リソース提案機能', 'ギバーSNSバッジの獲得'],
+  7: ['上級者向け教材の作成許可', 'プライオリティサポート'],
+  8: ['ギバーリーダーボードへの参加', 'VIPイベントへの招待'],
+  9: ['プラットフォームの意思決定権限', 'ギバー認定バッジ'],
+  10: ['無制限の教材作成', 'マスターメンターステータス', 'ギバーTシャツの贈呈']
+};
 
-// ギバースコアに基づくレベル定義
-const GIVER_LEVELS: GiverLevel[] = [
-  { min: 0, max: 10, name: '初心者ギバー', icon: <FaRegStar className="text-gray-400" />, color: 'text-gray-600' },
-  { min: 11, max: 30, name: 'アクティブギバー', icon: <FaStarHalfAlt className="text-blue-400" />, color: 'text-blue-600' },
-  { min: 31, max: 60, name: 'レギュラーギバー', icon: <FaStar className="text-blue-500" />, color: 'text-blue-600' },
-  { min: 61, max: 100, name: 'エリートギバー', icon: <FaMedal className="text-yellow-500" />, color: 'text-yellow-600' },
-  { min: 101, max: 200, name: 'マスターギバー', icon: <FaAward className="text-yellow-600" />, color: 'text-yellow-700' },
-  { min: 201, max: Infinity, name: 'レジェンドギバー', icon: <FaTrophy className="text-yellow-500" />, color: 'text-yellow-700' }
-];
+// パーソナリティタイプごとのアイコンマップ
+const PERSONALITY_ICONS = {
+  giver: <HiGift data-testid="giver-icon" className="text-green-500" size={24} />,
+  taker: <HiStar data-testid="taker-icon" className="text-blue-500" size={24} />,
+  matcher: <HiLightningBolt data-testid="matcher-icon" className="text-purple-500" size={24} />
+};
 
-const GiverScoreDisplay: React.FC<GiverScoreDisplayProps> = ({ 
-  score,
-  showDetails = true
-}) => {
-  const [level, setLevel] = useState<GiverLevel>(GIVER_LEVELS[0]);
-  const [nextLevel, setNextLevel] = useState<GiverLevel | null>(GIVER_LEVELS[1]);
-  const [progress, setProgress] = useState(0);
+// パーソナリティタイプごとの色マップ
+const PERSONALITY_COLORS = {
+  giver: 'bg-green-500',
+  taker: 'bg-blue-500',
+  matcher: 'bg-purple-500'
+};
 
-  useEffect(() => {
-    // スコアに基づいてレベルを決定
-    const currentLevel = GIVER_LEVELS.reduce((prev, current) => {
-      return (score >= current.min && score <= current.max) ? current : prev;
-    }, GIVER_LEVELS[0]);
-    
-    setLevel(currentLevel);
-    
-    // 次のレベルを計算
-    const currentIndex = GIVER_LEVELS.findIndex(l => l === currentLevel);
-    const next = currentIndex < GIVER_LEVELS.length - 1 ? GIVER_LEVELS[currentIndex + 1] : null;
-    setNextLevel(next);
-    
-    // 進捗度を計算
-    if (next) {
-      const levelRange = next.min - currentLevel.min;
-      const userProgress = score - currentLevel.min;
-      setProgress(Math.min(100, Math.round((userProgress / levelRange) * 100)));
-    } else {
-      setProgress(100); // 最高レベルの場合
-    }
-  }, [score]);
-
+const GiverScoreDisplay: React.FC<GiverScoreDisplayProps> = ({ userData }) => {
+  const { score, level, nextLevelScore, progressPercentage, personalityType, activities } = userData;
+  
+  // 次のレベルまでの必要ポイント
+  const pointsToNextLevel = nextLevelScore - score;
+  
+  // 現在のレベルの特典リスト
+  const currentBenefits = LEVEL_BENEFITS[level] || [];
+  
   return (
-    <div className="giver-score-display bg-white rounded-lg shadow-md p-5">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center">
-          <div className="mr-3 text-2xl">{level.icon}</div>
-          <div>
-            <h3 className={`text-lg font-bold ${level.color}`}>{level.name}</h3>
-            <p className="text-sm text-gray-600">ギバースコア: {score}点</p>
-          </div>
+    <div className="bg-white rounded-lg shadow-md p-6 max-w-md">
+      <div className="flex items-center mb-4">
+        <div className="rounded-full bg-gray-100 p-3 mr-4">
+          {PERSONALITY_ICONS[personalityType] || <HiUser size={24} />}
         </div>
-        {nextLevel && (
-          <div className="text-right">
-            <p className="text-xs text-gray-500">次のレベルまで</p>
-            <p className="text-sm font-semibold">{nextLevel.min - score}点</p>
-          </div>
-        )}
+        <div>
+          <h2 className="text-2xl font-bold">{userData.name}</h2>
+          <p className="text-gray-600">{personalityType.charAt(0).toUpperCase() + personalityType.slice(1)}タイプ</p>
+        </div>
       </div>
       
-      {/* プログレスバー */}
-      <div className="relative h-2 bg-gray-200 rounded overflow-hidden mb-4">
-        <div 
-          className="absolute h-full bg-gradient-to-r from-blue-400 to-blue-600"
-          style={{ width: `${progress}%` }}
-        />
+      <div className="mb-6">
+        <div className="flex justify-between mb-2">
+          <span className="text-gray-700">ギバースコア</span>
+          <span className="font-bold text-xl">{score}</span>
+        </div>
+        <div className="flex justify-between mb-2">
+          <span className="text-gray-700">レベル</span>
+          <span className="font-semibold">レベル {level}</span>
+        </div>
+        <div className="flex justify-between mb-2">
+          <span className="text-gray-700">活動数</span>
+          <span className="font-semibold">{activities} 活動</span>
+        </div>
       </div>
       
-      {showDetails && (
-        <div className="mt-4 text-sm">
-          <h4 className="font-semibold mb-2">ギバースコアとは？</h4>
-          <p className="text-gray-600 mb-2">
-            コミュニティへの貢献度を表す指標です。教材作成やフィードバック提供など、
-            他のユーザーの学習を助ける行動によってスコアが上昇します。
-          </p>
-          <h4 className="font-semibold mb-2">{level.name}の特典</h4>
-          <ul className="list-disc list-inside text-gray-600">
-            {getLevelBenefits(level.name).map((benefit, index) => (
-              <li key={index}>{benefit}</li>
-            ))}
-          </ul>
+      <div className="mb-6">
+        <div className="flex justify-between mb-1">
+          <span>進捗状況</span>
+          <span>{progressPercentage}%</span>
         </div>
-      )}
+        <div className="w-full bg-gray-200 rounded-full h-2.5">
+          <div 
+            className={`h-2.5 rounded-full ${PERSONALITY_COLORS[personalityType]}`}
+            style={{ width: `${progressPercentage}%` }}
+            role="progressbar"
+            aria-valuenow={progressPercentage}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          ></div>
+        </div>
+        <p className="text-sm text-gray-600 mt-1">
+          次のレベルまで: {pointsToNextLevel}ポイント
+        </p>
+      </div>
+      
+      <div>
+        <h3 className="font-semibold mb-2">特典:</h3>
+        <ul className="list-disc pl-5">
+          {currentBenefits.map((benefit, index) => (
+            <li key={index} className="text-gray-700">{benefit}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
-
-// レベルごとの特典を取得
-function getLevelBenefits(levelName: string): string[] {
-  switch(levelName) {
-    case '初心者ギバー':
-      return [
-        'ベーシックコンテンツへのアクセス',
-        '基本フィードバック機能'
-      ];
-    case 'アクティブギバー':
-      return [
-        'ベーシックコンテンツへのアクセス',
-        '基本フィードバック機能',
-        'コミュニティバッジの獲得'
-      ];
-    case 'レギュラーギバー':
-      return [
-        '全コンテンツへのアクセス',
-        '高度なフィードバック機能',
-        'コミュニティバッジの獲得',
-        'プレミアム教材の割引'
-      ];
-    case 'エリートギバー':
-      return [
-        '全コンテンツへのアクセス',
-        '高度なフィードバック機能',
-        'エリートバッジの獲得',
-        'プレミアム教材の割引',
-        'コンテンツの収益化機能'
-      ];
-    case 'マスターギバー':
-      return [
-        '全コンテンツへのフルアクセス',
-        '最高度なフィードバック機能',
-        'マスターバッジの獲得',
-        'プレミアム教材の大幅割引',
-        'コンテンツの収益化機能',
-        'メンター認定資格'
-      ];
-    case 'レジェンドギバー':
-      return [
-        '全コンテンツへのフルアクセス',
-        '最高度なフィードバック機能',
-        'レジェンドバッジの獲得',
-        'プレミアム教材の無料アクセス',
-        'コンテンツの収益化機能（高率）',
-        'メンター認定資格',
-        'プラットフォーム開発への参加権'
-      ];
-    default:
-      return ['基本機能へのアクセス'];
-  }
-}
 
 export default GiverScoreDisplay; 

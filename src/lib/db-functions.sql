@@ -1,7 +1,11 @@
 -- ユーザーポイントを増加させる関数
 CREATE OR REPLACE FUNCTION increment_user_points(
   user_id TEXT,
-  points_to_add INTEGER
+  points_to_add INTEGER,
+  action_type TEXT,
+  reference_id TEXT DEFAULT NULL,
+  reference_type TEXT DEFAULT NULL,
+  description TEXT DEFAULT NULL
 ) RETURNS VOID AS $$
 BEGIN
   -- ユーザーが存在するか確認
@@ -15,6 +19,80 @@ BEGIN
     points = points + points_to_add,
     updated_at = NOW()
   WHERE id = user_id;
+  
+  -- ポイント履歴を記録
+  INSERT INTO points_history (
+    user_id,
+    points,
+    action_type,
+    reference_id,
+    reference_type,
+    description,
+    created_at
+  ) VALUES (
+    user_id,
+    points_to_add,
+    action_type,
+    reference_id,
+    reference_type,
+    description,
+    NOW()
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+-- ユーザーポイントを消費する関数
+CREATE OR REPLACE FUNCTION consume_user_points(
+  user_id TEXT,
+  points_to_consume INTEGER,
+  action_type TEXT,
+  reference_id TEXT DEFAULT NULL,
+  reference_type TEXT DEFAULT NULL,
+  description TEXT DEFAULT NULL
+) RETURNS BOOLEAN AS $$
+DECLARE
+  current_points INTEGER;
+BEGIN
+  -- ユーザーが存在するか確認
+  IF NOT EXISTS (SELECT 1 FROM users WHERE id = user_id) THEN
+    RAISE EXCEPTION 'ユーザーID: % が見つかりません', user_id;
+  END IF;
+
+  -- 現在のポイントを取得
+  SELECT points INTO current_points FROM users WHERE id = user_id;
+  
+  -- ポイントが足りるか確認
+  IF current_points < points_to_consume THEN
+    RETURN FALSE;
+  END IF;
+  
+  -- ポイントを更新
+  UPDATE users
+  SET 
+    points = points - points_to_consume,
+    updated_at = NOW()
+  WHERE id = user_id;
+  
+  -- ポイント履歴を記録（マイナス値として記録）
+  INSERT INTO points_history (
+    user_id,
+    points,
+    action_type,
+    reference_id,
+    reference_type,
+    description,
+    created_at
+  ) VALUES (
+    user_id,
+    -points_to_consume,
+    action_type,
+    reference_id,
+    reference_type,
+    description,
+    NOW()
+  );
+  
+  RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql;
 

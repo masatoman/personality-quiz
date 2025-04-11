@@ -18,6 +18,21 @@ CREATE TABLE IF NOT EXISTS giver_scores (
   CONSTRAINT giver_scores_user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- ポイント履歴テーブル
+CREATE TABLE IF NOT EXISTS points_history (
+  id SERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  points INTEGER NOT NULL,
+  action_type TEXT NOT NULL,
+  reference_id TEXT,
+  reference_type TEXT,
+  description TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CONSTRAINT points_history_user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+CREATE INDEX points_history_user_id_idx ON points_history(user_id);
+CREATE INDEX points_history_created_at_idx ON points_history(created_at);
+
 -- 診断結果履歴テーブル
 CREATE TABLE IF NOT EXISTS personality_history (
   id SERIAL PRIMARY KEY,

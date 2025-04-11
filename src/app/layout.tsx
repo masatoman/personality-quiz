@@ -1,8 +1,9 @@
-import React, { StrictMode } from 'react';
+import React from 'react';
 import './globals.css'
 import type { Metadata } from 'next'
 import { Noto_Sans_JP, M_PLUS_Rounded_1c } from 'next/font/google'
 import Navbar from '@/components/Navbar';
+import ThemeProviderClient from '@/components/ThemeProviderClient';
 
 const noto = Noto_Sans_JP({ 
   subsets: ['latin'],
@@ -31,12 +32,12 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
       </head>
       <body suppressHydrationWarning className="bg-background text-text-primary min-h-screen font-noto">
-        <StrictMode>
+        <ThemeProviderClient>
           <Navbar />
           <main>
             {children}
           </main>
-        </StrictMode>
+        </ThemeProviderClient>
       </body>
     </html>
   )
