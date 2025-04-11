@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: false,
   swcMinify: true,
+  productionBrowserSourceMaps: true, // 本番環境でのソースマップを有効化
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
   // basePath: '/quiz',
   // assetPrefix: '/quiz/',
@@ -16,6 +17,13 @@ const nextConfig = {
     pagesBufferLength: 2,
   },
   webpack: (config) => {
+    // ソースマップの設定を追加
+    if (process.env.NODE_ENV === 'production') {
+      config.devtool = 'source-map';
+    } else {
+      config.devtool = 'eval-source-map'; // 開発環境では高品質なソースマップを使用
+    }
+    
     config.module.rules.push({
       test: /\.(test|story)\.(js|jsx|ts|tsx)$/,
       loader: 'ignore-loader'
@@ -30,13 +38,8 @@ const nextConfig = {
     // スタイルの削除を防ぐ
     removeConsole: false,
   },
-  // フォントの設定を追加
+  // fontsの設定を削除
   optimizeFonts: true,
-  fonts: {
-    google: {
-      families: ['M PLUS Rounded 1c:400,500,700']
-    }
-  },
 };
 
 module.exports = nextConfig; 

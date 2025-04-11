@@ -4,9 +4,9 @@
 
 :root {
   /* カラーパレット */
-  --color-primary: #4F46E5;
-  --color-primary-light: #6366F1;
-  --color-primary-dark: #4338CA;
+  --color-primary: #1A9A9D;
+  --color-primary-light: #2DB6B9;
+  --color-primary-dark: #158385;
   
   /* タイプカラー */
   --color-supporter: #059669;
@@ -31,9 +31,25 @@
   --color-card: #FFFFFF;
   
   /* アクセントカラー */
-  --color-accent: #D97706;
-  --color-accent-light: #F59E0B;
-  --color-accent-dark: #B45309;
+  --color-accent: #6B2D90;
+  --color-accent-light: #8039AB;
+  --color-accent-dark: #572476;
+
+  /* 補助カラー */
+  --color-secondary: #4ECDC4;
+  --color-secondary-light: #6AD9D2;
+  --color-secondary-dark: #39B3AA;
+  
+  /* ニュートラルカラー */
+  --color-neutral: #1D3461;
+  --color-neutral-light: #274580;
+  --color-neutral-dark: #152648;
+  
+  /* ベースカラー */
+  --color-base: #F7F9FC;
+  --color-base-100: #F7F9FC;
+  --color-base-200: #EDF1F7;
+  --color-base-300: #E2E8F0;
 
   --primary: #5E35B1;
   --primary-light: #7E57C2;
@@ -46,13 +62,20 @@
   --gray-dark: #9E9E9E;
 }
 
+/* テーマ切り替えトランジション */
+*, *::before, *::after {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
 @layer base {
   html {
     @apply antialiased;
   }
 
   body {
-    @apply font-sans text-gray-900 bg-surface-light;
+    @apply font-sans text-neutral bg-base;
     font-feature-settings: "palt";
     margin: 0;
     padding: 0;
@@ -60,7 +83,7 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-rounded font-bold tracking-tight text-gray-900;
+    @apply font-rounded font-bold tracking-tight text-neutral;
   }
 
   h1 {
@@ -80,11 +103,52 @@
   }
 
   p {
-    @apply text-body text-gray-700;
+    @apply text-body text-neutral-light;
   }
 }
 
 @layer components {
+  /* テーマ関連のコンポーネント */
+  .theme-card {
+    @apply bg-base border border-base-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 p-6;
+  }
+  
+  .theme-button-primary {
+    @apply bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition-colors;
+  }
+  
+  .theme-button-accent {
+    @apply bg-accent hover:bg-accent-dark text-white px-4 py-2 rounded-md shadow-md transition-colors;
+  }
+  
+  .theme-button-outline {
+    @apply border border-primary text-primary hover:bg-opacity-10 hover:bg-primary px-4 py-2 rounded-md transition-colors;
+  }
+  
+  .theme-tag {
+    @apply bg-opacity-30 bg-secondary text-secondary-dark px-3 py-1 rounded-full text-sm font-medium;
+  }
+  
+  .theme-input {
+    @apply w-full border border-base-300 focus:border-secondary focus:ring-1 focus:ring-secondary rounded-md px-3 py-2 bg-base;
+  }
+  
+  .theme-nav {
+    @apply bg-neutral text-white p-4;
+  }
+  
+  .theme-nav-link {
+    @apply text-base hover:text-accent transition-colors;
+  }
+  
+  .theme-section {
+    @apply bg-base-100 p-8 rounded-xl border border-base-200 my-8;
+  }
+  
+  .theme-divider {
+    @apply border-t border-base-300 my-6;
+  }
+  
   /* カード */
   .card {
     @apply bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200;

@@ -1,40 +1,26 @@
+// Jest-DOMの拡張機能を読み込み
 import '@testing-library/jest-dom';
 
-// グローバルなタイムアウト設定 (デフォルトは5秒、ここでは30秒に設定)
+// タイムアウト設定
 jest.setTimeout(30000);
 
-// グローバルなマッチャーの拡張
+// カスタムマッチャー
 expect.extend({
-  toBeInTheDocument() {
-    return {
-      pass: true,
-      message: () => '',
-    };
-  },
-  toHaveAttribute(received, name, expectedValue) {
-    return {
-      pass: true,
-      message: () => '',
-    };
-  },
-  toHaveClass(received, className) {
-    return {
-      pass: true,
-      message: () => '',
-    };
-  },
-  toBeNull() {
-    return {
-      pass: true,
-      message: () => '',
-    };
-  },
-  toHaveBeenCalledWith() {
-    return {
-      pass: true,
-      message: () => '',
-    };
-  },
+  // 基本的なカスタムマッチャー例
+  toBeWithinRange(received, floor, ceiling) {
+    const pass = received >= floor && received <= ceiling;
+    if (pass) {
+      return {
+        message: () => `expected ${received} not to be within range ${floor} - ${ceiling}`,
+        pass: true,
+      };
+    } else {
+      return {
+        message: () => `expected ${received} to be within range ${floor} - ${ceiling}`,
+        pass: false,
+      };
+    }
+  }
 });
 
 // 注: TypeScriptの型定義はJSDocコメントで代用するか、

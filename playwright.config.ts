@@ -12,6 +12,7 @@ const config: PlaywrightTestConfig = {
     video: 'retain-on-failure',
     actionTimeout: 15000,
     navigationTimeout: 30000,
+    trace: 'on-first-retry',
   },
   projects: [
     {
@@ -20,8 +21,34 @@ const config: PlaywrightTestConfig = {
         browserName: 'chromium',
       },
     },
+    {
+      name: 'Firefox',
+      use: {
+        browserName: 'firefox',
+      },
+    },
+    {
+      name: 'WebKit',
+      use: {
+        browserName: 'webkit',
+      },
+    },
   ],
   retries: 2,
+  reporter: [
+    ['html', { open: 'never' }],
+    ['list']
+  ],
+  workers: process.env.CI ? 1 : undefined,
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+    timeout: 120000,
+  },
+  globalSetup: './src/tests/global-setup.ts',
+  globalTeardown: './src/tests/global-teardown.ts',
+  testMatch: '**/*.e2e.test.ts',
 };
 
-export default config; 
+export default config;

@@ -5,7 +5,14 @@ CREATE OR REPLACE FUNCTION update_user_on_post_creation()
 RETURNS TRIGGER AS $$
 BEGIN
   -- ユーザーにポイントを追加（投稿作成で10ポイント）
-  UPDATE users SET points = points + 10 WHERE id = NEW.user_id;
+  PERFORM increment_user_points(
+    NEW.user_id, 
+    10, 
+    'create_post', 
+    NEW.id::TEXT, 
+    'community_posts', 
+    '投稿作成によるポイント付与'
+  );
   
   -- ギバースコアを更新（投稿作成で5ポイント）
   INSERT INTO giver_scores (user_id, score, last_updated) 
@@ -31,7 +38,14 @@ CREATE OR REPLACE FUNCTION update_user_on_comment_creation()
 RETURNS TRIGGER AS $$
 BEGIN
   -- ユーザーにポイントを追加（コメント作成で5ポイント）
-  UPDATE users SET points = points + 5 WHERE id = NEW.user_id;
+  PERFORM increment_user_points(
+    NEW.user_id, 
+    5, 
+    'create_comment', 
+    NEW.id::TEXT, 
+    'comments', 
+    'コメント作成によるポイント付与'
+  );
   
   -- ギバースコアを更新（コメント作成で3ポイント）
   INSERT INTO giver_scores (user_id, score, last_updated) 
@@ -70,54 +84,50 @@ DECLARE
   target_type TEXT;
   post_title TEXT;
 BEGIN
-  -- いいねの対象によって更新内容を変える
-  IF NEW.post_id IS NOT NULL THEN
-    -- 投稿へのいいねの場合
-    target_type := 'post';
-    target_id := NEW.post_id;
-    
-    -- 投稿のいいねカウントを更新
-    UPDATE community_posts 
-    SET likes_count = likes_count + 1
-    WHERE id = NEW.post_id;
-    
-    -- 投稿作成者のIDを取得
-    SELECT user_id, title INTO target_user_id, post_title
+  -- いいねの対象によってユーザーIDを取得
+  IF NEW.target_type = 'post' THEN
+    SELECT user_id, id, 'post', title INTO target_user_id, target_id, target_type, post_title
     FROM community_posts
-    WHERE id = NEW.post_id;
-    
-  ELSE
-    -- コメントへのいいねの場合
-    target_type := 'comment';
-    target_id := NEW.comment_id;
-    
-    -- コメントのいいねカウントを更新
-    UPDATE comments
-    SET likes_count = likes_count + 1
-    WHERE id = NEW.comment_id;
-    
-    -- コメント作成者のIDを取得
-    SELECT user_id INTO target_user_id
-    FROM comments
-    WHERE id = NEW.comment_id;
-    
-    -- 関連する投稿IDとタイトルを取得
-    SELECT cp.id, cp.title INTO target_id, post_title
+    WHERE id = NEW.target_id;
+  ELSIF NEW.target_type = 'comment' THEN
+    SELECT c.user_id, c.id, 'comment', p.title INTO target_user_id, target_id, target_type, post_title
     FROM comments c
-    JOIN community_posts cp ON c.post_id = cp.id
-    WHERE c.id = NEW.comment_id;
+    JOIN community_posts p ON c.post_id = p.id
+    WHERE c.id = NEW.target_id;
+  ELSE
+    RAISE EXCEPTION 'Unknown target_type: %', NEW.target_type;
   END IF;
-
-  -- アクティビティログに記録（いいねした人）
-  INSERT INTO user_activity (user_id, activity_type, details, created_at)
-  VALUES (NEW.user_id, 'like', 
-          jsonb_build_object(
-            'target_type', target_type, 
-            'target_id', target_id
-          ), 
-          NOW());
   
-  -- 自分の投稿・コメント以外へのいいねの場合のみ通知とポイント付与
+  -- ユーザーにポイントを追加（いいね付与で2ポイント）
+  PERFORM increment_user_points(
+    NEW.user_id, 
+    2, 
+    'give_like', 
+    NEW.target_id::TEXT, 
+    NEW.target_type, 
+    'いいね付与によるポイント獲得'
+  );
+  
+  -- アクティビティログに記録
+  INSERT INTO user_activity (user_id, activity_type, details, created_at)
+  VALUES (
+    NEW.user_id, 
+    'give_like', 
+    jsonb_build_object(
+      'target_id', NEW.target_id,
+      'target_type', NEW.target_type,
+      'post_title', post_title
+    ), 
+    NOW()
+  );
+  
+  -- ギバースコアを更新（いいね付与で1ポイント）
+  INSERT INTO giver_scores (user_id, score, last_updated) 
+  VALUES (NEW.user_id, 1, NOW())
+  ON CONFLICT (user_id) 
+  DO UPDATE SET score = giver_scores.score + 1, last_updated = NOW();
+  
+  -- 自分以外のコンテンツにいいねした場合のみ通知とポイント付与
   IF target_user_id != NEW.user_id THEN
     -- ユーザーにいいねされた通知を追加
     INSERT INTO notifications (user_id, type, message, link, created_at)
@@ -131,9 +141,14 @@ BEGIN
     );
     
     -- いいねされたユーザーにポイントを追加（1ポイント）
-    UPDATE users 
-    SET points = points + 1 
-    WHERE id = target_user_id;
+    PERFORM increment_user_points(
+      target_user_id, 
+      1, 
+      'receive_like', 
+      NEW.id::TEXT, 
+      'likes', 
+      'いいねを受け取ることによるポイント獲得'
+    );
   END IF;
   
   RETURN NEW;
@@ -171,9 +186,14 @@ BEGIN
     END CASE;
     
     -- ユーザーにポイントを追加
-    UPDATE users 
-    SET points = points + points_to_add 
-    WHERE id = NEW.user_id;
+    PERFORM increment_user_points(
+      NEW.user_id, 
+      points_to_add, 
+      'complete_resource', 
+      NEW.resource_id::TEXT, 
+      'learning_resources', 
+      resource_record.title || 'の完了によるポイント獲得'
+    );
     
     -- アクティビティログに記録
     INSERT INTO user_activity (user_id, activity_type, details, created_at)
@@ -222,7 +242,14 @@ BEGIN
   
   -- 初回利用時にポイントを追加（20ポイント）
   IF NOT EXISTS (SELECT 1 FROM personality_results WHERE user_id = NEW.user_id AND id != NEW.id) THEN
-    UPDATE users SET points = points + 20 WHERE id = NEW.user_id;
+    PERFORM increment_user_points(
+      NEW.user_id, 
+      20, 
+      'complete_quiz', 
+      NEW.id::TEXT, 
+      'personality_results', 
+      'ギバー診断初回完了によるポイント獲得'
+    );
   END IF;
   
   RETURN NEW;
