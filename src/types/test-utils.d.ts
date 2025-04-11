@@ -34,12 +34,18 @@ declare global {
     interface InverseAsymmetricMatchers extends CustomMatchers, EnhancedMatchers {}
     
     // Mock関数の型定義を拡張
-    interface Mock<T = any, Args extends any[] = any[]> extends Function, MockInstance<T, Args> {}
+    interface Mock extends Function {
+      mockReturnValue(value: any): Mock;
+      mockImplementation(fn: (...args: any[]) => any): Mock;
+      mockResolvedValue(value: any): Mock;
+      mockRejectedValue(value: any): Mock;
+      mockClear(): void;
+    }
   }
   
   // グローバルなモック関数の型を追加
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const fetch: jest.Mock<Promise<any>>;
+  const fetch: jest.Mock;
 }
 
 export {}; 
