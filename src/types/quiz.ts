@@ -133,16 +133,22 @@ export type MaterialType =
 
 // クイズの質問
 export interface QuizQuestion {
-  id: string;
+  id: number;
   text: string;
   options: QuizOption[];
+  category?: string;
+  description?: string;
 }
 
 // クイズの選択肢
 export interface QuizOption {
   text: string;
-  scores: ScoreChange;
-  id: string;
+  score: {
+    giver: number;
+    taker: number;
+    matcher: number;
+  };
+  description?: string;
 }
 
 // クイズの結果
@@ -169,7 +175,7 @@ export interface PointHistoryItem {
 
 // ギバースコア履歴項目
 export interface GiverScoreHistoryItem {
-  userId: string;
+  date: string;
   score: number;
-  timestamp: Date;
+  userId: string;
 }
