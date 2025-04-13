@@ -1,0 +1,50 @@
+9e6b08f3d775fef2939bdb242815b082
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+function _export(target, all) {
+    for(var name in all)Object.defineProperty(target, name, {
+        enumerable: true,
+        get: all[name]
+    });
+}
+_export(exports, {
+    default: function() {
+        return Home;
+    },
+    metadata: function() {
+        return metadata;
+    }
+});
+const _jsxruntime = require("react/jsx-runtime");
+const _react = /*#__PURE__*/ _interop_require_default(require("react"));
+const _HomePage = /*#__PURE__*/ _interop_require_default(require("../components/HomePage"));
+function _interop_require_default(obj) {
+    return obj && obj.__esModule ? obj : {
+        default: obj
+    };
+}
+const metadata = {
+    title: "英語学習タイプ診断 | あなたに最適な学習法を発見",
+    description: "3分で完了する無料診断で、あなたの英語学習タイプを発見。共感型、没入型、適応型から、あなたの強みを活かした学習方法を科学的に分析します。",
+    openGraph: {
+        type: "website",
+        url: "https://engtype.vercel.app",
+        title: "英語学習タイプ診断 | あなたに最適な学習法を発見",
+        description: "3分で完了する無料診断で、あなたの英語学習タイプを発見。共感型、没入型、適応型から、あなたの強みを活かした学習方法を科学的に分析します。",
+        images: [
+            {
+                url: "https://engtype.vercel.app/api/og?type=home",
+                width: 1200,
+                height: 630,
+                alt: "英語学習タイプ診断トップページ"
+            }
+        ]
+    }
+};
+function Home() {
+    return /*#__PURE__*/ (0, _jsxruntime.jsx)(_HomePage.default, {});
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9zcmMvYXBwL3BhZ2UudHN4Il0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBSZWFjdCBmcm9tICdyZWFjdCc7XG5pbXBvcnQgeyBNZXRhZGF0YSB9IGZyb20gJ25leHQnO1xuaW1wb3J0IEhvbWVQYWdlIGZyb20gJ0AvY29tcG9uZW50cy9Ib21lUGFnZSc7XG5cbmV4cG9ydCBjb25zdCBtZXRhZGF0YTogTWV0YWRhdGEgPSB7XG4gIHRpdGxlOiAn6Iux6Kqe5a2m57+S44K/44Kk44OX6Ki65patIHwg44GC44Gq44Gf44Gr5pyA6YGp44Gq5a2m57+S5rOV44KS55m66KaLJyxcbiAgZGVzY3JpcHRpb246ICcz5YiG44Gn5a6M5LqG44GZ44KL54Sh5paZ6Ki65pat44Gn44CB44GC44Gq44Gf44Gu6Iux6Kqe5a2m57+S44K/44Kk44OX44KS55m66KaL44CC5YWx5oSf5Z6L44CB5rKh5YWl5Z6L44CB6YGp5b+c5Z6L44GL44KJ44CB44GC44Gq44Gf44Gu5by344G/44KS5rS744GL44GX44Gf5a2m57+S5pa55rOV44KS56eR5a2m55qE44Gr5YiG5p6Q44GX44G+44GZ44CCJyxcbiAgb3BlbkdyYXBoOiB7XG4gICAgdHlwZTogJ3dlYnNpdGUnLFxuICAgIHVybDogJ2h0dHBzOi8vZW5ndHlwZS52ZXJjZWwuYXBwJyxcbiAgICB0aXRsZTogJ+iLseiqnuWtpue/kuOCv+OCpOODl+iouuaWrSB8IOOBguOBquOBn+OBq+acgOmBqeOBquWtpue/kuazleOCkueZuuimiycsXG4gICAgZGVzY3JpcHRpb246ICcz5YiG44Gn5a6M5LqG44GZ44KL54Sh5paZ6Ki65pat44Gn44CB44GC44Gq44Gf44Gu6Iux6Kqe5a2m57+S44K/44Kk44OX44KS55m66KaL44CC5YWx5oSf5Z6L44CB5rKh5YWl5Z6L44CB6YGp5b+c5Z6L44GL44KJ44CB44GC44Gq44Gf44Gu5by344G/44KS5rS744GL44GX44Gf5a2m57+S5pa55rOV44KS56eR5a2m55qE44Gr5YiG5p6Q44GX44G+44GZ44CCJyxcbiAgICBpbWFnZXM6IFt7XG4gICAgICB1cmw6ICdodHRwczovL2VuZ3R5cGUudmVyY2VsLmFwcC9hcGkvb2c/dHlwZT1ob21lJyxcbiAgICAgIHdpZHRoOiAxMjAwLFxuICAgICAgaGVpZ2h0OiA2MzAsXG4gICAgICBhbHQ6ICfoi7Hoqp7lrabnv5Ljgr/jgqTjg5foqLrmlq3jg4jjg4Pjg5fjg5rjg7zjgrgnLFxuICAgIH1dLFxuICB9LFxufTtcblxuZXhwb3J0IGRlZmF1bHQgZnVuY3Rpb24gSG9tZSgpIHtcbiAgcmV0dXJuIDxIb21lUGFnZSAvPjtcbn0gIl0sIm5hbWVzIjpbIkhvbWUiLCJtZXRhZGF0YSIsInRpdGxlIiwiZGVzY3JpcHRpb24iLCJvcGVuR3JhcGgiLCJ0eXBlIiwidXJsIiwiaW1hZ2VzIiwid2lkdGgiLCJoZWlnaHQiLCJhbHQiLCJIb21lUGFnZSJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7SUFxQkEsT0FFQztlQUZ1QkE7O0lBakJYQyxRQUFRO2VBQVJBOzs7OzhEQUpLO2lFQUVHOzs7Ozs7QUFFZCxNQUFNQSxXQUFxQjtJQUNoQ0MsT0FBTztJQUNQQyxhQUFhO0lBQ2JDLFdBQVc7UUFDVEMsTUFBTTtRQUNOQyxLQUFLO1FBQ0xKLE9BQU87UUFDUEMsYUFBYTtRQUNiSSxRQUFRO1lBQUM7Z0JBQ1BELEtBQUs7Z0JBQ0xFLE9BQU87Z0JBQ1BDLFFBQVE7Z0JBQ1JDLEtBQUs7WUFDUDtTQUFFO0lBQ0o7QUFDRjtBQUVlLFNBQVNWO0lBQ3RCLHFCQUFPLHFCQUFDVyxpQkFBUTtBQUNsQiJ9

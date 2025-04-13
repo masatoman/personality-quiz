@@ -1,0 +1,222 @@
+93637dba3111398506091ed31bb9ad80
+// バッジマスターデータ
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+function _export(target, all) {
+    for(var name in all)Object.defineProperty(target, name, {
+        enumerable: true,
+        get: all[name]
+    });
+}
+_export(exports, {
+    BADGE_DEFINITIONS: function() {
+        return BADGE_DEFINITIONS;
+    },
+    BADGE_LEVEL_COLORS: function() {
+        return BADGE_LEVEL_COLORS;
+    },
+    BADGE_TYPE_ICONS: function() {
+        return BADGE_TYPE_ICONS;
+    }
+});
+const _fa = require("react-icons/fa");
+const BADGE_DEFINITIONS = {
+    first_completion: {
+        id: "badge_first_completion",
+        type: "first_completion",
+        name: "最初の一歩",
+        description: "初めての教材を完了しました。学習の旅が始まりました！",
+        iconUrl: "/badges/first_completion.svg",
+        level: "bronze",
+        requirements: [
+            {
+                activityType: "complete_resource",
+                count: 1
+            }
+        ],
+        isSecret: false
+    },
+    learning_streak: {
+        id: "badge_learning_streak",
+        type: "learning_streak",
+        name: "継続は力なり",
+        description: "7日間連続で学習活動を行いました。素晴らしい習慣です！",
+        iconUrl: "/badges/learning_streak.svg",
+        level: "silver",
+        requirements: [
+            {
+                activityType: "daily_login",
+                count: 7,
+                condition: "consecutive"
+            }
+        ],
+        isSecret: false
+    },
+    multi_completion: {
+        id: "badge_multi_completion",
+        type: "multi_completion",
+        name: "知識の探究者",
+        description: "10個の教材を完了しました。幅広い知識を身につけています！",
+        iconUrl: "/badges/multi_completion.svg",
+        level: "silver",
+        requirements: [
+            {
+                activityType: "complete_resource",
+                count: 10
+            }
+        ],
+        isSecret: false
+    },
+    perfect_score: {
+        id: "badge_perfect_score",
+        type: "perfect_score",
+        name: "完璧主義者",
+        description: "クイズで満点を獲得しました。素晴らしい理解力です！",
+        iconUrl: "/badges/perfect_score.svg",
+        level: "gold",
+        requirements: [
+            {
+                activityType: "quiz_complete",
+                count: 1,
+                metadata: {
+                    score: 100
+                }
+            }
+        ],
+        isSecret: false
+    },
+    fast_learner: {
+        id: "badge_fast_learner",
+        type: "fast_learner",
+        name: "速習マスター",
+        description: "短時間で教材を完了しました。効率的な学習者です！",
+        iconUrl: "/badges/fast_learner.svg",
+        level: "silver",
+        requirements: [
+            {
+                activityType: "complete_resource",
+                count: 1,
+                metadata: {
+                    time_limit: 600
+                }
+            } // 10分以内
+        ],
+        isSecret: false
+    },
+    content_creator: {
+        id: "badge_content_creator",
+        type: "content_creator",
+        name: "知識の共有者",
+        description: "初めての教材を作成しました。コミュニティに貢献しています！",
+        iconUrl: "/badges/content_creator.svg",
+        level: "gold",
+        requirements: [
+            {
+                activityType: "create_material",
+                count: 1
+            }
+        ],
+        isSecret: false
+    },
+    feedback_provider: {
+        id: "badge_feedback_provider",
+        type: "feedback_provider",
+        name: "建設的批評家",
+        description: "5つのフィードバックを提供しました。成長を促す手助けをしています！",
+        iconUrl: "/badges/feedback_provider.svg",
+        level: "silver",
+        requirements: [
+            {
+                activityType: "provide_feedback",
+                count: 5
+            }
+        ],
+        isSecret: false
+    },
+    community_contributor: {
+        id: "badge_community_contributor",
+        type: "community_contributor",
+        name: "コミュニティの柱",
+        description: "多様な方法でコミュニティに貢献しました。感謝します！",
+        iconUrl: "/badges/community_contributor.svg",
+        level: "platinum",
+        requirements: [
+            {
+                activityType: "create_material",
+                count: 3
+            },
+            {
+                activityType: "provide_feedback",
+                count: 10
+            },
+            {
+                activityType: "share_resource",
+                count: 5
+            }
+        ],
+        isSecret: false
+    },
+    diverse_learner: {
+        id: "badge_diverse_learner",
+        type: "diverse_learner",
+        name: "多才な学習者",
+        description: "3つ以上のカテゴリの教材を学習しました。幅広い知識を持っています！",
+        iconUrl: "/badges/diverse_learner.svg",
+        level: "gold",
+        requirements: [
+            {
+                activityType: "complete_resource",
+                count: 3,
+                metadata: {
+                    unique_categories: true
+                }
+            }
+        ],
+        isSecret: false
+    },
+    giver_champion: {
+        id: "badge_giver_champion",
+        type: "giver_champion",
+        name: "ギバーチャンピオン",
+        description: "ギバースコアが80を超えました。真のギバー精神の持ち主です！",
+        iconUrl: "/badges/giver_champion.svg",
+        level: "platinum",
+        requirements: [
+            {
+                activityType: "complete_resource",
+                count: 20
+            },
+            {
+                activityType: "create_material",
+                count: 5
+            },
+            {
+                activityType: "provide_feedback",
+                count: 15
+            }
+        ],
+        isSecret: false
+    }
+};
+const BADGE_LEVEL_COLORS = {
+    bronze: "text-amber-600",
+    silver: "text-gray-400",
+    gold: "text-yellow-400",
+    platinum: "text-blue-500"
+};
+const BADGE_TYPE_ICONS = {
+    first_completion: _fa.FaBook,
+    learning_streak: _fa.FaFire,
+    multi_completion: _fa.FaTrophy,
+    perfect_score: _fa.FaStar,
+    fast_learner: _fa.FaCertificate,
+    content_creator: _fa.FaPencilAlt,
+    feedback_provider: _fa.FaComment,
+    community_contributor: _fa.FaUsers,
+    diverse_learner: _fa.FaBook,
+    giver_champion: _fa.FaTrophy
+};
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9zcmMvZGF0YS9iYWRnZXMudHMiXSwic291cmNlc0NvbnRlbnQiOlsiLy8g44OQ44OD44K444Oe44K544K/44O844OH44O844K/XG5pbXBvcnQgeyBGYVRyb3BoeSwgRmFGaXJlLCBGYUJvb2ssIEZhUGVuY2lsQWx0LCBGYUNvbW1lbnQsIEZhVXNlcnMsIEZhQ2VydGlmaWNhdGUsIEZhU3RhciB9IGZyb20gJ3JlYWN0LWljb25zL2ZhJztcbmltcG9ydCB7IEJhZGdlLCBCYWRnZVR5cGUgfSBmcm9tICdAL3R5cGVzL2JhZGdlcyc7XG5cbi8vIOODkOODg+OCuOOBruODnuOCueOCv+ODvOODh+ODvOOCv+OCkuWumue+qVxuZXhwb3J0IGNvbnN0IEJBREdFX0RFRklOSVRJT05TOiBSZWNvcmQ8QmFkZ2VUeXBlLCBPbWl0PEJhZGdlLCAncHJvZ3Jlc3MnIHwgJ2FjcXVpcmVkQXQnPj4gPSB7XG4gIGZpcnN0X2NvbXBsZXRpb246IHtcbiAgICBpZDogJ2JhZGdlX2ZpcnN0X2NvbXBsZXRpb24nLFxuICAgIHR5cGU6ICdmaXJzdF9jb21wbGV0aW9uJyxcbiAgICBuYW1lOiAn5pyA5Yid44Gu5LiA5q2pJyxcbiAgICBkZXNjcmlwdGlvbjogJ+WIneOCgeOBpuOBruaVmeadkOOCkuWujOS6huOBl+OBvuOBl+OBn+OAguWtpue/kuOBruaXheOBjOWni+OBvuOCiuOBvuOBl+OBn++8gScsXG4gICAgaWNvblVybDogJy9iYWRnZXMvZmlyc3RfY29tcGxldGlvbi5zdmcnLFxuICAgIGxldmVsOiAnYnJvbnplJyxcbiAgICByZXF1aXJlbWVudHM6IFtcbiAgICAgIHsgYWN0aXZpdHlUeXBlOiAnY29tcGxldGVfcmVzb3VyY2UnLCBjb3VudDogMSB9XG4gICAgXSxcbiAgICBpc1NlY3JldDogZmFsc2VcbiAgfSxcbiAgXG4gIGxlYXJuaW5nX3N0cmVhazoge1xuICAgIGlkOiAnYmFkZ2VfbGVhcm5pbmdfc3RyZWFrJyxcbiAgICB0eXBlOiAnbGVhcm5pbmdfc3RyZWFrJyxcbiAgICBuYW1lOiAn57aZ57aa44Gv5Yqb44Gq44KKJyxcbiAgICBkZXNjcmlwdGlvbjogJzfml6XplpPpgKPntprjgaflrabnv5LmtLvli5XjgpLooYzjgYTjgb7jgZfjgZ/jgILntKDmmbTjgonjgZfjgYTnv5LmhaPjgafjgZnvvIEnLFxuICAgIGljb25Vcmw6ICcvYmFkZ2VzL2xlYXJuaW5nX3N0cmVhay5zdmcnLFxuICAgIGxldmVsOiAnc2lsdmVyJyxcbiAgICByZXF1aXJlbWVudHM6IFtcbiAgICAgIHsgYWN0aXZpdHlUeXBlOiAnZGFpbHlfbG9naW4nLCBjb3VudDogNywgY29uZGl0aW9uOiAnY29uc2VjdXRpdmUnIH1cbiAgICBdLFxuICAgIGlzU2VjcmV0OiBmYWxzZVxuICB9LFxuICBcbiAgbXVsdGlfY29tcGxldGlvbjoge1xuICAgIGlkOiAnYmFkZ2VfbXVsdGlfY29tcGxldGlvbicsXG4gICAgdHlwZTogJ211bHRpX2NvbXBsZXRpb24nLFxuICAgIG5hbWU6ICfnn6XorZjjga7mjqLnqbbogIUnLFxuICAgIGRlc2NyaXB0aW9uOiAnMTDlgIvjga7mlZnmnZDjgpLlrozkuobjgZfjgb7jgZfjgZ/jgILluYXluoPjgYTnn6XorZjjgpLouqvjgavjgaTjgZHjgabjgYTjgb7jgZnvvIEnLFxuICAgIGljb25Vcmw6ICcvYmFkZ2VzL211bHRpX2NvbXBsZXRpb24uc3ZnJyxcbiAgICBsZXZlbDogJ3NpbHZlcicsXG4gICAgcmVxdWlyZW1lbnRzOiBbXG4gICAgICB7IGFjdGl2aXR5VHlwZTogJ2NvbXBsZXRlX3Jlc291cmNlJywgY291bnQ6IDEwIH1cbiAgICBdLFxuICAgIGlzU2VjcmV0OiBmYWxzZVxuICB9LFxuICBcbiAgcGVyZmVjdF9zY29yZToge1xuICAgIGlkOiAnYmFkZ2VfcGVyZmVjdF9zY29yZScsXG4gICAgdHlwZTogJ3BlcmZlY3Rfc2NvcmUnLFxuICAgIG5hbWU6ICflroznkqfkuLvnvqnogIUnLFxuICAgIGRlc2NyaXB0aW9uOiAn44Kv44Kk44K644Gn5rqA54K544KS542y5b6X44GX44G+44GX44Gf44CC57Sg5pm044KJ44GX44GE55CG6Kej5Yqb44Gn44GZ77yBJyxcbiAgICBpY29uVXJsOiAnL2JhZGdlcy9wZXJmZWN0X3Njb3JlLnN2ZycsXG4gICAgbGV2ZWw6ICdnb2xkJyxcbiAgICByZXF1aXJlbWVudHM6IFtcbiAgICAgIHsgYWN0aXZpdHlUeXBlOiAncXVpel9jb21wbGV0ZScsIGNvdW50OiAxLCBtZXRhZGF0YTogeyBzY29yZTogMTAwIH0gfVxuICAgIF0sXG4gICAgaXNTZWNyZXQ6IGZhbHNlXG4gIH0sXG4gIFxuICBmYXN0X2xlYXJuZXI6IHtcbiAgICBpZDogJ2JhZGdlX2Zhc3RfbGVhcm5lcicsXG4gICAgdHlwZTogJ2Zhc3RfbGVhcm5lcicsXG4gICAgbmFtZTogJ+mAn+e/kuODnuOCueOCv+ODvCcsXG4gICAgZGVzY3JpcHRpb246ICfnn63mmYLplpPjgafmlZnmnZDjgpLlrozkuobjgZfjgb7jgZfjgZ/jgILlirnnjofnmoTjgarlrabnv5LogIXjgafjgZnvvIEnLFxuICAgIGljb25Vcmw6ICcvYmFkZ2VzL2Zhc3RfbGVhcm5lci5zdmcnLFxuICAgIGxldmVsOiAnc2lsdmVyJyxcbiAgICByZXF1aXJlbWVudHM6IFtcbiAgICAgIHsgYWN0aXZpdHlUeXBlOiAnY29tcGxldGVfcmVzb3VyY2UnLCBjb3VudDogMSwgbWV0YWRhdGE6IHsgdGltZV9saW1pdDogNjAwIH0gfSAvLyAxMOWIhuS7peWGhVxuICAgIF0sXG4gICAgaXNTZWNyZXQ6IGZhbHNlXG4gIH0sXG4gIFxuICBjb250ZW50X2NyZWF0b3I6IHtcbiAgICBpZDogJ2JhZGdlX2NvbnRlbnRfY3JlYXRvcicsXG4gICAgdHlwZTogJ2NvbnRlbnRfY3JlYXRvcicsXG4gICAgbmFtZTogJ+efpeitmOOBruWFseacieiAhScsXG4gICAgZGVzY3JpcHRpb246ICfliJ3jgoHjgabjga7mlZnmnZDjgpLkvZzmiJDjgZfjgb7jgZfjgZ/jgILjgrPjg5/jg6Xjg4vjg4bjgqPjgavosqLnjK7jgZfjgabjgYTjgb7jgZnvvIEnLFxuICAgIGljb25Vcmw6ICcvYmFkZ2VzL2NvbnRlbnRfY3JlYXRvci5zdmcnLFxuICAgIGxldmVsOiAnZ29sZCcsXG4gICAgcmVxdWlyZW1lbnRzOiBbXG4gICAgICB7IGFjdGl2aXR5VHlwZTogJ2NyZWF0ZV9tYXRlcmlhbCcsIGNvdW50OiAxIH1cbiAgICBdLFxuICAgIGlzU2VjcmV0OiBmYWxzZVxuICB9LFxuICBcbiAgZmVlZGJhY2tfcHJvdmlkZXI6IHtcbiAgICBpZDogJ2JhZGdlX2ZlZWRiYWNrX3Byb3ZpZGVyJyxcbiAgICB0eXBlOiAnZmVlZGJhY2tfcHJvdmlkZXInLFxuICAgIG5hbWU6ICflu7roqK3nmoTmibnoqZXlrrYnLFxuICAgIGRlc2NyaXB0aW9uOiAnNeOBpOOBruODleOCo+ODvOODieODkOODg+OCr+OCkuaPkOS+m+OBl+OBvuOBl+OBn+OAguaIkOmVt+OCkuS/g+OBmeaJi+WKqeOBkeOCkuOBl+OBpuOBhOOBvuOBme+8gScsXG4gICAgaWNvblVybDogJy9iYWRnZXMvZmVlZGJhY2tfcHJvdmlkZXIuc3ZnJyxcbiAgICBsZXZlbDogJ3NpbHZlcicsXG4gICAgcmVxdWlyZW1lbnRzOiBbXG4gICAgICB7IGFjdGl2aXR5VHlwZTogJ3Byb3ZpZGVfZmVlZGJhY2snLCBjb3VudDogNSB9XG4gICAgXSxcbiAgICBpc1NlY3JldDogZmFsc2VcbiAgfSxcbiAgXG4gIGNvbW11bml0eV9jb250cmlidXRvcjoge1xuICAgIGlkOiAnYmFkZ2VfY29tbXVuaXR5X2NvbnRyaWJ1dG9yJyxcbiAgICB0eXBlOiAnY29tbXVuaXR5X2NvbnRyaWJ1dG9yJyxcbiAgICBuYW1lOiAn44Kz44Of44Ol44OL44OG44Kj44Gu5p+xJyxcbiAgICBkZXNjcmlwdGlvbjogJ+WkmuanmOOBquaWueazleOBp+OCs+ODn+ODpeODi+ODhuOCo+OBq+iyoueMruOBl+OBvuOBl+OBn+OAguaEn+isneOBl+OBvuOBme+8gScsXG4gICAgaWNvblVybDogJy9iYWRnZXMvY29tbXVuaXR5X2NvbnRyaWJ1dG9yLnN2ZycsXG4gICAgbGV2ZWw6ICdwbGF0aW51bScsXG4gICAgcmVxdWlyZW1lbnRzOiBbXG4gICAgICB7IGFjdGl2aXR5VHlwZTogJ2NyZWF0ZV9tYXRlcmlhbCcsIGNvdW50OiAzIH0sXG4gICAgICB7IGFjdGl2aXR5VHlwZTogJ3Byb3ZpZGVfZmVlZGJhY2snLCBjb3VudDogMTAgfSxcbiAgICAgIHsgYWN0aXZpdHlUeXBlOiAnc2hhcmVfcmVzb3VyY2UnLCBjb3VudDogNSB9XG4gICAgXSxcbiAgICBpc1NlY3JldDogZmFsc2VcbiAgfSxcbiAgXG4gIGRpdmVyc2VfbGVhcm5lcjoge1xuICAgIGlkOiAnYmFkZ2VfZGl2ZXJzZV9sZWFybmVyJyxcbiAgICB0eXBlOiAnZGl2ZXJzZV9sZWFybmVyJyxcbiAgICBuYW1lOiAn5aSa5omN44Gq5a2m57+S6ICFJyxcbiAgICBkZXNjcmlwdGlvbjogJzPjgaTku6XkuIrjga7jgqvjg4bjgrTjg6rjga7mlZnmnZDjgpLlrabnv5LjgZfjgb7jgZfjgZ/jgILluYXluoPjgYTnn6XorZjjgpLmjIHjgaPjgabjgYTjgb7jgZnvvIEnLFxuICAgIGljb25Vcmw6ICcvYmFkZ2VzL2RpdmVyc2VfbGVhcm5lci5zdmcnLFxuICAgIGxldmVsOiAnZ29sZCcsXG4gICAgcmVxdWlyZW1lbnRzOiBbXG4gICAgICB7IGFjdGl2aXR5VHlwZTogJ2NvbXBsZXRlX3Jlc291cmNlJywgY291bnQ6IDMsIG1ldGFkYXRhOiB7IHVuaXF1ZV9jYXRlZ29yaWVzOiB0cnVlIH0gfVxuICAgIF0sXG4gICAgaXNTZWNyZXQ6IGZhbHNlXG4gIH0sXG4gIFxuICBnaXZlcl9jaGFtcGlvbjoge1xuICAgIGlkOiAnYmFkZ2VfZ2l2ZXJfY2hhbXBpb24nLFxuICAgIHR5cGU6ICdnaXZlcl9jaGFtcGlvbicsXG4gICAgbmFtZTogJ+OCruODkOODvOODgeODo+ODs+ODlOOCquODsycsXG4gICAgZGVzY3JpcHRpb246ICfjgq7jg5Djg7zjgrnjgrPjgqLjgYw4MOOCkui2heOBiOOBvuOBl+OBn+OAguecn+OBruOCruODkOODvOeyvuelnuOBruaMgeOBoeS4u+OBp+OBme+8gScsXG4gICAgaWNvblVybDogJy9iYWRnZXMvZ2l2ZXJfY2hhbXBpb24uc3ZnJyxcbiAgICBsZXZlbDogJ3BsYXRpbnVtJyxcbiAgICByZXF1aXJlbWVudHM6IFtcbiAgICAgIHsgYWN0aXZpdHlUeXBlOiAnY29tcGxldGVfcmVzb3VyY2UnLCBjb3VudDogMjAgfSxcbiAgICAgIHsgYWN0aXZpdHlUeXBlOiAnY3JlYXRlX21hdGVyaWFsJywgY291bnQ6IDUgfSxcbiAgICAgIHsgYWN0aXZpdHlUeXBlOiAncHJvdmlkZV9mZWVkYmFjaycsIGNvdW50OiAxNSB9XG4gICAgXSxcbiAgICBpc1NlY3JldDogZmFsc2VcbiAgfVxufTtcblxuLy8g44OQ44OD44K444Os44OZ44Or44GU44Go44Gu6Imy44KS5a6a576pXG5leHBvcnQgY29uc3QgQkFER0VfTEVWRUxfQ09MT1JTID0ge1xuICBicm9uemU6ICd0ZXh0LWFtYmVyLTYwMCcsXG4gIHNpbHZlcjogJ3RleHQtZ3JheS00MDAnLFxuICBnb2xkOiAndGV4dC15ZWxsb3ctNDAwJyxcbiAgcGxhdGludW06ICd0ZXh0LWJsdWUtNTAwJ1xufTtcblxuLy8g44OQ44OD44K444K/44Kk44OX44GU44Go44Gu44Ki44Kk44Kz44Oz44KS5a6a576pXG5leHBvcnQgY29uc3QgQkFER0VfVFlQRV9JQ09OUyA9IHtcbiAgZmlyc3RfY29tcGxldGlvbjogRmFCb29rLFxuICBsZWFybmluZ19zdHJlYWs6IEZhRmlyZSxcbiAgbXVsdGlfY29tcGxldGlvbjogRmFUcm9waHksXG4gIHBlcmZlY3Rfc2NvcmU6IEZhU3RhcixcbiAgZmFzdF9sZWFybmVyOiBGYUNlcnRpZmljYXRlLFxuICBjb250ZW50X2NyZWF0b3I6IEZhUGVuY2lsQWx0LFxuICBmZWVkYmFja19wcm92aWRlcjogRmFDb21tZW50LFxuICBjb21tdW5pdHlfY29udHJpYnV0b3I6IEZhVXNlcnMsXG4gIGRpdmVyc2VfbGVhcm5lcjogRmFCb29rLFxuICBnaXZlcl9jaGFtcGlvbjogRmFUcm9waHlcbn07ICJdLCJuYW1lcyI6WyJCQURHRV9ERUZJTklUSU9OUyIsIkJBREdFX0xFVkVMX0NPTE9SUyIsIkJBREdFX1RZUEVfSUNPTlMiLCJmaXJzdF9jb21wbGV0aW9uIiwiaWQiLCJ0eXBlIiwibmFtZSIsImRlc2NyaXB0aW9uIiwiaWNvblVybCIsImxldmVsIiwicmVxdWlyZW1lbnRzIiwiYWN0aXZpdHlUeXBlIiwiY291bnQiLCJpc1NlY3JldCIsImxlYXJuaW5nX3N0cmVhayIsImNvbmRpdGlvbiIsIm11bHRpX2NvbXBsZXRpb24iLCJwZXJmZWN0X3Njb3JlIiwibWV0YWRhdGEiLCJzY29yZSIsImZhc3RfbGVhcm5lciIsInRpbWVfbGltaXQiLCJjb250ZW50X2NyZWF0b3IiLCJmZWVkYmFja19wcm92aWRlciIsImNvbW11bml0eV9jb250cmlidXRvciIsImRpdmVyc2VfbGVhcm5lciIsInVuaXF1ZV9jYXRlZ29yaWVzIiwiZ2l2ZXJfY2hhbXBpb24iLCJicm9uemUiLCJzaWx2ZXIiLCJnb2xkIiwicGxhdGludW0iLCJGYUJvb2siLCJGYUZpcmUiLCJGYVRyb3BoeSIsIkZhU3RhciIsIkZhQ2VydGlmaWNhdGUiLCJGYVBlbmNpbEFsdCIsIkZhQ29tbWVudCIsIkZhVXNlcnMiXSwibWFwcGluZ3MiOiJBQUFBLGFBQWE7Ozs7Ozs7Ozs7OztJQUtBQSxpQkFBaUI7ZUFBakJBOztJQXlJQUMsa0JBQWtCO2VBQWxCQTs7SUFRQUMsZ0JBQWdCO2VBQWhCQTs7O29CQXJKb0Y7QUFJMUYsTUFBTUYsb0JBQStFO0lBQzFGRyxrQkFBa0I7UUFDaEJDLElBQUk7UUFDSkMsTUFBTTtRQUNOQyxNQUFNO1FBQ05DLGFBQWE7UUFDYkMsU0FBUztRQUNUQyxPQUFPO1FBQ1BDLGNBQWM7WUFDWjtnQkFBRUMsY0FBYztnQkFBcUJDLE9BQU87WUFBRTtTQUMvQztRQUNEQyxVQUFVO0lBQ1o7SUFFQUMsaUJBQWlCO1FBQ2ZWLElBQUk7UUFDSkMsTUFBTTtRQUNOQyxNQUFNO1FBQ05DLGFBQWE7UUFDYkMsU0FBUztRQUNUQyxPQUFPO1FBQ1BDLGNBQWM7WUFDWjtnQkFBRUMsY0FBYztnQkFBZUMsT0FBTztnQkFBR0csV0FBVztZQUFjO1NBQ25FO1FBQ0RGLFVBQVU7SUFDWjtJQUVBRyxrQkFBa0I7UUFDaEJaLElBQUk7UUFDSkMsTUFBTTtRQUNOQyxNQUFNO1FBQ05DLGFBQWE7UUFDYkMsU0FBUztRQUNUQyxPQUFPO1FBQ1BDLGNBQWM7WUFDWjtnQkFBRUMsY0FBYztnQkFBcUJDLE9BQU87WUFBRztTQUNoRDtRQUNEQyxVQUFVO0lBQ1o7SUFFQUksZUFBZTtRQUNiYixJQUFJO1FBQ0pDLE1BQU07UUFDTkMsTUFBTTtRQUNOQyxhQUFhO1FBQ2JDLFNBQVM7UUFDVEMsT0FBTztRQUNQQyxjQUFjO1lBQ1o7Z0JBQUVDLGNBQWM7Z0JBQWlCQyxPQUFPO2dCQUFHTSxVQUFVO29CQUFFQyxPQUFPO2dCQUFJO1lBQUU7U0FDckU7UUFDRE4sVUFBVTtJQUNaO0lBRUFPLGNBQWM7UUFDWmhCLElBQUk7UUFDSkMsTUFBTTtRQUNOQyxNQUFNO1FBQ05DLGFBQWE7UUFDYkMsU0FBUztRQUNUQyxPQUFPO1FBQ1BDLGNBQWM7WUFDWjtnQkFBRUMsY0FBYztnQkFBcUJDLE9BQU87Z0JBQUdNLFVBQVU7b0JBQUVHLFlBQVk7Z0JBQUk7WUFBRSxFQUFFLFFBQVE7U0FDeEY7UUFDRFIsVUFBVTtJQUNaO0lBRUFTLGlCQUFpQjtRQUNmbEIsSUFBSTtRQUNKQyxNQUFNO1FBQ05DLE1BQU07UUFDTkMsYUFBYTtRQUNiQyxTQUFTO1FBQ1RDLE9BQU87UUFDUEMsY0FBYztZQUNaO2dCQUFFQyxjQUFjO2dCQUFtQkMsT0FBTztZQUFFO1NBQzdDO1FBQ0RDLFVBQVU7SUFDWjtJQUVBVSxtQkFBbUI7UUFDakJuQixJQUFJO1FBQ0pDLE1BQU07UUFDTkMsTUFBTTtRQUNOQyxhQUFhO1FBQ2JDLFNBQVM7UUFDVEMsT0FBTztRQUNQQyxjQUFjO1lBQ1o7Z0JBQUVDLGNBQWM7Z0JBQW9CQyxPQUFPO1lBQUU7U0FDOUM7UUFDREMsVUFBVTtJQUNaO0lBRUFXLHVCQUF1QjtRQUNyQnBCLElBQUk7UUFDSkMsTUFBTTtRQUNOQyxNQUFNO1FBQ05DLGFBQWE7UUFDYkMsU0FBUztRQUNUQyxPQUFPO1FBQ1BDLGNBQWM7WUFDWjtnQkFBRUMsY0FBYztnQkFBbUJDLE9BQU87WUFBRTtZQUM1QztnQkFBRUQsY0FBYztnQkFBb0JDLE9BQU87WUFBRztZQUM5QztnQkFBRUQsY0FBYztnQkFBa0JDLE9BQU87WUFBRTtTQUM1QztRQUNEQyxVQUFVO0lBQ1o7SUFFQVksaUJBQWlCO1FBQ2ZyQixJQUFJO1FBQ0pDLE1BQU07UUFDTkMsTUFBTTtRQUNOQyxhQUFhO1FBQ2JDLFNBQVM7UUFDVEMsT0FBTztRQUNQQyxjQUFjO1lBQ1o7Z0JBQUVDLGNBQWM7Z0JBQXFCQyxPQUFPO2dCQUFHTSxVQUFVO29CQUFFUSxtQkFBbUI7Z0JBQUs7WUFBRTtTQUN0RjtRQUNEYixVQUFVO0lBQ1o7SUFFQWMsZ0JBQWdCO1FBQ2R2QixJQUFJO1FBQ0pDLE1BQU07UUFDTkMsTUFBTTtRQUNOQyxhQUFhO1FBQ2JDLFNBQVM7UUFDVEMsT0FBTztRQUNQQyxjQUFjO1lBQ1o7Z0JBQUVDLGNBQWM7Z0JBQXFCQyxPQUFPO1lBQUc7WUFDL0M7Z0JBQUVELGNBQWM7Z0JBQW1CQyxPQUFPO1lBQUU7WUFDNUM7Z0JBQUVELGNBQWM7Z0JBQW9CQyxPQUFPO1lBQUc7U0FDL0M7UUFDREMsVUFBVTtJQUNaO0FBQ0Y7QUFHTyxNQUFNWixxQkFBcUI7SUFDaEMyQixRQUFRO0lBQ1JDLFFBQVE7SUFDUkMsTUFBTTtJQUNOQyxVQUFVO0FBQ1o7QUFHTyxNQUFNN0IsbUJBQW1CO0lBQzlCQyxrQkFBa0I2QixVQUFNO0lBQ3hCbEIsaUJBQWlCbUIsVUFBTTtJQUN2QmpCLGtCQUFrQmtCLFlBQVE7SUFDMUJqQixlQUFla0IsVUFBTTtJQUNyQmYsY0FBY2dCLGlCQUFhO0lBQzNCZCxpQkFBaUJlLGVBQVc7SUFDNUJkLG1CQUFtQmUsYUFBUztJQUM1QmQsdUJBQXVCZSxXQUFPO0lBQzlCZCxpQkFBaUJPLFVBQU07SUFDdkJMLGdCQUFnQk8sWUFBUTtBQUMxQiJ9

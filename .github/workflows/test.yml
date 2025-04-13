@@ -1,0 +1,97 @@
+name: テスト実行とカバレッジレポート
+
+on:
+  push:
+    branches: [ main, development ]
+  pull_request:
+    branches: [ main, development ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Node.jsのセットアップ
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: 依存関係のキャッシュ
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.npm
+          node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+        
+    - name: 依存関係のインストール
+      run: npm ci
+      
+    - name: ESLintを実行
+      run: npm run lint
+      
+    - name: 型チェックを実行
+      run: npm run type-check
+      
+    - name: Jestキャッシュの復元
+      uses: actions/cache@v3
+      with:
+        path: .jest-cache
+        key: ${{ runner.os }}-jest-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.{ts,tsx,js,jsx}') }}
+        restore-keys: |
+          ${{ runner.os }}-jest-
+      
+    - name: テストを実行（並列処理）
+      run: npm run test:coverage -- --maxWorkers=2
+      
+    - name: カバレッジレポートのアップロード
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coverage/
+        
+    - name: カバレッジサマリーの表示
+      run: npx istanbul report text-summary
+
+    - name: カバレッジレポートをPRコメントとして表示
+      if: github.event_name == 'pull_request'
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage/lcov.info
+        fail_ci_if_error: false
+        token: ${{ secrets.CODECOV_TOKEN || '' }}
+        
+  report:
+    needs: test
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage
+          
+      - name: カバレッジ閾値チェック
+        run: |
+          STATEMENTS=$(cat coverage/coverage-summary.json | jq '.total.statements.pct')
+          BRANCHES=$(cat coverage/coverage-summary.json | jq '.total.branches.pct')
+          FUNCTIONS=$(cat coverage/coverage-summary.json | jq '.total.functions.pct')
+          LINES=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
+          
+          echo "Statements: $STATEMENTS% (threshold: 80%)"
+          echo "Branches: $BRANCHES% (threshold: 70%)"
+          echo "Functions: $FUNCTIONS% (threshold: 80%)"
+          echo "Lines: $LINES% (threshold: 80%)"
+          
+          if (( $(echo "$STATEMENTS < 80" | bc -l) )) || \
+             (( $(echo "$BRANCHES < 70" | bc -l) )) || \
+             (( $(echo "$FUNCTIONS < 80" | bc -l) )) || \
+             (( $(echo "$LINES < 80" | bc -l) )); then
+            echo "カバレッジが閾値を下回っています"
+            exit 1
+          fi 

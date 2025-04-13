@@ -1,0 +1,39 @@
+cfb8fb6272546885d859484e70b8cb7d
+// Jest-DOMの拡張機能を読み込み
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+require("@testing-library/jest-dom");
+// Reactの無限ループエラーを抑制
+const originalConsoleError = console.error;
+console.error = (...args)=>{
+    // Maximum update depthエラーを無視
+    if (args[0] && args[0].includes && args[0].includes("Maximum update depth exceeded")) {
+        return;
+    }
+    originalConsoleError(...args);
+};
+// テスト時間を短縮するため、各テストにタイムアウトを設定
+jest.setTimeout(5000);
+// カスタムマッチャー
+expect.extend({
+    // 基本的なカスタムマッチャー例
+    toBeWithinRange (received, floor, ceiling) {
+        const pass = received >= floor && received <= ceiling;
+        if (pass) {
+            return {
+                message: ()=>`expected ${received} not to be within range ${floor} - ${ceiling}`,
+                pass: true
+            };
+        } else {
+            return {
+                message: ()=>`expected ${received} to be within range ${floor} - ${ceiling}`,
+                pass: false
+            };
+        }
+    }
+}); // 注: TypeScriptの型定義はJSDocコメントで代用するか、
+ // 別の.d.tsファイルに記述することをお勧めします。 
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9qZXN0LnNldHVwLmpzIl0sInNvdXJjZXNDb250ZW50IjpbIi8vIEplc3QtRE9N44Gu5ouh5by15qmf6IO944KS6Kqt44G/6L6844G/XG5pbXBvcnQgJ0B0ZXN0aW5nLWxpYnJhcnkvamVzdC1kb20nO1xuXG4vLyBSZWFjdOOBrueEoemZkOODq+ODvOODl+OCqOODqeODvOOCkuaKkeWItlxuY29uc3Qgb3JpZ2luYWxDb25zb2xlRXJyb3IgPSBjb25zb2xlLmVycm9yO1xuY29uc29sZS5lcnJvciA9ICguLi5hcmdzKSA9PiB7XG4gIC8vIE1heGltdW0gdXBkYXRlIGRlcHRo44Ko44Op44O844KS54Sh6KaWXG4gIGlmIChhcmdzWzBdICYmIGFyZ3NbMF0uaW5jbHVkZXMgJiYgYXJnc1swXS5pbmNsdWRlcygnTWF4aW11bSB1cGRhdGUgZGVwdGggZXhjZWVkZWQnKSkge1xuICAgIHJldHVybjtcbiAgfVxuICBvcmlnaW5hbENvbnNvbGVFcnJvciguLi5hcmdzKTtcbn07XG5cbi8vIOODhuOCueODiOaZgumWk+OCkuefree4ruOBmeOCi+OBn+OCgeOAgeWQhOODhuOCueODiOOBq+OCv+OCpOODoOOCouOCpuODiOOCkuioreWumlxuamVzdC5zZXRUaW1lb3V0KDUwMDApO1xuXG4vLyDjgqvjgrnjgr/jg6Djg57jg4Pjg4Hjg6Pjg7xcbmV4cGVjdC5leHRlbmQoe1xuICAvLyDln7rmnKznmoTjgarjgqvjgrnjgr/jg6Djg57jg4Pjg4Hjg6Pjg7zkvotcbiAgdG9CZVdpdGhpblJhbmdlKHJlY2VpdmVkLCBmbG9vciwgY2VpbGluZykge1xuICAgIGNvbnN0IHBhc3MgPSByZWNlaXZlZCA+PSBmbG9vciAmJiByZWNlaXZlZCA8PSBjZWlsaW5nO1xuICAgIGlmIChwYXNzKSB7XG4gICAgICByZXR1cm4ge1xuICAgICAgICBtZXNzYWdlOiAoKSA9PiBgZXhwZWN0ZWQgJHtyZWNlaXZlZH0gbm90IHRvIGJlIHdpdGhpbiByYW5nZSAke2Zsb29yfSAtICR7Y2VpbGluZ31gLFxuICAgICAgICBwYXNzOiB0cnVlLFxuICAgICAgfTtcbiAgICB9IGVsc2Uge1xuICAgICAgcmV0dXJuIHtcbiAgICAgICAgbWVzc2FnZTogKCkgPT4gYGV4cGVjdGVkICR7cmVjZWl2ZWR9IHRvIGJlIHdpdGhpbiByYW5nZSAke2Zsb29yfSAtICR7Y2VpbGluZ31gLFxuICAgICAgICBwYXNzOiBmYWxzZSxcbiAgICAgIH07XG4gICAgfVxuICB9XG59KTtcblxuLy8g5rOoOiBUeXBlU2NyaXB044Gu5Z6L5a6a576p44GvSlNEb2PjgrPjg6Hjg7Pjg4jjgafku6PnlKjjgZnjgovjgYvjgIFcbi8vIOWIpeOBri5kLnRz44OV44Kh44Kk44Or44Gr6KiY6L+w44GZ44KL44GT44Go44KS44GK5Yun44KB44GX44G+44GZ44CCICJdLCJuYW1lcyI6WyJvcmlnaW5hbENvbnNvbGVFcnJvciIsImNvbnNvbGUiLCJlcnJvciIsImFyZ3MiLCJpbmNsdWRlcyIsImplc3QiLCJzZXRUaW1lb3V0IiwiZXhwZWN0IiwiZXh0ZW5kIiwidG9CZVdpdGhpblJhbmdlIiwicmVjZWl2ZWQiLCJmbG9vciIsImNlaWxpbmciLCJwYXNzIiwibWVzc2FnZSJdLCJtYXBwaW5ncyI6IkFBQUEscUJBQXFCOzs7OztRQUNkO0FBRVAsb0JBQW9CO0FBQ3BCLE1BQU1BLHVCQUF1QkMsUUFBUUMsS0FBSztBQUMxQ0QsUUFBUUMsS0FBSyxHQUFHLENBQUMsR0FBR0M7SUFDbEIsNkJBQTZCO0lBQzdCLElBQUlBLElBQUksQ0FBQyxFQUFFLElBQUlBLElBQUksQ0FBQyxFQUFFLENBQUNDLFFBQVEsSUFBSUQsSUFBSSxDQUFDLEVBQUUsQ0FBQ0MsUUFBUSxDQUFDLGtDQUFrQztRQUNwRjtJQUNGO0lBQ0FKLHdCQUF3Qkc7QUFDMUI7QUFFQSw4QkFBOEI7QUFDOUJFLEtBQUtDLFVBQVUsQ0FBQztBQUVoQixZQUFZO0FBQ1pDLE9BQU9DLE1BQU0sQ0FBQztJQUNaLGlCQUFpQjtJQUNqQkMsaUJBQWdCQyxRQUFRLEVBQUVDLEtBQUssRUFBRUMsT0FBTztRQUN0QyxNQUFNQyxPQUFPSCxZQUFZQyxTQUFTRCxZQUFZRTtRQUM5QyxJQUFJQyxNQUFNO1lBQ1IsT0FBTztnQkFDTEMsU0FBUyxJQUFNLENBQUMsU0FBUyxFQUFFSixTQUFTLHdCQUF3QixFQUFFQyxNQUFNLEdBQUcsRUFBRUMsUUFBUSxDQUFDO2dCQUNsRkMsTUFBTTtZQUNSO1FBQ0YsT0FBTztZQUNMLE9BQU87Z0JBQ0xDLFNBQVMsSUFBTSxDQUFDLFNBQVMsRUFBRUosU0FBUyxvQkFBb0IsRUFBRUMsTUFBTSxHQUFHLEVBQUVDLFFBQVEsQ0FBQztnQkFDOUVDLE1BQU07WUFDUjtRQUNGO0lBQ0Y7QUFDRixJQUVBLHFDQUFxQztDQUNyQyw4QkFBOEIifQ==

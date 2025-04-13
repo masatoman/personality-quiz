@@ -4,6 +4,13 @@ import type { Metadata } from 'next'
 import { Noto_Sans_JP, M_PLUS_Rounded_1c } from 'next/font/google'
 import Navbar from '@/components/Navbar';
 import ThemeProviderClient from '@/components/ThemeProviderClient';
+import dynamic from 'next/dynamic';
+
+// ErrorBoundaryをクライアントサイドのみで動作するようにする
+const ErrorBoundary = dynamic(
+  () => import('@/components/ErrorBoundary'),
+  { ssr: false }
+);
 
 const noto = Noto_Sans_JP({ 
   subsets: ['latin'],
@@ -35,7 +42,14 @@ export default function RootLayout({
         <ThemeProviderClient>
           <Navbar />
           <main>
-            {children}
+            <ErrorBoundary
+              onError={(error, errorInfo) => {
+                console.error('Global error caught:', error);
+                // 分析サービスや監視システムにエラーを送信する場合はここで実装
+              }}
+            >
+              {children}
+            </ErrorBoundary>
           </main>
         </ThemeProviderClient>
       </body>
