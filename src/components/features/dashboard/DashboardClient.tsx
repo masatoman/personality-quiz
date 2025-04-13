@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import ActivitySummary from './ActivitySummary';
 import DashboardLayout from './DashboardLayout';
-import TodoList from '../TodoList';
-import GiverScoreDisplay from '../GiverScoreDisplay';
+import TodoList from '@/components/features/todo/TodoList';
+import GiverScoreDisplay from '@/components/features/giver-score/GiverScoreDisplay';
 import { FaChartLine, FaCalendarAlt } from 'react-icons/fa';
 
 // モックデータ

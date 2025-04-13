@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task } from '../../../hooks/useTodoStorage';
+import { Task } from '@/hooks/useTodoStorage';
 import { FaTrashAlt, FaCheckCircle, FaRegCircle } from 'react-icons/fa';
 
 interface TaskItemProps {

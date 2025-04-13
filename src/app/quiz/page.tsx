@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import QuizClient from '@/components/QuizClient';
+import { QuizContainer } from '@/components/features/quiz/QuizContainer';
 
 // メタデータ設定
 export const metadata: Metadata = {
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
 // クイズページのメインコンポーネント
 export default function QuizPage() {
   return (
-    <main>
-      <QuizClient />
+    <main className="min-h-screen bg-gray-50 py-12">
+      <QuizContainer />
     </main>
   );
 } 

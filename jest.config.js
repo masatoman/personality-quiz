@@ -11,7 +11,7 @@ const customJestConfig = {
   preset: 'ts-jest',
   
   // テスト環境
-  testEnvironment: 'jsdom',
+  testEnvironment: 'jest-environment-node',
   
   // テストのマッチパターン
   testMatch: [

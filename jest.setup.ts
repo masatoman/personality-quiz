@@ -1,4 +1,10 @@
 import '@testing-library/jest-dom';
+import { expect, jest } from '@jest/globals';
+
+declare global {
+  var expect: typeof expect;
+  var jest: typeof jest;
+}
 
 // カスタムmatchers拡張を追加
 expect.extend({
@@ -18,4 +24,29 @@ expect.extend({
       };
     }
   },
-}); 
+});
+
+// グローバルにexpectとjestを追加
+global.expect = expect;
+global.jest = jest;
+
+// グローバルなモックの設定
+global.Response = class {
+  constructor(private body?: any, private init?: ResponseInit) {}
+  json() {
+    return Promise.resolve(this.body);
+  }
+} as any;
+
+// フェッチのモック
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    json: () => Promise.resolve({}),
+  })
+) as jest.Mock;
+
+// 環境変数の設定
+process.env = {
+  ...process.env,
+  NEXT_PUBLIC_API_URL: 'http://localhost:3000',
+}; 

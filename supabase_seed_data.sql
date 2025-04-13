@@ -203,4 +203,22 @@ INSERT INTO public.materials (user_id, title, description, content, category, ta
     ARRAY['politeness', 'responses', 'formal'],
     1,
     TRUE
-  ); 
+  );
+
+-- テストユーザーの追加
+INSERT INTO public.users (id, email, username)
+VALUES 
+  ('11111111-1111-1111-1111-111111111111', 'test1@example.com', 'テストユーザー1'),
+  ('22222222-2222-2222-2222-222222222222', 'test2@example.com', 'テストユーザー2'),
+  ('33333333-3333-3333-3333-333333333333', 'test3@example.com', 'テストユーザー3')
+ON CONFLICT (id) DO NOTHING;
+
+-- テストクイズ結果の追加
+INSERT INTO public.quiz_results (user_id, score, created_at)
+VALUES 
+  ('11111111-1111-1111-1111-111111111111', 100, NOW() - INTERVAL '1 day'),
+  ('11111111-1111-1111-1111-111111111111', 80, NOW() - INTERVAL '2 days'),
+  ('22222222-2222-2222-2222-222222222222', 90, NOW() - INTERVAL '3 days'),
+  ('22222222-2222-2222-2222-222222222222', 70, NOW() - INTERVAL '4 days'),
+  ('33333333-3333-3333-3333-333333333333', 60, NOW() - INTERVAL '5 days')
+ON CONFLICT DO NOTHING; 

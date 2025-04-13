@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Task } from '../../../hooks/useTodoStorage';
+import { Task } from '@/hooks/useTodoStorage';
 
 interface TodoFormProps {
   onAddTask: (task: Omit<Task, 'id' | 'completed' | 'createdAt'>) => void;
