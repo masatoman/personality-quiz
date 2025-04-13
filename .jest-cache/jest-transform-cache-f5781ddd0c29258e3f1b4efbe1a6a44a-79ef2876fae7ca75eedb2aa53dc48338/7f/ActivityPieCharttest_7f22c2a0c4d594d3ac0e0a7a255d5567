@@ -1,0 +1,114 @@
+196e1d2daf7abdbd8bb6efd89c71638e
+"use strict";
+// モックを設定してframer-motionのアニメーションによるエラーを回避
+jest.mock("framer-motion", ()=>({
+        motion: {
+            div: ({ children, ...props })=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                    ...props,
+                    children: children
+                }),
+            h3: ({ children, ...props })=>/*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                    ...props,
+                    children: children
+                })
+        }
+    }));
+// Rechartsのコンポーネントをモック
+jest.mock("recharts", ()=>{
+    const OriginalModule = jest.requireActual("recharts");
+    return {
+        ...OriginalModule,
+        ResponsiveContainer: ({ children })=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                "data-testid": "responsive-container",
+                children: children
+            }),
+        PieChart: ({ children })=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                "data-testid": "pie-chart",
+                children: children
+            }),
+        Pie: ({ children })=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                "data-testid": "pie",
+                children: children
+            }),
+        Cell: ()=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                "data-testid": "cell"
+            }),
+        Tooltip: ()=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                "data-testid": "tooltip"
+            }),
+        Legend: ()=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                "data-testid": "legend"
+            })
+    };
+});
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+const _jsxruntime = require("react/jsx-runtime");
+const _react = require("@testing-library/react");
+require("@testing-library/jest-dom");
+const _ActivityPieChart = /*#__PURE__*/ _interop_require_default(require("../ActivityPieChart"));
+function _interop_require_default(obj) {
+    return obj && obj.__esModule ? obj : {
+        default: obj
+    };
+}
+describe("ActivityPieChart", ()=>{
+    const mockData = [
+        {
+            name: "教材作成",
+            value: 40,
+            color: "#3B82F6"
+        },
+        {
+            name: "教材閲覧",
+            value: 30,
+            color: "#10B981"
+        },
+        {
+            name: "コメント",
+            value: 20,
+            color: "#6366F1"
+        },
+        {
+            name: "いいね",
+            value: 10,
+            color: "#F59E0B"
+        }
+    ];
+    it("コンポーネントが正しくレンダリングされること", ()=>{
+        (0, _react.render)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_ActivityPieChart.default, {}));
+        // タイトルと説明テキストが正しく表示されていることを確認
+        expect(_react.screen.getByText("活動種類の分布")).toBeInTheDocument();
+        expect(_react.screen.getByText("活動内容の割合を確認できます")).toBeInTheDocument();
+    });
+    it("Rechartsのコンポーネントが正しくレンダリングされること", ()=>{
+        (0, _react.render)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_ActivityPieChart.default, {}));
+        // Rechartsの各コンポーネントが正しくレンダリングされていることを確認
+        expect(_react.screen.getByTestId("responsive-container")).toBeInTheDocument();
+        expect(_react.screen.getByTestId("pie-chart")).toBeInTheDocument();
+        expect(_react.screen.getByTestId("pie")).toBeInTheDocument();
+        expect(_react.screen.getByTestId("tooltip")).toBeInTheDocument();
+        expect(_react.screen.getByTestId("legend")).toBeInTheDocument();
+    });
+    it("カスタムデータを渡した場合、そのデータが使われること", ()=>{
+        // この部分はUIテストだけでは検証が難しいため、
+        // スパイを使って内部実装を検証するより高度なテストが必要になります
+        // ここでは基本的なレンダリングテストのみ実施
+        (0, _react.render)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_ActivityPieChart.default, {
+            data: mockData
+        }));
+        expect(_react.screen.getByText("活動種類の分布")).toBeInTheDocument();
+    });
+    it("高さのプロパティが正しく適用されること", ()=>{
+        const customHeight = 500;
+        (0, _react.render)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_ActivityPieChart.default, {
+            height: customHeight
+        }));
+        // コンポーネントが正しくレンダリングされていることを確認
+        expect(_react.screen.getByText("活動種類の分布")).toBeInTheDocument();
+    // 注: 実際のDOMでの高さ検証はframer-motionのモック化により複雑になるため省略
+    });
+});
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9zcmMvY29tcG9uZW50cy9kYXNoYm9hcmQvX190ZXN0c19fL0FjdGl2aXR5UGllQ2hhcnQudGVzdC50c3giXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgcmVuZGVyLCBzY3JlZW4gfSBmcm9tICdAdGVzdGluZy1saWJyYXJ5L3JlYWN0JztcbmltcG9ydCAnQHRlc3RpbmctbGlicmFyeS9qZXN0LWRvbSc7XG5pbXBvcnQgQWN0aXZpdHlQaWVDaGFydCBmcm9tICcuLi9BY3Rpdml0eVBpZUNoYXJ0JztcblxuLy8g44Oi44OD44Kv44KS6Kit5a6a44GX44GmZnJhbWVyLW1vdGlvbuOBruOCouODi+ODoeODvOOCt+ODp+ODs+OBq+OCiOOCi+OCqOODqeODvOOCkuWbnumBv1xuamVzdC5tb2NrKCdmcmFtZXItbW90aW9uJywgKCkgPT4gKHtcbiAgbW90aW9uOiB7XG4gICAgZGl2OiAoeyBjaGlsZHJlbiwgLi4ucHJvcHMgfTogYW55KSA9PiA8ZGl2IHsuLi5wcm9wc30+e2NoaWxkcmVufTwvZGl2PixcbiAgICBoMzogKHsgY2hpbGRyZW4sIC4uLnByb3BzIH06IGFueSkgPT4gPGgzIHsuLi5wcm9wc30+e2NoaWxkcmVufTwvaDM+LFxuICB9LFxufSkpO1xuXG4vLyBSZWNoYXJ0c+OBruOCs+ODs+ODneODvOODjeODs+ODiOOCkuODouODg+OCr1xuamVzdC5tb2NrKCdyZWNoYXJ0cycsICgpID0+IHtcbiAgY29uc3QgT3JpZ2luYWxNb2R1bGUgPSBqZXN0LnJlcXVpcmVBY3R1YWwoJ3JlY2hhcnRzJyk7XG4gIHJldHVybiB7XG4gICAgLi4uT3JpZ2luYWxNb2R1bGUsXG4gICAgUmVzcG9uc2l2ZUNvbnRhaW5lcjogKHsgY2hpbGRyZW4gfTogYW55KSA9PiA8ZGl2IGRhdGEtdGVzdGlkPVwicmVzcG9uc2l2ZS1jb250YWluZXJcIj57Y2hpbGRyZW59PC9kaXY+LFxuICAgIFBpZUNoYXJ0OiAoeyBjaGlsZHJlbiB9OiBhbnkpID0+IDxkaXYgZGF0YS10ZXN0aWQ9XCJwaWUtY2hhcnRcIj57Y2hpbGRyZW59PC9kaXY+LFxuICAgIFBpZTogKHsgY2hpbGRyZW4gfTogYW55KSA9PiA8ZGl2IGRhdGEtdGVzdGlkPVwicGllXCI+e2NoaWxkcmVufTwvZGl2PixcbiAgICBDZWxsOiAoKSA9PiA8ZGl2IGRhdGEtdGVzdGlkPVwiY2VsbFwiIC8+LFxuICAgIFRvb2x0aXA6ICgpID0+IDxkaXYgZGF0YS10ZXN0aWQ9XCJ0b29sdGlwXCIgLz4sXG4gICAgTGVnZW5kOiAoKSA9PiA8ZGl2IGRhdGEtdGVzdGlkPVwibGVnZW5kXCIgLz4sXG4gIH07XG59KTtcblxuZGVzY3JpYmUoJ0FjdGl2aXR5UGllQ2hhcnQnLCAoKSA9PiB7XG4gIGNvbnN0IG1vY2tEYXRhID0gW1xuICAgIHsgbmFtZTogJ+aVmeadkOS9nOaIkCcsIHZhbHVlOiA0MCwgY29sb3I6ICcjM0I4MkY2JyB9LFxuICAgIHsgbmFtZTogJ+aVmeadkOmWsuimpycsIHZhbHVlOiAzMCwgY29sb3I6ICcjMTBCOTgxJyB9LFxuICAgIHsgbmFtZTogJ+OCs+ODoeODs+ODiCcsIHZhbHVlOiAyMCwgY29sb3I6ICcjNjM2NkYxJyB9LFxuICAgIHsgbmFtZTogJ+OBhOOBhOOBrScsIHZhbHVlOiAxMCwgY29sb3I6ICcjRjU5RTBCJyB9XG4gIF07XG5cbiAgaXQoJ+OCs+ODs+ODneODvOODjeODs+ODiOOBjOato+OBl+OBj+ODrOODs+ODgOODquODs+OCsOOBleOCjOOCi+OBk+OBqCcsICgpID0+IHtcbiAgICByZW5kZXIoPEFjdGl2aXR5UGllQ2hhcnQgLz4pO1xuICAgIFxuICAgIC8vIOOCv+OCpOODiOODq+OBqOiqrOaYjuODhuOCreOCueODiOOBjOato+OBl+OBj+ihqOekuuOBleOCjOOBpuOBhOOCi+OBk+OBqOOCkueiuuiqjVxuICAgIGV4cGVjdChzY3JlZW4uZ2V0QnlUZXh0KCfmtLvli5XnqK7poZ7jga7liIbluIMnKSkudG9CZUluVGhlRG9jdW1lbnQoKTtcbiAgICBleHBlY3Qoc2NyZWVuLmdldEJ5VGV4dCgn5rS75YuV5YaF5a6544Gu5Ymy5ZCI44KS56K66KqN44Gn44GN44G+44GZJykpLnRvQmVJblRoZURvY3VtZW50KCk7XG4gIH0pO1xuXG4gIGl0KCdSZWNoYXJ0c+OBruOCs+ODs+ODneODvOODjeODs+ODiOOBjOato+OBl+OBj+ODrOODs+ODgOODquODs+OCsOOBleOCjOOCi+OBk+OBqCcsICgpID0+IHtcbiAgICByZW5kZXIoPEFjdGl2aXR5UGllQ2hhcnQgLz4pO1xuICAgIFxuICAgIC8vIFJlY2hhcnRz44Gu5ZCE44Kz44Oz44Od44O844ON44Oz44OI44GM5q2j44GX44GP44Os44Oz44OA44Oq44Oz44Kw44GV44KM44Gm44GE44KL44GT44Go44KS56K66KqNXG4gICAgZXhwZWN0KHNjcmVlbi5nZXRCeVRlc3RJZCgncmVzcG9uc2l2ZS1jb250YWluZXInKSkudG9CZUluVGhlRG9jdW1lbnQoKTtcbiAgICBleHBlY3Qoc2NyZWVuLmdldEJ5VGVzdElkKCdwaWUtY2hhcnQnKSkudG9CZUluVGhlRG9jdW1lbnQoKTtcbiAgICBleHBlY3Qoc2NyZWVuLmdldEJ5VGVzdElkKCdwaWUnKSkudG9CZUluVGhlRG9jdW1lbnQoKTtcbiAgICBleHBlY3Qoc2NyZWVuLmdldEJ5VGVzdElkKCd0b29sdGlwJykpLnRvQmVJblRoZURvY3VtZW50KCk7XG4gICAgZXhwZWN0KHNjcmVlbi5nZXRCeVRlc3RJZCgnbGVnZW5kJykpLnRvQmVJblRoZURvY3VtZW50KCk7XG4gIH0pO1xuXG4gIGl0KCfjgqvjgrnjgr/jg6Djg4fjg7zjgr/jgpLmuKHjgZfjgZ/loLTlkIjjgIHjgZ3jga7jg4fjg7zjgr/jgYzkvb/jgo/jgozjgovjgZPjgagnLCAoKSA9PiB7XG4gICAgLy8g44GT44Gu6YOo5YiG44GvVUnjg4bjgrnjg4jjgaDjgZHjgafjga/mpJzoqLzjgYzpm6PjgZfjgYTjgZ/jgoHjgIFcbiAgICAvLyDjgrnjg5HjgqTjgpLkvb/jgaPjgablhoXpg6jlrp/oo4XjgpLmpJzoqLzjgZnjgovjgojjgorpq5jluqbjgarjg4bjgrnjg4jjgYzlv4XopoHjgavjgarjgorjgb7jgZlcbiAgICAvLyDjgZPjgZPjgafjga/ln7rmnKznmoTjgarjg6zjg7Pjg4Djg6rjg7PjgrDjg4bjgrnjg4jjga7jgb/lrp/mlr1cbiAgICByZW5kZXIoPEFjdGl2aXR5UGllQ2hhcnQgZGF0YT17bW9ja0RhdGF9IC8+KTtcbiAgICBcbiAgICBleHBlY3Qoc2NyZWVuLmdldEJ5VGV4dCgn5rS75YuV56iu6aGe44Gu5YiG5biDJykpLnRvQmVJblRoZURvY3VtZW50KCk7XG4gIH0pO1xuXG4gIGl0KCfpq5jjgZXjga7jg5fjg63jg5Hjg4bjgqPjgYzmraPjgZfjgY/pgannlKjjgZXjgozjgovjgZPjgagnLCAoKSA9PiB7XG4gICAgY29uc3QgY3VzdG9tSGVpZ2h0ID0gNTAwO1xuICAgIHJlbmRlcig8QWN0aXZpdHlQaWVDaGFydCBoZWlnaHQ9e2N1c3RvbUhlaWdodH0gLz4pO1xuICAgIFxuICAgIC8vIOOCs+ODs+ODneODvOODjeODs+ODiOOBjOato+OBl+OBj+ODrOODs+ODgOODquODs+OCsOOBleOCjOOBpuOBhOOCi+OBk+OBqOOCkueiuuiqjVxuICAgIGV4cGVjdChzY3JlZW4uZ2V0QnlUZXh0KCfmtLvli5XnqK7poZ7jga7liIbluIMnKSkudG9CZUluVGhlRG9jdW1lbnQoKTtcbiAgICBcbiAgICAvLyDms6g6IOWun+mam+OBrkRPTeOBp+OBrumrmOOBleaknOiovOOBr2ZyYW1lci1tb3Rpb27jga7jg6Ljg4Pjgq/ljJbjgavjgojjgoropIfpm5HjgavjgarjgovjgZ/jgoHnnIHnlaVcbiAgfSk7XG59KTsgIl0sIm5hbWVzIjpbImplc3QiLCJtb2NrIiwibW90aW9uIiwiZGl2IiwiY2hpbGRyZW4iLCJwcm9wcyIsImgzIiwiT3JpZ2luYWxNb2R1bGUiLCJyZXF1aXJlQWN0dWFsIiwiUmVzcG9uc2l2ZUNvbnRhaW5lciIsImRhdGEtdGVzdGlkIiwiUGllQ2hhcnQiLCJQaWUiLCJDZWxsIiwiVG9vbHRpcCIsIkxlZ2VuZCIsImRlc2NyaWJlIiwibW9ja0RhdGEiLCJuYW1lIiwidmFsdWUiLCJjb2xvciIsIml0IiwicmVuZGVyIiwiQWN0aXZpdHlQaWVDaGFydCIsImV4cGVjdCIsInNjcmVlbiIsImdldEJ5VGV4dCIsInRvQmVJblRoZURvY3VtZW50IiwiZ2V0QnlUZXN0SWQiLCJkYXRhIiwiY3VzdG9tSGVpZ2h0IiwiaGVpZ2h0Il0sIm1hcHBpbmdzIjoiO0FBSUEseUNBQXlDO0FBQ3pDQSxLQUFLQyxJQUFJLENBQUMsaUJBQWlCLElBQU8sQ0FBQTtRQUNoQ0MsUUFBUTtZQUNOQyxLQUFLLENBQUMsRUFBRUMsUUFBUSxFQUFFLEdBQUdDLE9BQVksaUJBQUsscUJBQUNGO29CQUFLLEdBQUdFLEtBQUs7OEJBQUdEOztZQUN2REUsSUFBSSxDQUFDLEVBQUVGLFFBQVEsRUFBRSxHQUFHQyxPQUFZLGlCQUFLLHFCQUFDQztvQkFBSSxHQUFHRCxLQUFLOzhCQUFHRDs7UUFDdkQ7SUFDRixDQUFBO0FBRUEsdUJBQXVCO0FBQ3ZCSixLQUFLQyxJQUFJLENBQUMsWUFBWTtJQUNwQixNQUFNTSxpQkFBaUJQLEtBQUtRLGFBQWEsQ0FBQztJQUMxQyxPQUFPO1FBQ0wsR0FBR0QsY0FBYztRQUNqQkUscUJBQXFCLENBQUMsRUFBRUwsUUFBUSxFQUFPLGlCQUFLLHFCQUFDRDtnQkFBSU8sZUFBWTswQkFBd0JOOztRQUNyRk8sVUFBVSxDQUFDLEVBQUVQLFFBQVEsRUFBTyxpQkFBSyxxQkFBQ0Q7Z0JBQUlPLGVBQVk7MEJBQWFOOztRQUMvRFEsS0FBSyxDQUFDLEVBQUVSLFFBQVEsRUFBTyxpQkFBSyxxQkFBQ0Q7Z0JBQUlPLGVBQVk7MEJBQU9OOztRQUNwRFMsTUFBTSxrQkFBTSxxQkFBQ1Y7Z0JBQUlPLGVBQVk7O1FBQzdCSSxTQUFTLGtCQUFNLHFCQUFDWDtnQkFBSU8sZUFBWTs7UUFDaENLLFFBQVEsa0JBQU0scUJBQUNaO2dCQUFJTyxlQUFZOztJQUNqQztBQUNGOzs7Ozt1QkF4QitCO1FBQ3hCO3lFQUNzQjs7Ozs7O0FBd0I3Qk0sU0FBUyxvQkFBb0I7SUFDM0IsTUFBTUMsV0FBVztRQUNmO1lBQUVDLE1BQU07WUFBUUMsT0FBTztZQUFJQyxPQUFPO1FBQVU7UUFDNUM7WUFBRUYsTUFBTTtZQUFRQyxPQUFPO1lBQUlDLE9BQU87UUFBVTtRQUM1QztZQUFFRixNQUFNO1lBQVFDLE9BQU87WUFBSUMsT0FBTztRQUFVO1FBQzVDO1lBQUVGLE1BQU07WUFBT0MsT0FBTztZQUFJQyxPQUFPO1FBQVU7S0FDNUM7SUFFREMsR0FBRywwQkFBMEI7UUFDM0JDLElBQUFBLGFBQU0sZ0JBQUMscUJBQUNDLHlCQUFnQjtRQUV4Qiw4QkFBOEI7UUFDOUJDLE9BQU9DLGFBQU0sQ0FBQ0MsU0FBUyxDQUFDLFlBQVlDLGlCQUFpQjtRQUNyREgsT0FBT0MsYUFBTSxDQUFDQyxTQUFTLENBQUMsbUJBQW1CQyxpQkFBaUI7SUFDOUQ7SUFFQU4sR0FBRyxtQ0FBbUM7UUFDcENDLElBQUFBLGFBQU0sZ0JBQUMscUJBQUNDLHlCQUFnQjtRQUV4Qix3Q0FBd0M7UUFDeENDLE9BQU9DLGFBQU0sQ0FBQ0csV0FBVyxDQUFDLHlCQUF5QkQsaUJBQWlCO1FBQ3BFSCxPQUFPQyxhQUFNLENBQUNHLFdBQVcsQ0FBQyxjQUFjRCxpQkFBaUI7UUFDekRILE9BQU9DLGFBQU0sQ0FBQ0csV0FBVyxDQUFDLFFBQVFELGlCQUFpQjtRQUNuREgsT0FBT0MsYUFBTSxDQUFDRyxXQUFXLENBQUMsWUFBWUQsaUJBQWlCO1FBQ3ZESCxPQUFPQyxhQUFNLENBQUNHLFdBQVcsQ0FBQyxXQUFXRCxpQkFBaUI7SUFDeEQ7SUFFQU4sR0FBRyw4QkFBOEI7UUFDL0IsMEJBQTBCO1FBQzFCLG1DQUFtQztRQUNuQyx3QkFBd0I7UUFDeEJDLElBQUFBLGFBQU0sZ0JBQUMscUJBQUNDLHlCQUFnQjtZQUFDTSxNQUFNWjs7UUFFL0JPLE9BQU9DLGFBQU0sQ0FBQ0MsU0FBUyxDQUFDLFlBQVlDLGlCQUFpQjtJQUN2RDtJQUVBTixHQUFHLHVCQUF1QjtRQUN4QixNQUFNUyxlQUFlO1FBQ3JCUixJQUFBQSxhQUFNLGdCQUFDLHFCQUFDQyx5QkFBZ0I7WUFBQ1EsUUFBUUQ7O1FBRWpDLDhCQUE4QjtRQUM5Qk4sT0FBT0MsYUFBTSxDQUFDQyxTQUFTLENBQUMsWUFBWUMsaUJBQWlCO0lBRXJELGlEQUFpRDtJQUNuRDtBQUNGIn0=

@@ -1,0 +1,232 @@
+6aa53cff2ca0bf3acd3c50b4f2fc3b9a
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "default", {
+    enumerable: true,
+    get: function() {
+        return _default;
+    }
+});
+const _jsxruntime = require("react/jsx-runtime");
+const _react = /*#__PURE__*/ _interop_require_default(require("react"));
+const _hi = require("react-icons/hi");
+function _interop_require_default(obj) {
+    return obj && obj.__esModule ? obj : {
+        default: obj
+    };
+}
+// レベルごとの特典マップ（実際の実装に合わせて調整してください）
+const LEVEL_BENEFITS = {
+    1: [
+        "基本機能の利用"
+    ],
+    2: [
+        "詳細フィードバック機能",
+        "ポイント2倍デー"
+    ],
+    3: [
+        "教材ブックマーク機能",
+        "バッジシステムのロック解除"
+    ],
+    4: [
+        "教材作成機能のロック解除",
+        "ギバーコミュニティへのアクセス"
+    ],
+    5: [
+        "他ユーザーのメンター登録",
+        "カスタムテーマ"
+    ],
+    6: [
+        "リソース提案機能",
+        "ギバーSNSバッジの獲得"
+    ],
+    7: [
+        "上級者向け教材の作成許可",
+        "プライオリティサポート"
+    ],
+    8: [
+        "ギバーリーダーボードへの参加",
+        "VIPイベントへの招待"
+    ],
+    9: [
+        "プラットフォームの意思決定権限",
+        "ギバー認定バッジ"
+    ],
+    10: [
+        "無制限の教材作成",
+        "マスターメンターステータス",
+        "ギバーTシャツの贈呈"
+    ]
+};
+// パーソナリティタイプごとのアイコンマップ
+const PERSONALITY_ICONS = {
+    giver: /*#__PURE__*/ (0, _jsxruntime.jsx)(_hi.HiGift, {
+        "data-testid": "giver-icon",
+        className: "text-green-500",
+        size: 24
+    }),
+    taker: /*#__PURE__*/ (0, _jsxruntime.jsx)(_hi.HiStar, {
+        "data-testid": "taker-icon",
+        className: "text-blue-500",
+        size: 24
+    }),
+    matcher: /*#__PURE__*/ (0, _jsxruntime.jsx)(_hi.HiLightningBolt, {
+        "data-testid": "matcher-icon",
+        className: "text-purple-500",
+        size: 24
+    })
+};
+// パーソナリティタイプごとの色マップ
+const PERSONALITY_COLORS = {
+    giver: "bg-green-500",
+    taker: "bg-blue-500",
+    matcher: "bg-purple-500"
+};
+const GiverScoreDisplay = ({ userData })=>{
+    const { score, level, nextLevelScore, progressPercentage, personalityType, activities } = userData;
+    // 次のレベルまでの必要ポイント
+    const pointsToNextLevel = nextLevelScore - score;
+    // 現在のレベルの特典リスト
+    const currentBenefits = LEVEL_BENEFITS[level] || [];
+    return /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+        className: "bg-white rounded-lg shadow-md p-6 max-w-md",
+        children: [
+            /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                className: "flex items-center mb-4",
+                children: [
+                    /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                        className: "rounded-full bg-gray-100 p-3 mr-4",
+                        children: PERSONALITY_ICONS[personalityType] || /*#__PURE__*/ (0, _jsxruntime.jsx)(_hi.HiUser, {
+                            size: 24
+                        })
+                    }),
+                    /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                        children: [
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)("h2", {
+                                className: "text-2xl font-bold",
+                                children: userData.name
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsxs)("p", {
+                                className: "text-gray-600",
+                                children: [
+                                    personalityType.charAt(0).toUpperCase() + personalityType.slice(1),
+                                    "タイプ"
+                                ]
+                            })
+                        ]
+                    })
+                ]
+            }),
+            /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                className: "mb-6",
+                children: [
+                    /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                        className: "flex justify-between mb-2",
+                        children: [
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                className: "text-gray-700",
+                                children: "ギバースコア"
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                className: "font-bold text-xl",
+                                children: score
+                            })
+                        ]
+                    }),
+                    /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                        className: "flex justify-between mb-2",
+                        children: [
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                className: "text-gray-700",
+                                children: "レベル"
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsxs)("span", {
+                                className: "font-semibold",
+                                children: [
+                                    "レベル ",
+                                    level
+                                ]
+                            })
+                        ]
+                    }),
+                    /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                        className: "flex justify-between mb-2",
+                        children: [
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                className: "text-gray-700",
+                                children: "活動数"
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsxs)("span", {
+                                className: "font-semibold",
+                                children: [
+                                    activities,
+                                    " 活動"
+                                ]
+                            })
+                        ]
+                    })
+                ]
+            }),
+            /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                className: "mb-6",
+                children: [
+                    /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                        className: "flex justify-between mb-1",
+                        children: [
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                children: "進捗状況"
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsxs)("span", {
+                                children: [
+                                    progressPercentage,
+                                    "%"
+                                ]
+                            })
+                        ]
+                    }),
+                    /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                        className: "w-full bg-gray-200 rounded-full h-2.5",
+                        children: /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                            className: `h-2.5 rounded-full ${PERSONALITY_COLORS[personalityType]}`,
+                            style: {
+                                width: `${progressPercentage}%`
+                            },
+                            role: "progressbar",
+                            "aria-valuenow": progressPercentage,
+                            "aria-valuemin": 0,
+                            "aria-valuemax": 100
+                        })
+                    }),
+                    /*#__PURE__*/ (0, _jsxruntime.jsxs)("p", {
+                        className: "text-sm text-gray-600 mt-1",
+                        children: [
+                            "次のレベルまで: ",
+                            pointsToNextLevel,
+                            "ポイント"
+                        ]
+                    })
+                ]
+            }),
+            /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                children: [
+                    /*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                        className: "font-semibold mb-2",
+                        children: "特典:"
+                    }),
+                    /*#__PURE__*/ (0, _jsxruntime.jsx)("ul", {
+                        className: "list-disc pl-5",
+                        children: currentBenefits.map((benefit, index)=>/*#__PURE__*/ (0, _jsxruntime.jsx)("li", {
+                                className: "text-gray-700",
+                                children: benefit
+                            }, index))
+                    })
+                ]
+            })
+        ]
+    });
+};
+const _default = GiverScoreDisplay;
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9zcmMvY29tcG9uZW50cy9mZWF0dXJlcy9naXZlci1zY29yZS9HaXZlclNjb3JlRGlzcGxheS50c3giXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFJlYWN0IGZyb20gJ3JlYWN0JztcbmltcG9ydCB7IEhpR2lmdCwgSGlTdGFyLCBIaUxpZ2h0bmluZ0JvbHQsIEhpVXNlciB9IGZyb20gJ3JlYWN0LWljb25zL2hpJztcblxuaW50ZXJmYWNlIFVzZXJEYXRhIHtcbiAgaWQ6IHN0cmluZztcbiAgbmFtZTogc3RyaW5nO1xuICBlbWFpbDogc3RyaW5nO1xuICBzY29yZTogbnVtYmVyO1xuICBhY3Rpdml0aWVzOiBudW1iZXI7XG4gIGxldmVsOiBudW1iZXI7XG4gIG5leHRMZXZlbFNjb3JlOiBudW1iZXI7XG4gIHByb2dyZXNzUGVyY2VudGFnZTogbnVtYmVyO1xuICBwZXJzb25hbGl0eVR5cGU6ICdnaXZlcicgfCAndGFrZXInIHwgJ21hdGNoZXInO1xufVxuXG5pbnRlcmZhY2UgR2l2ZXJTY29yZURpc3BsYXlQcm9wcyB7XG4gIHVzZXJEYXRhOiBVc2VyRGF0YTtcbn1cblxuLy8g44Os44OZ44Or44GU44Go44Gu54m55YW444Oe44OD44OX77yI5a6f6Zqb44Gu5a6f6KOF44Gr5ZCI44KP44Gb44Gm6Kq/5pW044GX44Gm44GP44Gg44GV44GE77yJXG5jb25zdCBMRVZFTF9CRU5FRklUUzogUmVjb3JkPG51bWJlciwgc3RyaW5nW10+ID0ge1xuICAxOiBbJ+WfuuacrOapn+iDveOBruWIqeeUqCddLFxuICAyOiBbJ+ips+e0sOODleOCo+ODvOODieODkOODg+OCr+apn+iDvScsICfjg53jgqTjg7Pjg4gy5YCN44OH44O8J10sXG4gIDM6IFsn5pWZ5p2Q44OW44OD44Kv44Oe44O844Kv5qmf6IO9JywgJ+ODkOODg+OCuOOCt+OCueODhuODoOOBruODreODg+OCr+ino+mZpCddLFxuICA0OiBbJ+aVmeadkOS9nOaIkOapn+iDveOBruODreODg+OCr+ino+mZpCcsICfjgq7jg5Djg7zjgrPjg5/jg6Xjg4vjg4bjgqPjgbjjga7jgqLjgq/jgrvjgrknXSxcbiAgNTogWyfku5bjg6bjg7zjgrbjg7zjga7jg6Hjg7Pjgr/jg7znmbvpjLInLCAn44Kr44K544K/44Og44OG44O844OeJ10sXG4gIDY6IFsn44Oq44K944O844K55o+Q5qGI5qmf6IO9JywgJ+OCruODkOODvFNOU+ODkOODg+OCuOOBrueNsuW+lyddLFxuICA3OiBbJ+S4iue0muiAheWQkeOBkeaVmeadkOOBruS9nOaIkOioseWPrycsICfjg5fjg6njgqTjgqrjg6rjg4bjgqPjgrXjg53jg7zjg4gnXSxcbiAgODogWyfjgq7jg5Djg7zjg6rjg7zjg4Djg7zjg5zjg7zjg4njgbjjga7lj4LliqAnLCAnVklQ44Kk44OZ44Oz44OI44G444Gu5oub5b6FJ10sXG4gIDk6IFsn44OX44Op44OD44OI44OV44Kp44O844Og44Gu5oSP5oCd5rG65a6a5qip6ZmQJywgJ+OCruODkOODvOiqjeWumuODkOODg+OCuCddLFxuICAxMDogWyfnhKHliLbpmZDjga7mlZnmnZDkvZzmiJAnLCAn44Oe44K544K/44O844Oh44Oz44K/44O844K544OG44O844K/44K5JywgJ+OCruODkOODvFTjgrfjg6Pjg4Tjga7otIjlkYgnXVxufTtcblxuLy8g44OR44O844K944OK44Oq44OG44Kj44K/44Kk44OX44GU44Go44Gu44Ki44Kk44Kz44Oz44Oe44OD44OXXG5jb25zdCBQRVJTT05BTElUWV9JQ09OUyA9IHtcbiAgZ2l2ZXI6IDxIaUdpZnQgZGF0YS10ZXN0aWQ9XCJnaXZlci1pY29uXCIgY2xhc3NOYW1lPVwidGV4dC1ncmVlbi01MDBcIiBzaXplPXsyNH0gLz4sXG4gIHRha2VyOiA8SGlTdGFyIGRhdGEtdGVzdGlkPVwidGFrZXItaWNvblwiIGNsYXNzTmFtZT1cInRleHQtYmx1ZS01MDBcIiBzaXplPXsyNH0gLz4sXG4gIG1hdGNoZXI6IDxIaUxpZ2h0bmluZ0JvbHQgZGF0YS10ZXN0aWQ9XCJtYXRjaGVyLWljb25cIiBjbGFzc05hbWU9XCJ0ZXh0LXB1cnBsZS01MDBcIiBzaXplPXsyNH0gLz5cbn07XG5cbi8vIOODkeODvOOCveODiuODquODhuOCo+OCv+OCpOODl+OBlOOBqOOBruiJsuODnuODg+ODl1xuY29uc3QgUEVSU09OQUxJVFlfQ09MT1JTID0ge1xuICBnaXZlcjogJ2JnLWdyZWVuLTUwMCcsXG4gIHRha2VyOiAnYmctYmx1ZS01MDAnLFxuICBtYXRjaGVyOiAnYmctcHVycGxlLTUwMCdcbn07XG5cbmNvbnN0IEdpdmVyU2NvcmVEaXNwbGF5OiBSZWFjdC5GQzxHaXZlclNjb3JlRGlzcGxheVByb3BzPiA9ICh7IHVzZXJEYXRhIH0pID0+IHtcbiAgY29uc3QgeyBzY29yZSwgbGV2ZWwsIG5leHRMZXZlbFNjb3JlLCBwcm9ncmVzc1BlcmNlbnRhZ2UsIHBlcnNvbmFsaXR5VHlwZSwgYWN0aXZpdGllcyB9ID0gdXNlckRhdGE7XG4gIFxuICAvLyDmrKHjga7jg6zjg5njg6vjgb7jgafjga7lv4XopoHjg53jgqTjg7Pjg4hcbiAgY29uc3QgcG9pbnRzVG9OZXh0TGV2ZWwgPSBuZXh0TGV2ZWxTY29yZSAtIHNjb3JlO1xuICBcbiAgLy8g54++5Zyo44Gu44Os44OZ44Or44Gu54m55YW444Oq44K544OIXG4gIGNvbnN0IGN1cnJlbnRCZW5lZml0cyA9IExFVkVMX0JFTkVGSVRTW2xldmVsXSB8fCBbXTtcbiAgXG4gIHJldHVybiAoXG4gICAgPGRpdiBjbGFzc05hbWU9XCJiZy13aGl0ZSByb3VuZGVkLWxnIHNoYWRvdy1tZCBwLTYgbWF4LXctbWRcIj5cbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleCBpdGVtcy1jZW50ZXIgbWItNFwiPlxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJvdW5kZWQtZnVsbCBiZy1ncmF5LTEwMCBwLTMgbXItNFwiPlxuICAgICAgICAgIHtQRVJTT05BTElUWV9JQ09OU1twZXJzb25hbGl0eVR5cGVdIHx8IDxIaVVzZXIgc2l6ZT17MjR9IC8+fVxuICAgICAgICA8L2Rpdj5cbiAgICAgICAgPGRpdj5cbiAgICAgICAgICA8aDIgY2xhc3NOYW1lPVwidGV4dC0yeGwgZm9udC1ib2xkXCI+e3VzZXJEYXRhLm5hbWV9PC9oMj5cbiAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LWdyYXktNjAwXCI+e3BlcnNvbmFsaXR5VHlwZS5jaGFyQXQoMCkudG9VcHBlckNhc2UoKSArIHBlcnNvbmFsaXR5VHlwZS5zbGljZSgxKX3jgr/jgqTjg5c8L3A+XG4gICAgICAgIDwvZGl2PlxuICAgICAgPC9kaXY+XG4gICAgICBcbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwibWItNlwiPlxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXgganVzdGlmeS1iZXR3ZWVuIG1iLTJcIj5cbiAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJ0ZXh0LWdyYXktNzAwXCI+44Ku44OQ44O844K544Kz44KiPC9zcGFuPlxuICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImZvbnQtYm9sZCB0ZXh0LXhsXCI+e3Njb3JlfTwvc3Bhbj5cbiAgICAgICAgPC9kaXY+XG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleCBqdXN0aWZ5LWJldHdlZW4gbWItMlwiPlxuICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cInRleHQtZ3JheS03MDBcIj7jg6zjg5njg6s8L3NwYW4+XG4gICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwiZm9udC1zZW1pYm9sZFwiPuODrOODmeODqyB7bGV2ZWx9PC9zcGFuPlxuICAgICAgICA8L2Rpdj5cbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGp1c3RpZnktYmV0d2VlbiBtYi0yXCI+XG4gICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwidGV4dC1ncmF5LTcwMFwiPua0u+WLleaVsDwvc3Bhbj5cbiAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJmb250LXNlbWlib2xkXCI+e2FjdGl2aXRpZXN9IOa0u+WLlTwvc3Bhbj5cbiAgICAgICAgPC9kaXY+XG4gICAgICA8L2Rpdj5cbiAgICAgIFxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJtYi02XCI+XG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleCBqdXN0aWZ5LWJldHdlZW4gbWItMVwiPlxuICAgICAgICAgIDxzcGFuPumAsuaNl+eKtuazgTwvc3Bhbj5cbiAgICAgICAgICA8c3Bhbj57cHJvZ3Jlc3NQZXJjZW50YWdlfSU8L3NwYW4+XG4gICAgICAgIDwvZGl2PlxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInctZnVsbCBiZy1ncmF5LTIwMCByb3VuZGVkLWZ1bGwgaC0yLjVcIj5cbiAgICAgICAgICA8ZGl2IFxuICAgICAgICAgICAgY2xhc3NOYW1lPXtgaC0yLjUgcm91bmRlZC1mdWxsICR7UEVSU09OQUxJVFlfQ09MT1JTW3BlcnNvbmFsaXR5VHlwZV19YH1cbiAgICAgICAgICAgIHN0eWxlPXt7IHdpZHRoOiBgJHtwcm9ncmVzc1BlcmNlbnRhZ2V9JWAgfX1cbiAgICAgICAgICAgIHJvbGU9XCJwcm9ncmVzc2JhclwiXG4gICAgICAgICAgICBhcmlhLXZhbHVlbm93PXtwcm9ncmVzc1BlcmNlbnRhZ2V9XG4gICAgICAgICAgICBhcmlhLXZhbHVlbWluPXswfVxuICAgICAgICAgICAgYXJpYS12YWx1ZW1heD17MTAwfVxuICAgICAgICAgID48L2Rpdj5cbiAgICAgICAgPC9kaXY+XG4gICAgICAgIDxwIGNsYXNzTmFtZT1cInRleHQtc20gdGV4dC1ncmF5LTYwMCBtdC0xXCI+XG4gICAgICAgICAg5qyh44Gu44Os44OZ44Or44G+44GnOiB7cG9pbnRzVG9OZXh0TGV2ZWx944Od44Kk44Oz44OIXG4gICAgICAgIDwvcD5cbiAgICAgIDwvZGl2PlxuICAgICAgXG4gICAgICA8ZGl2PlxuICAgICAgICA8aDMgY2xhc3NOYW1lPVwiZm9udC1zZW1pYm9sZCBtYi0yXCI+54m55YW4OjwvaDM+XG4gICAgICAgIDx1bCBjbGFzc05hbWU9XCJsaXN0LWRpc2MgcGwtNVwiPlxuICAgICAgICAgIHtjdXJyZW50QmVuZWZpdHMubWFwKChiZW5lZml0LCBpbmRleCkgPT4gKFxuICAgICAgICAgICAgPGxpIGtleT17aW5kZXh9IGNsYXNzTmFtZT1cInRleHQtZ3JheS03MDBcIj57YmVuZWZpdH08L2xpPlxuICAgICAgICAgICkpfVxuICAgICAgICA8L3VsPlxuICAgICAgPC9kaXY+XG4gICAgPC9kaXY+XG4gICk7XG59O1xuXG5leHBvcnQgZGVmYXVsdCBHaXZlclNjb3JlRGlzcGxheTsgIl0sIm5hbWVzIjpbIkxFVkVMX0JFTkVGSVRTIiwiUEVSU09OQUxJVFlfSUNPTlMiLCJnaXZlciIsIkhpR2lmdCIsImRhdGEtdGVzdGlkIiwiY2xhc3NOYW1lIiwic2l6ZSIsInRha2VyIiwiSGlTdGFyIiwibWF0Y2hlciIsIkhpTGlnaHRuaW5nQm9sdCIsIlBFUlNPTkFMSVRZX0NPTE9SUyIsIkdpdmVyU2NvcmVEaXNwbGF5IiwidXNlckRhdGEiLCJzY29yZSIsImxldmVsIiwibmV4dExldmVsU2NvcmUiLCJwcm9ncmVzc1BlcmNlbnRhZ2UiLCJwZXJzb25hbGl0eVR5cGUiLCJhY3Rpdml0aWVzIiwicG9pbnRzVG9OZXh0TGV2ZWwiLCJjdXJyZW50QmVuZWZpdHMiLCJkaXYiLCJIaVVzZXIiLCJoMiIsIm5hbWUiLCJwIiwiY2hhckF0IiwidG9VcHBlckNhc2UiLCJzbGljZSIsInNwYW4iLCJzdHlsZSIsIndpZHRoIiwicm9sZSIsImFyaWEtdmFsdWVub3ciLCJhcmlhLXZhbHVlbWluIiwiYXJpYS12YWx1ZW1heCIsImgzIiwidWwiLCJtYXAiLCJiZW5lZml0IiwiaW5kZXgiLCJsaSJdLCJtYXBwaW5ncyI6Ijs7OzsrQkFtSEE7OztlQUFBOzs7OzhEQW5Ia0I7b0JBQ3NDOzs7Ozs7QUFrQnhELGtDQUFrQztBQUNsQyxNQUFNQSxpQkFBMkM7SUFDL0MsR0FBRztRQUFDO0tBQVU7SUFDZCxHQUFHO1FBQUM7UUFBZTtLQUFXO0lBQzlCLEdBQUc7UUFBQztRQUFjO0tBQWdCO0lBQ2xD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

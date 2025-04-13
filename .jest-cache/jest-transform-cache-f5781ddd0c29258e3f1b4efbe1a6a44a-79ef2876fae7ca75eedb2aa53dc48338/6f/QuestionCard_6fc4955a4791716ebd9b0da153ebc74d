@@ -1,0 +1,119 @@
+8d4725583e2fb4fd30915cc283778b7a
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "QuestionCard", {
+    enumerable: true,
+    get: function() {
+        return QuestionCard;
+    }
+});
+const _jsxruntime = require("react/jsx-runtime");
+const _framermotion = require("framer-motion");
+const QuestionCard = ({ question, currentQuestion, totalQuestions, onAnswer })=>{
+    return /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+        className: "w-full max-w-2xl",
+        children: /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+            className: "bg-white rounded-2xl shadow-xl p-6 sm:p-8",
+            children: [
+                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                    className: "mb-8",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                            className: "flex items-center justify-between mb-4",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("span", {
+                                    className: "text-sm font-medium text-gray-500",
+                                    children: [
+                                        "質問 ",
+                                        currentQuestion + 1,
+                                        " / ",
+                                        totalQuestions
+                                    ]
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "progress-container",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                            className: "progress-info",
+                                            children: [
+                                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("span", {
+                                                    children: [
+                                                        "Question ",
+                                                        currentQuestion + 1,
+                                                        " of ",
+                                                        totalQuestions
+                                                    ]
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("span", {
+                                                    children: [
+                                                        Math.round((currentQuestion + 1) / totalQuestions * 100),
+                                                        "%"
+                                                    ]
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "progress-bar",
+                                            role: "progressbar",
+                                            "aria-valuenow": Math.round((currentQuestion + 1) / totalQuestions * 100),
+                                            "aria-valuemin": 0,
+                                            "aria-valuemax": 100,
+                                            children: /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                                className: "progress-fill",
+                                                style: {
+                                                    width: `${(currentQuestion + 1) / totalQuestions * 100}%`
+                                                }
+                                            })
+                                        })
+                                    ]
+                                })
+                            ]
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h2", {
+                            className: "text-xl sm:text-2xl font-bold text-gray-900 mb-6",
+                            children: question.text
+                        })
+                    ]
+                }),
+                /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                    className: "space-y-4",
+                    children: question.options.map((option, index)=>/*#__PURE__*/ (0, _jsxruntime.jsxs)(_framermotion.motion.button, {
+                            whileHover: {
+                                scale: 1.02
+                            },
+                            whileTap: {
+                                scale: 0.98
+                            },
+                            onClick: ()=>onAnswer(index),
+                            className: "w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-blue-500 transition-all duration-300 group relative overflow-hidden",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                    className: "absolute inset-0 bg-gradient-to-r from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/5 group-hover:to-blue-500/10 transition-all duration-300"
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "relative flex items-center",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "w-8 h-8 rounded-full bg-gray-100 group-hover:bg-blue-100 flex items-center justify-center mr-4 transition-all duration-300",
+                                            children: /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                className: "text-gray-600 group-hover:text-blue-600 font-medium",
+                                                children: String.fromCharCode(65 + index)
+                                            })
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                            className: "text-gray-800 group-hover:text-gray-900 font-medium",
+                                            children: option.text
+                                        })
+                                    ]
+                                })
+                            ]
+                        }, index))
+                })
+            ]
+        })
+    });
+};
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9zcmMvY29tcG9uZW50cy9RdWVzdGlvbkNhcmQudHN4Il0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IG1vdGlvbiB9IGZyb20gJ2ZyYW1lci1tb3Rpb24nO1xuaW1wb3J0IHsgUXVlc3Rpb24gfSBmcm9tICdAL3R5cGVzL3F1aXonO1xuXG5pbnRlcmZhY2UgUXVlc3Rpb25DYXJkUHJvcHMge1xuICBxdWVzdGlvbjogUXVlc3Rpb247XG4gIGN1cnJlbnRRdWVzdGlvbjogbnVtYmVyO1xuICB0b3RhbFF1ZXN0aW9uczogbnVtYmVyO1xuICBvbkFuc3dlcjogKGluZGV4OiBudW1iZXIpID0+IHZvaWQ7XG59XG5cbmV4cG9ydCBjb25zdCBRdWVzdGlvbkNhcmQgPSAoe1xuICBxdWVzdGlvbixcbiAgY3VycmVudFF1ZXN0aW9uLFxuICB0b3RhbFF1ZXN0aW9ucyxcbiAgb25BbnN3ZXIsXG59OiBRdWVzdGlvbkNhcmRQcm9wcykgPT4ge1xuICByZXR1cm4gKFxuICAgIDxkaXYgY2xhc3NOYW1lPVwidy1mdWxsIG1heC13LTJ4bFwiPlxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJiZy13aGl0ZSByb3VuZGVkLTJ4bCBzaGFkb3cteGwgcC02IHNtOnAtOFwiPlxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cIm1iLThcIj5cbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggaXRlbXMtY2VudGVyIGp1c3RpZnktYmV0d2VlbiBtYi00XCI+XG4gICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJ0ZXh0LXNtIGZvbnQtbWVkaXVtIHRleHQtZ3JheS01MDBcIj5cbiAgICAgICAgICAgICAg6LOq5ZWPIHtjdXJyZW50UXVlc3Rpb24gKyAxfSAvIHt0b3RhbFF1ZXN0aW9uc31cbiAgICAgICAgICAgIDwvc3Bhbj5cbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicHJvZ3Jlc3MtY29udGFpbmVyXCI+XG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicHJvZ3Jlc3MtaW5mb1wiPlxuICAgICAgICAgICAgICAgIDxzcGFuPlF1ZXN0aW9uIHtjdXJyZW50UXVlc3Rpb24gKyAxfSBvZiB7dG90YWxRdWVzdGlvbnN9PC9zcGFuPlxuICAgICAgICAgICAgICAgIDxzcGFuPntNYXRoLnJvdW5kKChjdXJyZW50UXVlc3Rpb24gKyAxKSAvIHRvdGFsUXVlc3Rpb25zICogMTAwKX0lPC9zcGFuPlxuICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgPGRpdiBcbiAgICAgICAgICAgICAgICBjbGFzc05hbWU9XCJwcm9ncmVzcy1iYXJcIiBcbiAgICAgICAgICAgICAgICByb2xlPVwicHJvZ3Jlc3NiYXJcIlxuICAgICAgICAgICAgICAgIGFyaWEtdmFsdWVub3c9e01hdGgucm91bmQoKGN1cnJlbnRRdWVzdGlvbiArIDEpIC8gdG90YWxRdWVzdGlvbnMgKiAxMDApfVxuICAgICAgICAgICAgICAgIGFyaWEtdmFsdWVtaW49ezB9XG4gICAgICAgICAgICAgICAgYXJpYS12YWx1ZW1heD17MTAwfVxuICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgPGRpdiBcbiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cInByb2dyZXNzLWZpbGxcIiBcbiAgICAgICAgICAgICAgICAgIHN0eWxlPXt7IHdpZHRoOiBgJHsoKGN1cnJlbnRRdWVzdGlvbiArIDEpIC8gdG90YWxRdWVzdGlvbnMpICogMTAwfSVgIH19IFxuICAgICAgICAgICAgICAgIC8+XG4gICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgPGgyIGNsYXNzTmFtZT1cInRleHQteGwgc206dGV4dC0yeGwgZm9udC1ib2xkIHRleHQtZ3JheS05MDAgbWItNlwiPntxdWVzdGlvbi50ZXh0fTwvaDI+XG4gICAgICAgIDwvZGl2PlxuXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS00XCI+XG4gICAgICAgICAge3F1ZXN0aW9uLm9wdGlvbnMubWFwKChvcHRpb24sIGluZGV4KSA9PiAoXG4gICAgICAgICAgICA8bW90aW9uLmJ1dHRvblxuICAgICAgICAgICAgICBrZXk9e2luZGV4fVxuICAgICAgICAgICAgICB3aGlsZUhvdmVyPXt7IHNjYWxlOiAxLjAyIH19XG4gICAgICAgICAgICAgIHdoaWxlVGFwPXt7IHNjYWxlOiAwLjk4IH19XG4gICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IG9uQW5zd2VyKGluZGV4KX1cbiAgICAgICAgICAgICAgY2xhc3NOYW1lPVwidy1mdWxsIHRleHQtbGVmdCBwLTQgcm91bmRlZC14bCBib3JkZXItMiBib3JkZXItZ3JheS0yMDAgaG92ZXI6Ym9yZGVyLWJsdWUtNTAwIHRyYW5zaXRpb24tYWxsIGR1cmF0aW9uLTMwMCBncm91cCByZWxhdGl2ZSBvdmVyZmxvdy1oaWRkZW5cIlxuICAgICAgICAgICAgPlxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImFic29sdXRlIGluc2V0LTAgYmctZ3JhZGllbnQtdG8tciBmcm9tLWJsdWUtNTAwLzAgdG8tYmx1ZS01MDAvMCBncm91cC1ob3Zlcjpmcm9tLWJsdWUtNTAwLzUgZ3JvdXAtaG92ZXI6dG8tYmx1ZS01MDAvMTAgdHJhbnNpdGlvbi1hbGwgZHVyYXRpb24tMzAwXCIgLz5cbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJyZWxhdGl2ZSBmbGV4IGl0ZW1zLWNlbnRlclwiPlxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidy04IGgtOCByb3VuZGVkLWZ1bGwgYmctZ3JheS0xMDAgZ3JvdXAtaG92ZXI6YmctYmx1ZS0xMDAgZmxleCBpdGVtcy1jZW50ZXIganVzdGlmeS1jZW50ZXIgbXItNCB0cmFuc2l0aW9uLWFsbCBkdXJhdGlvbi0zMDBcIj5cbiAgICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cInRleHQtZ3JheS02MDAgZ3JvdXAtaG92ZXI6dGV4dC1ibHVlLTYwMCBmb250LW1lZGl1bVwiPlxuICAgICAgICAgICAgICAgICAgICB7U3RyaW5nLmZyb21DaGFyQ29kZSg2NSArIGluZGV4KX1cbiAgICAgICAgICAgICAgICAgIDwvc3Bhbj5cbiAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJ0ZXh0LWdyYXktODAwIGdyb3VwLWhvdmVyOnRleHQtZ3JheS05MDAgZm9udC1tZWRpdW1cIj5cbiAgICAgICAgICAgICAgICAgIHtvcHRpb24udGV4dH1cbiAgICAgICAgICAgICAgICA8L3NwYW4+XG4gICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgPC9tb3Rpb24uYnV0dG9uPlxuICAgICAgICAgICkpfVxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvZGl2PlxuICAgIDwvZGl2PlxuICApO1xufTsgIl0sIm5hbWVzIjpbIlF1ZXN0aW9uQ2FyZCIsInF1ZXN0aW9uIiwiY3VycmVudFF1ZXN0aW9uIiwidG90YWxRdWVzdGlvbnMiLCJvbkFuc3dlciIsImRpdiIsImNsYXNzTmFtZSIsInNwYW4iLCJNYXRoIiwicm91bmQiLCJyb2xlIiwiYXJpYS12YWx1ZW5vdyIsImFyaWEtdmFsdWVtaW4iLCJhcmlhLXZhbHVlbWF4Iiwic3R5bGUiLCJ3aWR0aCIsImgyIiwidGV4dCIsIm9wdGlvbnMiLCJtYXAiLCJvcHRpb24iLCJpbmRleCIsIm1vdGlvbiIsImJ1dHRvbiIsIndoaWxlSG92ZXIiLCJzY2FsZSIsIndoaWxlVGFwIiwib25DbGljayIsIlN0cmluZyIsImZyb21DaGFyQ29kZSJdLCJtYXBwaW5ncyI6Ijs7OzsrQkFVYUE7OztlQUFBQTs7Ozs4QkFWVTtBQVVoQixNQUFNQSxlQUFlLENBQUMsRUFDM0JDLFFBQVEsRUFDUkMsZUFBZSxFQUNmQyxjQUFjLEVBQ2RDLFFBQVEsRUFDVTtJQUNsQixxQkFDRSxxQkFBQ0M7UUFBSUMsV0FBVTtrQkFDYixjQUFBLHNCQUFDRDtZQUFJQyxXQUFVOzs4QkFDYixzQkFBQ0Q7b0JBQUlDLFdBQVU7O3NDQUNiLHNCQUFDRDs0QkFBSUMsV0FBVTs7OENBQ2Isc0JBQUNDO29DQUFLRCxXQUFVOzt3Q0FBb0M7d0NBQzlDSixrQkFBa0I7d0NBQUU7d0NBQUlDOzs7OENBRTlCLHNCQUFDRTtvQ0FBSUMsV0FBVTs7c0RBQ2Isc0JBQUNEOzRDQUFJQyxXQUFVOzs4REFDYixzQkFBQ0M7O3dEQUFLO3dEQUFVTCxrQkFBa0I7d0RBQUU7d0RBQUtDOzs7OERBQ3pDLHNCQUFDSTs7d0RBQU1DLEtBQUtDLEtBQUssQ0FBQyxBQUFDUCxDQUFBQSxrQkFBa0IsQ0FBQSxJQUFLQyxpQkFBaUI7d0RBQUs7Ozs7O3NEQUVsRSxxQkFBQ0U7NENBQ0NDLFdBQVU7NENBQ1ZJLE1BQUs7NENBQ0xDLGlCQUFlSCxLQUFLQyxLQUFLLENBQUMsQUFBQ1AsQ0FBQUEsa0JBQWtCLENBQUEsSUFBS0MsaUJBQWlCOzRDQUNuRVMsaUJBQWU7NENBQ2ZDLGlCQUFlO3NEQUVmLGNBQUEscUJBQUNSO2dEQUNDQyxXQUFVO2dEQUNWUSxPQUFPO29EQUFFQyxPQUFPLENBQUMsRUFBRSxBQUFFYixDQUFBQSxrQkFBa0IsQ0FBQSxJQUFLQyxpQkFBa0IsSUFBSSxDQUFDLENBQUM7Z0RBQUM7Ozs7Ozs7c0NBSzdFLHFCQUFDYTs0QkFBR1YsV0FBVTtzQ0FBb0RMLFNBQVNnQixJQUFJOzs7OzhCQUdqRixxQkFBQ1o7b0JBQUlDLFdBQVU7OEJBQ1pMLFNBQVNpQixPQUFPLENBQUNDLEdBQUcsQ0FBQyxDQUFDQyxRQUFRQyxzQkFDN0Isc0JBQUNDLG9CQUFNLENBQUNDLE1BQU07NEJBRVpDLFlBQVk7Z0NBQUVDLE9BQU87NEJBQUs7NEJBQzFCQyxVQUFVO2dDQUFFRCxPQUFPOzRCQUFLOzRCQUN4QkUsU0FBUyxJQUFNdkIsU0FBU2lCOzRCQUN4QmYsV0FBVTs7OENBRVYscUJBQUNEO29DQUFJQyxXQUFVOzs4Q0FDZixzQkFBQ0Q7b0NBQUlDLFdBQVU7O3NEQUNiLHFCQUFDRDs0Q0FBSUMsV0FBVTtzREFDYixjQUFBLHFCQUFDQztnREFBS0QsV0FBVTswREFDYnNCLE9BQU9DLFlBQVksQ0FBQyxLQUFLUjs7O3NEQUc5QixxQkFBQ2Q7NENBQUtELFdBQVU7c0RBQ2JjLE9BQU9ILElBQUk7Ozs7OzJCQWRYSTs7Ozs7QUF1Qm5CIn0=

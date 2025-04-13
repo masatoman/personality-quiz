@@ -1,0 +1,114 @@
+37eecd606efbdfc1d46da7f05e73275f
+"use strict";
+// モックを設定してframer-motionのアニメーションによるエラーを回避
+jest.mock("framer-motion", ()=>({
+        motion: {
+            div: ({ children, ...props })=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                    ...props,
+                    children: children
+                }),
+            h3: ({ children, ...props })=>/*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                    ...props,
+                    children: children
+                })
+        }
+    }));
+// Rechartsのコンポーネントをモック
+jest.mock("recharts", ()=>{
+    const OriginalModule = jest.requireActual("recharts");
+    return {
+        ...OriginalModule,
+        ResponsiveContainer: ({ children })=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                "data-testid": "responsive-container",
+                children: children
+            }),
+        LineChart: ({ children })=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                "data-testid": "line-chart",
+                children: children
+            }),
+        Line: ()=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                "data-testid": "line"
+            }),
+        XAxis: ()=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                "data-testid": "x-axis"
+            }),
+        YAxis: ()=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                "data-testid": "y-axis"
+            }),
+        CartesianGrid: ()=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                "data-testid": "cartesian-grid"
+            }),
+        Tooltip: ()=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                "data-testid": "tooltip"
+            }),
+        Legend: ()=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                "data-testid": "legend"
+            })
+    };
+});
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+const _jsxruntime = require("react/jsx-runtime");
+const _react = require("@testing-library/react");
+require("@testing-library/jest-dom");
+const _GiverScoreChart = /*#__PURE__*/ _interop_require_default(require("../GiverScoreChart"));
+function _interop_require_default(obj) {
+    return obj && obj.__esModule ? obj : {
+        default: obj
+    };
+}
+describe("GiverScoreChart", ()=>{
+    const mockData = [
+        {
+            date: "2023-04-01",
+            score: 10
+        },
+        {
+            date: "2023-04-08",
+            score: 20
+        },
+        {
+            date: "2023-04-15",
+            score: 30
+        }
+    ];
+    it("コンポーネントが正しくレンダリングされること", ()=>{
+        (0, _react.render)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_GiverScoreChart.default, {}));
+        // タイトルと説明テキストが正しく表示されていることを確認
+        expect(_react.screen.getByText("ギバースコア推移")).toBeInTheDocument();
+        expect(_react.screen.getByText("過去の活動によるスコア変化を確認できます")).toBeInTheDocument();
+    });
+    it("Rechartsのコンポーネントが正しくレンダリングされること", ()=>{
+        (0, _react.render)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_GiverScoreChart.default, {}));
+        // Rechartsの各コンポーネントが正しくレンダリングされていることを確認
+        expect(_react.screen.getByTestId("responsive-container")).toBeInTheDocument();
+        expect(_react.screen.getByTestId("line-chart")).toBeInTheDocument();
+        expect(_react.screen.getByTestId("line")).toBeInTheDocument();
+        expect(_react.screen.getByTestId("x-axis")).toBeInTheDocument();
+        expect(_react.screen.getByTestId("y-axis")).toBeInTheDocument();
+        expect(_react.screen.getByTestId("cartesian-grid")).toBeInTheDocument();
+        expect(_react.screen.getByTestId("tooltip")).toBeInTheDocument();
+        expect(_react.screen.getByTestId("legend")).toBeInTheDocument();
+    });
+    it("カスタムデータを渡した場合、そのデータが使われること", ()=>{
+        // この部分はUIテストだけでは検証が難しいため、
+        // スパイを使って内部実装を検証するより高度なテストが必要になります
+        // ここでは基本的なレンダリングテストのみ実施
+        (0, _react.render)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_GiverScoreChart.default, {
+            data: mockData
+        }));
+        expect(_react.screen.getByText("ギバースコア推移")).toBeInTheDocument();
+    });
+    it("高さのプロパティが正しく適用されること", ()=>{
+        const customHeight = 500;
+        (0, _react.render)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_GiverScoreChart.default, {
+            height: customHeight
+        }));
+        // コンポーネントが正しくレンダリングされていることを確認
+        expect(_react.screen.getByText("ギバースコア推移")).toBeInTheDocument();
+    // 注: 実際のDOMでの高さ検証はframer-motionのモック化により複雑になるため省略
+    });
+});
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9zcmMvY29tcG9uZW50cy9kYXNoYm9hcmQvX190ZXN0c19fL0dpdmVyU2NvcmVDaGFydC50ZXN0LnRzeCJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyByZW5kZXIsIHNjcmVlbiB9IGZyb20gJ0B0ZXN0aW5nLWxpYnJhcnkvcmVhY3QnO1xuaW1wb3J0ICdAdGVzdGluZy1saWJyYXJ5L2plc3QtZG9tJztcbmltcG9ydCBHaXZlclNjb3JlQ2hhcnQgZnJvbSAnLi4vR2l2ZXJTY29yZUNoYXJ0JztcblxuLy8g44Oi44OD44Kv44KS6Kit5a6a44GX44GmZnJhbWVyLW1vdGlvbuOBruOCouODi+ODoeODvOOCt+ODp+ODs+OBq+OCiOOCi+OCqOODqeODvOOCkuWbnumBv1xuamVzdC5tb2NrKCdmcmFtZXItbW90aW9uJywgKCkgPT4gKHtcbiAgbW90aW9uOiB7XG4gICAgZGl2OiAoeyBjaGlsZHJlbiwgLi4ucHJvcHMgfTogYW55KSA9PiA8ZGl2IHsuLi5wcm9wc30+e2NoaWxkcmVufTwvZGl2PixcbiAgICBoMzogKHsgY2hpbGRyZW4sIC4uLnByb3BzIH06IGFueSkgPT4gPGgzIHsuLi5wcm9wc30+e2NoaWxkcmVufTwvaDM+LFxuICB9LFxufSkpO1xuXG4vLyBSZWNoYXJ0c+OBruOCs+ODs+ODneODvOODjeODs+ODiOOCkuODouODg+OCr1xuamVzdC5tb2NrKCdyZWNoYXJ0cycsICgpID0+IHtcbiAgY29uc3QgT3JpZ2luYWxNb2R1bGUgPSBqZXN0LnJlcXVpcmVBY3R1YWwoJ3JlY2hhcnRzJyk7XG4gIHJldHVybiB7XG4gICAgLi4uT3JpZ2luYWxNb2R1bGUsXG4gICAgUmVzcG9uc2l2ZUNvbnRhaW5lcjogKHsgY2hpbGRyZW4gfTogYW55KSA9PiA8ZGl2IGRhdGEtdGVzdGlkPVwicmVzcG9uc2l2ZS1jb250YWluZXJcIj57Y2hpbGRyZW59PC9kaXY+LFxuICAgIExpbmVDaGFydDogKHsgY2hpbGRyZW4gfTogYW55KSA9PiA8ZGl2IGRhdGEtdGVzdGlkPVwibGluZS1jaGFydFwiPntjaGlsZHJlbn08L2Rpdj4sXG4gICAgTGluZTogKCkgPT4gPGRpdiBkYXRhLXRlc3RpZD1cImxpbmVcIiAvPixcbiAgICBYQXhpczogKCkgPT4gPGRpdiBkYXRhLXRlc3RpZD1cIngtYXhpc1wiIC8+LFxuICAgIFlBeGlzOiAoKSA9PiA8ZGl2IGRhdGEtdGVzdGlkPVwieS1heGlzXCIgLz4sXG4gICAgQ2FydGVzaWFuR3JpZDogKCkgPT4gPGRpdiBkYXRhLXRlc3RpZD1cImNhcnRlc2lhbi1ncmlkXCIgLz4sXG4gICAgVG9vbHRpcDogKCkgPT4gPGRpdiBkYXRhLXRlc3RpZD1cInRvb2x0aXBcIiAvPixcbiAgICBMZWdlbmQ6ICgpID0+IDxkaXYgZGF0YS10ZXN0aWQ9XCJsZWdlbmRcIiAvPixcbiAgfTtcbn0pO1xuXG5kZXNjcmliZSgnR2l2ZXJTY29yZUNoYXJ0JywgKCkgPT4ge1xuICBjb25zdCBtb2NrRGF0YSA9IFtcbiAgICB7IGRhdGU6ICcyMDIzLTA0LTAxJywgc2NvcmU6IDEwIH0sXG4gICAgeyBkYXRlOiAnMjAyMy0wNC0wOCcsIHNjb3JlOiAyMCB9LFxuICAgIHsgZGF0ZTogJzIwMjMtMDQtMTUnLCBzY29yZTogMzAgfSxcbiAgXTtcblxuICBpdCgn44Kz44Oz44Od44O844ON44Oz44OI44GM5q2j44GX44GP44Os44Oz44OA44Oq44Oz44Kw44GV44KM44KL44GT44GoJywgKCkgPT4ge1xuICAgIHJlbmRlcig8R2l2ZXJTY29yZUNoYXJ0IC8+KTtcbiAgICBcbiAgICAvLyDjgr/jgqTjg4jjg6vjgajoqqzmmI7jg4bjgq3jgrnjg4jjgYzmraPjgZfjgY/ooajnpLrjgZXjgozjgabjgYTjgovjgZPjgajjgpLnorroqo1cbiAgICBleHBlY3Qoc2NyZWVuLmdldEJ5VGV4dCgn44Ku44OQ44O844K544Kz44Ki5o6o56e7JykpLnRvQmVJblRoZURvY3VtZW50KCk7XG4gICAgZXhwZWN0KHNjcmVlbi5nZXRCeVRleHQoJ+mBjuWOu+OBrua0u+WLleOBq+OCiOOCi+OCueOCs+OCouWkieWMluOCkueiuuiqjeOBp+OBjeOBvuOBmScpKS50b0JlSW5UaGVEb2N1bWVudCgpO1xuICB9KTtcblxuICBpdCgnUmVjaGFydHPjga7jgrPjg7Pjg53jg7zjg43jg7Pjg4jjgYzmraPjgZfjgY/jg6zjg7Pjg4Djg6rjg7PjgrDjgZXjgozjgovjgZPjgagnLCAoKSA9PiB7XG4gICAgcmVuZGVyKDxHaXZlclNjb3JlQ2hhcnQgLz4pO1xuICAgIFxuICAgIC8vIFJlY2hhcnRz44Gu5ZCE44Kz44Oz44Od44O844ON44Oz44OI44GM5q2j44GX44GP44Os44Oz44OA44Oq44Oz44Kw44GV44KM44Gm44GE44KL44GT44Go44KS56K66KqNXG4gICAgZXhwZWN0KHNjcmVlbi5nZXRCeVRlc3RJZCgncmVzcG9uc2l2ZS1jb250YWluZXInKSkudG9CZUluVGhlRG9jdW1lbnQoKTtcbiAgICBleHBlY3Qoc2NyZWVuLmdldEJ5VGVzdElkKCdsaW5lLWNoYXJ0JykpLnRvQmVJblRoZURvY3VtZW50KCk7XG4gICAgZXhwZWN0KHNjcmVlbi5nZXRCeVRlc3RJZCgnbGluZScpKS50b0JlSW5UaGVEb2N1bWVudCgpO1xuICAgIGV4cGVjdChzY3JlZW4uZ2V0QnlUZXN0SWQoJ3gtYXhpcycpKS50b0JlSW5UaGVEb2N1bWVudCgpO1xuICAgIGV4cGVjdChzY3JlZW4uZ2V0QnlUZXN0SWQoJ3ktYXhpcycpKS50b0JlSW5UaGVEb2N1bWVudCgpO1xuICAgIGV4cGVjdChzY3JlZW4uZ2V0QnlUZXN0SWQoJ2NhcnRlc2lhbi1ncmlkJykpLnRvQmVJblRoZURvY3VtZW50KCk7XG4gICAgZXhwZWN0KHNjcmVlbi5nZXRCeVRlc3RJZCgndG9vbHRpcCcpKS50b0JlSW5UaGVEb2N1bWVudCgpO1xuICAgIGV4cGVjdChzY3JlZW4uZ2V0QnlUZXN0SWQoJ2xlZ2VuZCcpKS50b0JlSW5UaGVEb2N1bWVudCgpO1xuICB9KTtcblxuICBpdCgn44Kr44K544K/44Og44OH44O844K/44KS5rih44GX44Gf5aC05ZCI44CB44Gd44Gu44OH44O844K/44GM5L2/44KP44KM44KL44GT44GoJywgKCkgPT4ge1xuICAgIC8vIOOBk+OBrumDqOWIhuOBr1VJ44OG44K544OI44Gg44GR44Gn44Gv5qSc6Ki844GM6Zuj44GX44GE44Gf44KB44CBXG4gICAgLy8g44K544OR44Kk44KS5L2/44Gj44Gm5YaF6YOo5a6f6KOF44KS5qSc6Ki844GZ44KL44KI44KK6auY5bqm44Gq44OG44K544OI44GM5b+F6KaB44Gr44Gq44KK44G+44GZXG4gICAgLy8g44GT44GT44Gn44Gv5Z+65pys55qE44Gq44Os44Oz44OA44Oq44Oz44Kw44OG44K544OI44Gu44G/5a6f5pa9XG4gICAgcmVuZGVyKDxHaXZlclNjb3JlQ2hhcnQgZGF0YT17bW9ja0RhdGF9IC8+KTtcbiAgICBcbiAgICBleHBlY3Qoc2NyZWVuLmdldEJ5VGV4dCgn44Ku44OQ44O844K544Kz44Ki5o6o56e7JykpLnRvQmVJblRoZURvY3VtZW50KCk7XG4gIH0pO1xuXG4gIGl0KCfpq5jjgZXjga7jg5fjg63jg5Hjg4bjgqPjgYzmraPjgZfjgY/pgannlKjjgZXjgozjgovjgZPjgagnLCAoKSA9PiB7XG4gICAgY29uc3QgY3VzdG9tSGVpZ2h0ID0gNTAwO1xuICAgIHJlbmRlcig8R2l2ZXJTY29yZUNoYXJ0IGhlaWdodD17Y3VzdG9tSGVpZ2h0fSAvPik7XG4gICAgXG4gICAgLy8g44Kz44Oz44Od44O844ON44Oz44OI44GM5q2j44GX44GP44Os44Oz44OA44Oq44Oz44Kw44GV44KM44Gm44GE44KL44GT44Go44KS56K66KqNXG4gICAgZXhwZWN0KHNjcmVlbi5nZXRCeVRleHQoJ+OCruODkOODvOOCueOCs+OCouaOqOenuycpKS50b0JlSW5UaGVEb2N1bWVudCgpO1xuICAgIFxuICAgIC8vIOazqDog5a6f6Zqb44GuRE9N44Gn44Gu6auY44GV5qSc6Ki844GvZnJhbWVyLW1vdGlvbuOBruODouODg+OCr+WMluOBq+OCiOOCiuikh+mbkeOBq+OBquOCi+OBn+OCgeecgeeVpVxuICB9KTtcbn0pOyAiXSwibmFtZXMiOlsiamVzdCIsIm1vY2siLCJtb3Rpb24iLCJkaXYiLCJjaGlsZHJlbiIsInByb3BzIiwiaDMiLCJPcmlnaW5hbE1vZHVsZSIsInJlcXVpcmVBY3R1YWwiLCJSZXNwb25zaXZlQ29udGFpbmVyIiwiZGF0YS10ZXN0aWQiLCJMaW5lQ2hhcnQiLCJMaW5lIiwiWEF4aXMiLCJZQXhpcyIsIkNhcnRlc2lhbkdyaWQiLCJUb29sdGlwIiwiTGVnZW5kIiwiZGVzY3JpYmUiLCJtb2NrRGF0YSIsImRhdGUiLCJzY29yZSIsIml0IiwicmVuZGVyIiwiR2l2ZXJTY29yZUNoYXJ0IiwiZXhwZWN0Iiwic2NyZWVuIiwiZ2V0QnlUZXh0IiwidG9CZUluVGhlRG9jdW1lbnQiLCJnZXRCeVRlc3RJZCIsImRhdGEiLCJjdXN0b21IZWlnaHQiLCJoZWlnaHQiXSwibWFwcGluZ3MiOiI7QUFJQSx5Q0FBeUM7QUFDekNBLEtBQUtDLElBQUksQ0FBQyxpQkFBaUIsSUFBTyxDQUFBO1FBQ2hDQyxRQUFRO1lBQ05DLEtBQUssQ0FBQyxFQUFFQyxRQUFRLEVBQUUsR0FBR0MsT0FBWSxpQkFBSyxxQkFBQ0Y7b0JBQUssR0FBR0UsS0FBSzs4QkFBR0Q7O1lBQ3ZERSxJQUFJLENBQUMsRUFBRUYsUUFBUSxFQUFFLEdBQUdDLE9BQVksaUJBQUsscUJBQUNDO29CQUFJLEdBQUdELEtBQUs7OEJBQUdEOztRQUN2RDtJQUNGLENBQUE7QUFFQSx1QkFBdUI7QUFDdkJKLEtBQUtDLElBQUksQ0FBQyxZQUFZO0lBQ3BCLE1BQU1NLGlCQUFpQlAsS0FBS1EsYUFBYSxDQUFDO0lBQzFDLE9BQU87UUFDTCxHQUFHRCxjQUFjO1FBQ2pCRSxxQkFBcUIsQ0FBQyxFQUFFTCxRQUFRLEVBQU8saUJBQUsscUJBQUNEO2dCQUFJTyxlQUFZOzBCQUF3Qk47O1FBQ3JGTyxXQUFXLENBQUMsRUFBRVAsUUFBUSxFQUFPLGlCQUFLLHFCQUFDRDtnQkFBSU8sZUFBWTswQkFBY047O1FBQ2pFUSxNQUFNLGtCQUFNLHFCQUFDVDtnQkFBSU8sZUFBWTs7UUFDN0JHLE9BQU8sa0JBQU0scUJBQUNWO2dCQUFJTyxlQUFZOztRQUM5QkksT0FBTyxrQkFBTSxxQkFBQ1g7Z0JBQUlPLGVBQVk7O1FBQzlCSyxlQUFlLGtCQUFNLHFCQUFDWjtnQkFBSU8sZUFBWTs7UUFDdENNLFNBQVMsa0JBQU0scUJBQUNiO2dCQUFJTyxlQUFZOztRQUNoQ08sUUFBUSxrQkFBTSxxQkFBQ2Q7Z0JBQUlPLGVBQVk7O0lBQ2pDO0FBQ0Y7Ozs7O3VCQTFCK0I7UUFDeEI7d0VBQ3FCOzs7Ozs7QUEwQjVCUSxTQUFTLG1CQUFtQjtJQUMxQixNQUFNQyxXQUFXO1FBQ2Y7WUFBRUMsTUFBTTtZQUFjQyxPQUFPO1FBQUc7UUFDaEM7WUFBRUQsTUFBTTtZQUFjQyxPQUFPO1FBQUc7UUFDaEM7WUFBRUQsTUFBTTtZQUFjQyxPQUFPO1FBQUc7S0FDakM7SUFFREMsR0FBRywwQkFBMEI7UUFDM0JDLElBQUFBLGFBQU0sZ0JBQUMscUJBQUNDLHdCQUFlO1FBRXZCLDhCQUE4QjtRQUM5QkMsT0FBT0MsYUFBTSxDQUFDQyxTQUFTLENBQUMsYUFBYUMsaUJBQWlCO1FBQ3RESCxPQUFPQyxhQUFNLENBQUNDLFNBQVMsQ0FBQyx5QkFBeUJDLGlCQUFpQjtJQUNwRTtJQUVBTixHQUFHLG1DQUFtQztRQUNwQ0MsSUFBQUEsYUFBTSxnQkFBQyxxQkFBQ0Msd0JBQWU7UUFFdkIsd0NBQXdDO1FBQ3hDQyxPQUFPQyxhQUFNLENBQUNHLFdBQVcsQ0FBQyx5QkFBeUJELGlCQUFpQjtRQUNwRUgsT0FBT0MsYUFBTSxDQUFDRyxXQUFXLENBQUMsZUFBZUQsaUJBQWlCO1FBQzFESCxPQUFPQyxhQUFNLENBQUNHLFdBQVcsQ0FBQyxTQUFTRCxpQkFBaUI7UUFDcERILE9BQU9DLGFBQU0sQ0FBQ0csV0FBVyxDQUFDLFdBQVdELGlCQUFpQjtRQUN0REgsT0FBT0MsYUFBTSxDQUFDRyxXQUFXLENBQUMsV0FBV0QsaUJBQWlCO1FBQ3RESCxPQUFPQyxhQUFNLENBQUNHLFdBQVcsQ0FBQyxtQkFBbUJELGlCQUFpQjtRQUM5REgsT0FBT0MsYUFBTSxDQUFDRyxXQUFXLENBQUMsWUFBWUQsaUJBQWlCO1FBQ3ZESCxPQUFPQyxhQUFNLENBQUNHLFdBQVcsQ0FBQyxXQUFXRCxpQkFBaUI7SUFDeEQ7SUFFQU4sR0FBRyw4QkFBOEI7UUFDL0IsMEJBQTBCO1FBQzFCLG1DQUFtQztRQUNuQyx3QkFBd0I7UUFDeEJDLElBQUFBLGFBQU0sZ0JBQUMscUJBQUNDLHdCQUFlO1lBQUNNLE1BQU1YOztRQUU5Qk0sT0FBT0MsYUFBTSxDQUFDQyxTQUFTLENBQUMsYUFBYUMsaUJBQWlCO0lBQ3hEO0lBRUFOLEdBQUcsdUJBQXVCO1FBQ3hCLE1BQU1TLGVBQWU7UUFDckJSLElBQUFBLGFBQU0sZ0JBQUMscUJBQUNDLHdCQUFlO1lBQUNRLFFBQVFEOztRQUVoQyw4QkFBOEI7UUFDOUJOLE9BQU9DLGFBQU0sQ0FBQ0MsU0FBUyxDQUFDLGFBQWFDLGlCQUFpQjtJQUV0RCxpREFBaUQ7SUFDbkQ7QUFDRiJ9

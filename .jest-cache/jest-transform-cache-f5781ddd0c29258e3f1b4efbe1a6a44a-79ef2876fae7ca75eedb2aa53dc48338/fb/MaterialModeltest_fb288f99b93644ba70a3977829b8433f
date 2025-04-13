@@ -1,0 +1,276 @@
+733ea87f92058d8385b0e85faf0a7805
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+const _MaterialModel = require("../MaterialModel");
+describe("MaterialModel バリデーション", ()=>{
+    describe("validateMaterial", ()=>{
+        it("有効な教材データを検証できる", ()=>{
+            const validMaterial = {
+                id: "material-123",
+                title: "初級英語文法講座",
+                description: "英語の基本文法をわかりやすく解説します",
+                content: "<p>これは教材のコンテンツです</p>",
+                authorId: "user-456",
+                status: _MaterialModel.MaterialStatus.PUBLISHED,
+                category: "grammar",
+                level: "beginner",
+                tags: [
+                    "英文法",
+                    "初級"
+                ],
+                estimatedTime: 30,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                publishedAt: new Date().toISOString(),
+                sections: [
+                    {
+                        id: "section-1",
+                        title: "セクション1",
+                        content: "<p>セクション1のコンテンツ</p>",
+                        order: 1
+                    }
+                ],
+                coverImageUrl: "https://example.com/image.jpg"
+            };
+            const result = (0, _MaterialModel.validateMaterial)(validMaterial);
+            expect(result.isValid).toBe(true);
+            expect(result.errors).toEqual([]);
+        });
+        it("タイトルが空の場合にエラーを検出する", ()=>{
+            const invalidMaterial = {
+                id: "material-123",
+                title: "",
+                description: "英語の基本文法をわかりやすく解説します",
+                content: "<p>これは教材のコンテンツです</p>",
+                authorId: "user-456",
+                status: _MaterialModel.MaterialStatus.PUBLISHED,
+                category: "grammar",
+                level: "beginner",
+                tags: [
+                    "英文法",
+                    "初級"
+                ],
+                estimatedTime: 30,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                publishedAt: new Date().toISOString(),
+                sections: [
+                    {
+                        id: "section-1",
+                        title: "セクション1",
+                        content: "<p>セクション1のコンテンツ</p>",
+                        order: 1
+                    }
+                ],
+                coverImageUrl: "https://example.com/image.jpg"
+            };
+            const result = (0, _MaterialModel.validateMaterial)(invalidMaterial);
+            expect(result.isValid).toBe(false);
+            expect(result.errors).toContain("タイトルは必須です");
+        });
+        it("タイトルが長すぎる場合にエラーを検出する", ()=>{
+            const invalidMaterial = {
+                id: "material-123",
+                title: "非常に長いタイトル".repeat(20),
+                description: "英語の基本文法をわかりやすく解説します",
+                content: "<p>これは教材のコンテンツです</p>",
+                authorId: "user-456",
+                status: _MaterialModel.MaterialStatus.PUBLISHED,
+                category: "grammar",
+                level: "beginner",
+                tags: [
+                    "英文法",
+                    "初級"
+                ],
+                estimatedTime: 30,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                publishedAt: new Date().toISOString(),
+                sections: [
+                    {
+                        id: "section-1",
+                        title: "セクション1",
+                        content: "<p>セクション1のコンテンツ</p>",
+                        order: 1
+                    }
+                ],
+                coverImageUrl: "https://example.com/image.jpg"
+            };
+            const result = (0, _MaterialModel.validateMaterial)(invalidMaterial);
+            expect(result.isValid).toBe(false);
+            expect(result.errors).toContain("タイトルは100文字以内で入力してください");
+        });
+        it("説明文が長すぎる場合にエラーを検出する", ()=>{
+            const invalidMaterial = {
+                id: "material-123",
+                title: "初級英語文法講座",
+                description: "長い説明文".repeat(100),
+                content: "<p>これは教材のコンテンツです</p>",
+                authorId: "user-456",
+                status: _MaterialModel.MaterialStatus.PUBLISHED,
+                category: "grammar",
+                level: "beginner",
+                tags: [
+                    "英文法",
+                    "初級"
+                ],
+                estimatedTime: 30,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                publishedAt: new Date().toISOString(),
+                sections: [
+                    {
+                        id: "section-1",
+                        title: "セクション1",
+                        content: "<p>セクション1のコンテンツ</p>",
+                        order: 1
+                    }
+                ],
+                coverImageUrl: "https://example.com/image.jpg"
+            };
+            const result = (0, _MaterialModel.validateMaterial)(invalidMaterial);
+            expect(result.isValid).toBe(false);
+            expect(result.errors).toContain("説明文は300文字以内で入力してください");
+        });
+        it("コンテンツが空の場合にエラーを検出する", ()=>{
+            const invalidMaterial = {
+                id: "material-123",
+                title: "初級英語文法講座",
+                description: "英語の基本文法をわかりやすく解説します",
+                content: "",
+                authorId: "user-456",
+                status: _MaterialModel.MaterialStatus.PUBLISHED,
+                category: "grammar",
+                level: "beginner",
+                tags: [
+                    "英文法",
+                    "初級"
+                ],
+                estimatedTime: 30,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                publishedAt: new Date().toISOString(),
+                sections: [],
+                coverImageUrl: "https://example.com/image.jpg"
+            };
+            const result = (0, _MaterialModel.validateMaterial)(invalidMaterial);
+            expect(result.isValid).toBe(false);
+            expect(result.errors).toContain("コンテンツは必須です");
+        });
+        it("セクションの順序が重複している場合にエラーを検出する", ()=>{
+            const invalidMaterial = {
+                id: "material-123",
+                title: "初級英語文法講座",
+                description: "英語の基本文法をわかりやすく解説します",
+                content: "<p>これは教材のコンテンツです</p>",
+                authorId: "user-456",
+                status: _MaterialModel.MaterialStatus.PUBLISHED,
+                category: "grammar",
+                level: "beginner",
+                tags: [
+                    "英文法",
+                    "初級"
+                ],
+                estimatedTime: 30,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                publishedAt: new Date().toISOString(),
+                sections: [
+                    {
+                        id: "section-1",
+                        title: "セクション1",
+                        content: "<p>セクション1のコンテンツ</p>",
+                        order: 1
+                    },
+                    {
+                        id: "section-2",
+                        title: "セクション2",
+                        content: "<p>セクション2のコンテンツ</p>",
+                        order: 1 // 重複する順序
+                    }
+                ],
+                coverImageUrl: "https://example.com/image.jpg"
+            };
+            const result = (0, _MaterialModel.validateMaterial)(invalidMaterial);
+            expect(result.isValid).toBe(false);
+            expect(result.errors).toContain("セクションの順序が重複しています");
+        });
+        it("タグが多すぎる場合にエラーを検出する", ()=>{
+            const invalidMaterial = {
+                id: "material-123",
+                title: "初級英語文法講座",
+                description: "英語の基本文法をわかりやすく解説します",
+                content: "<p>これは教材のコンテンツです</p>",
+                authorId: "user-456",
+                status: _MaterialModel.MaterialStatus.PUBLISHED,
+                category: "grammar",
+                level: "beginner",
+                tags: [
+                    "タグ1",
+                    "タグ2",
+                    "タグ3",
+                    "タグ4",
+                    "タグ5",
+                    "タグ6",
+                    "タグ7",
+                    "タグ8",
+                    "タグ9",
+                    "タグ10",
+                    "タグ11"
+                ],
+                estimatedTime: 30,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                publishedAt: new Date().toISOString(),
+                sections: [
+                    {
+                        id: "section-1",
+                        title: "セクション1",
+                        content: "<p>セクション1のコンテンツ</p>",
+                        order: 1
+                    }
+                ],
+                coverImageUrl: "https://example.com/image.jpg"
+            };
+            const result = (0, _MaterialModel.validateMaterial)(invalidMaterial);
+            expect(result.isValid).toBe(false);
+            expect(result.errors).toContain("タグは10個以内で設定してください");
+        });
+        it("公開ステータスなのに公開日がない場合にエラーを検出する", ()=>{
+            const invalidMaterial = {
+                id: "material-123",
+                title: "初級英語文法講座",
+                description: "英語の基本文法をわかりやすく解説します",
+                content: "<p>これは教材のコンテンツです</p>",
+                authorId: "user-456",
+                status: _MaterialModel.MaterialStatus.PUBLISHED,
+                category: "grammar",
+                level: "beginner",
+                tags: [
+                    "英文法",
+                    "初級"
+                ],
+                estimatedTime: 30,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                publishedAt: undefined,
+                sections: [
+                    {
+                        id: "section-1",
+                        title: "セクション1",
+                        content: "<p>セクション1のコンテンツ</p>",
+                        order: 1
+                    }
+                ],
+                coverImageUrl: "https://example.com/image.jpg"
+            };
+            const result = (0, _MaterialModel.validateMaterial)(invalidMaterial);
+            expect(result.isValid).toBe(false);
+            expect(result.errors).toContain("公開ステータスの教材には公開日が必要です");
+        });
+    });
+});
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9zcmMvbW9kZWxzL19fdGVzdHNfXy9NYXRlcmlhbE1vZGVsLnRlc3QudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgdmFsaWRhdGVNYXRlcmlhbCwgTWF0ZXJpYWwsIE1hdGVyaWFsU3RhdHVzIH0gZnJvbSAnLi4vTWF0ZXJpYWxNb2RlbCc7XG5cbmRlc2NyaWJlKCdNYXRlcmlhbE1vZGVsIOODkOODquODh+ODvOOCt+ODp+ODsycsICgpID0+IHtcbiAgZGVzY3JpYmUoJ3ZhbGlkYXRlTWF0ZXJpYWwnLCAoKSA9PiB7XG4gICAgaXQoJ+acieWKueOBquaVmeadkOODh+ODvOOCv+OCkuaknOiovOOBp+OBjeOCiycsICgpID0+IHtcbiAgICAgIGNvbnN0IHZhbGlkTWF0ZXJpYWw6IE1hdGVyaWFsID0ge1xuICAgICAgICBpZDogJ21hdGVyaWFsLTEyMycsXG4gICAgICAgIHRpdGxlOiAn5Yid57Sa6Iux6Kqe5paH5rOV6Kyb5bqnJyxcbiAgICAgICAgZGVzY3JpcHRpb246ICfoi7Hoqp7jga7ln7rmnKzmlofms5XjgpLjgo/jgYvjgorjgoTjgZnjgY/op6PoqqzjgZfjgb7jgZknLFxuICAgICAgICBjb250ZW50OiAnPHA+44GT44KM44Gv5pWZ5p2Q44Gu44Kz44Oz44OG44Oz44OE44Gn44GZPC9wPicsXG4gICAgICAgIGF1dGhvcklkOiAndXNlci00NTYnLFxuICAgICAgICBzdGF0dXM6IE1hdGVyaWFsU3RhdHVzLlBVQkxJU0hFRCxcbiAgICAgICAgY2F0ZWdvcnk6ICdncmFtbWFyJyxcbiAgICAgICAgbGV2ZWw6ICdiZWdpbm5lcicsXG4gICAgICAgIHRhZ3M6IFsn6Iux5paH5rOVJywgJ+WInee0middLFxuICAgICAgICBlc3RpbWF0ZWRUaW1lOiAzMCxcbiAgICAgICAgY3JlYXRlZEF0OiBuZXcgRGF0ZSgpLnRvSVNPU3RyaW5nKCksXG4gICAgICAgIHVwZGF0ZWRBdDogbmV3IERhdGUoKS50b0lTT1N0cmluZygpLFxuICAgICAgICBwdWJsaXNoZWRBdDogbmV3IERhdGUoKS50b0lTT1N0cmluZygpLFxuICAgICAgICBzZWN0aW9uczogW1xuICAgICAgICAgIHtcbiAgICAgICAgICAgIGlkOiAnc2VjdGlvbi0xJyxcbiAgICAgICAgICAgIHRpdGxlOiAn44K744Kv44K344On44OzMScsXG4gICAgICAgICAgICBjb250ZW50OiAnPHA+44K744Kv44K344On44OzMeOBruOCs+ODs+ODhuODs+ODhDwvcD4nLFxuICAgICAgICAgICAgb3JkZXI6IDFcbiAgICAgICAgICB9XG4gICAgICAgIF0sXG4gICAgICAgIGNvdmVySW1hZ2VVcmw6ICdodHRwczovL2V4YW1wbGUuY29tL2ltYWdlLmpwZydcbiAgICAgIH07XG4gICAgICBcbiAgICAgIGNvbnN0IHJlc3VsdCA9IHZhbGlkYXRlTWF0ZXJpYWwodmFsaWRNYXRlcmlhbCk7XG4gICAgICBcbiAgICAgIGV4cGVjdChyZXN1bHQuaXNWYWxpZCkudG9CZSh0cnVlKTtcbiAgICAgIGV4cGVjdChyZXN1bHQuZXJyb3JzKS50b0VxdWFsKFtdKTtcbiAgICB9KTtcbiAgICBcbiAgICBpdCgn44K/44Kk44OI44Or44GM56m644Gu5aC05ZCI44Gr44Ko44Op44O844KS5qSc5Ye644GZ44KLJywgKCkgPT4ge1xuICAgICAgY29uc3QgaW52YWxpZE1hdGVyaWFsOiBNYXRlcmlhbCA9IHtcbiAgICAgICAgaWQ6ICdtYXRlcmlhbC0xMjMnLFxuICAgICAgICB0aXRsZTogJycsXG4gICAgICAgIGRlc2NyaXB0aW9uOiAn6Iux6Kqe44Gu5Z+65pys5paH5rOV44KS44KP44GL44KK44KE44GZ44GP6Kej6Kqs44GX44G+44GZJyxcbiAgICAgICAgY29udGVudDogJzxwPuOBk+OCjOOBr+aVmeadkOOBruOCs+ODs+ODhuODs+ODhOOBp+OBmTwvcD4nLFxuICAgICAgICBhdXRob3JJZDogJ3VzZXItNDU2JyxcbiAgICAgICAgc3RhdHVzOiBNYXRlcmlhbFN0YXR1cy5QVUJMSVNIRUQsXG4gICAgICAgIGNhdGVnb3J5OiAnZ3JhbW1hcicsXG4gICAgICAgIGxldmVsOiAnYmVnaW5uZXInLFxuICAgICAgICB0YWdzOiBbJ+iLseaWh+azlScsICfliJ3ntJonXSxcbiAgICAgICAgZXN0aW1hdGVkVGltZTogMzAsXG4gICAgICAgIGNyZWF0ZWRBdDogbmV3IERhdGUoKS50b0lTT1N0cmluZygpLFxuICAgICAgICB1cGRhdGVkQXQ6IG5ldyBEYXRlKCkudG9JU09TdHJpbmcoKSxcbiAgICAgICAgcHVibGlzaGVkQXQ6IG5ldyBEYXRlKCkudG9JU09TdHJpbmcoKSxcbiAgICAgICAgc2VjdGlvbnM6IFtcbiAgICAgICAgICB7XG4gICAgICAgICAgICBpZDogJ3NlY3Rpb24tMScsXG4gICAgICAgICAgICB0aXRsZTogJ+OCu+OCr+OCt+ODp+ODszEnLFxuICAgICAgICAgICAgY29udGVudDogJzxwPuOCu+OCr+OCt+ODp+ODszHjga7jgrPjg7Pjg4bjg7Pjg4Q8L3A+JyxcbiAgICAgICAgICAgIG9yZGVyOiAxXG4gICAgICAgICAgfVxuICAgICAgICBdLFxuICAgICAgICBjb3ZlckltYWdlVXJsOiAnaHR0cHM6Ly9leGFtcGxlLmNvbS9pbWFnZS5qcGcnXG4gICAgICB9O1xuICAgICAgXG4gICAgICBjb25zdCByZXN1bHQgPSB2YWxpZGF0ZU1hdGVyaWFsKGludmFsaWRNYXRlcmlhbCk7XG4gICAgICBcbiAgICAgIGV4cGVjdChyZXN1bHQuaXNWYWxpZCkudG9CZShmYWxzZSk7XG4gICAgICBleHBlY3QocmVzdWx0LmVycm9ycykudG9Db250YWluKCfjgr/jgqTjg4jjg6vjga/lv4XpoIjjgafjgZknKTtcbiAgICB9KTtcbiAgICBcbiAgICBpdCgn44K/44Kk44OI44Or44GM6ZW344GZ44GO44KL5aC05ZCI44Gr44Ko44Op44O844KS5qSc5Ye644GZ44KLJywgKCkgPT4ge1xuICAgICAgY29uc3QgaW52YWxpZE1hdGVyaWFsOiBNYXRlcmlhbCA9IHtcbiAgICAgICAgaWQ6ICdtYXRlcmlhbC0xMjMnLFxuICAgICAgICB0aXRsZTogJ+mdnuW4uOOBq+mVt+OBhOOCv+OCpOODiOODqycucmVwZWF0KDIwKSwgLy8gMjAw5paH5a2X5Lul5LiKXG4gICAgICAgIGRlc2NyaXB0aW9uOiAn6Iux6Kqe44Gu5Z+65pys5paH5rOV44KS44KP44GL44KK44KE44GZ44GP6Kej6Kqs44GX44G+44GZJyxcbiAgICAgICAgY29udGVudDogJzxwPuOBk+OCjOOBr+aVmeadkOOBruOCs+ODs+ODhuODs+ODhOOBp+OBmTwvcD4nLFxuICAgICAgICBhdXRob3JJZDogJ3VzZXItNDU2JyxcbiAgICAgICAgc3RhdHVzOiBNYXRlcmlhbFN0YXR1cy5QVUJMSVNIRUQsXG4gICAgICAgIGNhdGVnb3J5OiAnZ3JhbW1hcicsXG4gICAgICAgIGxldmVsOiAnYmVnaW5uZXInLFxuICAgICAgICB0YWdzOiBbJ+iLseaWh+azlScsICfliJ3ntJonXSxcbiAgICAgICAgZXN0aW1hdGVkVGltZTogMzAsXG4gICAgICAgIGNyZWF0ZWRBdDogbmV3IERhdGUoKS50b0lTT1N0cmluZygpLFxuICAgICAgICB1cGRhdGVkQXQ6IG5ldyBEYXRlKCkudG9JU09TdHJpbmcoKSxcbiAgICAgICAgcHVibGlzaGVkQXQ6IG5ldyBEYXRlKCkudG9JU09TdHJpbmcoKSxcbiAgICAgICAgc2VjdGlvbnM6IFtcbiAgICAgICAgICB7XG4gICAgICAgICAgICBpZDogJ3NlY3Rpb24tMScsXG4gICAgICAgICAgICB0aXRsZTogJ+OCu+OCr+OCt+ODp+ODszEnLFxuICAgICAgICAgICAgY29udGVudDogJzxwPuOCu+OCr+OCt+ODp+ODszHjga7jgrPjg7Pjg4bjg7Pjg4Q8L3A+JyxcbiAgICAgICAgICAgIG9yZGVyOiAxXG4gICAgICAgICAgfVxuICAgICAgICBdLFxuICAgICAgICBjb3ZlckltYWdlVXJsOiAnaHR0cHM6Ly9leGFtcGxlLmNvbS9pbWFnZS5qcGcnXG4gICAgICB9O1xuICAgICAgXG4gICAgICBjb25zdCByZXN1bHQgPSB2YWxpZGF0ZU1hdGVyaWFsKGludmFsaWRNYXRlcmlhbCk7XG4gICAgICBcbiAgICAgIGV4cGVjdChyZXN1bHQuaXNWYWxpZCkudG9CZShmYWxzZSk7XG4gICAgICBleHBlY3QocmVzdWx0LmVycm9ycykudG9Db250YWluKCfjgr/jgqTjg4jjg6vjga8xMDDmloflrZfku6XlhoXjgaflhaXlipvjgZfjgabjgY/jgaDjgZXjgYQnKTtcbiAgICB9KTtcbiAgICBcbiAgICBpdCgn6Kqs5piO5paH44GM6ZW344GZ44GO44KL5aC05ZCI44Gr44Ko44Op44O844KS5qSc5Ye644GZ44KLJywgKCkgPT4ge1xuICAgICAgY29uc3QgaW52YWxpZE1hdGVyaWFsOiBNYXRlcmlhbCA9IHtcbiAgICAgICAgaWQ6ICdtYXRlcmlhbC0xMjMnLFxuICAgICAgICB0aXRsZTogJ+WInee0muiLseiqnuaWh+azleism+W6pycsXG4gICAgICAgIGRlc2NyaXB0aW9uOiAn6ZW344GE6Kqs5piO5paHJy5yZXBlYXQoMTAwKSwgLy8gNTAw5paH5a2X5Lul5LiKXG4gICAgICAgIGNvbnRlbnQ6ICc8cD7jgZPjgozjga/mlZnmnZDjga7jgrPjg7Pjg4bjg7Pjg4TjgafjgZk8L3A+JyxcbiAgICAgICAgYXV0aG9ySWQ6ICd1c2VyLTQ1NicsXG4gICAgICAgIHN0YXR1czogTWF0ZXJpYWxTdGF0dXMuUFVCTElTSEVELFxuICAgICAgICBjYXRlZ29yeTogJ2dyYW1tYXInLFxuICAgICAgICBsZXZlbDogJ2JlZ2lubmVyJyxcbiAgICAgICAgdGFnczogWyfoi7Hmlofms5UnLCAn5Yid57SaJ10sXG4gICAgICAgIGVzdGltYXRlZFRpbWU6IDMwLFxuICAgICAgICBjcmVhdGVkQXQ6IG5ldyBEYXRlKCkudG9JU09TdHJpbmcoKSxcbiAgICAgICAgdXBkYXRlZEF0OiBuZXcgRGF0ZSgpLnRvSVNPU3RyaW5nKCksXG4gICAgICAgIHB1Ymxpc2hlZEF0OiBuZXcgRGF0ZSgpLnRvSVNPU3RyaW5nKCksXG4gICAgICAgIHNlY3Rpb25zOiBbXG4gICAgICAgICAge1xuICAgICAgICAgICAgaWQ6ICdzZWN0aW9uLTEnLFxuICAgICAgICAgICAgdGl0bGU6ICfjgrvjgq/jgrfjg6fjg7MxJyxcbiAgICAgICAgICAgIGNvbnRlbnQ6ICc8cD7jgrvjgq/jgrfjg6fjg7Mx44Gu44Kz44Oz44OG44Oz44OEPC9wPicsXG4gICAgICAgICAgICBvcmRlcjogMVxuICAgICAgICAgIH1cbiAgICAgICAgXSxcbiAgICAgICAgY292ZXJJbWFnZVVybDogJ2h0dHBzOi8vZXhhbXBsZS5jb20vaW1hZ2UuanBnJ1xuICAgICAgfTtcbiAgICAgIFxuICAgICAgY29uc3QgcmVzdWx0ID0gdmFsaWRhdGVNYXRlcmlhbChpbnZhbGlkTWF0ZXJpYWwpO1xuICAgICAgXG4gICAgICBleHBlY3QocmVzdWx0LmlzVmFsaWQpLnRvQmUoZmFsc2UpO1xuICAgICAgZXhwZWN0KHJlc3VsdC5lcnJvcnMpLnRvQ29udGFpbign6Kqs5piO5paH44GvMzAw5paH5a2X5Lul5YaF44Gn5YWl5Yqb44GX44Gm44GP44Gg44GV44GEJyk7XG4gICAgfSk7XG4gICAgXG4gICAgaXQoJ+OCs+ODs+ODhuODs+ODhOOBjOepuuOBruWgtOWQiOOBq+OCqOODqeODvOOCkuaknOWHuuOBmeOCiycsICgpID0+IHtcbiAgICAgIGNvbnN0IGludmFsaWRNYXRlcmlhbDogTWF0ZXJpYWwgPSB7XG4gICAgICAgIGlkOiAnbWF0ZXJpYWwtMTIzJyxcbiAgICAgICAgdGl0bGU6ICfliJ3ntJroi7Hoqp7mlofms5XorJvluqcnLFxuICAgICAgICBkZXNjcmlwdGlvbjogJ+iLseiqnuOBruWfuuacrOaWh+azleOCkuOCj+OBi+OCiuOChOOBmeOBj+ino+iqrOOBl+OBvuOBmScsXG4gICAgICAgIGNvbnRlbnQ6ICcnLFxuICAgICAgICBhdXRob3JJZDogJ3VzZXItNDU2JyxcbiAgICAgICAgc3RhdHVzOiBNYXRlcmlhbFN0YXR1cy5QVUJMSVNIRUQsXG4gICAgICAgIGNhdGVnb3J5OiAnZ3JhbW1hcicsXG4gICAgICAgIGxldmVsOiAnYmVnaW5uZXInLFxuICAgICAgICB0YWdzOiBbJ+iLseaWh+azlScsICfliJ3ntJonXSxcbiAgICAgICAgZXN0aW1hdGVkVGltZTogMzAsXG4gICAgICAgIGNyZWF0ZWRBdDogbmV3IERhdGUoKS50b0lTT1N0cmluZygpLFxuICAgICAgICB1cGRhdGVkQXQ6IG5ldyBEYXRlKCkudG9JU09TdHJpbmcoKSxcbiAgICAgICAgcHVibGlzaGVkQXQ6IG5ldyBEYXRlKCkudG9JU09TdHJpbmcoKSxcbiAgICAgICAgc2VjdGlvbnM6IFtdLFxuICAgICAgICBjb3ZlckltYWdlVXJsOiAnaHR0cHM6Ly9leGFtcGxlLmNvbS9pbWFnZS5qcGcnXG4gICAgICB9O1xuICAgICAgXG4gICAgICBjb25zdCByZXN1bHQgPSB2YWxpZGF0ZU1hdGVyaWFsKGludmFsaWRNYXRlcmlhbCk7XG4gICAgICBcbiAgICAgIGV4cGVjdChyZXN1bHQuaXNWYWxpZCkudG9CZShmYWxzZSk7XG4gICAgICBleHBlY3QocmVzdWx0LmVycm9ycykudG9Db250YWluKCfjgrPjg7Pjg4bjg7Pjg4Tjga/lv4XpoIjjgafjgZknKTtcbiAgICB9KTtcbiAgICBcbiAgICBpdCgn44K744Kv44K344On44Oz44Gu6aCG5bqP44GM6YeN6KSH44GX44Gm44GE44KL5aC05ZCI44Gr44Ko44Op44O844KS5qSc5Ye644GZ44KLJywgKCkgPT4ge1xuICAgICAgY29uc3QgaW52YWxpZE1hdGVyaWFsOiBNYXRlcmlhbCA9IHtcbiAgICAgICAgaWQ6ICdtYXRlcmlhbC0xMjMnLFxuICAgICAgICB0aXRsZTogJ+WInee0muiLseiqnuaWh+azleism+W6pycsXG4gICAgICAgIGRlc2NyaXB0aW9uOiAn6Iux6Kqe44Gu5Z+65pys5paH5rOV44KS44KP44GL44KK44KE44GZ44GP6Kej6Kqs44GX44G+44GZJyxcbiAgICAgICAgY29udGVudDogJzxwPuOBk+OCjOOBr+aVmeadkOOBruOCs+ODs+ODhuODs+ODhOOBp+OBmTwvcD4nLFxuICAgICAgICBhdXRob3JJZDogJ3VzZXItNDU2JyxcbiAgICAgICAgc3RhdHVzOiBNYXRlcmlhbFN0YXR1cy5QVUJMSVNIRUQsXG4gICAgICAgIGNhdGVnb3J5OiAnZ3JhbW1hcicsXG4gICAgICAgIGxldmVsOiAnYmVnaW5uZXInLFxuICAgICAgICB0YWdzOiBbJ+iLseaWh+azlScsICfliJ3ntJonXSxcbiAgICAgICAgZXN0aW1hdGVkVGltZTogMzAsXG4gICAgICAgIGNyZWF0ZWRBdDogbmV3IERhdGUoKS50b0lTT1N0cmluZygpLFxuICAgICAgICB1cGRhdGVkQXQ6IG5ldyBEYXRlKCkudG9JU09TdHJpbmcoKSxcbiAgICAgICAgcHVibGlzaGVkQXQ6IG5ldyBEYXRlKCkudG9JU09TdHJpbmcoKSxcbiAgICAgICAgc2VjdGlvbnM6IFtcbiAgICAgICAgICB7XG4gICAgICAgICAgICBpZDogJ3NlY3Rpb24tMScsXG4gICAgICAgICAgICB0aXRsZTogJ+OCu+OCr+OCt+ODp+ODszEnLFxuICAgICAgICAgICAgY29udGVudDogJzxwPuOCu+OCr+OCt+ODp+ODszHjga7jgrPjg7Pjg4bjg7Pjg4Q8L3A+JyxcbiAgICAgICAgICAgIG9yZGVyOiAxXG4gICAgICAgICAgfSxcbiAgICAgICAgICB7XG4gICAgICAgICAgICBpZDogJ3NlY3Rpb24tMicsXG4gICAgICAgICAgICB0aXRsZTogJ+OCu+OCr+OCt+ODp+ODszInLFxuICAgICAgICAgICAgY29udGVudDogJzxwPuOCu+OCr+OCt+ODp+ODszLjga7jgrPjg7Pjg4bjg7Pjg4Q8L3A+JyxcbiAgICAgICAgICAgIG9yZGVyOiAxIC8vIOmHjeikh+OBmeOCi+mghuW6j1xuICAgICAgICAgIH1cbiAgICAgICAgXSxcbiAgICAgICAgY292ZXJJbWFnZVVybDogJ2h0dHBzOi8vZXhhbXBsZS5jb20vaW1hZ2UuanBnJ1xuICAgICAgfTtcbiAgICAgIFxuICAgICAgY29uc3QgcmVzdWx0ID0gdmFsaWRhdGVNYXRlcmlhbChpbnZhbGlkTWF0ZXJpYWwpO1xuICAgICAgXG4gICAgICBleHBlY3QocmVzdWx0LmlzVmFsaWQpLnRvQmUoZmFsc2UpO1xuICAgICAgZXhwZWN0KHJlc3VsdC5lcnJvcnMpLnRvQ29udGFpbign44K744Kv44K344On44Oz44Gu6aCG5bqP44GM6YeN6KSH44GX44Gm44GE44G+44GZJyk7XG4gICAgfSk7XG4gICAgXG4gICAgaXQoJ+OCv+OCsOOBjOWkmuOBmeOBjuOCi+WgtOWQiOOBq+OCqOODqeODvOOCkuaknOWHuuOBmeOCiycsICgpID0+IHtcbiAgICAgIGNvbnN0IGludmFsaWRNYXRlcmlhbDogTWF0ZXJpYWwgPSB7XG4gICAgICAgIGlkOiAnbWF0ZXJpYWwtMTIzJyxcbiAgICAgICAgdGl0bGU6ICfliJ3ntJroi7Hoqp7mlofms5XorJvluqcnLFxuICAgICAgICBkZXNjcmlwdGlvbjogJ+iLseiqnuOBruWfuuacrOaWh+azleOCkuOCj+OBi+OCiuOChOOBmeOBj+ino+iqrOOBl+OBvuOBmScsXG4gICAgICAgIGNvbnRlbnQ6ICc8cD7jgZPjgozjga/mlZnmnZDjga7jgrPjg7Pjg4bjg7Pjg4TjgafjgZk8L3A+JyxcbiAgICAgICAgYXV0aG9ySWQ6ICd1c2VyLTQ1NicsXG4gICAgICAgIHN0YXR1czogTWF0ZXJpYWxTdGF0dXMuUFVCTElTSEVELFxuICAgICAgICBjYXRlZ29yeTogJ2dyYW1tYXInLFxuICAgICAgICBsZXZlbDogJ2JlZ2lubmVyJyxcbiAgICAgICAgdGFnczogWyfjgr/jgrAxJywgJ+OCv+OCsDInLCAn44K/44KwMycsICfjgr/jgrA0JywgJ+OCv+OCsDUnLCAn44K/44KwNicsICfjgr/jgrA3JywgJ+OCv+OCsDgnLCAn44K/44KwOScsICfjgr/jgrAxMCcsICfjgr/jgrAxMSddLFxuICAgICAgICBlc3RpbWF0ZWRUaW1lOiAzMCxcbiAgICAgICAgY3JlYXRlZEF0OiBuZXcgRGF0ZSgpLnRvSVNPU3RyaW5nKCksXG4gICAgICAgIHVwZGF0ZWRBdDogbmV3IERhdGUoKS50b0lTT1N0cmluZygpLFxuICAgICAgICBwdWJsaXNoZWRBdDogbmV3IERhdGUoKS50b0lTT1N0cmluZygpLFxuICAgICAgICBzZWN0aW9uczogW1xuICAgICAgICAgIHtcbiAgICAgICAgICAgIGlkOiAnc2VjdGlvbi0xJyxcbiAgICAgICAgICAgIHRpdGxlOiAn44K744Kv44K344On44OzMScsXG4gICAgICAgICAgICBjb250ZW50OiAnPHA+44K744Kv44K344On44OzMeOBruOCs+ODs+ODhuODs+ODhDwvcD4nLFxuICAgICAgICAgICAgb3JkZXI6IDFcbiAgICAgICAgICB9XG4gICAgICAgIF0sXG4gICAgICAgIGNvdmVySW1hZ2VVcmw6ICdodHRwczovL2V4YW1wbGUuY29tL2ltYWdlLmpwZydcbiAgICAgIH07XG4gICAgICBcbiAgICAgIGNvbnN0IHJlc3VsdCA9IHZhbGlkYXRlTWF0ZXJpYWwoaW52YWxpZE1hdGVyaWFsKTtcbiAgICAgIFxuICAgICAgZXhwZWN0KHJlc3VsdC5pc1ZhbGlkKS50b0JlKGZhbHNlKTtcbiAgICAgIGV4cGVjdChyZXN1bHQuZXJyb3JzKS50b0NvbnRhaW4oJ+OCv+OCsOOBrzEw5YCL5Lul5YaF44Gn6Kit5a6a44GX44Gm44GP44Gg44GV44GEJyk7XG4gICAgfSk7XG4gICAgXG4gICAgaXQoJ+WFrOmWi+OCueODhuODvOOCv+OCueOBquOBruOBq+WFrOmWi+aXpeOBjOOBquOBhOWgtOWQiOOBq+OCqOODqeODvOOCkuaknOWHuuOBmeOCiycsICgpID0+IHtcbiAgICAgIGNvbnN0IGludmFsaWRNYXRlcmlhbDogTWF0ZXJpYWwgPSB7XG4gICAgICAgIGlkOiAnbWF0ZXJpYWwtMTIzJyxcbiAgICAgICAgdGl0bGU6ICfliJ3ntJroi7Hoqp7mlofms5XorJvluqcnLFxuICAgICAgICBkZXNjcmlwdGlvbjogJ+iLseiqnuOBruWfuuacrOaWh+azleOCkuOCj+OBi+OCiuOChOOBmeOBj+ino+iqrOOBl+OBvuOBmScsXG4gICAgICAgIGNvbnRlbnQ6ICc8cD7jgZPjgozjga/mlZnmnZDjga7jgrPjg7Pjg4bjg7Pjg4TjgafjgZk8L3A+JyxcbiAgICAgICAgYXV0aG9ySWQ6ICd1c2VyLTQ1NicsXG4gICAgICAgIHN0YXR1czogTWF0ZXJpYWxTdGF0dXMuUFVCTElTSEVELFxuICAgICAgICBjYXRlZ29yeTogJ2dyYW1tYXInLFxuICAgICAgICBsZXZlbDogJ2JlZ2lubmVyJyxcbiAgICAgICAgdGFnczogWyfoi7Hmlofms5UnLCAn5Yid57SaJ10sXG4gICAgICAgIGVzdGltYXRlZFRpbWU6IDMwLFxuICAgICAgICBjcmVhdGVkQXQ6IG5ldyBEYXRlKCkudG9JU09TdHJpbmcoKSxcbiAgICAgICAgdXBkYXRlZEF0OiBuZXcgRGF0ZSgpLnRvSVNPU3RyaW5nKCksXG4gICAgICAgIHB1Ymxpc2hlZEF0OiB1bmRlZmluZWQsIC8vIOWFrOmWi+aXpeOBquOBl1xuICAgICAgICBzZWN0aW9uczogW1xuICAgICAgICAgIHtcbiAgICAgICAgICAgIGlkOiAnc2VjdGlvbi0xJyxcbiAgICAgICAgICAgIHRpdGxlOiAn44K744Kv44K344On44OzMScsXG4gICAgICAgICAgICBjb250ZW50OiAnPHA+44K744Kv44K344On44OzMeOBruOCs+ODs+ODhuODs+ODhDwvcD4nLFxuICAgICAgICAgICAgb3JkZXI6IDFcbiAgICAgICAgICB9XG4gICAgICAgIF0sXG4gICAgICAgIGNvdmVySW1hZ2VVcmw6ICdodHRwczovL2V4YW1wbGUuY29tL2ltYWdlLmpwZydcbiAgICAgIH07XG4gICAgICBcbiAgICAgIGNvbnN0IHJlc3VsdCA9IHZhbGlkYXRlTWF0ZXJpYWwoaW52YWxpZE1hdGVyaWFsKTtcbiAgICAgIFxuICAgICAgZXhwZWN0KHJlc3VsdC5pc1ZhbGlkKS50b0JlKGZhbHNlKTtcbiAgICAgIGV4cGVjdChyZXN1bHQuZXJyb3JzKS50b0NvbnRhaW4oJ+WFrOmWi+OCueODhuODvOOCv+OCueOBruaVmeadkOOBq+OBr+WFrOmWi+aXpeOBjOW/heimgeOBp+OBmScpO1xuICAgIH0pO1xuICB9KTtcbn0pOyAiXSwibmFtZXMiOlsiZGVzY3JpYmUiLCJpdCIsInZhbGlkTWF0ZXJpYWwiLCJpZCIsInRpdGxlIiwiZGVzY3JpcHRpb24iLCJjb250ZW50IiwiYXV0aG9ySWQiLCJzdGF0dXMiLCJNYXRlcmlhbFN0YXR1cyIsIlBVQkxJU0hFRCIsImNhdGVnb3J5IiwibGV2ZWwiLCJ0YWdzIiwiZXN0aW1hdGVkVGltZSIsImNyZWF0ZWRBdCIsIkRhdGUiLCJ0b0lTT1N0cmluZyIsInVwZGF0ZWRBdCIsInB1Ymxpc2hlZEF0Iiwic2VjdGlvbnMiLCJvcmRlciIsImNvdmVySW1hZ2VVcmwiLCJyZXN1bHQiLCJ2YWxpZGF0ZU1hdGVyaWFsIiwiZXhwZWN0IiwiaXNWYWxpZCIsInRvQmUiLCJlcnJvcnMiLCJ0b0VxdWFsIiwiaW52YWxpZE1hdGVyaWFsIiwidG9Db250YWluIiwicmVwZWF0IiwidW5kZWZpbmVkIl0sIm1hcHBpbmdzIjoiOzs7OytCQUEyRDtBQUUzREEsU0FBUyx5QkFBeUI7SUFDaENBLFNBQVMsb0JBQW9CO1FBQzNCQyxHQUFHLGtCQUFrQjtZQUNuQixNQUFNQyxnQkFBMEI7Z0JBQzlCQyxJQUFJO2dCQUNKQyxPQUFPO2dCQUNQQyxhQUFhO2dCQUNiQyxTQUFTO2dCQUNUQyxVQUFVO2dCQUNWQyxRQUFRQyw2QkFBYyxDQUFDQyxTQUFTO2dCQUNoQ0MsVUFBVTtnQkFDVkMsT0FBTztnQkFDUEMsTUFBTTtvQkFBQztvQkFBTztpQkFBSztnQkFDbkJDLGVBQWU7Z0JBQ2ZDLFdBQVcsSUFBSUMsT0FBT0MsV0FBVztnQkFDakNDLFdBQVcsSUFBSUYsT0FBT0MsV0FBVztnQkFDakNFLGFBQWEsSUFBSUgsT0FBT0MsV0FBVztnQkFDbkNHLFVBQVU7b0JBQ1I7d0JBQ0VqQixJQUFJO3dCQUNKQyxPQUFPO3dCQUNQRSxTQUFTO3dCQUNUZSxPQUFPO29CQUNUO2lCQUNEO2dCQUNEQyxlQUFlO1lBQ2pCO1lBRUEsTUFBTUMsU0FBU0MsSUFBQUEsK0JBQWdCLEVBQUN0QjtZQUVoQ3VCLE9BQU9GLE9BQU9HLE9BQU8sRUFBRUMsSUFBSSxDQUFDO1lBQzVCRixPQUFPRixPQUFPSyxNQUFNLEVBQUVDLE9BQU8sQ0FBQyxFQUFFO1FBQ2xDO1FBRUE1QixHQUFHLHNCQUFzQjtZQUN2QixNQUFNNkIsa0JBQTRCO2dCQUNoQzNCLElBQUk7Z0JBQ0pDLE9BQU87Z0JBQ1BDLGFBQWE7Z0JBQ2JDLFNBQVM7Z0JBQ1RDLFVBQVU7Z0JBQ1ZDLFFBQVFDLDZCQUFjLENBQUNDLFNBQVM7Z0JBQ2hDQyxVQUFVO2dCQUNWQyxPQUFPO2dCQUNQQyxNQUFNO29CQUFDO29CQUFPO2lCQUFLO2dCQUNuQkMsZUFBZTtnQkFDZkMsV0FBVyxJQUFJQyxPQUFPQyxXQUFXO2dCQUNqQ0MsV0FBVyxJQUFJRixPQUFPQyxXQUFXO2dCQUNqQ0UsYUFBYSxJQUFJSCxPQUFPQyxXQUFXO2dCQUNuQ0csVUFBVTtvQkFDUjt3QkFDRWpCLElBQUk7d0JBQ0pDLE9BQU87d0JBQ1BFLFNBQVM7d0JBQ1RlLE9BQU87b0JBQ1Q7aUJBQ0Q7Z0JBQ0RDLGVBQWU7WUFDakI7WUFFQSxNQUFNQyxTQUFTQyxJQUFBQSwrQkFBZ0IsRUFBQ007WUFFaENMLE9BQU9GLE9BQU9HLE9BQU8sRUFBRUMsSUFBSSxDQUFDO1lBQzVCRixPQUFPRixPQUFPSyxNQUFNLEVBQUVHLFNBQVMsQ0FBQztRQUNsQztRQUVBOUIsR0FBRyx3QkFBd0I7WUFDekIsTUFBTTZCLGtCQUE0QjtnQkFDaEMzQixJQUFJO2dCQUNKQyxPQUFPLFlBQVk0QixNQUFNLENBQUM7Z0JBQzFCM0IsYUFBYTtnQkFDYkMsU0FBUztnQkFDVEMsVUFBVTtnQkFDVkMsUUFBUUMsNkJBQWMsQ0FBQ0MsU0FBUztnQkFDaENDLFVBQVU7Z0JBQ1ZDLE9BQU87Z0JBQ1BDLE1BQU07b0JBQUM7b0JBQU87aUJBQUs7Z0JBQ25CQyxlQUFlO2dCQUNmQyxXQUFXLElBQUlDLE9BQU9DLFdBQVc7Z0JBQ2pDQyxXQUFXLElBQUlGLE9BQU9DLFdBQVc7Z0JBQ2pDRSxhQUFhLElBQUlILE9BQU9DLFdBQVc7Z0JBQ25DRyxVQUFVO29CQUNSO3dCQUNFakIsSUFBSTt3QkFDSkMsT0FBTzt3QkFDUEUsU0FBUzt3QkFDVGUsT0FBTztvQkFDVDtpQkFDRDtnQkFDREMsZUFBZTtZQUNqQjtZQUVBLE1BQU1DLFNBQVNDLElBQUFBLCtCQUFnQixFQUFDTTtZQUVoQ0wsT0FBT0YsT0FBT0csT0FBTyxFQUFFQyxJQUFJLENBQUM7WUFDNUJGLE9BQU9GLE9BQU9LLE1BQU0sRUFBRUcsU0FBUyxDQUFDO1FBQ2xDO1FBRUE5QixHQUFHLHVCQUF1QjtZQUN4QixNQUFNNkIsa0JBQTRCO2dCQUNoQzNCLElBQUk7Z0JBQ0pDLE9BQU87Z0JBQ1BDLGFBQWEsUUFBUTJCLE1BQU0sQ0FBQztnQkFDNUIxQixTQUFTO2dCQUNUQyxVQUFVO2dCQUNWQyxRQUFRQyw2QkFBYyxDQUFDQyxTQUFTO2dCQUNoQ0MsVUFBVTtnQkFDVkMsT0FBTztnQkFDUEMsTUFBTTtvQkFBQztvQkFBTztpQkFBSztnQkFDbkJDLGVBQWU7Z0JBQ2ZDLFdBQVcsSUFBSUMsT0FBT0MsV0FBVztnQkFDakNDLFdBQVcsSUFBSUYsT0FBT0MsV0FBVztnQkFDakNFLGFBQWEsSUFBSUgsT0FBT0MsV0FBVztnQkFDbkNHLFVBQVU7b0JBQ1I7d0JBQ0VqQixJQUFJO3dCQUNKQyxPQUFPO3dCQUNQRSxTQUFTO3dCQUNUZSxPQUFPO29CQUNUO2lCQUNEO2dCQUNEQyxlQUFlO1lBQ2pCO1lBRUEsTUFBTUMsU0FBU0MsSUFBQUEsK0JBQWdCLEVBQUNNO1lBRWhDTCxPQUFPRixPQUFPRyxPQUFPLEVBQUVDLElBQUksQ0FBQztZQUM1QkYsT0FBT0YsT0FBT0ssTUFBTSxFQUFFRyxTQUFTLENBQUM7UUFDbEM7UUFFQTlCLEdBQUcsdUJBQXVCO1lBQ3hCLE1BQU02QixrQkFBNEI7Z0JBQ2hDM0IsSUFBSTtnQkFDSkMsT0FBTztnQkFDUEMsYUFBYTtnQkFDYkMsU0FBUztnQkFDVEMsVUFBVTtnQkFDVkMsUUFBUUMsNkJBQWMsQ0FBQ0MsU0FBUztnQkFDaENDLFVBQVU7Z0JBQ1ZDLE9BQU87Z0JBQ1BDLE1BQU07b0JBQUM7b0JBQU87aUJBQUs7Z0JBQ25CQyxlQUFlO2dCQUNmQyxXQUFXLElBQUlDLE9BQU9DLFdBQVc7Z0JBQ2pDQyxXQUFXLElBQUlGLE9BQU9DLFdBQVc7Z0JBQ2pDRSxhQUFhLElBQUlILE9BQU9DLFdBQVc7Z0JBQ25DRyxVQUFVLEVBQUU7Z0JBQ1pFLGVBQWU7WUFDakI7WUFFQSxNQUFNQyxTQUFTQyxJQUFBQSwrQkFBZ0IsRUFBQ007WUFFaENMLE9BQU9GLE9BQU9HLE9BQU8sRUFBRUMsSUFBSSxDQUFDO1lBQzVCRixPQUFPRixPQUFPSyxNQUFNLEVBQUVHLFNBQVMsQ0FBQztRQUNsQztRQUVBOUIsR0FBRyw4QkFBOEI7WUFDL0IsTUFBTTZCLGtCQUE0QjtnQkFDaEMzQixJQUFJO2dCQUNKQyxPQUFPO2dCQUNQQyxhQUFhO2dCQUNiQyxTQUFTO2dCQUNUQyxVQUFVO2dCQUNWQyxRQUFRQyw2QkFBYyxDQUFDQyxTQUFTO2dCQUNoQ0MsVUFBVTtnQkFDVkMsT0FBTztnQkFDUEMsTUFBTTtvQkFBQztvQkFBTztpQkFBSztnQkFDbkJDLGVBQWU7Z0JBQ2ZDLFdBQVcsSUFBSUMsT0FBT0MsV0FBVztnQkFDakNDLFdBQVcsSUFBSUYsT0FBT0MsV0FBVztnQkFDakNFLGFBQWEsSUFBSUgsT0FBT0MsV0FBVztnQkFDbkNHLFVBQVU7b0JBQ1I7d0JBQ0VqQixJQUFJO3dCQUNKQyxPQUFPO3dCQUNQRSxTQUFTO3dCQUNUZSxPQUFPO29CQUNUO29CQUNBO3dCQUNFbEIsSUFBSTt3QkFDSkMsT0FBTzt3QkFDUEUsU0FBUzt3QkFDVGUsT0FBTyxFQUFFLFNBQVM7b0JBQ3BCO2lCQUNEO2dCQUNEQyxlQUFlO1lBQ2pCO1lBRUEsTUFBTUMsU0FBU0MsSUFBQUEsK0JBQWdCLEVBQUNNO1lBRWhDTCxPQUFPRixPQUFPRyxPQUFPLEVBQUVDLElBQUksQ0FBQztZQUM1QkYsT0FBT0YsT0FBT0ssTUFBTSxFQUFFRyxTQUFTLENBQUM7UUFDbEM7UUFFQTlCLEdBQUcsc0JBQXNCO1lBQ3ZCLE1BQU02QixrQkFBNEI7Z0JBQ2hDM0IsSUFBSTtnQkFDSkMsT0FBTztnQkFDUEMsYUFBYTtnQkFDYkMsU0FBUztnQkFDVEMsVUFBVTtnQkFDVkMsUUFBUUMsNkJBQWMsQ0FBQ0MsU0FBUztnQkFDaENDLFVBQVU7Z0JBQ1ZDLE9BQU87Z0JBQ1BDLE1BQU07b0JBQUM7b0JBQU87b0JBQU87b0JBQU87b0JBQU87b0JBQU87b0JBQU87b0JBQU87b0JBQU87b0JBQU87b0JBQVE7aUJBQU87Z0JBQ3JGQyxlQUFlO2dCQUNmQyxXQUFXLElBQUlDLE9BQU9DLFdBQVc7Z0JBQ2pDQyxXQUFXLElBQUlGLE9BQU9DLFdBQVc7Z0JBQ2pDRSxhQUFhLElBQUlILE9BQU9DLFdBQVc7Z0JBQ25DRyxVQUFVO29CQUNSO3dCQUNFakIsSUFBSTt3QkFDSkMsT0FBTzt3QkFDUEUsU0FBUzt3QkFDVGUsT0FBTztvQkFDVDtpQkFDRDtnQkFDREMsZUFBZTtZQUNqQjtZQUVBLE1BQU1DLFNBQVNDLElBQUFBLCtCQUFnQixFQUFDTTtZQUVoQ0wsT0FBT0YsT0FBT0csT0FBTyxFQUFFQyxJQUFJLENBQUM7WUFDNUJGLE9BQU9GLE9BQU9LLE1BQU0sRUFBRUcsU0FBUyxDQUFDO1FBQ2xDO1FBRUE5QixHQUFHLCtCQUErQjtZQUNoQyxNQUFNNkIsa0JBQTRCO2dCQUNoQzNCLElBQUk7Z0JBQ0pDLE9BQU87Z0JBQ1BDLGFBQWE7Z0JBQ2JDLFNBQVM7Z0JBQ1RDLFVBQVU7Z0JBQ1ZDLFFBQVFDLDZCQUFjLENBQUNDLFNBQVM7Z0JBQ2hDQyxVQUFVO2dCQUNWQyxPQUFPO2dCQUNQQyxNQUFNO29CQUFDO29CQUFPO2lCQUFLO2dCQUNuQkMsZUFBZTtnQkFDZkMsV0FBVyxJQUFJQyxPQUFPQyxXQUFXO2dCQUNqQ0MsV0FBVyxJQUFJRixPQUFPQyxXQUFXO2dCQUNqQ0UsYUFBYWM7Z0JBQ2JiLFVBQVU7b0JBQ1I7d0JBQ0VqQixJQUFJO3dCQUNKQyxPQUFPO3dCQUNQRSxTQUFTO3dCQUNUZSxPQUFPO29CQUNUO2lCQUNEO2dCQUNEQyxlQUFlO1lBQ2pCO1lBRUEsTUFBTUMsU0FBU0MsSUFBQUEsK0JBQWdCLEVBQUNNO1lBRWhDTCxPQUFPRixPQUFPRyxPQUFPLEVBQUVDLElBQUksQ0FBQztZQUM1QkYsT0FBT0YsT0FBT0ssTUFBTSxFQUFFRyxTQUFTLENBQUM7UUFDbEM7SUFDRjtBQUNGIn0=

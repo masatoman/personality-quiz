@@ -1,0 +1,110 @@
+cd835da536f17c3aec43d6bd04749541
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "getPersonalityDescription", {
+    enumerable: true,
+    get: function() {
+        return getPersonalityDescription;
+    }
+});
+const getPersonalityDescription = (type)=>{
+    switch(type){
+        case "giver":
+            return {
+                title: "共感型学習者",
+                description: "他者との関わりを通じて学ぶことに喜びを感じるタイプです。教えることで自身の理解も深まり、社会的な学習環境で最も力を発揮します。",
+                strengths: [
+                    "教えることで記憶の定着率が高い（プロテジェ効果）",
+                    "学習コミュニティでの信頼関係を築きやすい",
+                    "多様な視点から物事を理解できる",
+                    "説明力が自然と身につく"
+                ],
+                weaknesses: [
+                    "完璧主義になりやすい（他者の期待に応えようとする）",
+                    "自身の学習時間が確保しづらい",
+                    "他者の理解度に過度に影響される"
+                ],
+                learningAdvice: {
+                    title: "あなたに合わせた効果的な学習方法",
+                    tips: [
+                        "教えることを通じて学ぶ（ラーニング・バイ・ティーチング）",
+                        "学習内容を音声や動画で説明して記録する",
+                        "定期的な振り返りセッションを設ける",
+                        "教えることと学ぶことの時間配分を意識する（7:3の法則）"
+                    ],
+                    tools: [
+                        "Anki - スペース型復習で効率的な暗記",
+                        "Zoom - オンライン学習グループの運営",
+                        "Notion - 学習内容の体系的な整理",
+                        "Discord - 学習コミュニティの運営"
+                    ]
+                }
+            };
+        case "taker":
+            return {
+                title: "没入型学習者",
+                description: "深い集中状態で学ぶことを好むタイプです。自己ペースでの学習を重視し、フロー状態に入りやすい特徴があります。",
+                strengths: [
+                    "集中力が高く、フロー状態に入りやすい",
+                    "自己主導型学習が得意",
+                    "効率的な学習方法を見つけられる",
+                    "目標達成への強い意志"
+                ],
+                weaknesses: [
+                    "他者からのフィードバックを受けにくい",
+                    "視野が狭くなりやすい",
+                    "学習の多様性が不足しがち"
+                ],
+                learningAdvice: {
+                    title: "あなたの強みを活かす学習方法",
+                    tips: [
+                        "ポモドーロ・テクニックで集中と休憩のリズムを作る",
+                        "没入できる環境を意図的に作る（BGM、照明、温度など）",
+                        "定期的な目標設定と振り返り",
+                        "週1回は他者との学習機会を設ける"
+                    ],
+                    tools: [
+                        "Forest - 集中力を高めるタイマーアプリ",
+                        "Brain.fm - 集中のための特殊な音楽",
+                        "Todoist - 学習タスクの管理",
+                        "RescueTime - 学習時間の可視化"
+                    ]
+                }
+            };
+        case "matcher":
+            return {
+                title: "適応型学習者",
+                description: "状況に応じて最適な学習方法を選択できるタイプです。個人学習とグループ学習を柔軟に使い分け、バランスの取れた成長を実現できます。",
+                strengths: [
+                    "様々な学習スタイルに適応できる",
+                    "失敗を恐れず新しい方法を試せる",
+                    "バランスの取れた学習が可能",
+                    "他者の良い点を取り入れられる"
+                ],
+                weaknesses: [
+                    "一つの方法を極めにくい",
+                    "優先順位の設定が難しい",
+                    "方法選択に時間がかかる"
+                ],
+                learningAdvice: {
+                    title: "あなたの適応力を活かす学習方法",
+                    tips: [
+                        "週単位で異なる学習方法を試す（実験的アプローチ）",
+                        "学習ログを付けて効果を検証する",
+                        "他者の学習方法を積極的に取り入れる",
+                        "定期的な学習方法の見直しと最適化"
+                    ],
+                    tools: [
+                        "Evernote - 学習記録と振り返り",
+                        "Duolingo - ゲーム感覚で学習",
+                        "LingoDeer - 体系的な文法学習",
+                        "HelloTalk - 言語交換アプリ"
+                    ]
+                }
+            };
+    }
+};
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9zcmMvdXRpbHMvcGVyc29uYWxpdHkudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgUGVyc29uYWxpdHlUeXBlLCBQZXJzb25hbGl0eURlc2NyaXB0aW9uIH0gZnJvbSAnQC90eXBlcy9xdWl6JztcblxuZXhwb3J0IGNvbnN0IGdldFBlcnNvbmFsaXR5RGVzY3JpcHRpb24gPSAodHlwZTogUGVyc29uYWxpdHlUeXBlKTogUGVyc29uYWxpdHlEZXNjcmlwdGlvbiA9PiB7XG4gIHN3aXRjaCAodHlwZSkge1xuICAgIGNhc2UgJ2dpdmVyJzpcbiAgICAgIHJldHVybiB7XG4gICAgICAgIHRpdGxlOiAn5YWx5oSf5Z6L5a2m57+S6ICFJyxcbiAgICAgICAgZGVzY3JpcHRpb246ICfku5bogIXjgajjga7plqLjgo/jgorjgpLpgJrjgZjjgablrabjgbbjgZPjgajjgavllpzjgbPjgpLmhJ/jgZjjgovjgr/jgqTjg5fjgafjgZnjgILmlZnjgYjjgovjgZPjgajjgafoh6rouqvjga7nkIbop6PjgoLmt7Hjgb7jgorjgIHnpL7kvJrnmoTjgarlrabnv5LnkrDlooPjgafmnIDjgoLlipvjgpLnmbrmj67jgZfjgb7jgZnjgIInLFxuICAgICAgICBzdHJlbmd0aHM6IFtcbiAgICAgICAgICAn5pWZ44GI44KL44GT44Go44Gn6KiY5oa244Gu5a6a552A546H44GM6auY44GE77yI44OX44Ot44OG44K444Kn5Yq55p6c77yJJyxcbiAgICAgICAgICAn5a2m57+S44Kz44Of44Ol44OL44OG44Kj44Gn44Gu5L+h6aC86Zai5L+C44KS56+J44GN44KE44GZ44GEJyxcbiAgICAgICAgICAn5aSa5qeY44Gq6KaW54K544GL44KJ54mp5LqL44KS55CG6Kej44Gn44GN44KLJyxcbiAgICAgICAgICAn6Kqs5piO5Yqb44GM6Ieq54S244Go6Lqr44Gr44Gk44GPJ1xuICAgICAgICBdLFxuICAgICAgICB3ZWFrbmVzc2VzOiBbXG4gICAgICAgICAgJ+WujOeSp+S4u+e+qeOBq+OBquOCiuOChOOBmeOBhO+8iOS7luiAheOBruacn+W+heOBq+W/nOOBiOOCiOOBhuOBqOOBmeOCi++8iScsXG4gICAgICAgICAgJ+iHqui6q+OBruWtpue/kuaZgumWk+OBjOeiuuS/neOBl+OBpeOCieOBhCcsXG4gICAgICAgICAgJ+S7luiAheOBrueQhuino+W6puOBq+mBjuW6puOBq+W9semfv+OBleOCjOOCiydcbiAgICAgICAgXSxcbiAgICAgICAgbGVhcm5pbmdBZHZpY2U6IHtcbiAgICAgICAgICB0aXRsZTogJ+OBguOBquOBn+OBq+WQiOOCj+OBm+OBn+WKueaenOeahOOBquWtpue/kuaWueazlScsXG4gICAgICAgICAgdGlwczogW1xuICAgICAgICAgICAgJ+aVmeOBiOOCi+OBk+OBqOOCkumAmuOBmOOBpuWtpuOBtu+8iOODqeODvOODi+ODs+OCsOODu+ODkOOCpOODu+ODhuOCo+ODvOODgeODs+OCsO+8iScsXG4gICAgICAgICAgICAn5a2m57+S5YaF5a6544KS6Z+z5aOw44KE5YuV55S744Gn6Kqs5piO44GX44Gm6KiY6Yyy44GZ44KLJyxcbiAgICAgICAgICAgICflrprmnJ/nmoTjgarmjK/jgorov5Tjgorjgrvjg4Pjgrfjg6fjg7PjgpLoqK3jgZHjgosnLFxuICAgICAgICAgICAgJ+aVmeOBiOOCi+OBk+OBqOOBqOWtpuOBtuOBk+OBqOOBruaZgumWk+mFjeWIhuOCkuaEj+itmOOBmeOCi++8iDc6M+OBruazleWJh++8iSdcbiAgICAgICAgICBdLFxuICAgICAgICAgIHRvb2xzOiBbXG4gICAgICAgICAgICAnQW5raSAtIOOCueODmuODvOOCueWei+W+qee/kuOBp+WKueeOh+eahOOBquaal+iomCcsXG4gICAgICAgICAgICAnWm9vbSAtIOOCquODs+ODqeOCpOODs+Wtpue/kuOCsOODq+ODvOODl+OBrumBi+WWticsXG4gICAgICAgICAgICAnTm90aW9uIC0g5a2m57+S5YaF5a6544Gu5L2T57O755qE44Gq5pW055CGJyxcbiAgICAgICAgICAgICdEaXNjb3JkIC0g5a2m57+S44Kz44Of44Ol44OL44OG44Kj44Gu6YGL5Za2J1xuICAgICAgICAgIF1cbiAgICAgICAgfVxuICAgICAgfTtcbiAgICBjYXNlICd0YWtlcic6XG4gICAgICByZXR1cm4ge1xuICAgICAgICB0aXRsZTogJ+ayoeWFpeWei+Wtpue/kuiAhScsXG4gICAgICAgIGRlc2NyaXB0aW9uOiAn5rex44GE6ZuG5Lit54q25oWL44Gn5a2m44G244GT44Go44KS5aW944KA44K/44Kk44OX44Gn44GZ44CC6Ieq5bex44Oa44O844K544Gn44Gu5a2m57+S44KS6YeN6KaW44GX44CB44OV44Ot44O854q25oWL44Gr5YWl44KK44KE44GZ44GE54m55b6044GM44GC44KK44G+44GZ44CCJyxcbiAgICAgICAgc3RyZW5ndGhzOiBbXG4gICAgICAgICAgJ+mbhuS4reWKm+OBjOmrmOOBj+OAgeODleODreODvOeKtuaFi+OBq+WFpeOCiuOChOOBmeOBhCcsXG4gICAgICAgICAgJ+iHquW3seS4u+WwjuWei+Wtpue/kuOBjOW+l+aEjycsXG4gICAgICAgICAgJ+WKueeOh+eahOOBquWtpue/kuaWueazleOCkuimi+OBpOOBkeOCieOCjOOCiycsXG4gICAgICAgICAgJ+ebruaomemBlOaIkOOBuOOBruW8t+OBhOaEj+W/lydcbiAgICAgICAgXSxcbiAgICAgICAgd2Vha25lc3NlczogW1xuICAgICAgICAgICfku5bogIXjgYvjgonjga7jg5XjgqPjg7zjg4njg5Djg4Pjgq/jgpLlj5fjgZHjgavjgY/jgYQnLFxuICAgICAgICAgICfoppbph47jgYzni63jgY/jgarjgorjgoTjgZnjgYQnLFxuICAgICAgICAgICflrabnv5Ljga7lpJrmp5jmgKfjgYzkuI3otrPjgZfjgYzjgaEnXG4gICAgICAgIF0sXG4gICAgICAgIGxlYXJuaW5nQWR2aWNlOiB7XG4gICAgICAgICAgdGl0bGU6ICfjgYLjgarjgZ/jga7lvLfjgb/jgpLmtLvjgYvjgZnlrabnv5Lmlrnms5UnLFxuICAgICAgICAgIHRpcHM6IFtcbiAgICAgICAgICAgICfjg53jg6Ljg4njg7zjg63jg7vjg4bjgq/jg4vjg4Pjgq/jgafpm4bkuK3jgajkvJHmhqnjga7jg6rjgrrjg6DjgpLkvZzjgosnLFxuICAgICAgICAgICAgJ+ayoeWFpeOBp+OBjeOCi+eSsOWig+OCkuaEj+Wbs+eahOOBq+S9nOOCi++8iEJHTeOAgeeFp+aYjuOAgea4qeW6puOBquOBqe+8iScsXG4gICAgICAgICAgICAn5a6a5pyf55qE44Gq55uu5qiZ6Kit5a6a44Go5oyv44KK6L+U44KKJyxcbiAgICAgICAgICAgICfpgLEx5Zue44Gv5LuW6ICF44Go44Gu5a2m57+S5qmf5Lya44KS6Kit44GR44KLJ1xuICAgICAgICAgIF0sXG4gICAgICAgICAgdG9vbHM6IFtcbiAgICAgICAgICAgICdGb3Jlc3QgLSDpm4bkuK3lipvjgpLpq5jjgoHjgovjgr/jgqTjg57jg7zjgqLjg5fjg6onLFxuICAgICAgICAgICAgJ0JyYWluLmZtIC0g6ZuG5Lit44Gu44Gf44KB44Gu54m55q6K44Gq6Z+z5qW9JyxcbiAgICAgICAgICAgICdUb2RvaXN0IC0g5a2m57+S44K/44K544Kv44Gu566h55CGJyxcbiAgICAgICAgICAgICdSZXNjdWVUaW1lIC0g5a2m57+S5pmC6ZaT44Gu5Y+v6KaW5YyWJ1xuICAgICAgICAgIF1cbiAgICAgICAgfVxuICAgICAgfTtcbiAgICBjYXNlICdtYXRjaGVyJzpcbiAgICAgIHJldHVybiB7XG4gICAgICAgIHRpdGxlOiAn6YGp5b+c5Z6L5a2m57+S6ICFJyxcbiAgICAgICAgZGVzY3JpcHRpb246ICfnirbms4Hjgavlv5zjgZjjgabmnIDpganjgarlrabnv5Lmlrnms5XjgpLpgbjmip7jgafjgY3jgovjgr/jgqTjg5fjgafjgZnjgILlgIvkurrlrabnv5LjgajjgrDjg6vjg7zjg5flrabnv5LjgpLmn5Tou5/jgavkvb/jgYTliIbjgZHjgIHjg5Djg6njg7Pjgrnjga7lj5bjgozjgZ/miJDplbfjgpLlrp/nj77jgafjgY3jgb7jgZnjgIInLFxuICAgICAgICBzdHJlbmd0aHM6IFtcbiAgICAgICAgICAn5qeY44CF44Gq5a2m57+S44K544K/44Kk44Or44Gr6YGp5b+c44Gn44GN44KLJyxcbiAgICAgICAgICAn5aSx5pWX44KS5oGQ44KM44Ga5paw44GX44GE5pa55rOV44KS6Kmm44Gb44KLJyxcbiAgICAgICAgICAn44OQ44Op44Oz44K544Gu5Y+W44KM44Gf5a2m57+S44GM5Y+v6IO9JyxcbiAgICAgICAgICAn5LuW6ICF44Gu6Imv44GE54K544KS5Y+W44KK5YWl44KM44KJ44KM44KLJ1xuICAgICAgICBdLFxuICAgICAgICB3ZWFrbmVzc2VzOiBbXG4gICAgICAgICAgJ+S4gOOBpOOBruaWueazleOCkualteOCgeOBq+OBj+OBhCcsXG4gICAgICAgICAgJ+WEquWFiOmghuS9jeOBruioreWumuOBjOmbo+OBl+OBhCcsXG4gICAgICAgICAgJ+aWueazlemBuOaKnuOBq+aZgumWk+OBjOOBi+OBi+OCiydcbiAgICAgICAgXSxcbiAgICAgICAgbGVhcm5pbmdBZHZpY2U6IHtcbiAgICAgICAgICB0aXRsZTogJ+OBguOBquOBn+OBrumBqeW/nOWKm+OCkua0u+OBi+OBmeWtpue/kuaWueazlScsXG4gICAgICAgICAgdGlwczogW1xuICAgICAgICAgICAgJ+mAseWNmOS9jeOBp+eVsOOBquOCi+Wtpue/kuaWueazleOCkuippuOBme+8iOWun+mok+eahOOCouODl+ODreODvOODge+8iScsXG4gICAgICAgICAgICAn5a2m57+S44Ot44Kw44KS5LuY44GR44Gm5Yq55p6c44KS5qSc6Ki844GZ44KLJyxcbiAgICAgICAgICAgICfku5bogIXjga7lrabnv5Lmlrnms5XjgpLnqY3mpbXnmoTjgavlj5bjgorlhaXjgozjgosnLFxuICAgICAgICAgICAgJ+Wumuacn+eahOOBquWtpue/kuaWueazleOBruimi+ebtOOBl+OBqOacgOmBqeWMlidcbiAgICAgICAgICBdLFxuICAgICAgICAgIHRvb2xzOiBbXG4gICAgICAgICAgICAnRXZlcm5vdGUgLSDlrabnv5LoqJjpjLLjgajmjK/jgorov5TjgoonLFxuICAgICAgICAgICAgJ0R1b2xpbmdvIC0g44Ky44O844Og5oSf6Kaa44Gn5a2m57+SJyxcbiAgICAgICAgICAgICdMaW5nb0RlZXIgLSDkvZPns7vnmoTjgarmlofms5Xlrabnv5InLFxuICAgICAgICAgICAgJ0hlbGxvVGFsayAtIOiogOiqnuS6pOaPm+OCouODl+ODqidcbiAgICAgICAgICBdXG4gICAgICAgIH1cbiAgICAgIH07XG4gIH1cbn07ICJdLCJuYW1lcyI6WyJnZXRQZXJzb25hbGl0eURlc2NyaXB0aW9uIiwidHlwZSIsInRpdGxlIiwiZGVzY3JpcHRpb24iLCJzdHJlbmd0aHMiLCJ3ZWFrbmVzc2VzIiwibGVhcm5pbmdBZHZpY2UiLCJ0aXBzIiwidG9vbHMiXSwibWFwcGluZ3MiOiI7Ozs7K0JBRWFBOzs7ZUFBQUE7OztBQUFOLE1BQU1BLDRCQUE0QixDQUFDQztJQUN4QyxPQUFRQTtRQUNOLEtBQUs7WUFDSCxPQUFPO2dCQUNMQyxPQUFPO2dCQUNQQyxhQUFhO2dCQUNiQyxXQUFXO29CQUNUO29CQUNBO29CQUNBO29CQUNBO2lCQUNEO2dCQUNEQyxZQUFZO29CQUNWO29CQUNBO29CQUNBO2lCQUNEO2dCQUNEQyxnQkFBZ0I7b0JBQ2RKLE9BQU87b0JBQ1BLLE1BQU07d0JBQ0o7d0JBQ0E7d0JBQ0E7d0JBQ0E7cUJBQ0Q7b0JBQ0RDLE9BQU87d0JBQ0w7d0JBQ0E7d0JBQ0E7d0JBQ0E7cUJBQ0Q7Z0JBQ0g7WUFDRjtRQUNGLEtBQUs7WUFDSCxPQUFPO2dCQUNMTixPQUFPO2dCQUNQQyxhQUFhO2dCQUNiQyxXQUFXO29CQUNUO29CQUNBO29CQUNBO29CQUNBO2lCQUNEO2dCQUNEQyxZQUFZO29CQUNWO29CQUNBO29CQUNBO2lCQUNEO2dCQUNEQyxnQkFBZ0I7b0JBQ2RKLE9BQU87b0JBQ1BLLE1BQU07d0JBQ0o7d0JBQ0E7d0JBQ0E7d0JBQ0E7cUJBQ0Q7b0JBQ0RDLE9BQU87d0JBQ0w7d0JBQ0E7d0JBQ0E7d0JBQ0E7cUJBQ0Q7Z0JBQ0g7WUFDRjtRQUNGLEtBQUs7WUFDSCxPQUFPO2dCQUNMTixPQUFPO2dCQUNQQyxhQUFhO2dCQUNiQyxXQUFXO29CQUNUO29CQUNBO29CQUNBO29CQUNBO2lCQUNEO2dCQUNEQyxZQUFZO29CQUNWO29CQUNBO29CQUNBO2lCQUNEO2dCQUNEQyxnQkFBZ0I7b0JBQ2RKLE9BQU87b0JBQ1BLLE1BQU07d0JBQ0o7d0JBQ0E7d0JBQ0E7d0JBQ0E7cUJBQ0Q7b0JBQ0RDLE9BQU87d0JBQ0w7d0JBQ0E7d0JBQ0E7d0JBQ0E7cUJBQ0Q7Z0JBQ0g7WUFDRjtJQUNKO0FBQ0YifQ==

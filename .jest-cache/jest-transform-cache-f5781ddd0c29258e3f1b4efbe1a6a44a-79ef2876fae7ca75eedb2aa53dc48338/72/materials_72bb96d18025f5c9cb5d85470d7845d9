@@ -1,0 +1,254 @@
+ee5dd2298c22ea191cc73b574dec39cc
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+function _export(target, all) {
+    for(var name in all)Object.defineProperty(target, name, {
+        enumerable: true,
+        get: all[name]
+    });
+}
+_export(exports, {
+    getMaterial: function() {
+        return getMaterial;
+    },
+    getMaterials: function() {
+        return getMaterials;
+    }
+});
+async function getMaterial(id) {
+    // 実際のアプリでは、APIからデータを取得
+    // const res = await fetch(`${process.env.API_URL}/api/materials/${id}`);
+    // const data = await res.json();
+    // return data;
+    // モックデータを返す
+    return {
+        id,
+        title: "英語初心者のための基礎文法",
+        description: "英語の基本文法を初心者にもわかりやすく解説した教材です。本教材では、英語の文型、時制、助動詞、冠詞などの基礎的な文法項目をわかりやすく解説しています。各セクションには練習問題も用意されていますので、学習した内容を確認しながら進めることができます。",
+        isPublic: true,
+        allowComments: true,
+        estimatedTime: 30,
+        difficulty: "beginner",
+        targetAudience: [
+            "英語初心者",
+            "英語の基礎を復習したい方",
+            "TOEIC受験予定の方"
+        ],
+        prerequisites: "アルファベットが読める、基本的な単語を知っている",
+        author: {
+            id: "author1",
+            name: "Tanaka Yuki",
+            avatarUrl: "/images/author1.jpg"
+        },
+        createdAt: "2023-12-15T12:00:00Z",
+        updatedAt: "2023-12-20T15:30:00Z",
+        sections: [
+            {
+                id: "s1",
+                type: "text",
+                title: "英語の文型（基本的な5文型）",
+                content: `
+          <h3>第1文型: S + V（主語 + 動詞）</h3>
+          <p>例文: Birds fly.（鳥は飛ぶ）</p>
+          <p>説明: 主語と自動詞だけで意味が完結する最も基本的な文型です。</p>
+          
+          <h3>第2文型: S + V + C（主語 + 動詞 + 補語）</h3>
+          <p>例文: She became a teacher.（彼女は教師になった）</p>
+          <p>説明: 主語と「be動詞」や「become」などの動詞に補語を伴う文型です。</p>
+          
+          <h3>第3文型: S + V + O（主語 + 動詞 + 目的語）</h3>
+          <p>例文: I read a book.（私は本を読む）</p>
+          <p>説明: 主語が他動詞を通して目的語に対して動作を行う文型です。</p>
+          
+          <h3>第4文型: S + V + O + O（主語 + 動詞 + 間接目的語 + 直接目的語）</h3>
+          <p>例文: She gave me a present.（彼女は私にプレゼントをくれた）</p>
+          <p>説明: 2つの目的語を取る文型で、通常「人」と「物」を表します。</p>
+          
+          <h3>第5文型: S + V + O + C（主語 + 動詞 + 目的語 + 補語）</h3>
+          <p>例文: They named their baby Emma.（彼らは赤ちゃんをEmmaと名付けた）</p>
+          <p>説明: 目的語とその補語を含む文型です。目的語と補語の関係が重要です。</p>
+        `
+            },
+            {
+                id: "s2",
+                type: "text",
+                title: "時制の基本（現在・過去・未来）",
+                content: `
+          <h3>現在形</h3>
+          <p>使用例: I study English every day.（私は毎日英語を勉強します）</p>
+          <p>使い方: 習慣的な行動や一般的な事実を表現する時に使用します。</p>
+          
+          <h3>現在進行形</h3>
+          <p>使用例: I am studying English now.（私は今英語を勉強しています）</p>
+          <p>使い方: 現在進行中の行動を表現する時に使用します。</p>
+          
+          <h3>過去形</h3>
+          <p>使用例: I studied English yesterday.（私は昨日英語を勉強しました）</p>
+          <p>使い方: 過去のある時点で完了した行動を表現する時に使用します。</p>
+          
+          <h3>過去進行形</h3>
+          <p>使用例: I was studying English at 7 pm yesterday.（私は昨日午後7時に英語を勉強していました）</p>
+          <p>使い方: 過去のある時点で進行中だった行動を表現する時に使用します。</p>
+          
+          <h3>未来形</h3>
+          <p>使用例: I will study English tomorrow.（私は明日英語を勉強します）</p>
+          <p>使い方: 未来の行動や予定について表現する時に使用します。</p>
+          
+          <h3>未来進行形</h3>
+          <p>使用例: I will be studying English at this time tomorrow.（私は明日の今頃英語を勉強しているでしょう）</p>
+          <p>使い方: 未来のある時点で進行中になっているだろう行動を表現する時に使用します。</p>
+        `
+            },
+            {
+                id: "s3",
+                type: "image",
+                title: "動詞の活用表（規則・不規則）",
+                imageUrl: "/images/verb-conjugation.jpg",
+                description: "一般的な動詞の活用をまとめた表です。左側が規則変化、右側が不規則変化の例を示しています。"
+            },
+            {
+                id: "s4",
+                type: "quiz",
+                title: "確認クイズ: 基本文法",
+                questions: [
+                    {
+                        id: "q1",
+                        question: '次の文は何文型か？ "She gave him a book."',
+                        options: [
+                            {
+                                id: "a",
+                                text: "第1文型 (S+V)"
+                            },
+                            {
+                                id: "b",
+                                text: "第2文型 (S+V+C)"
+                            },
+                            {
+                                id: "c",
+                                text: "第3文型 (S+V+O)"
+                            },
+                            {
+                                id: "d",
+                                text: "第4文型 (S+V+O+O)"
+                            },
+                            {
+                                id: "e",
+                                text: "第5文型 (S+V+O+C)"
+                            }
+                        ],
+                        correctAnswer: "d",
+                        explanation: "この文は「彼女は彼に本をあげた」という意味で、主語(She)、動詞(gave)、間接目的語(him)、直接目的語(a book)から構成されています。よって第4文型です。"
+                    },
+                    {
+                        id: "q2",
+                        question: "過去進行形の正しい形はどれか？",
+                        options: [
+                            {
+                                id: "a",
+                                text: "I studying."
+                            },
+                            {
+                                id: "b",
+                                text: "I study."
+                            },
+                            {
+                                id: "c",
+                                text: "I was studying."
+                            },
+                            {
+                                id: "d",
+                                text: "I will studying."
+                            }
+                        ],
+                        correctAnswer: "c",
+                        explanation: "過去進行形は was/were + 動詞ing の形です。主語が I なので was を使用します。"
+                    },
+                    {
+                        id: "q3",
+                        question: '次の文の空所に当てはまる適切な動詞は？ "He _______ a teacher for ten years."',
+                        options: [
+                            {
+                                id: "a",
+                                text: "is"
+                            },
+                            {
+                                id: "b",
+                                text: "was"
+                            },
+                            {
+                                id: "c",
+                                text: "has been"
+                            },
+                            {
+                                id: "d",
+                                text: "will be"
+                            }
+                        ],
+                        correctAnswer: "c",
+                        explanation: "この文は現在完了形を使用します。「彼は10年間教師をしている」という、過去から現在まで続いている状態を表現しているため、has been が正解です。"
+                    }
+                ]
+            }
+        ],
+        reviews: [
+            {
+                id: "r1",
+                userId: "user1",
+                userName: "Sato Kenji",
+                userAvatarUrl: "/images/user1.jpg",
+                rating: 5,
+                comment: "とても分かりやすい説明で、基礎文法が理解しやすかったです。特に5文型の説明がシンプルで良かったです。",
+                createdAt: "2023-12-18T10:30:00Z"
+            },
+            {
+                id: "r2",
+                userId: "user2",
+                userName: "Yamamoto Haruka",
+                userAvatarUrl: "/images/user2.jpg",
+                rating: 4,
+                comment: "初心者向けの内容で、基礎をしっかり学び直すことができました。もう少し練習問題が多いとさらに良いと思います。",
+                createdAt: "2023-12-16T15:45:00Z"
+            }
+        ],
+        relatedMaterials: [
+            {
+                id: "2",
+                title: "実践ビジネス英語：メール作成テクニック",
+                difficulty: "intermediate",
+                estimatedTime: 45,
+                rating: 4.2,
+                reviewCount: 8
+            },
+            {
+                id: "3",
+                title: "TOEICリスニング対策クイズ",
+                difficulty: "intermediate",
+                estimatedTime: 60,
+                rating: 4.7,
+                reviewCount: 12
+            }
+        ]
+    };
+}
+async function getMaterials(options) {
+    // 実際のアプリでは、APIからデータを取得
+    // const queryParams = new URLSearchParams();
+    // if (options?.category) queryParams.append('category', options.category);
+    // if (options?.difficulty) queryParams.append('difficulty', options.difficulty);
+    // if (options?.sort) queryParams.append('sort', options.sort);
+    // if (options?.page) queryParams.append('page', options.page.toString());
+    // if (options?.limit) queryParams.append('limit', options.limit.toString());
+    // const res = await fetch(`${process.env.API_URL}/api/materials?${queryParams}`);
+    // const data = await res.json();
+    // return data;
+    // モックデータを返す（実際はもっと多くの教材が返される）
+    return [
+        await getMaterial("1"),
+        await getMaterial("2"),
+        await getMaterial("3")
+    ];
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9zcmMvbGliL2FwaS9tYXRlcmlhbHMudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgTWF0ZXJpYWwsIFNlY3Rpb24sIFF1aXpRdWVzdGlvbiB9IGZyb20gJ0AvdHlwZXMvbWF0ZXJpYWwnO1xuXG4vLyDmlZnmnZDjg4fjg7zjgr/jgpLlj5blvpfjgZnjgovplqLmlbBcbmV4cG9ydCBhc3luYyBmdW5jdGlvbiBnZXRNYXRlcmlhbChpZDogc3RyaW5nKTogUHJvbWlzZTxNYXRlcmlhbD4ge1xuICAvLyDlrp/pmpvjga7jgqLjg5fjg6rjgafjga/jgIFBUEnjgYvjgonjg4fjg7zjgr/jgpLlj5blvpdcbiAgLy8gY29uc3QgcmVzID0gYXdhaXQgZmV0Y2goYCR7cHJvY2Vzcy5lbnYuQVBJX1VSTH0vYXBpL21hdGVyaWFscy8ke2lkfWApO1xuICAvLyBjb25zdCBkYXRhID0gYXdhaXQgcmVzLmpzb24oKTtcbiAgLy8gcmV0dXJuIGRhdGE7XG4gIFxuICAvLyDjg6Ljg4Pjgq/jg4fjg7zjgr/jgpLov5TjgZlcbiAgcmV0dXJuIHtcbiAgICBpZCxcbiAgICB0aXRsZTogJ+iLseiqnuWIneW/g+iAheOBruOBn+OCgeOBruWfuuekjuaWh+azlScsXG4gICAgZGVzY3JpcHRpb246ICfoi7Hoqp7jga7ln7rmnKzmlofms5XjgpLliJ3lv4PogIXjgavjgoLjgo/jgYvjgorjgoTjgZnjgY/op6PoqqzjgZfjgZ/mlZnmnZDjgafjgZnjgILmnKzmlZnmnZDjgafjga/jgIHoi7Hoqp7jga7mloflnovjgIHmmYLliLbjgIHliqnli5XoqZ7jgIHlhqDoqZ7jgarjganjga7ln7rnpI7nmoTjgarmlofms5XpoIXnm67jgpLjgo/jgYvjgorjgoTjgZnjgY/op6PoqqzjgZfjgabjgYTjgb7jgZnjgILlkITjgrvjgq/jgrfjg6fjg7Pjgavjga/nt7Tnv5LllY/poYzjgoLnlKjmhI/jgZXjgozjgabjgYTjgb7jgZnjga7jgafjgIHlrabnv5LjgZfjgZ/lhoXlrrnjgpLnorroqo3jgZfjgarjgYzjgonpgLLjgoHjgovjgZPjgajjgYzjgafjgY3jgb7jgZnjgIInLFxuICAgIGlzUHVibGljOiB0cnVlLFxuICAgIGFsbG93Q29tbWVudHM6IHRydWUsXG4gICAgZXN0aW1hdGVkVGltZTogMzAsXG4gICAgZGlmZmljdWx0eTogJ2JlZ2lubmVyJyxcbiAgICB0YXJnZXRBdWRpZW5jZTogWyfoi7Hoqp7liJ3lv4PogIUnLCAn6Iux6Kqe44Gu5Z+656SO44KS5b6p57+S44GX44Gf44GE5pa5JywgJ1RPRUlD5Y+X6aiT5LqI5a6a44Gu5pa5J10sXG4gICAgcHJlcmVxdWlzaXRlczogJ+OCouODq+ODleOCoeODmeODg+ODiOOBjOiqreOCgeOCi+OAgeWfuuacrOeahOOBquWNmOiqnuOCkuefpeOBo+OBpuOBhOOCiycsXG4gICAgYXV0aG9yOiB7XG4gICAgICBpZDogJ2F1dGhvcjEnLFxuICAgICAgbmFtZTogJ1RhbmFrYSBZdWtpJyxcbiAgICAgIGF2YXRhclVybDogJy9pbWFnZXMvYXV0aG9yMS5qcGcnXG4gICAgfSxcbiAgICBjcmVhdGVkQXQ6ICcyMDIzLTEyLTE1VDEyOjAwOjAwWicsXG4gICAgdXBkYXRlZEF0OiAnMjAyMy0xMi0yMFQxNTozMDowMFonLFxuICAgIHNlY3Rpb25zOiBbXG4gICAgICB7XG4gICAgICAgIGlkOiAnczEnLFxuICAgICAgICB0eXBlOiAndGV4dCcsXG4gICAgICAgIHRpdGxlOiAn6Iux6Kqe44Gu5paH5Z6L77yI5Z+65pys55qE44GqNeaWh+Wei++8iScsXG4gICAgICAgIGNvbnRlbnQ6IGBcbiAgICAgICAgICA8aDM+56ysMeaWh+WeizogUyArIFbvvIjkuLvoqp4gKyDli5XoqZ7vvIk8L2gzPlxuICAgICAgICAgIDxwPuS+i+aWhzogQmlyZHMgZmx5Lu+8iOmzpeOBr+mjm+OBtu+8iTwvcD5cbiAgICAgICAgICA8cD7oqqzmmI46IOS4u+iqnuOBqOiHquWLleipnuOBoOOBkeOBp+aEj+WRs+OBjOWujOe1kOOBmeOCi+acgOOCguWfuuacrOeahOOBquaWh+Wei+OBp+OBmeOAgjwvcD5cbiAgICAgICAgICBcbiAgICAgICAgICA8aDM+56ysMuaWh+WeizogUyArIFYgKyBD77yI5Li76KqeICsg5YuV6KmeICsg6KOc6Kqe77yJPC9oMz5cbiAgICAgICAgICA8cD7kvovmloc6IFNoZSBiZWNhbWUgYSB0ZWFjaGVyLu+8iOW9vOWls+OBr+aVmeW4q+OBq+OBquOBo+OBn++8iTwvcD5cbiAgICAgICAgICA8cD7oqqzmmI46IOS4u+iqnuOBqOOAjGJl5YuV6Kme44CN44KE44CMYmVjb21l44CN44Gq44Gp44Gu5YuV6Kme44Gr6KOc6Kqe44KS5Ly044GG5paH5Z6L44Gn44GZ44CCPC9wPlxuICAgICAgICAgIFxuICAgICAgICAgIDxoMz7nrKwz5paH5Z6LOiBTICsgViArIE/vvIjkuLvoqp4gKyDli5XoqZ4gKyDnm67nmoToqp7vvIk8L2gzPlxuICAgICAgICAgIDxwPuS+i+aWhzogSSByZWFkIGEgYm9vay7vvIjnp4Hjga/mnKzjgpLoqq3jgoDvvIk8L3A+XG4gICAgICAgICAgPHA+6Kqs5piOOiDkuLvoqp7jgYzku5bli5XoqZ7jgpLpgJrjgZfjgabnm67nmoToqp7jgavlr77jgZfjgabli5XkvZzjgpLooYzjgYbmloflnovjgafjgZnjgII8L3A+XG4gICAgICAgICAgXG4gICAgICAgICAgPGgzPuesrDTmloflnos6IFMgKyBWICsgTyArIE/vvIjkuLvoqp4gKyDli5XoqZ4gKyDplpPmjqXnm67nmoToqp4gKyDnm7TmjqXnm67nmoToqp7vvIk8L2gzPlxuICAgICAgICAgIDxwPuS+i+aWhzogU2hlIGdhdmUgbWUgYSBwcmVzZW50Lu+8iOW9vOWls+OBr+engeOBq+ODl+ODrOOCvOODs+ODiOOCkuOBj+OCjOOBn++8iTwvcD5cbiAgICAgICAgICA8cD7oqqzmmI46IDLjgaTjga7nm67nmoToqp7jgpLlj5bjgovmloflnovjgafjgIHpgJrluLjjgIzkurrjgI3jgajjgIznianjgI3jgpLooajjgZfjgb7jgZnjgII8L3A+XG4gICAgICAgICAgXG4gICAgICAgICAgPGgzPuesrDXmloflnos6IFMgKyBWICsgTyArIEPvvIjkuLvoqp4gKyDli5XoqZ4gKyDnm67nmoToqp4gKyDoo5zoqp7vvIk8L2gzPlxuICAgICAgICAgIDxwPuS+i+aWhzogVGhleSBuYW1lZCB0aGVpciBiYWJ5IEVtbWEu77yI5b2844KJ44Gv6LWk44Gh44KD44KT44KSRW1tYeOBqOWQjeS7mOOBkeOBn++8iTwvcD5cbiAgICAgICAgICA8cD7oqqzmmI46IOebrueahOiqnuOBqOOBneOBruijnOiqnuOCkuWQq+OCgOaWh+Wei+OBp+OBmeOAguebrueahOiqnuOBqOijnOiqnuOBrumWouS/guOBjOmHjeimgeOBp+OBmeOAgjwvcD5cbiAgICAgICAgYFxuICAgICAgfSxcbiAgICAgIHtcbiAgICAgICAgaWQ6ICdzMicsXG4gICAgICAgIHR5cGU6ICd0ZXh0JyxcbiAgICAgICAgdGl0bGU6ICfmmYLliLbjga7ln7rmnKzvvIjnj77lnKjjg7vpgY7ljrvjg7vmnKrmnaXvvIknLFxuICAgICAgICBjb250ZW50OiBgXG4gICAgICAgICAgPGgzPuePvuWcqOW9ojwvaDM+XG4gICAgICAgICAgPHA+5L2/55So5L6LOiBJIHN0dWR5IEVuZ2xpc2ggZXZlcnkgZGF5Lu+8iOengeOBr+avjuaXpeiLseiqnuOCkuWLieW8t+OBl+OBvuOBme+8iTwvcD5cbiAgICAgICAgICA8cD7kvb/jgYTmlrk6IOe/kuaFo+eahOOBquihjOWLleOChOS4gOiIrOeahOOBquS6i+Wun+OCkuihqOePvuOBmeOCi+aZguOBq+S9v+eUqOOBl+OBvuOBmeOAgjwvcD5cbiAgICAgICAgICBcbiAgICAgICAgICA8aDM+54++5Zyo6YCy6KGM5b2iPC9oMz5cbiAgICAgICAgICA8cD7kvb/nlKjkvos6IEkgYW0gc3R1ZHlpbmcgRW5nbGlzaCBub3cu77yI56eB44Gv5LuK6Iux6Kqe44KS5YuJ5by344GX44Gm44GE44G+44GZ77yJPC9wPlxuICAgICAgICAgIDxwPuS9v+OBhOaWuTog54++5Zyo6YCy6KGM5Lit44Gu6KGM5YuV44KS6KGo54++44GZ44KL5pmC44Gr5L2/55So44GX44G+44GZ44CCPC9wPlxuICAgICAgICAgIFxuICAgICAgICAgIDxoMz7pgY7ljrvlvaI8L2gzPlxuICAgICAgICAgIDxwPuS9v+eUqOS+izogSSBzdHVkaWVkIEVuZ2xpc2ggeWVzdGVyZGF5Lu+8iOengeOBr+aYqOaXpeiLseiqnuOCkuWLieW8t+OBl+OBvuOBl+OBn++8iTwvcD5cbiAgICAgICAgICA8cD7kvb/jgYTmlrk6IOmBjuWOu+OBruOBguOCi+aZgueCueOBp+WujOS6huOBl+OBn+ihjOWLleOCkuihqOePvuOBmeOCi+aZguOBq+S9v+eUqOOBl+OBvuOBmeOAgjwvcD5cbiAgICAgICAgICBcbiAgICAgICAgICA8aDM+6YGO5Y676YCy6KGM5b2iPC9oMz5cbiAgICAgICAgICA8cD7kvb/nlKjkvos6IEkgd2FzIHN0dWR5aW5nIEVuZ2xpc2ggYXQgNyBwbSB5ZXN0ZXJkYXku77yI56eB44Gv5pio5pel5Y2I5b6MN+aZguOBq+iLseiqnuOCkuWLieW8t+OBl+OBpuOBhOOBvuOBl+OBn++8iTwvcD5cbiAgICAgICAgICA8cD7kvb/jgYTmlrk6IOmBjuWOu+OBruOBguOCi+aZgueCueOBp+mAsuihjOS4reOBoOOBo+OBn+ihjOWLleOCkuihqOePvuOBmeOCi+aZguOBq+S9v+eUqOOBl+OBvuOBmeOAgjwvcD5cbiAgICAgICAgICBcbiAgICAgICAgICA8aDM+5pyq5p2l5b2iPC9oMz5cbiAgICAgICAgICA8cD7kvb/nlKjkvos6IEkgd2lsbCBzdHVkeSBFbmdsaXNoIHRvbW9ycm93Lu+8iOengeOBr+aYjuaXpeiLseiqnuOCkuWLieW8t+OBl+OBvuOBme+8iTwvcD5cbiAgICAgICAgICA8cD7kvb/jgYTmlrk6IOacquadpeOBruihjOWLleOChOS6iOWumuOBq+OBpOOBhOOBpuihqOePvuOBmeOCi+aZguOBq+S9v+eUqOOBl+OBvuOBmeOAgjwvcD5cbiAgICAgICAgICBcbiAgICAgICAgICA8aDM+5pyq5p2l6YCy6KGM5b2iPC9oMz5cbiAgICAgICAgICA8cD7kvb/nlKjkvos6IEkgd2lsbCBiZSBzdHVkeWluZyBFbmdsaXNoIGF0IHRoaXMgdGltZSB0b21vcnJvdy7vvIjnp4Hjga/mmI7ml6Xjga7ku4rpoIPoi7Hoqp7jgpLli4nlvLfjgZfjgabjgYTjgovjgafjgZfjgofjgYbvvIk8L3A+XG4gICAgICAgICAgPHA+5L2/44GE5pa5OiDmnKrmnaXjga7jgYLjgovmmYLngrnjgafpgLLooYzkuK3jgavjgarjgaPjgabjgYTjgovjgaDjgo3jgYbooYzli5XjgpLooajnj77jgZnjgovmmYLjgavkvb/nlKjjgZfjgb7jgZnjgII8L3A+XG4gICAgICAgIGBcbiAgICAgIH0sXG4gICAgICB7XG4gICAgICAgIGlkOiAnczMnLFxuICAgICAgICB0eXBlOiAnaW1hZ2UnLFxuICAgICAgICB0aXRsZTogJ+WLleipnuOBrua0u+eUqOihqO+8iOimj+WJh+ODu+S4jeimj+WJh++8iScsXG4gICAgICAgIGltYWdlVXJsOiAnL2ltYWdlcy92ZXJiLWNvbmp1Z2F0aW9uLmpwZycsXG4gICAgICAgIGRlc2NyaXB0aW9uOiAn5LiA6Iis55qE44Gq5YuV6Kme44Gu5rS755So44KS44G+44Go44KB44Gf6KGo44Gn44GZ44CC5bem5YG044GM6KaP5YmH5aSJ5YyW44CB5Y+z5YG044GM5LiN6KaP5YmH5aSJ5YyW44Gu5L6L44KS56S644GX44Gm44GE44G+44GZ44CCJ1xuICAgICAgfSxcbiAgICAgIHtcbiAgICAgICAgaWQ6ICdzNCcsXG4gICAgICAgIHR5cGU6ICdxdWl6JyxcbiAgICAgICAgdGl0bGU6ICfnorroqo3jgq/jgqTjgro6IOWfuuacrOaWh+azlScsXG4gICAgICAgIHF1ZXN0aW9uczogW1xuICAgICAgICAgIHtcbiAgICAgICAgICAgIGlkOiAncTEnLFxuICAgICAgICAgICAgcXVlc3Rpb246ICfmrKHjga7mlofjga/kvZXmloflnovjgYvvvJ8gXCJTaGUgZ2F2ZSBoaW0gYSBib29rLlwiJyxcbiAgICAgICAgICAgIG9wdGlvbnM6IFtcbiAgICAgICAgICAgICAgeyBpZDogJ2EnLCB0ZXh0OiAn56ysMeaWh+WeiyAoUytWKScgfSxcbiAgICAgICAgICAgICAgeyBpZDogJ2InLCB0ZXh0OiAn56ysMuaWh+WeiyAoUytWK0MpJyB9LFxuICAgICAgICAgICAgICB7IGlkOiAnYycsIHRleHQ6ICfnrKwz5paH5Z6LIChTK1YrTyknIH0sXG4gICAgICAgICAgICAgIHsgaWQ6ICdkJywgdGV4dDogJ+esrDTmloflnosgKFMrVitPK08pJyB9LFxuICAgICAgICAgICAgICB7IGlkOiAnZScsIHRleHQ6ICfnrKw15paH5Z6LIChTK1YrTytDKScgfVxuICAgICAgICAgICAgXSxcbiAgICAgICAgICAgIGNvcnJlY3RBbnN3ZXI6ICdkJyxcbiAgICAgICAgICAgIGV4cGxhbmF0aW9uOiAn44GT44Gu5paH44Gv44CM5b285aWz44Gv5b2844Gr5pys44KS44GC44GS44Gf44CN44Go44GE44GG5oSP5ZGz44Gn44CB5Li76KqeKFNoZSnjgIHli5XoqZ4oZ2F2ZSnjgIHplpPmjqXnm67nmoToqp4oaGltKeOAgeebtOaOpeebrueahOiqnihhIGJvb2sp44GL44KJ5qeL5oiQ44GV44KM44Gm44GE44G+44GZ44CC44KI44Gj44Gm56ysNOaWh+Wei+OBp+OBmeOAgidcbiAgICAgICAgICB9LFxuICAgICAgICAgIHtcbiAgICAgICAgICAgIGlkOiAncTInLFxuICAgICAgICAgICAgcXVlc3Rpb246ICfpgY7ljrvpgLLooYzlvaLjga7mraPjgZfjgYTlvaLjga/jganjgozjgYvvvJ8nLFxuICAgICAgICAgICAgb3B0aW9uczogW1xuICAgICAgICAgICAgICB7IGlkOiAnYScsIHRleHQ6ICdJIHN0dWR5aW5nLicgfSxcbiAgICAgICAgICAgICAgeyBpZDogJ2InLCB0ZXh0OiAnSSBzdHVkeS4nIH0sXG4gICAgICAgICAgICAgIHsgaWQ6ICdjJywgdGV4dDogJ0kgd2FzIHN0dWR5aW5nLicgfSxcbiAgICAgICAgICAgICAgeyBpZDogJ2QnLCB0ZXh0OiAnSSB3aWxsIHN0dWR5aW5nLicgfVxuICAgICAgICAgICAgXSxcbiAgICAgICAgICAgIGNvcnJlY3RBbnN3ZXI6ICdjJyxcbiAgICAgICAgICAgIGV4cGxhbmF0aW9uOiAn6YGO5Y676YCy6KGM5b2i44GvIHdhcy93ZXJlICsg5YuV6KmeaW5nIOOBruW9ouOBp+OBmeOAguS4u+iqnuOBjCBJIOOBquOBruOBpyB3YXMg44KS5L2/55So44GX44G+44GZ44CCJ1xuICAgICAgICAgIH0sXG4gICAgICAgICAge1xuICAgICAgICAgICAgaWQ6ICdxMycsXG4gICAgICAgICAgICBxdWVzdGlvbjogJ+asoeOBruaWh+OBruepuuaJgOOBq+W9k+OBpuOBr+OBvuOCi+mBqeWIh+OBquWLleipnuOBr++8nyBcIkhlIF9fX19fX18gYSB0ZWFjaGVyIGZvciB0ZW4geWVhcnMuXCInLFxuICAgICAgICAgICAgb3B0aW9uczogW1xuICAgICAgICAgICAgICB7IGlkOiAnYScsIHRleHQ6ICdpcycgfSxcbiAgICAgICAgICAgICAgeyBpZDogJ2InLCB0ZXh0OiAnd2FzJyB9LFxuICAgICAgICAgICAgICB7IGlkOiAnYycsIHRleHQ6ICdoYXMgYmVlbicgfSxcbiAgICAgICAgICAgICAgeyBpZDogJ2QnLCB0ZXh0OiAnd2lsbCBiZScgfVxuICAgICAgICAgICAgXSxcbiAgICAgICAgICAgIGNvcnJlY3RBbnN3ZXI6ICdjJyxcbiAgICAgICAgICAgIGV4cGxhbmF0aW9uOiAn44GT44Gu5paH44Gv54++5Zyo5a6M5LqG5b2i44KS5L2/55So44GX44G+44GZ44CC44CM5b2844GvMTDlubTplpPmlZnluKvjgpLjgZfjgabjgYTjgovjgI3jgajjgYTjgYbjgIHpgY7ljrvjgYvjgonnj77lnKjjgb7jgafntprjgYTjgabjgYTjgovnirbmhYvjgpLooajnj77jgZfjgabjgYTjgovjgZ/jgoHjgIFoYXMgYmVlbiDjgYzmraPop6PjgafjgZnjgIInXG4gICAgICAgICAgfVxuICAgICAgICBdXG4gICAgICB9XG4gICAgXSxcbiAgICByZXZpZXdzOiBbXG4gICAgICB7XG4gICAgICAgIGlkOiAncjEnLFxuICAgICAgICB1c2VySWQ6ICd1c2VyMScsXG4gICAgICAgIHVzZXJOYW1lOiAnU2F0byBLZW5qaScsXG4gICAgICAgIHVzZXJBdmF0YXJVcmw6ICcvaW1hZ2VzL3VzZXIxLmpwZycsXG4gICAgICAgIHJhdGluZzogNSxcbiAgICAgICAgY29tbWVudDogJ+OBqOOBpuOCguWIhuOBi+OCiuOChOOBmeOBhOiqrOaYjuOBp+OAgeWfuuekjuaWh+azleOBjOeQhuino+OBl+OChOOBmeOBi+OBo+OBn+OBp+OBmeOAgueJueOBqzXmloflnovjga7oqqzmmI7jgYzjgrfjg7Pjg5fjg6vjgafoia/jgYvjgaPjgZ/jgafjgZnjgIInLFxuICAgICAgICBjcmVhdGVkQXQ6ICcyMDIzLTEyLTE4VDEwOjMwOjAwWidcbiAgICAgIH0sXG4gICAgICB7XG4gICAgICAgIGlkOiAncjInLFxuICAgICAgICB1c2VySWQ6ICd1c2VyMicsXG4gICAgICAgIHVzZXJOYW1lOiAnWWFtYW1vdG8gSGFydWthJyxcbiAgICAgICAgdXNlckF2YXRhclVybDogJy9pbWFnZXMvdXNlcjIuanBnJyxcbiAgICAgICAgcmF0aW5nOiA0LFxuICAgICAgICBjb21tZW50OiAn5Yid5b+D6ICF5ZCR44GR44Gu5YaF5a6544Gn44CB5Z+656SO44KS44GX44Gj44GL44KK5a2m44Gz55u044GZ44GT44Go44GM44Gn44GN44G+44GX44Gf44CC44KC44GG5bCR44GX57e057+S5ZWP6aGM44GM5aSa44GE44Go44GV44KJ44Gr6Imv44GE44Go5oCd44GE44G+44GZ44CCJyxcbiAgICAgICAgY3JlYXRlZEF0OiAnMjAyMy0xMi0xNlQxNTo0NTowMFonXG4gICAgICB9XG4gICAgXSxcbiAgICByZWxhdGVkTWF0ZXJpYWxzOiBbXG4gICAgICB7XG4gICAgICAgIGlkOiAnMicsXG4gICAgICAgIHRpdGxlOiAn5a6f6Le144OT44K444ON44K56Iux6Kqe77ya44Oh44O844Or5L2c5oiQ44OG44Kv44OL44OD44KvJyxcbiAgICAgICAgZGlmZmljdWx0eTogJ2ludGVybWVkaWF0ZScsXG4gICAgICAgIGVzdGltYXRlZFRpbWU6IDQ1LFxuICAgICAgICByYXRpbmc6IDQuMixcbiAgICAgICAgcmV2aWV3Q291bnQ6IDhcbiAgICAgIH0sXG4gICAgICB7XG4gICAgICAgIGlkOiAnMycsXG4gICAgICAgIHRpdGxlOiAnVE9FSUPjg6rjgrnjg4vjg7PjgrDlr77nrZbjgq/jgqTjgronLFxuICAgICAgICBkaWZmaWN1bHR5OiAnaW50ZXJtZWRpYXRlJyxcbiAgICAgICAgZXN0aW1hdGVkVGltZTogNjAsXG4gICAgICAgIHJhdGluZzogNC43LFxuICAgICAgICByZXZpZXdDb3VudDogMTJcbiAgICAgIH1cbiAgICBdXG4gIH07XG59XG5cbi8vIOaVmeadkOOBruS4gOimp+OCkuWPluW+l+OBmeOCi+mWouaVsFxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIGdldE1hdGVyaWFscyhvcHRpb25zPzoge1xuICBjYXRlZ29yeT86IHN0cmluZztcbiAgZGlmZmljdWx0eT86IHN0cmluZztcbiAgc29ydD86IHN0cmluZztcbiAgcGFnZT86IG51bWJlcjtcbiAgbGltaXQ/OiBudW1iZXI7XG59KTogUHJvbWlzZTxNYXRlcmlhbFtdPiB7XG4gIC8vIOWun+mam+OBruOCouODl+ODquOBp+OBr+OAgUFQSeOBi+OCieODh+ODvOOCv+OCkuWPluW+l1xuICAvLyBjb25zdCBxdWVyeVBhcmFtcyA9IG5ldyBVUkxTZWFyY2hQYXJhbXMoKTtcbiAgLy8gaWYgKG9wdGlvbnM/LmNhdGVnb3J5KSBxdWVyeVBhcmFtcy5hcHBlbmQoJ2NhdGVnb3J5Jywgb3B0aW9ucy5jYXRlZ29yeSk7XG4gIC8vIGlmIChvcHRpb25zPy5kaWZmaWN1bHR5KSBxdWVyeVBhcmFtcy5hcHBlbmQoJ2RpZmZpY3VsdHknLCBvcHRpb25zLmRpZmZpY3VsdHkpO1xuICAvLyBpZiAob3B0aW9ucz8uc29ydCkgcXVlcnlQYXJhbXMuYXBwZW5kKCdzb3J0Jywgb3B0aW9ucy5zb3J0KTtcbiAgLy8gaWYgKG9wdGlvbnM/LnBhZ2UpIHF1ZXJ5UGFyYW1zLmFwcGVuZCgncGFnZScsIG9wdGlvbnMucGFnZS50b1N0cmluZygpKTtcbiAgLy8gaWYgKG9wdGlvbnM/LmxpbWl0KSBxdWVyeVBhcmFtcy5hcHBlbmQoJ2xpbWl0Jywgb3B0aW9ucy5saW1pdC50b1N0cmluZygpKTtcbiAgXG4gIC8vIGNvbnN0IHJlcyA9IGF3YWl0IGZldGNoKGAke3Byb2Nlc3MuZW52LkFQSV9VUkx9L2FwaS9tYXRlcmlhbHM/JHtxdWVyeVBhcmFtc31gKTtcbiAgLy8gY29uc3QgZGF0YSA9IGF3YWl0IHJlcy5qc29uKCk7XG4gIC8vIHJldHVybiBkYXRhO1xuICBcbiAgLy8g44Oi44OD44Kv44OH44O844K/44KS6L+U44GZ77yI5a6f6Zqb44Gv44KC44Gj44Go5aSa44GP44Gu5pWZ5p2Q44GM6L+U44GV44KM44KL77yJXG4gIHJldHVybiBbXG4gICAgYXdhaXQgZ2V0TWF0ZXJpYWwoJzEnKSxcbiAgICBhd2FpdCBnZXRNYXRlcmlhbCgnMicpLFxuICAgIGF3YWl0IGdldE1hdGVyaWFsKCczJylcbiAgXTtcbn0gIl0sIm5hbWVzIjpbImdldE1hdGVyaWFsIiwiZ2V0TWF0ZXJpYWxzIiwiaWQiLCJ0aXRsZSIsImRlc2NyaXB0aW9uIiwiaXNQdWJsaWMiLCJhbGxvd0NvbW1lbnRzIiwiZXN0aW1hdGVkVGltZSIsImRpZmZpY3VsdHkiLCJ0YXJnZXRBdWRpZW5jZSIsInByZXJlcXVpc2l0ZXMiLCJhdXRob3IiLCJuYW1lIiwiYXZhdGFyVXJsIiwiY3JlYXRlZEF0IiwidXBkYXRlZEF0Iiwic2VjdGlvbnMiLCJ0eXBlIiwiY29udGVudCIsImltYWdlVXJsIiwicXVlc3Rpb25zIiwicXVlc3Rpb24iLCJvcHRpb25zIiwidGV4dCIsImNvcnJlY3RBbnN3ZXIiLCJleHBsYW5hdGlvbiIsInJldmlld3MiLCJ1c2VySWQiLCJ1c2VyTmFtZSIsInVzZXJBdmF0YXJVcmwiLCJyYXRpbmciLCJjb21tZW50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

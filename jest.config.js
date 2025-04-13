@@ -14,7 +14,11 @@ const customJestConfig = {
   testEnvironment: 'jsdom',
   
   // テストのマッチパターン
-  testMatch: ['**/__tests__/**/*.test.[jt]s?(x)'],
+  testMatch: [
+    '**/__tests__/**/*.test.[jt]s?(x)',
+    '**/test/**/*.unit.test.[jt]s?(x)',
+    '**/test/**/*.integration.test.[jt]s?(x)'
+  ],
   
   // モジュール名マッピング
   moduleNameMapper: {
@@ -41,11 +45,23 @@ const customJestConfig = {
     '!**/node_modules/**',
   ],
   
+  // カバレッジレポート設定の追加
+  coverageDirectory: '<rootDir>/coverage',
+  coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
+  coverageThreshold: {
+    global: {
+      statements: 80,
+      branches: 70,
+      functions: 80,
+      lines: 80,
+    },
+  },
+  
   // キャッシュの場所
   cacheDirectory: '.jest-cache',
   
   // タイムアウト設定
-  testTimeout: 30000,
+  testTimeout: 5000,
   
   // ts-jestの設定
   globals: {
@@ -70,6 +86,21 @@ const customJestConfig = {
   
   // テストで使用するモジュールにパスを追加
   modulePaths: ['<rootDir>/src'],
+  
+  // モックを自動的にクリア
+  clearMocks: true,
+  
+  // キャッシュを無効化
+  cache: false,
+  
+  // React 18対応の設定
+  testEnvironment: 'jsdom',
+  
+  // テスト強制終了設定
+  forceExit: true,
+  
+  // 最大ワーカー数を制限
+  maxWorkers: '50%'
 };
 
 // nextJestがカスタム設定を使用できるように設定
