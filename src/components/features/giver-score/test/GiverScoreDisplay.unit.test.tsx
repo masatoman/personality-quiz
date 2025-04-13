@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import GiverScoreDisplay from '@/components/GiverScoreDisplay';
+import GiverScoreDisplay from '@/components/features/giver-score/GiverScoreDisplay';
 import { calculateGiverLevel } from '@/utils/score';
 
 /**

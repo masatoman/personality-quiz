@@ -1,0 +1,65 @@
+11bb3098545fb8322f3166db63b1a0d8
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "LEVELS", {
+    enumerable: true,
+    get: function() {
+        return LEVELS;
+    }
+});
+const LEVELS = [
+    {
+        number: 1,
+        title: "ビギナー",
+        requiredScore: 0,
+        benefits: [
+            "基本的な学習機能の利用",
+            "コミュニティへのアクセス",
+            "週間学習レポートの閲覧"
+        ]
+    },
+    {
+        number: 2,
+        title: "アドベンチャー",
+        requiredScore: 100,
+        benefits: [
+            "カスタマイズ可能な学習パス",
+            "プレミアム教材へのアクセス",
+            "月間進捗分析レポート"
+        ]
+    },
+    {
+        number: 3,
+        title: "エキスパート",
+        requiredScore: 300,
+        benefits: [
+            "AIパーソナルコーチの利用",
+            "グループ学習セッションの主催",
+            "プロフェッショナル認定証の取得"
+        ]
+    },
+    {
+        number: 4,
+        title: "マスター",
+        requiredScore: 600,
+        benefits: [
+            "メンター資格の取得",
+            "コミュニティリーダー権限",
+            "オリジナル学習コンテンツの作成権限"
+        ]
+    },
+    {
+        number: 5,
+        title: "レジェンド",
+        requiredScore: 1000,
+        benefits: [
+            "プラットフォームアンバサダー資格",
+            "プライベートメンタリングセッション",
+            "グローバルリーダーボード参加資格"
+        ]
+    }
+];
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9zcmMvZGF0YS9sZXZlbHMudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgTGV2ZWwgfSBmcm9tICdAL3R5cGVzL3F1aXonO1xuXG5leHBvcnQgY29uc3QgTEVWRUxTOiBMZXZlbFtdID0gW1xuICB7XG4gICAgbnVtYmVyOiAxLFxuICAgIHRpdGxlOiAn44OT44Ku44OK44O8JyxcbiAgICByZXF1aXJlZFNjb3JlOiAwLFxuICAgIGJlbmVmaXRzOiBbXG4gICAgICAn5Z+65pys55qE44Gq5a2m57+S5qmf6IO944Gu5Yip55SoJyxcbiAgICAgICfjgrPjg5/jg6Xjg4vjg4bjgqPjgbjjga7jgqLjgq/jgrvjgrknLFxuICAgICAgJ+mAsemWk+Wtpue/kuODrOODneODvOODiOOBrumWsuimpydcbiAgICBdXG4gIH0sXG4gIHtcbiAgICBudW1iZXI6IDIsXG4gICAgdGl0bGU6ICfjgqLjg4njg5njg7Pjg4Hjg6Pjg7wnLFxuICAgIHJlcXVpcmVkU2NvcmU6IDEwMCxcbiAgICBiZW5lZml0czogW1xuICAgICAgJ+OCq+OCueOCv+ODnuOCpOOCuuWPr+iDveOBquWtpue/kuODkeOCuScsXG4gICAgICAn44OX44Os44Of44Ki44Og5pWZ5p2Q44G444Gu44Ki44Kv44K744K5JyxcbiAgICAgICfmnIjplpPpgLLmjZfliIbmnpDjg6zjg53jg7zjg4gnXG4gICAgXVxuICB9LFxuICB7XG4gICAgbnVtYmVyOiAzLFxuICAgIHRpdGxlOiAn44Ko44Kt44K544OR44O844OIJyxcbiAgICByZXF1aXJlZFNjb3JlOiAzMDAsXG4gICAgYmVuZWZpdHM6IFtcbiAgICAgICdBSeODkeODvOOCveODiuODq+OCs+ODvOODgeOBruWIqeeUqCcsXG4gICAgICAn44Kw44Or44O844OX5a2m57+S44K744OD44K344On44Oz44Gu5Li75YKsJyxcbiAgICAgICfjg5fjg63jg5Xjgqfjg4Pjgrfjg6fjg4rjg6voqo3lrproqLzjga7lj5blvpcnXG4gICAgXVxuICB9LFxuICB7XG4gICAgbnVtYmVyOiA0LFxuICAgIHRpdGxlOiAn44Oe44K544K/44O8JyxcbiAgICByZXF1aXJlZFNjb3JlOiA2MDAsXG4gICAgYmVuZWZpdHM6IFtcbiAgICAgICfjg6Hjg7Pjgr/jg7zos4fmoLzjga7lj5blvpcnLFxuICAgICAgJ+OCs+ODn+ODpeODi+ODhuOCo+ODquODvOODgOODvOaoqemZkCcsXG4gICAgICAn44Kq44Oq44K444OK44Or5a2m57+S44Kz44Oz44OG44Oz44OE44Gu5L2c5oiQ5qip6ZmQJ1xuICAgIF1cbiAgfSxcbiAge1xuICAgIG51bWJlcjogNSxcbiAgICB0aXRsZTogJ+ODrOOCuOOCp+ODs+ODiScsXG4gICAgcmVxdWlyZWRTY29yZTogMTAwMCxcbiAgICBiZW5lZml0czogW1xuICAgICAgJ+ODl+ODqeODg+ODiOODleOCqeODvOODoOOCouODs+ODkOOCteODgOODvOizh+agvCcsXG4gICAgICAn44OX44Op44Kk44OZ44O844OI44Oh44Oz44K/44Oq44Oz44Kw44K744OD44K344On44OzJyxcbiAgICAgICfjgrDjg63jg7zjg5Djg6vjg6rjg7zjg4Djg7zjg5zjg7zjg4nlj4LliqDos4fmoLwnXG4gICAgXVxuICB9XG5dOyAiXSwibmFtZXMiOlsiTEVWRUxTIiwibnVtYmVyIiwidGl0bGUiLCJyZXF1aXJlZFNjb3JlIiwiYmVuZWZpdHMiXSwibWFwcGluZ3MiOiI7Ozs7K0JBRWFBOzs7ZUFBQUE7OztBQUFOLE1BQU1BLFNBQWtCO0lBQzdCO1FBQ0VDLFFBQVE7UUFDUkMsT0FBTztRQUNQQyxlQUFlO1FBQ2ZDLFVBQVU7WUFDUjtZQUNBO1lBQ0E7U0FDRDtJQUNIO0lBQ0E7UUFDRUgsUUFBUTtRQUNSQyxPQUFPO1FBQ1BDLGVBQWU7UUFDZkMsVUFBVTtZQUNSO1lBQ0E7WUFDQTtTQUNEO0lBQ0g7SUFDQTtRQUNFSCxRQUFRO1FBQ1JDLE9BQU87UUFDUEMsZUFBZTtRQUNmQyxVQUFVO1lBQ1I7WUFDQTtZQUNBO1NBQ0Q7SUFDSDtJQUNBO1FBQ0VILFFBQVE7UUFDUkMsT0FBTztRQUNQQyxlQUFlO1FBQ2ZDLFVBQVU7WUFDUjtZQUNBO1lBQ0E7U0FDRDtJQUNIO0lBQ0E7UUFDRUgsUUFBUTtRQUNSQyxPQUFPO1FBQ1BDLGVBQWU7UUFDZkMsVUFBVTtZQUNSO1lBQ0E7WUFDQTtTQUNEO0lBQ0g7Q0FDRCJ9

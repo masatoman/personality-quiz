@@ -1,0 +1,57 @@
+5ef39c2eff0410c1c67f8c9c2c2eb334
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+const _test = require("@playwright/test");
+_test.test.describe("英語学習タイプ診断", ()=>{
+    (0, _test.test)("診断フローを完了し、結果を表示できる", async ({ page })=>{
+        // トップページにアクセス
+        await page.goto("/");
+        // 診断開始ボタンをクリック
+        await page.click('button:has-text("診断を開始")');
+        // 全ての質問に回答
+        for(let i = 0; i < 10; i++){
+            // 選択肢をクリック（ここでは最初の選択肢を選択）
+            await page.click(".option-button >> nth=0");
+            // 次へボタンをクリック
+            await page.click('button:has-text("次へ")');
+        }
+        // 結果ページが表示されることを確認
+        await (0, _test.expect)(page.locator('h2:has-text("あなたの英語学習タイプは")')).toBeVisible();
+        // 診断結果の要素が表示されることを確認
+        await (0, _test.expect)(page.locator(".personality-type")).toBeVisible();
+        await (0, _test.expect)(page.locator(".strengths")).toBeVisible();
+        await (0, _test.expect)(page.locator(".weaknesses")).toBeVisible();
+        await (0, _test.expect)(page.locator(".learning-advice")).toBeVisible();
+    });
+    (0, _test.test)("前の質問に戻れる", async ({ page })=>{
+        await page.goto("/");
+        await page.click('button:has-text("診断を開始")');
+        // 最初の質問に回答
+        await page.click(".option-button >> nth=0");
+        await page.click('button:has-text("次へ")');
+        // 2問目の質問文を保存
+        const secondQuestionText = await page.textContent(".question-text");
+        // 前の質問に戻る
+        await page.click('button:has-text("戻る")');
+        // 最初の質問に戻っていることを確認
+        const currentQuestionText = await page.textContent(".question-text");
+        (0, _test.expect)(currentQuestionText).not.toBe(secondQuestionText);
+    });
+    (0, _test.test)("エラー状態からの回復", async ({ page })=>{
+        await page.goto("/");
+        // エラーを発生させる（例：存在しない要素をクリック）
+        await page.evaluate(()=>{
+            throw new Error("テストエラー");
+        }).catch(()=>{});
+        // エラーメッセージが表示されることを確認
+        await (0, _test.expect)(page.locator("text=予期せぬエラーが発生しました")).toBeVisible();
+        // 再試行ボタンをクリック
+        await page.click('button:has-text("再試行する")');
+        // アプリケーションが正常な状態に戻ることを確認
+        await (0, _test.expect)(page.locator('button:has-text("診断を開始")')).toBeVisible();
+    });
+});
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9zcmMvYXBwL19fdGVzdHNfXy9xdWl6LmUyZS50ZXN0LnRzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IHRlc3QsIGV4cGVjdCwgUGFnZSB9IGZyb20gJ0BwbGF5d3JpZ2h0L3Rlc3QnO1xuXG50ZXN0LmRlc2NyaWJlKCfoi7Hoqp7lrabnv5Ljgr/jgqTjg5foqLrmlq0nLCAoKSA9PiB7XG4gIHRlc3QoJ+iouuaWreODleODreODvOOCkuWujOS6huOBl+OAgee1kOaenOOCkuihqOekuuOBp+OBjeOCiycsIGFzeW5jICh7IHBhZ2UgfTogeyBwYWdlOiBQYWdlIH0pID0+IHtcbiAgICAvLyDjg4jjg4Pjg5fjg5rjg7zjgrjjgavjgqLjgq/jgrvjgrlcbiAgICBhd2FpdCBwYWdlLmdvdG8oJy8nKTtcbiAgICBcbiAgICAvLyDoqLrmlq3plovlp4vjg5zjgr/jg7PjgpLjgq/jg6rjg4Pjgq9cbiAgICBhd2FpdCBwYWdlLmNsaWNrKCdidXR0b246aGFzLXRleHQoXCLoqLrmlq3jgpLplovlp4tcIiknKTtcblxuICAgIC8vIOWFqOOBpuOBruizquWVj+OBq+WbnuetlFxuICAgIGZvciAobGV0IGkgPSAwOyBpIDwgMTA7IGkrKykge1xuICAgICAgLy8g6YG45oqe6IKi44KS44Kv44Oq44OD44Kv77yI44GT44GT44Gn44Gv5pyA5Yid44Gu6YG45oqe6IKi44KS6YG45oqe77yJXG4gICAgICBhd2FpdCBwYWdlLmNsaWNrKCcub3B0aW9uLWJ1dHRvbiA+PiBudGg9MCcpO1xuICAgICAgXG4gICAgICAvLyDmrKHjgbjjg5zjgr/jg7PjgpLjgq/jg6rjg4Pjgq9cbiAgICAgIGF3YWl0IHBhZ2UuY2xpY2soJ2J1dHRvbjpoYXMtdGV4dChcIuasoeOBuFwiKScpO1xuICAgIH1cblxuICAgIC8vIOe1kOaenOODmuODvOOCuOOBjOihqOekuuOBleOCjOOCi+OBk+OBqOOCkueiuuiqjVxuICAgIGF3YWl0IGV4cGVjdChwYWdlLmxvY2F0b3IoJ2gyOmhhcy10ZXh0KFwi44GC44Gq44Gf44Gu6Iux6Kqe5a2m57+S44K/44Kk44OX44GvXCIpJykpLnRvQmVWaXNpYmxlKCk7XG4gICAgXG4gICAgLy8g6Ki65pat57WQ5p6c44Gu6KaB57Sg44GM6KGo56S644GV44KM44KL44GT44Go44KS56K66KqNXG4gICAgYXdhaXQgZXhwZWN0KHBhZ2UubG9jYXRvcignLnBlcnNvbmFsaXR5LXR5cGUnKSkudG9CZVZpc2libGUoKTtcbiAgICBhd2FpdCBleHBlY3QocGFnZS5sb2NhdG9yKCcuc3RyZW5ndGhzJykpLnRvQmVWaXNpYmxlKCk7XG4gICAgYXdhaXQgZXhwZWN0KHBhZ2UubG9jYXRvcignLndlYWtuZXNzZXMnKSkudG9CZVZpc2libGUoKTtcbiAgICBhd2FpdCBleHBlY3QocGFnZS5sb2NhdG9yKCcubGVhcm5pbmctYWR2aWNlJykpLnRvQmVWaXNpYmxlKCk7XG4gIH0pO1xuXG4gIHRlc3QoJ+WJjeOBruizquWVj+OBq+aIu+OCjOOCiycsIGFzeW5jICh7IHBhZ2UgfTogeyBwYWdlOiBQYWdlIH0pID0+IHtcbiAgICBhd2FpdCBwYWdlLmdvdG8oJy8nKTtcbiAgICBhd2FpdCBwYWdlLmNsaWNrKCdidXR0b246aGFzLXRleHQoXCLoqLrmlq3jgpLplovlp4tcIiknKTtcblxuICAgIC8vIOacgOWIneOBruizquWVj+OBq+WbnuetlFxuICAgIGF3YWl0IHBhZ2UuY2xpY2soJy5vcHRpb24tYnV0dG9uID4+IG50aD0wJyk7XG4gICAgYXdhaXQgcGFnZS5jbGljaygnYnV0dG9uOmhhcy10ZXh0KFwi5qyh44G4XCIpJyk7XG5cbiAgICAvLyAy5ZWP55uu44Gu6LOq5ZWP5paH44KS5L+d5a2YXG4gICAgY29uc3Qgc2Vjb25kUXVlc3Rpb25UZXh0ID0gYXdhaXQgcGFnZS50ZXh0Q29udGVudCgnLnF1ZXN0aW9uLXRleHQnKTtcblxuICAgIC8vIOWJjeOBruizquWVj+OBq+aIu+OCi1xuICAgIGF3YWl0IHBhZ2UuY2xpY2soJ2J1dHRvbjpoYXMtdGV4dChcIuaIu+OCi1wiKScpO1xuXG4gICAgLy8g5pyA5Yid44Gu6LOq5ZWP44Gr5oi744Gj44Gm44GE44KL44GT44Go44KS56K66KqNXG4gICAgY29uc3QgY3VycmVudFF1ZXN0aW9uVGV4dCA9IGF3YWl0IHBhZ2UudGV4dENvbnRlbnQoJy5xdWVzdGlvbi10ZXh0Jyk7XG4gICAgZXhwZWN0KGN1cnJlbnRRdWVzdGlvblRleHQpLm5vdC50b0JlKHNlY29uZFF1ZXN0aW9uVGV4dCk7XG4gIH0pO1xuXG4gIHRlc3QoJ+OCqOODqeODvOeKtuaFi+OBi+OCieOBruWbnuW+qScsIGFzeW5jICh7IHBhZ2UgfTogeyBwYWdlOiBQYWdlIH0pID0+IHtcbiAgICBhd2FpdCBwYWdlLmdvdG8oJy8nKTtcbiAgICBcbiAgICAvLyDjgqjjg6njg7zjgpLnmbrnlJ/jgZXjgZvjgovvvIjkvovvvJrlrZjlnKjjgZfjgarjgYTopoHntKDjgpLjgq/jg6rjg4Pjgq/vvIlcbiAgICBhd2FpdCBwYWdlLmV2YWx1YXRlKCgpID0+IHtcbiAgICAgIHRocm93IG5ldyBFcnJvcign44OG44K544OI44Ko44Op44O8Jyk7XG4gICAgfSkuY2F0Y2goKCkgPT4ge30pO1xuXG4gICAgLy8g44Ko44Op44O844Oh44OD44K744O844K444GM6KGo56S644GV44KM44KL44GT44Go44KS56K66KqNXG4gICAgYXdhaXQgZXhwZWN0KHBhZ2UubG9jYXRvcigndGV4dD3kuojmnJ/jgZvjgazjgqjjg6njg7zjgYznmbrnlJ/jgZfjgb7jgZfjgZ8nKSkudG9CZVZpc2libGUoKTtcblxuICAgIC8vIOWGjeippuihjOODnOOCv+ODs+OCkuOCr+ODquODg+OCr1xuICAgIGF3YWl0IHBhZ2UuY2xpY2soJ2J1dHRvbjpoYXMtdGV4dChcIuWGjeippuihjOOBmeOCi1wiKScpO1xuXG4gICAgLy8g44Ki44OX44Oq44Kx44O844K344On44Oz44GM5q2j5bi444Gq54q25oWL44Gr5oi744KL44GT44Go44KS56K66KqNXG4gICAgYXdhaXQgZXhwZWN0KHBhZ2UubG9jYXRvcignYnV0dG9uOmhhcy10ZXh0KFwi6Ki65pat44KS6ZaL5aeLXCIpJykpLnRvQmVWaXNpYmxlKCk7XG4gIH0pO1xufSk7ICJdLCJuYW1lcyI6WyJ0ZXN0IiwiZGVzY3JpYmUiLCJwYWdlIiwiZ290byIsImNsaWNrIiwiaSIsImV4cGVjdCIsImxvY2F0b3IiLCJ0b0JlVmlzaWJsZSIsInNlY29uZFF1ZXN0aW9uVGV4dCIsInRleHRDb250ZW50IiwiY3VycmVudFF1ZXN0aW9uVGV4dCIsIm5vdCIsInRvQmUiLCJldmFsdWF0ZSIsIkVycm9yIiwiY2F0Y2giXSwibWFwcGluZ3MiOiI7Ozs7c0JBQW1DO0FBRW5DQSxVQUFJLENBQUNDLFFBQVEsQ0FBQyxhQUFhO0lBQ3pCRCxJQUFBQSxVQUFJLEVBQUMsc0JBQXNCLE9BQU8sRUFBRUUsSUFBSSxFQUFrQjtRQUN4RCxjQUFjO1FBQ2QsTUFBTUEsS0FBS0MsSUFBSSxDQUFDO1FBRWhCLGVBQWU7UUFDZixNQUFNRCxLQUFLRSxLQUFLLENBQUM7UUFFakIsV0FBVztRQUNYLElBQUssSUFBSUMsSUFBSSxHQUFHQSxJQUFJLElBQUlBLElBQUs7WUFDM0IsMEJBQTBCO1lBQzFCLE1BQU1ILEtBQUtFLEtBQUssQ0FBQztZQUVqQixhQUFhO1lBQ2IsTUFBTUYsS0FBS0UsS0FBSyxDQUFDO1FBQ25CO1FBRUEsbUJBQW1CO1FBQ25CLE1BQU1FLElBQUFBLFlBQU0sRUFBQ0osS0FBS0ssT0FBTyxDQUFDLGdDQUFnQ0MsV0FBVztRQUVyRSxxQkFBcUI7UUFDckIsTUFBTUYsSUFBQUEsWUFBTSxFQUFDSixLQUFLSyxPQUFPLENBQUMsc0JBQXNCQyxXQUFXO1FBQzNELE1BQU1GLElBQUFBLFlBQU0sRUFBQ0osS0FBS0ssT0FBTyxDQUFDLGVBQWVDLFdBQVc7UUFDcEQsTUFBTUYsSUFBQUEsWUFBTSxFQUFDSixLQUFLSyxPQUFPLENBQUMsZ0JBQWdCQyxXQUFXO1FBQ3JELE1BQU1GLElBQUFBLFlBQU0sRUFBQ0osS0FBS0ssT0FBTyxDQUFDLHFCQUFxQkMsV0FBVztJQUM1RDtJQUVBUixJQUFBQSxVQUFJLEVBQUMsWUFBWSxPQUFPLEVBQUVFLElBQUksRUFBa0I7UUFDOUMsTUFBTUEsS0FBS0MsSUFBSSxDQUFDO1FBQ2hCLE1BQU1ELEtBQUtFLEtBQUssQ0FBQztRQUVqQixXQUFXO1FBQ1gsTUFBTUYsS0FBS0UsS0FBSyxDQUFDO1FBQ2pCLE1BQU1GLEtBQUtFLEtBQUssQ0FBQztRQUVqQixhQUFhO1FBQ2IsTUFBTUsscUJBQXFCLE1BQU1QLEtBQUtRLFdBQVcsQ0FBQztRQUVsRCxVQUFVO1FBQ1YsTUFBTVIsS0FBS0UsS0FBSyxDQUFDO1FBRWpCLG1CQUFtQjtRQUNuQixNQUFNTyxzQkFBc0IsTUFBTVQsS0FBS1EsV0FBVyxDQUFDO1FBQ25ESixJQUFBQSxZQUFNLEVBQUNLLHFCQUFxQkMsR0FBRyxDQUFDQyxJQUFJLENBQUNKO0lBQ3ZDO0lBRUFULElBQUFBLFVBQUksRUFBQyxjQUFjLE9BQU8sRUFBRUUsSUFBSSxFQUFrQjtRQUNoRCxNQUFNQSxLQUFLQyxJQUFJLENBQUM7UUFFaEIsNEJBQTRCO1FBQzVCLE1BQU1ELEtBQUtZLFFBQVEsQ0FBQztZQUNsQixNQUFNLElBQUlDLE1BQU07UUFDbEIsR0FBR0MsS0FBSyxDQUFDLEtBQU87UUFFaEIsc0JBQXNCO1FBQ3RCLE1BQU1WLElBQUFBLFlBQU0sRUFBQ0osS0FBS0ssT0FBTyxDQUFDLHdCQUF3QkMsV0FBVztRQUU3RCxjQUFjO1FBQ2QsTUFBTU4sS0FBS0UsS0FBSyxDQUFDO1FBRWpCLHlCQUF5QjtRQUN6QixNQUFNRSxJQUFBQSxZQUFNLEVBQUNKLEtBQUtLLE9BQU8sQ0FBQyw2QkFBNkJDLFdBQVc7SUFDcEU7QUFDRiJ9

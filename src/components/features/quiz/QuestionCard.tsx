@@ -1,11 +1,13 @@
 import { motion } from 'framer-motion';
-import { Question } from '@/types/quiz';
+import { QuizQuestion } from '@/types/quiz';
+import { FaRegCheckCircle } from 'react-icons/fa';
 
 interface QuestionCardProps {
-  question: Question;
+  question: QuizQuestion;
   currentQuestion: number;
   totalQuestions: number;
   onAnswer: (index: number) => void;
+  selectedOption?: number | null;
 }
 
 export const QuestionCard = ({
@@ -13,58 +15,49 @@ export const QuestionCard = ({
   currentQuestion,
   totalQuestions,
   onAnswer,
+  selectedOption = null,
 }: QuestionCardProps) => {
   return (
-    <div className="w-full max-w-2xl">
-      <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-medium text-gray-500">
-              質問 {currentQuestion + 1} / {totalQuestions}
-            </span>
-            <div className="progress-container">
-              <div className="progress-info">
-                <span>Question {currentQuestion + 1} of {totalQuestions}</span>
-                <span>{Math.round((currentQuestion + 1) / totalQuestions * 100)}%</span>
-              </div>
-              <div 
-                className="progress-bar" 
-                role="progressbar"
-                aria-valuenow={Math.round((currentQuestion + 1) / totalQuestions * 100)}
-                aria-valuemin={0}
-                aria-valuemax={100}
-              >
-                <div 
-                  className="progress-fill" 
-                  style={{ width: `${((currentQuestion + 1) / totalQuestions) * 100}%` }} 
-                />
-              </div>
-            </div>
-          </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">{question.text}</h2>
+    <div className="w-full">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div className="mb-4">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
+            質問 {currentQuestion + 1}: {question.text}
+          </h2>
+          
+          {question.description && (
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
+              {question.description}
+            </p>
+          )}
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {question.options.map((option, index) => (
-            <motion.button
+            <div 
               key={index}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
               onClick={() => onAnswer(index)}
-              className="w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-blue-500 transition-all duration-300 group relative overflow-hidden"
+              className={`
+                cursor-pointer p-4 rounded-lg border-2 transition duration-200
+                flex justify-between items-center
+                ${selectedOption === index 
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900' 
+                  : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700'}
+              `}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/5 group-hover:to-blue-500/10 transition-all duration-300" />
-              <div className="relative flex items-center">
-                <div className="w-8 h-8 rounded-full bg-gray-100 group-hover:bg-blue-100 flex items-center justify-center mr-4 transition-all duration-300">
-                  <span className="text-gray-600 group-hover:text-blue-600 font-medium">
-                    {String.fromCharCode(65 + index)}
-                  </span>
-                </div>
-                <span className="text-gray-800 group-hover:text-gray-900 font-medium">
-                  {option.text}
-                </span>
+              <div>
+                <p className="text-gray-800 dark:text-gray-200">{option.text}</p>
+                {option.description && (
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    {option.description}
+                  </p>
+                )}
               </div>
-            </motion.button>
+              
+              {selectedOption === index && (
+                <FaRegCheckCircle className="text-blue-500 text-xl" />
+              )}
+            </div>
           ))}
         </div>
       </div>

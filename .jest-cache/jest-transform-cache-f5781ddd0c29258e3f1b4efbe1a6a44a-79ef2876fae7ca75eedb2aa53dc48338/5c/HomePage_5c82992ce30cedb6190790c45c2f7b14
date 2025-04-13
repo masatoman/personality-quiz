@@ -1,0 +1,576 @@
+dd74f2508533b1fe8bbe72f967a79b21
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "default", {
+    enumerable: true,
+    get: function() {
+        return _default;
+    }
+});
+const _jsxruntime = require("react/jsx-runtime");
+const _react = /*#__PURE__*/ _interop_require_wildcard(require("react"));
+const _navigation = require("next/navigation");
+const _link = /*#__PURE__*/ _interop_require_default(require("next/link"));
+const _fa = require("react-icons/fa");
+function _interop_require_default(obj) {
+    return obj && obj.__esModule ? obj : {
+        default: obj
+    };
+}
+function _getRequireWildcardCache(nodeInterop) {
+    if (typeof WeakMap !== "function") return null;
+    var cacheBabelInterop = new WeakMap();
+    var cacheNodeInterop = new WeakMap();
+    return (_getRequireWildcardCache = function(nodeInterop) {
+        return nodeInterop ? cacheNodeInterop : cacheBabelInterop;
+    })(nodeInterop);
+}
+function _interop_require_wildcard(obj, nodeInterop) {
+    if (!nodeInterop && obj && obj.__esModule) {
+        return obj;
+    }
+    if (obj === null || typeof obj !== "object" && typeof obj !== "function") {
+        return {
+            default: obj
+        };
+    }
+    var cache = _getRequireWildcardCache(nodeInterop);
+    if (cache && cache.has(obj)) {
+        return cache.get(obj);
+    }
+    var newObj = {
+        __proto__: null
+    };
+    var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+    for(var key in obj){
+        if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) {
+            var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+            if (desc && (desc.get || desc.set)) {
+                Object.defineProperty(newObj, key, desc);
+            } else {
+                newObj[key] = obj[key];
+            }
+        }
+    }
+    newObj.default = obj;
+    if (cache) {
+        cache.set(obj, newObj);
+    }
+    return newObj;
+}
+// メインコンポーネント
+const HomePage = ()=>{
+    const [isScrolled, setIsScrolled] = (0, _react.useState)(false);
+    const router = (0, _navigation.useRouter)();
+    // スクロール検知
+    (0, _react.useEffect)(()=>{
+        const handleScroll = ()=>{
+            const scrollPosition = window.scrollY;
+            setIsScrolled(scrollPosition > 50);
+        };
+        window.addEventListener("scroll", handleScroll);
+        return ()=>window.removeEventListener("scroll", handleScroll);
+    }, []);
+    return /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+        className: "min-h-screen",
+        children: [
+            /*#__PURE__*/ (0, _jsxruntime.jsx)("header", {
+                className: "bg-gradient-to-r from-blue-500 to-purple-600 text-white py-6",
+                children: /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                    className: "container mx-auto flex justify-between items-center px-4",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h1", {
+                            className: "text-3xl font-bold",
+                            children: "英語学習タイプ診断"
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("nav", {
+                            className: "space-x-4",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)("a", {
+                                    href: "#types",
+                                    className: "hover:underline",
+                                    children: "学習タイプ"
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)("a", {
+                                    href: "#benefits",
+                                    className: "hover:underline",
+                                    children: "メリット"
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)("a", {
+                                    href: "#roadmap",
+                                    className: "hover:underline",
+                                    children: "成長プラン"
+                                })
+                            ]
+                        })
+                    ]
+                })
+            }),
+            /*#__PURE__*/ (0, _jsxruntime.jsx)("section", {
+                className: "bg-white text-center py-20",
+                children: /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                    className: "container mx-auto px-4",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h2", {
+                            className: "text-4xl font-bold mb-4",
+                            children: "あなたの英語学習タイプを知ろう"
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                            className: "text-lg text-gray-700 mb-8",
+                            children: "自分に合った学習法で効率的に英語を習得。心理学に基づいた診断であなたの強みを活かした学習法を発見しませんか？"
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                            className: "flex justify-center space-x-4",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_link.default, {
+                                    href: "/quiz",
+                                    className: "inline-block px-8 py-4 bg-blue-600 text-white rounded-full text-lg font-bold shadow-lg hover:bg-blue-700 transition-colors",
+                                    children: "診断スタート（5分）"
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)("a", {
+                                    href: "#types",
+                                    className: "inline-flex items-center px-6 py-3 border border-blue-600 text-blue-600 rounded-full hover:bg-blue-600 hover:text-white transition-colors",
+                                    children: "詳しく見る"
+                                })
+                            ]
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                            className: "grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 quiz-info",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "bg-white p-6 rounded-xl shadow-sm",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "text-lg font-medium text-gray-400",
+                                            children: "質問数"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "text-3xl font-bold",
+                                            children: "15問"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "text-gray-500 mt-2",
+                                            children: "約5分で完了"
+                                        })
+                                    ]
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "bg-white p-6 rounded-xl shadow-sm",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "text-lg font-medium text-gray-400",
+                                            children: "学習者の理解度向上"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "text-3xl font-bold text-success",
+                                            children: "+43%"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "text-gray-500 mt-2",
+                                            children: "自分に合った方法で学ぶ効果"
+                                        })
+                                    ]
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "bg-white p-6 rounded-xl shadow-sm",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "text-lg font-medium text-gray-400",
+                                            children: "累計診断者数"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "text-3xl font-bold",
+                                            children: "1,200+"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "text-gray-500 mt-2",
+                                            children: "診断後の満足度98%"
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                })
+            }),
+            /*#__PURE__*/ (0, _jsxruntime.jsx)("section", {
+                id: "types",
+                className: "bg-gray-100 py-20",
+                children: /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                    className: "container mx-auto px-4",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h2", {
+                            className: "text-3xl font-bold text-center mb-12",
+                            children: "あなたの英語学習タイプを発見しよう"
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                            className: "grid grid-cols-1 md:grid-cols-3 gap-8",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "type-card bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "type-icon mb-4",
+                                            children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_fa.FaUsers, {
+                                                size: 60,
+                                                className: "text-blue-500 mx-auto"
+                                            })
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                                            className: "type-title text-xl font-semibold mb-2",
+                                            children: "ギバー型"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                                            className: "type-desc text-gray-600 mb-4",
+                                            children: "他者へ知識を伝えることで学ぶタイプ。教えることで理解が深まります。"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("ul", {
+                                            className: "type-features text-sm text-gray-500",
+                                            children: [
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("li", {
+                                                    children: "グループ学習を好む"
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("li", {
+                                                    children: "説明することで記憶定着"
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("li", {
+                                                    children: "人とのつながりを大切にする"
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "type-stats text-sm text-gray-500 mt-4",
+                                            children: "診断受験者の33%"
+                                        })
+                                    ]
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "type-card bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "type-icon mb-4",
+                                            children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_fa.FaBalanceScale, {
+                                                size: 60,
+                                                className: "text-blue-500 mx-auto"
+                                            })
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                                            className: "type-title text-xl font-semibold mb-2",
+                                            children: "マッチャー型"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                                            className: "type-desc text-gray-600 mb-4",
+                                            children: "バランス重視で学ぶタイプ。多様な学習方法を組み合わせます。"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("ul", {
+                                            className: "type-features text-sm text-gray-500",
+                                            children: [
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("li", {
+                                                    children: "柔軟な学習スタイル"
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("li", {
+                                                    children: "実践と理論のバランス"
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("li", {
+                                                    children: "環境に適応しやすい"
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "type-stats text-sm text-gray-500 mt-4",
+                                            children: "診断受験者の34%"
+                                        })
+                                    ]
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "type-card bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "type-icon mb-4",
+                                            children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_fa.FaBook, {
+                                                size: 60,
+                                                className: "text-blue-500 mx-auto"
+                                            })
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                                            className: "type-title text-xl font-semibold mb-2",
+                                            children: "テイカー型"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                                            className: "type-desc text-gray-600 mb-4",
+                                            children: "自己学習を好むタイプ。情報収集と分析が得意です。"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("ul", {
+                                            className: "type-features text-sm text-gray-500",
+                                            children: [
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("li", {
+                                                    children: "個人学習を好む"
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("li", {
+                                                    children: "情報整理が得意"
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("li", {
+                                                    children: "自分のペースを大切にする"
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "type-stats text-sm text-gray-500 mt-4",
+                                            children: "診断受験者の33%"
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                })
+            }),
+            /*#__PURE__*/ (0, _jsxruntime.jsx)("section", {
+                id: "benefits",
+                className: "bg-white py-20",
+                children: /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                    className: "container mx-auto px-4",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h2", {
+                            className: "text-3xl font-bold text-center mb-12",
+                            children: "診断で得られるメリット"
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                            className: "grid grid-cols-1 md:grid-cols-4 gap-8",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "benefit-card bg-gray-100 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "benefit-icon mb-4",
+                                            children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_fa.FaChartLine, {
+                                                size: 40,
+                                                className: "text-blue-500 mx-auto"
+                                            })
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                                            className: "benefit-title text-xl font-semibold mb-2",
+                                            children: "学習効率の向上"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                                            className: "benefit-desc text-gray-600",
+                                            children: "自分に合った学習法を知ることで、効率よく英語力を伸ばせます。"
+                                        })
+                                    ]
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "benefit-card bg-gray-100 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "benefit-icon mb-4",
+                                            children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_fa.FaLightbulb, {
+                                                size: 40,
+                                                className: "text-blue-500 mx-auto"
+                                            })
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                                            className: "benefit-title text-xl font-semibold mb-2",
+                                            children: "モチベーション維持"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                                            className: "benefit-desc text-gray-600",
+                                            children: "自分に合った方法で学ぶことで、継続的な学習が可能になります。"
+                                        })
+                                    ]
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "benefit-card bg-gray-100 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "benefit-icon mb-4",
+                                            children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_fa.FaRocket, {
+                                                size: 40,
+                                                className: "text-blue-500 mx-auto"
+                                            })
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                                            className: "benefit-title text-xl font-semibold mb-2",
+                                            children: "強みの活用"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                                            className: "benefit-desc text-gray-600",
+                                            children: "自分の強みを活かした学習アプローチで、最大限の成果を出せます。"
+                                        })
+                                    ]
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "benefit-card bg-gray-100 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "benefit-icon mb-4",
+                                            children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_fa.FaClock, {
+                                                size: 40,
+                                                className: "text-blue-500 mx-auto"
+                                            })
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                                            className: "benefit-title text-xl font-semibold mb-2",
+                                            children: "学習時間の短縮"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                                            className: "benefit-desc text-gray-600",
+                                            children: "効率的な学習方法で、目標達成までの時間を短縮できます。"
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                })
+            }),
+            /*#__PURE__*/ (0, _jsxruntime.jsx)("section", {
+                id: "roadmap",
+                className: "bg-gray-100 py-20",
+                children: /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                    className: "container mx-auto px-4",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h2", {
+                            className: "text-3xl font-bold text-center mb-12",
+                            children: "英語習得への成長ロードマップ"
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                            className: "grid grid-cols-1 md:grid-cols-2 gap-8",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "step-number text-blue-500 text-2xl font-bold mb-4",
+                                            children: "1"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                                            className: "growth-title text-xl font-semibold mb-2",
+                                            children: "学習タイプの診断"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                                            className: "growth-desc text-gray-600",
+                                            children: "5分程度の質問に答えるだけで、あなたの英語学習タイプを特定します。"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)(_link.default, {
+                                            href: "/quiz",
+                                            className: "inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-full hover:opacity-90 transition-colors",
+                                            children: [
+                                                "診断を始める",
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_fa.FaChevronRight, {
+                                                    className: "ml-2"
+                                                })
+                                            ]
+                                        })
+                                    ]
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "step-number text-blue-500 text-2xl font-bold mb-4",
+                                            children: "2"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                                            className: "growth-title text-xl font-semibold mb-2",
+                                            children: "学習法のカスタマイズ"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                                            className: "growth-desc text-gray-600",
+                                            children: "診断結果に基づいて、あなたに最適な学習ツールと方法を提案します。"
+                                        })
+                                    ]
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "step-number text-blue-500 text-2xl font-bold mb-4",
+                                            children: "3"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                                            className: "growth-title text-xl font-semibold mb-2",
+                                            children: "継続的な学習サポート"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                                            className: "growth-desc text-gray-600",
+                                            children: "あなたのタイプに合わせたリソースと定期的なフィードバックで、学習を継続的にサポートします。"
+                                        })
+                                    ]
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                            className: "step-number text-blue-500 text-2xl font-bold mb-4",
+                                            children: "4"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                                            className: "growth-title text-xl font-semibold mb-2",
+                                            children: "目標達成と成長"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                                            className: "growth-desc text-gray-600",
+                                            children: "効率的な学習で英語力を着実に伸ばし、あなたの英語学習目標を達成します。"
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                })
+            }),
+            /*#__PURE__*/ (0, _jsxruntime.jsx)("section", {
+                className: "cta bg-primary text-white py-16",
+                children: /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                    className: "container mx-auto px-4 text-center",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h2", {
+                            className: "text-3xl font-bold mb-6",
+                            children: "今すぐ自分の英語学習タイプを見つけよう"
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                            className: "text-xl opacity-90 mb-8",
+                            children: "たった5分の診断で、あなたに最適な英語学習法がわかります。"
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_link.default, {
+                            href: "/quiz",
+                            className: "inline-block px-8 py-4 bg-white text-primary font-bold rounded-full text-lg shadow-lg hover:bg-gray-100 transition-colors",
+                            children: "無料診断をスタート"
+                        })
+                    ]
+                })
+            }),
+            /*#__PURE__*/ (0, _jsxruntime.jsx)("footer", {
+                className: "bg-gradient-to-r from-blue-500 to-purple-600 text-white py-12",
+                children: /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                    className: "container mx-auto text-center",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h2", {
+                            className: "text-2xl font-bold mb-4",
+                            children: "今すぐ自分の英語学習タイプを見つけよう"
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                            className: "text-lg mb-8",
+                            children: "たった5分の診断で、あなたに最適な英語学習法がわかります。"
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_link.default, {
+                            href: "/quiz",
+                            className: "inline-block px-8 py-4 bg-white text-blue-600 font-bold rounded-full text-lg shadow-lg hover:bg-gray-100 transition-colors",
+                            children: "無料診断をスタート"
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                            className: "mt-8 text-sm",
+                            children: "\xa9 2023 英語学習タイプ診断 All Rights Reserved."
+                        })
+                    ]
+                })
+            })
+        ]
+    });
+};
+const _default = HomePage;
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9zcmMvY29tcG9uZW50cy9Ib21lUGFnZS50c3giXSwic291cmNlc0NvbnRlbnQiOlsiJ3VzZSBjbGllbnQnO1xuXG5pbXBvcnQgUmVhY3QsIHsgdXNlU3RhdGUsIHVzZUVmZmVjdCwgdXNlUmVmIH0gZnJvbSAncmVhY3QnO1xuaW1wb3J0IHsgdXNlUm91dGVyIH0gZnJvbSAnbmV4dC9uYXZpZ2F0aW9uJztcbmltcG9ydCBMaW5rIGZyb20gJ25leHQvbGluayc7XG5pbXBvcnQgeyBtb3Rpb24gfSBmcm9tICdmcmFtZXItbW90aW9uJztcbmltcG9ydCB7IFxuICBGYVVzZXJzLCBGYUJhbGFuY2VTY2FsZSwgRmFCb29rLCBGYUNoYXJ0TGluZSwgXG4gIEZhTGlnaHRidWxiLCBGYVJvY2tldCwgRmFDbG9jaywgRmFDaGV2cm9uUmlnaHQsXG4gIEZhVXNlckNpcmNsZSwgRmFUcm9waHksIEZhQ2FsZW5kYXJBbHQsIEZhUGx1c0NpcmNsZSxcbiAgRmFTZWFyY2gsIEZhRWRpdFxufSBmcm9tICdyZWFjdC1pY29ucy9mYSc7XG5cbi8vIOODoeOCpOODs+OCs+ODs+ODneODvOODjeODs+ODiFxuY29uc3QgSG9tZVBhZ2U6IFJlYWN0LkZDID0gKCkgPT4ge1xuICBjb25zdCBbaXNTY3JvbGxlZCwgc2V0SXNTY3JvbGxlZF0gPSB1c2VTdGF0ZShmYWxzZSk7XG4gIGNvbnN0IHJvdXRlciA9IHVzZVJvdXRlcigpO1xuICBcbiAgLy8g44K544Kv44Ot44O844Or5qSc55+lXG4gIHVzZUVmZmVjdCgoKSA9PiB7XG4gICAgY29uc3QgaGFuZGxlU2Nyb2xsID0gKCkgPT4ge1xuICAgICAgY29uc3Qgc2Nyb2xsUG9zaXRpb24gPSB3aW5kb3cuc2Nyb2xsWTtcbiAgICAgIHNldElzU2Nyb2xsZWQoc2Nyb2xsUG9zaXRpb24gPiA1MCk7XG4gICAgfTtcblxuICAgIHdpbmRvdy5hZGRFdmVudExpc3RlbmVyKCdzY3JvbGwnLCBoYW5kbGVTY3JvbGwpO1xuICAgIHJldHVybiAoKSA9PiB3aW5kb3cucmVtb3ZlRXZlbnRMaXN0ZW5lcignc2Nyb2xsJywgaGFuZGxlU2Nyb2xsKTtcbiAgfSwgW10pO1xuXG4gIHJldHVybiAoXG4gICAgPGRpdiBjbGFzc05hbWU9XCJtaW4taC1zY3JlZW5cIj5cbiAgICAgIHsvKiDjg5jjg4Pjg4Djg7wgKi99XG4gICAgICA8aGVhZGVyIGNsYXNzTmFtZT1cImJnLWdyYWRpZW50LXRvLXIgZnJvbS1ibHVlLTUwMCB0by1wdXJwbGUtNjAwIHRleHQtd2hpdGUgcHktNlwiPlxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbnRhaW5lciBteC1hdXRvIGZsZXgganVzdGlmeS1iZXR3ZWVuIGl0ZW1zLWNlbnRlciBweC00XCI+XG4gICAgICAgICAgPGgxIGNsYXNzTmFtZT1cInRleHQtM3hsIGZvbnQtYm9sZFwiPuiLseiqnuWtpue/kuOCv+OCpOODl+iouuaWrTwvaDE+XG4gICAgICAgICAgPG5hdiBjbGFzc05hbWU9XCJzcGFjZS14LTRcIj5cbiAgICAgICAgICAgIDxhIGhyZWY9XCIjdHlwZXNcIiBjbGFzc05hbWU9XCJob3Zlcjp1bmRlcmxpbmVcIj7lrabnv5Ljgr/jgqTjg5c8L2E+XG4gICAgICAgICAgICA8YSBocmVmPVwiI2JlbmVmaXRzXCIgY2xhc3NOYW1lPVwiaG92ZXI6dW5kZXJsaW5lXCI+44Oh44Oq44OD44OIPC9hPlxuICAgICAgICAgICAgPGEgaHJlZj1cIiNyb2FkbWFwXCIgY2xhc3NOYW1lPVwiaG92ZXI6dW5kZXJsaW5lXCI+5oiQ6ZW344OX44Op44OzPC9hPlxuICAgICAgICAgIDwvbmF2PlxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvaGVhZGVyPlxuXG4gICAgICB7Lyog44OS44O844Ot44O844K744Kv44K344On44OzICovfVxuICAgICAgPHNlY3Rpb24gY2xhc3NOYW1lPVwiYmctd2hpdGUgdGV4dC1jZW50ZXIgcHktMjBcIj5cbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJjb250YWluZXIgbXgtYXV0byBweC00XCI+XG4gICAgICAgICAgPGgyIGNsYXNzTmFtZT1cInRleHQtNHhsIGZvbnQtYm9sZCBtYi00XCI+44GC44Gq44Gf44Gu6Iux6Kqe5a2m57+S44K/44Kk44OX44KS55+l44KN44GGPC9oMj5cbiAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LWxnIHRleHQtZ3JheS03MDAgbWItOFwiPuiHquWIhuOBq+WQiOOBo+OBn+Wtpue/kuazleOBp+WKueeOh+eahOOBq+iLseiqnuOCkue/kuW+l+OAguW/g+eQhuWtpuOBq+WfuuOBpeOBhOOBn+iouuaWreOBp+OBguOBquOBn+OBruW8t+OBv+OCkua0u+OBi+OBl+OBn+Wtpue/kuazleOCkueZuuimi+OBl+OBvuOBm+OCk+OBi++8nzwvcD5cbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXgganVzdGlmeS1jZW50ZXIgc3BhY2UteC00XCI+XG4gICAgICAgICAgICA8TGluayBocmVmPVwiL3F1aXpcIiBjbGFzc05hbWU9XCJpbmxpbmUtYmxvY2sgcHgtOCBweS00IGJnLWJsdWUtNjAwIHRleHQtd2hpdGUgcm91bmRlZC1mdWxsIHRleHQtbGcgZm9udC1ib2xkIHNoYWRvdy1sZyBob3ZlcjpiZy1ibHVlLTcwMCB0cmFuc2l0aW9uLWNvbG9yc1wiPlxuICAgICAgICAgICAgICDoqLrmlq3jgrnjgr/jg7zjg4jvvIg15YiG77yJXG4gICAgICAgICAgICA8L0xpbms+XG4gICAgICAgICAgICA8YSBocmVmPVwiI3R5cGVzXCIgY2xhc3NOYW1lPVwiaW5saW5lLWZsZXggaXRlbXMtY2VudGVyIHB4LTYgcHktMyBib3JkZXIgYm9yZGVyLWJsdWUtNjAwIHRleHQtYmx1ZS02MDAgcm91bmRlZC1mdWxsIGhvdmVyOmJnLWJsdWUtNjAwIGhvdmVyOnRleHQtd2hpdGUgdHJhbnNpdGlvbi1jb2xvcnNcIj5cbiAgICAgICAgICAgICAg6Kmz44GX44GP6KaL44KLXG4gICAgICAgICAgICA8L2E+XG4gICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJncmlkIGdyaWQtY29scy0xIG1kOmdyaWQtY29scy0zIGdhcC04IG10LTE2IHF1aXotaW5mb1wiPlxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJiZy13aGl0ZSBwLTYgcm91bmRlZC14bCBzaGFkb3ctc21cIj5cbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZXh0LWxnIGZvbnQtbWVkaXVtIHRleHQtZ3JheS00MDBcIj7os6rllY/mlbA8L2Rpdj5cbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZXh0LTN4bCBmb250LWJvbGRcIj4xNeWVjzwvZGl2PlxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQtZ3JheS01MDAgbXQtMlwiPue0hDXliIbjgaflrozkuoY8L2Rpdj5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJiZy13aGl0ZSBwLTYgcm91bmRlZC14bCBzaGFkb3ctc21cIj5cbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZXh0LWxnIGZvbnQtbWVkaXVtIHRleHQtZ3JheS00MDBcIj7lrabnv5LogIXjga7nkIbop6PluqblkJHkuIo8L2Rpdj5cbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZXh0LTN4bCBmb250LWJvbGQgdGV4dC1zdWNjZXNzXCI+KzQzJTwvZGl2PlxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQtZ3JheS01MDAgbXQtMlwiPuiHquWIhuOBq+WQiOOBo+OBn+aWueazleOBp+WtpuOBtuWKueaenDwvZGl2PlxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImJnLXdoaXRlIHAtNiByb3VuZGVkLXhsIHNoYWRvdy1zbVwiPlxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQtbGcgZm9udC1tZWRpdW0gdGV4dC1ncmF5LTQwMFwiPue0r+ioiOiouuaWreiAheaVsDwvZGl2PlxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQtM3hsIGZvbnQtYm9sZFwiPjEsMjAwKzwvZGl2PlxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQtZ3JheS01MDAgbXQtMlwiPuiouuaWreW+jOOBrua6gOi2s+W6pjk4JTwvZGl2PlxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgPC9kaXY+XG4gICAgICAgIDwvZGl2PlxuICAgICAgPC9zZWN0aW9uPlxuXG4gICAgICB7Lyog5a2m57+S44K/44Kk44OX44K744Kv44K344On44OzICovfVxuICAgICAgPHNlY3Rpb24gaWQ9XCJ0eXBlc1wiIGNsYXNzTmFtZT1cImJnLWdyYXktMTAwIHB5LTIwXCI+XG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiY29udGFpbmVyIG14LWF1dG8gcHgtNFwiPlxuICAgICAgICAgIDxoMiBjbGFzc05hbWU9XCJ0ZXh0LTN4bCBmb250LWJvbGQgdGV4dC1jZW50ZXIgbWItMTJcIj7jgYLjgarjgZ/jga7oi7Hoqp7lrabnv5Ljgr/jgqTjg5fjgpLnmbropovjgZfjgojjgYY8L2gyPlxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZ3JpZCBncmlkLWNvbHMtMSBtZDpncmlkLWNvbHMtMyBnYXAtOFwiPlxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0eXBlLWNhcmQgYmctd2hpdGUgcC02IHJvdW5kZWQtbGcgc2hhZG93LW1kIGhvdmVyOnNoYWRvdy1sZyB0cmFuc2l0aW9uLXNoYWRvd1wiPlxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInR5cGUtaWNvbiBtYi00XCI+XG4gICAgICAgICAgICAgICAgPEZhVXNlcnMgc2l6ZT17NjB9IGNsYXNzTmFtZT1cInRleHQtYmx1ZS01MDAgbXgtYXV0b1wiIC8+XG4gICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICA8aDMgY2xhc3NOYW1lPVwidHlwZS10aXRsZSB0ZXh0LXhsIGZvbnQtc2VtaWJvbGQgbWItMlwiPuOCruODkOODvOWeizwvaDM+XG4gICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInR5cGUtZGVzYyB0ZXh0LWdyYXktNjAwIG1iLTRcIj7ku5bogIXjgbjnn6XorZjjgpLkvJ3jgYjjgovjgZPjgajjgaflrabjgbbjgr/jgqTjg5fjgILmlZnjgYjjgovjgZPjgajjgafnkIbop6PjgYzmt7Hjgb7jgorjgb7jgZnjgII8L3A+XG4gICAgICAgICAgICAgIDx1bCBjbGFzc05hbWU9XCJ0eXBlLWZlYXR1cmVzIHRleHQtc20gdGV4dC1ncmF5LTUwMFwiPlxuICAgICAgICAgICAgICAgIDxsaT7jgrDjg6vjg7zjg5flrabnv5LjgpLlpb3jgoA8L2xpPlxuICAgICAgICAgICAgICAgIDxsaT7oqqzmmI7jgZnjgovjgZPjgajjgafoqJjmhrblrprnnYA8L2xpPlxuICAgICAgICAgICAgICAgIDxsaT7kurrjgajjga7jgaTjgarjgYzjgorjgpLlpKfliIfjgavjgZnjgos8L2xpPlxuICAgICAgICAgICAgICA8L3VsPlxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInR5cGUtc3RhdHMgdGV4dC1zbSB0ZXh0LWdyYXktNTAwIG10LTRcIj7oqLrmlq3lj5fpqJPogIXjga4zMyU8L2Rpdj5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0eXBlLWNhcmQgYmctd2hpdGUgcC02IHJvdW5kZWQtbGcgc2hhZG93LW1kIGhvdmVyOnNoYWRvdy1sZyB0cmFuc2l0aW9uLXNoYWRvd1wiPlxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInR5cGUtaWNvbiBtYi00XCI+XG4gICAgICAgICAgICAgICAgPEZhQmFsYW5jZVNjYWxlIHNpemU9ezYwfSBjbGFzc05hbWU9XCJ0ZXh0LWJsdWUtNTAwIG14LWF1dG9cIiAvPlxuICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgPGgzIGNsYXNzTmFtZT1cInR5cGUtdGl0bGUgdGV4dC14bCBmb250LXNlbWlib2xkIG1iLTJcIj7jg57jg4Pjg4Hjg6Pjg7zlnos8L2gzPlxuICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0eXBlLWRlc2MgdGV4dC1ncmF5LTYwMCBtYi00XCI+44OQ44Op44Oz44K56YeN6KaW44Gn5a2m44G244K/44Kk44OX44CC5aSa5qeY44Gq5a2m57+S5pa55rOV44KS57WE44G/5ZCI44KP44Gb44G+44GZ44CCPC9wPlxuICAgICAgICAgICAgICA8dWwgY2xhc3NOYW1lPVwidHlwZS1mZWF0dXJlcyB0ZXh0LXNtIHRleHQtZ3JheS01MDBcIj5cbiAgICAgICAgICAgICAgICA8bGk+5p+U6Luf44Gq5a2m57+S44K544K/44Kk44OrPC9saT5cbiAgICAgICAgICAgICAgICA8bGk+5a6f6Le144Go55CG6KuW44Gu44OQ44Op44Oz44K5PC9saT5cbiAgICAgICAgICAgICAgICA8bGk+55Kw5aKD44Gr6YGp5b+c44GX44KE44GZ44GEPC9saT5cbiAgICAgICAgICAgICAgPC91bD5cbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0eXBlLXN0YXRzIHRleHQtc20gdGV4dC1ncmF5LTUwMCBtdC00XCI+6Ki65pat5Y+X6aiT6ICF44GuMzQlPC9kaXY+XG4gICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidHlwZS1jYXJkIGJnLXdoaXRlIHAtNiByb3VuZGVkLWxnIHNoYWRvdy1tZCBob3ZlcjpzaGFkb3ctbGcgdHJhbnNpdGlvbi1zaGFkb3dcIj5cbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0eXBlLWljb24gbWItNFwiPlxuICAgICAgICAgICAgICAgIDxGYUJvb2sgc2l6ZT17NjB9IGNsYXNzTmFtZT1cInRleHQtYmx1ZS01MDAgbXgtYXV0b1wiIC8+XG4gICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICA8aDMgY2xhc3NOYW1lPVwidHlwZS10aXRsZSB0ZXh0LXhsIGZvbnQtc2VtaWJvbGQgbWItMlwiPuODhuOCpOOCq+ODvOWeizwvaDM+XG4gICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInR5cGUtZGVzYyB0ZXh0LWdyYXktNjAwIG1iLTRcIj7oh6rlt7Hlrabnv5LjgpLlpb3jgoDjgr/jgqTjg5fjgILmg4XloLHlj47pm4bjgajliIbmnpDjgYzlvpfmhI/jgafjgZnjgII8L3A+XG4gICAgICAgICAgICAgIDx1bCBjbGFzc05hbWU9XCJ0eXBlLWZlYXR1cmVzIHRleHQtc20gdGV4dC1ncmF5LTUwMFwiPlxuICAgICAgICAgICAgICAgIDxsaT7lgIvkurrlrabnv5LjgpLlpb3jgoA8L2xpPlxuICAgICAgICAgICAgICAgIDxsaT7mg4XloLHmlbTnkIbjgYzlvpfmhI88L2xpPlxuICAgICAgICAgICAgICAgIDxsaT7oh6rliIbjga7jg5rjg7zjgrnjgpLlpKfliIfjgavjgZnjgos8L2xpPlxuICAgICAgICAgICAgICA8L3VsPlxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInR5cGUtc3RhdHMgdGV4dC1zbSB0ZXh0LWdyYXktNTAwIG10LTRcIj7oqLrmlq3lj5fpqJPogIXjga4zMyU8L2Rpdj5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgIDwvZGl2PlxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvc2VjdGlvbj5cblxuICAgICAgey8qIOODoeODquODg+ODiOOCu+OCr+OCt+ODp+ODsyAqL31cbiAgICAgIDxzZWN0aW9uIGlkPVwiYmVuZWZpdHNcIiBjbGFzc05hbWU9XCJiZy13aGl0ZSBweS0yMFwiPlxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbnRhaW5lciBteC1hdXRvIHB4LTRcIj5cbiAgICAgICAgICA8aDIgY2xhc3NOYW1lPVwidGV4dC0zeGwgZm9udC1ib2xkIHRleHQtY2VudGVyIG1iLTEyXCI+6Ki65pat44Gn5b6X44KJ44KM44KL44Oh44Oq44OD44OIPC9oMj5cbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImdyaWQgZ3JpZC1jb2xzLTEgbWQ6Z3JpZC1jb2xzLTQgZ2FwLThcIj5cbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiYmVuZWZpdC1jYXJkIGJnLWdyYXktMTAwIHAtNiByb3VuZGVkLWxnIHNoYWRvdy1tZCBob3ZlcjpzaGFkb3ctbGcgdHJhbnNpdGlvbi1zaGFkb3dcIj5cbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJiZW5lZml0LWljb24gbWItNFwiPlxuICAgICAgICAgICAgICAgIDxGYUNoYXJ0TGluZSBzaXplPXs0MH0gY2xhc3NOYW1lPVwidGV4dC1ibHVlLTUwMCBteC1hdXRvXCIgLz5cbiAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgIDxoMyBjbGFzc05hbWU9XCJiZW5lZml0LXRpdGxlIHRleHQteGwgZm9udC1zZW1pYm9sZCBtYi0yXCI+5a2m57+S5Yq5546H44Gu5ZCR5LiKPC9oMz5cbiAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwiYmVuZWZpdC1kZXNjIHRleHQtZ3JheS02MDBcIj7oh6rliIbjgavlkIjjgaPjgZ/lrabnv5Lms5XjgpLnn6XjgovjgZPjgajjgafjgIHlirnnjofjgojjgY/oi7Hoqp7lipvjgpLkvLjjgbDjgZvjgb7jgZnjgII8L3A+XG4gICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiYmVuZWZpdC1jYXJkIGJnLWdyYXktMTAwIHAtNiByb3VuZGVkLWxnIHNoYWRvdy1tZCBob3ZlcjpzaGFkb3ctbGcgdHJhbnNpdGlvbi1zaGFkb3dcIj5cbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJiZW5lZml0LWljb24gbWItNFwiPlxuICAgICAgICAgICAgICAgIDxGYUxpZ2h0YnVsYiBzaXplPXs0MH0gY2xhc3NOYW1lPVwidGV4dC1ibHVlLTUwMCBteC1hdXRvXCIgLz5cbiAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgIDxoMyBjbGFzc05hbWU9XCJiZW5lZml0LXRpdGxlIHRleHQteGwgZm9udC1zZW1pYm9sZCBtYi0yXCI+44Oi44OB44OZ44O844K344On44Oz57at5oyBPC9oMz5cbiAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwiYmVuZWZpdC1kZXNjIHRleHQtZ3JheS02MDBcIj7oh6rliIbjgavlkIjjgaPjgZ/mlrnms5XjgaflrabjgbbjgZPjgajjgafjgIHntpnntprnmoTjgarlrabnv5LjgYzlj6/og73jgavjgarjgorjgb7jgZnjgII8L3A+XG4gICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiYmVuZWZpdC1jYXJkIGJnLWdyYXktMTAwIHAtNiByb3VuZGVkLWxnIHNoYWRvdy1tZCBob3ZlcjpzaGFkb3ctbGcgdHJhbnNpdGlvbi1zaGFkb3dcIj5cbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJiZW5lZml0LWljb24gbWItNFwiPlxuICAgICAgICAgICAgICAgIDxGYVJvY2tldCBzaXplPXs0MH0gY2xhc3NOYW1lPVwidGV4dC1ibHVlLTUwMCBteC1hdXRvXCIgLz5cbiAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgIDxoMyBjbGFzc05hbWU9XCJiZW5lZml0LXRpdGxlIHRleHQteGwgZm9udC1zZW1pYm9sZCBtYi0yXCI+5by344G/44Gu5rS755SoPC9oMz5cbiAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwiYmVuZWZpdC1kZXNjIHRleHQtZ3JheS02MDBcIj7oh6rliIbjga7lvLfjgb/jgpLmtLvjgYvjgZfjgZ/lrabnv5LjgqLjg5fjg63jg7zjg4HjgafjgIHmnIDlpKfpmZDjga7miJDmnpzjgpLlh7rjgZvjgb7jgZnjgII8L3A+XG4gICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiYmVuZWZpdC1jYXJkIGJnLWdyYXktMTAwIHAtNiByb3VuZGVkLWxnIHNoYWRvdy1tZCBob3ZlcjpzaGFkb3ctbGcgdHJhbnNpdGlvbi1zaGFkb3dcIj5cbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJiZW5lZml0LWljb24gbWItNFwiPlxuICAgICAgICAgICAgICAgIDxGYUNsb2NrIHNpemU9ezQwfSBjbGFzc05hbWU9XCJ0ZXh0LWJsdWUtNTAwIG14LWF1dG9cIiAvPlxuICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgPGgzIGNsYXNzTmFtZT1cImJlbmVmaXQtdGl0bGUgdGV4dC14bCBmb250LXNlbWlib2xkIG1iLTJcIj7lrabnv5LmmYLplpPjga7nn63nuK48L2gzPlxuICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJiZW5lZml0LWRlc2MgdGV4dC1ncmF5LTYwMFwiPuWKueeOh+eahOOBquWtpue/kuaWueazleOBp+OAgeebruaomemBlOaIkOOBvuOBp+OBruaZgumWk+OCkuefree4ruOBp+OBjeOBvuOBmeOAgjwvcD5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgIDwvZGl2PlxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvc2VjdGlvbj5cblxuICAgICAgey8qIOaIkOmVt+ODreODvOODieODnuODg+ODlyAqL31cbiAgICAgIDxzZWN0aW9uIGlkPVwicm9hZG1hcFwiIGNsYXNzTmFtZT1cImJnLWdyYXktMTAwIHB5LTIwXCI+XG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiY29udGFpbmVyIG14LWF1dG8gcHgtNFwiPlxuICAgICAgICAgIDxoMiBjbGFzc05hbWU9XCJ0ZXh0LTN4bCBmb250LWJvbGQgdGV4dC1jZW50ZXIgbWItMTJcIj7oi7Hoqp7nv5Llvpfjgbjjga7miJDplbfjg63jg7zjg4njg57jg4Pjg5c8L2gyPlxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZ3JpZCBncmlkLWNvbHMtMSBtZDpncmlkLWNvbHMtMiBnYXAtOFwiPlxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJiZy13aGl0ZSBwLTYgcm91bmRlZC1sZyBzaGFkb3ctbWQgaG92ZXI6c2hhZG93LWxnIHRyYW5zaXRpb24tc2hhZG93XCI+XG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3RlcC1udW1iZXIgdGV4dC1ibHVlLTUwMCB0ZXh0LTJ4bCBmb250LWJvbGQgbWItNFwiPjE8L2Rpdj5cbiAgICAgICAgICAgICAgPGgzIGNsYXNzTmFtZT1cImdyb3d0aC10aXRsZSB0ZXh0LXhsIGZvbnQtc2VtaWJvbGQgbWItMlwiPuWtpue/kuOCv+OCpOODl+OBruiouuaWrTwvaDM+XG4gICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cImdyb3d0aC1kZXNjIHRleHQtZ3JheS02MDBcIj415YiG56iL5bqm44Gu6LOq5ZWP44Gr562U44GI44KL44Gg44GR44Gn44CB44GC44Gq44Gf44Gu6Iux6Kqe5a2m57+S44K/44Kk44OX44KS54m55a6a44GX44G+44GZ44CCPC9wPlxuICAgICAgICAgICAgICA8TGluayBocmVmPVwiL3F1aXpcIiBjbGFzc05hbWU9XCJpbmxpbmUtZmxleCBpdGVtcy1jZW50ZXIgcHgtNiBweS0zIGJnLWJsdWUtNjAwIHRleHQtd2hpdGUgcm91bmRlZC1mdWxsIGhvdmVyOm9wYWNpdHktOTAgdHJhbnNpdGlvbi1jb2xvcnNcIj5cbiAgICAgICAgICAgICAgICDoqLrmlq3jgpLlp4vjgoHjgotcbiAgICAgICAgICAgICAgICA8RmFDaGV2cm9uUmlnaHQgY2xhc3NOYW1lPVwibWwtMlwiIC8+XG4gICAgICAgICAgICAgIDwvTGluaz5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJiZy13aGl0ZSBwLTYgcm91bmRlZC1sZyBzaGFkb3ctbWQgaG92ZXI6c2hhZG93LWxnIHRyYW5zaXRpb24tc2hhZG93XCI+XG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3RlcC1udW1iZXIgdGV4dC1ibHVlLTUwMCB0ZXh0LTJ4bCBmb250LWJvbGQgbWItNFwiPjI8L2Rpdj5cbiAgICAgICAgICAgICAgPGgzIGNsYXNzTmFtZT1cImdyb3d0aC10aXRsZSB0ZXh0LXhsIGZvbnQtc2VtaWJvbGQgbWItMlwiPuWtpue/kuazleOBruOCq+OCueOCv+ODnuOCpOOCujwvaDM+XG4gICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cImdyb3d0aC1kZXNjIHRleHQtZ3JheS02MDBcIj7oqLrmlq3ntZDmnpzjgavln7rjgaXjgYTjgabjgIHjgYLjgarjgZ/jgavmnIDpganjgarlrabnv5Ljg4Tjg7zjg6vjgajmlrnms5XjgpLmj5DmoYjjgZfjgb7jgZnjgII8L3A+XG4gICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiYmctd2hpdGUgcC02IHJvdW5kZWQtbGcgc2hhZG93LW1kIGhvdmVyOnNoYWRvdy1sZyB0cmFuc2l0aW9uLXNoYWRvd1wiPlxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInN0ZXAtbnVtYmVyIHRleHQtYmx1ZS01MDAgdGV4dC0yeGwgZm9udC1ib2xkIG1iLTRcIj4zPC9kaXY+XG4gICAgICAgICAgICAgIDxoMyBjbGFzc05hbWU9XCJncm93dGgtdGl0bGUgdGV4dC14bCBmb250LXNlbWlib2xkIG1iLTJcIj7ntpnntprnmoTjgarlrabnv5LjgrXjg53jg7zjg4g8L2gzPlxuICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJncm93dGgtZGVzYyB0ZXh0LWdyYXktNjAwXCI+44GC44Gq44Gf44Gu44K/44Kk44OX44Gr5ZCI44KP44Gb44Gf44Oq44K944O844K544Go5a6a5pyf55qE44Gq44OV44Kj44O844OJ44OQ44OD44Kv44Gn44CB5a2m57+S44KS57aZ57aa55qE44Gr44K144Od44O844OI44GX44G+44GZ44CCPC9wPlxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImJnLXdoaXRlIHAtNiByb3VuZGVkLWxnIHNoYWRvdy1tZCBob3ZlcjpzaGFkb3ctbGcgdHJhbnNpdGlvbi1zaGFkb3dcIj5cbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJzdGVwLW51bWJlciB0ZXh0LWJsdWUtNTAwIHRleHQtMnhsIGZvbnQtYm9sZCBtYi00XCI+NDwvZGl2PlxuICAgICAgICAgICAgICA8aDMgY2xhc3NOYW1lPVwiZ3Jvd3RoLXRpdGxlIHRleHQteGwgZm9udC1zZW1pYm9sZCBtYi0yXCI+55uu5qiZ6YGU5oiQ44Go5oiQ6ZW3PC9oMz5cbiAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwiZ3Jvd3RoLWRlc2MgdGV4dC1ncmF5LTYwMFwiPuWKueeOh+eahOOBquWtpue/kuOBp+iLseiqnuWKm+OCkuedgOWun+OBq+S8uOOBsOOBl+OAgeOBguOBquOBn+OBruiLseiqnuWtpue/kuebruaomeOCkumBlOaIkOOBl+OBvuOBmeOAgjwvcD5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgIDwvZGl2PlxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvc2VjdGlvbj5cblxuICAgICAgey8qIENUQSAqL31cbiAgICAgIDxzZWN0aW9uIGNsYXNzTmFtZT1cImN0YSBiZy1wcmltYXJ5IHRleHQtd2hpdGUgcHktMTZcIj5cbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJjb250YWluZXIgbXgtYXV0byBweC00IHRleHQtY2VudGVyXCI+XG4gICAgICAgICAgPGgyIGNsYXNzTmFtZT1cInRleHQtM3hsIGZvbnQtYm9sZCBtYi02XCI+5LuK44GZ44GQ6Ieq5YiG44Gu6Iux6Kqe5a2m57+S44K/44Kk44OX44KS6KaL44Gk44GR44KI44GGPC9oMj5cbiAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LXhsIG9wYWNpdHktOTAgbWItOFwiPuOBn+OBo+OBnzXliIbjga7oqLrmlq3jgafjgIHjgYLjgarjgZ/jgavmnIDpganjgaroi7Hoqp7lrabnv5Lms5XjgYzjgo/jgYvjgorjgb7jgZnjgII8L3A+XG4gICAgICAgICAgPExpbmsgaHJlZj1cIi9xdWl6XCIgY2xhc3NOYW1lPVwiaW5saW5lLWJsb2NrIHB4LTggcHktNCBiZy13aGl0ZSB0ZXh0LXByaW1hcnkgZm9udC1ib2xkIHJvdW5kZWQtZnVsbCB0ZXh0LWxnIHNoYWRvdy1sZyBob3ZlcjpiZy1ncmF5LTEwMCB0cmFuc2l0aW9uLWNvbG9yc1wiPlxuICAgICAgICAgICAg54Sh5paZ6Ki65pat44KS44K544K/44O844OIXG4gICAgICAgICAgPC9MaW5rPlxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvc2VjdGlvbj5cblxuICAgICAgey8qIOODleODg+OCv+ODvCAqL31cbiAgICAgIDxmb290ZXIgY2xhc3NOYW1lPVwiYmctZ3JhZGllbnQtdG8tciBmcm9tLWJsdWUtNTAwIHRvLXB1cnBsZS02MDAgdGV4dC13aGl0ZSBweS0xMlwiPlxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbnRhaW5lciBteC1hdXRvIHRleHQtY2VudGVyXCI+XG4gICAgICAgICAgPGgyIGNsYXNzTmFtZT1cInRleHQtMnhsIGZvbnQtYm9sZCBtYi00XCI+5LuK44GZ44GQ6Ieq5YiG44Gu6Iux6Kqe5a2m57+S44K/44Kk44OX44KS6KaL44Gk44GR44KI44GGPC9oMj5cbiAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LWxnIG1iLThcIj7jgZ/jgaPjgZ815YiG44Gu6Ki65pat44Gn44CB44GC44Gq44Gf44Gr5pyA6YGp44Gq6Iux6Kqe5a2m57+S5rOV44GM44KP44GL44KK44G+44GZ44CCPC9wPlxuICAgICAgICAgIDxMaW5rIGhyZWY9XCIvcXVpelwiIGNsYXNzTmFtZT1cImlubGluZS1ibG9jayBweC04IHB5LTQgYmctd2hpdGUgdGV4dC1ibHVlLTYwMCBmb250LWJvbGQgcm91bmRlZC1mdWxsIHRleHQtbGcgc2hhZG93LWxnIGhvdmVyOmJnLWdyYXktMTAwIHRyYW5zaXRpb24tY29sb3JzXCI+XG4gICAgICAgICAgICDnhKHmlpnoqLrmlq3jgpLjgrnjgr/jg7zjg4hcbiAgICAgICAgICA8L0xpbms+XG4gICAgICAgICAgPHAgY2xhc3NOYW1lPVwibXQtOCB0ZXh0LXNtXCI+JmNvcHk7IDIwMjMg6Iux6Kqe5a2m57+S44K/44Kk44OX6Ki65patIEFsbCBSaWdodHMgUmVzZXJ2ZWQuPC9wPlxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvZm9vdGVyPlxuICAgIDwvZGl2PlxuICApO1xufTtcblxuZXhwb3J0IGRlZmF1bHQgSG9tZVBhZ2U7ICJdLCJuYW1lcyI6WyJIb21lUGFnZSIsImlzU2Nyb2xsZWQiLCJzZXRJc1Njcm9sbGVkIiwidXNlU3RhdGUiLCJyb3V0ZXIiLCJ1c2VSb3V0ZXIiLCJ1c2VFZmZlY3QiLCJoYW5kbGVTY3JvbGwiLCJzY3JvbGxQb3NpdGlvbiIsIndpbmRvdyIsInNjcm9sbFkiLCJhZGRFdmVudExpc3RlbmVyIiwicmVtb3ZlRXZlbnRMaXN0ZW5lciIsImRpdiIsImNsYXNzTmFtZSIsImhlYWRlciIsImgxIiwibmF2IiwiYSIsImhyZWYiLCJzZWN0aW9uIiwiaDIiLCJwIiwiTGluayIsImlkIiwiRmFVc2VycyIsInNpemUiLCJoMyIsInVsIiwibGkiLCJGYUJhbGFuY2VTY2FsZSIsIkZhQm9vayIsIkZhQ2hhcnRMaW5lIiwiRmFMaWdodGJ1bGIiLCJGYVJvY2tldCIsIkZhQ2xvY2siLCJGYUNoZXZyb25SaWdodCIsImZvb3RlciJdLCJtYXBwaW5ncyI6IkFBQUE7Ozs7OytCQTZOQTs7O2VBQUE7Ozs7K0RBM05tRDs0QkFDekI7NkRBQ1Q7b0JBT1Y7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBRVAsYUFBYTtBQUNiLE1BQU1BLFdBQXFCO0lBQ3pCLE1BQU0sQ0FBQ0MsWUFBWUMsY0FBYyxHQUFHQyxJQUFBQSxlQUFRLEVBQUM7SUFDN0MsTUFBTUMsU0FBU0MsSUFBQUEscUJBQVM7SUFFeEIsVUFBVTtJQUNWQyxJQUFBQSxnQkFBUyxFQUFDO1FBQ1IsTUFBTUMsZUFBZTtZQUNuQixNQUFNQyxpQkFBaUJDLE9BQU9DLE9BQU87WUFDckNSLGNBQWNNLGlCQUFpQjtRQUNqQztRQUVBQyxPQUFPRSxnQkFBZ0IsQ0FBQyxVQUFVSjtRQUNsQyxPQUFPLElBQU1FLE9BQU9HLG1CQUFt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

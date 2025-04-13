@@ -1,0 +1,130 @@
+20c3ed283e4aa14a3cd4d5e1178f83d9
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "useProgress", {
+    enumerable: true,
+    get: function() {
+        return useProgress;
+    }
+});
+const _react = require("react");
+const _badges = require("../data/badges");
+const _levels = require("../data/levels");
+const useProgress = (userId)=>{
+    const [userProgress, setUserProgress] = (0, _react.useState)({
+        userId,
+        level: 1,
+        totalScore: 0,
+        badges: [],
+        streakDays: 0,
+        lastActivityDate: new Date()
+    });
+    // 進捗データの取得
+    const fetchProgress = (0, _react.useCallback)(async ()=>{
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+            const response = await fetch(`${apiUrl}/get_progress.php?userId=${userId}`);
+            if (!response.ok) {
+                throw new Error("進捗データの取得に失敗しました");
+            }
+            const data = await response.json();
+            setUserProgress(data);
+        } catch (error) {
+            console.error("進捗データの取得中にエラーが発生しました:", error);
+            throw error;
+        }
+    }, [
+        userId
+    ]);
+    // バッジの進捗確認
+    const checkBadgeProgress = (0, _react.useCallback)((activityType)=>{
+        const newBadges = [];
+        Object.entries(_badges.BADGE_DEFINITIONS).forEach(([_, badgeDef])=>{
+            const existingBadge = userProgress.badges.find((b)=>b.type === badgeDef.type);
+            if (existingBadge) return;
+            const relevantRequirements = badgeDef.requirements.filter((req)=>req.activityType === activityType);
+            if (relevantRequirements.length === 0) return;
+            // 進捗の計算（仮実装）
+            const progress = Math.min(relevantRequirements.reduce((acc, req)=>acc + req.count * 10, 0), 100);
+            if (progress >= 100) {
+                const newBadge = {
+                    ...badgeDef,
+                    acquiredAt: new Date(),
+                    progress: 100
+                };
+                newBadges.push(newBadge);
+            }
+        });
+        return newBadges;
+    }, [
+        userProgress.badges
+    ]);
+    // レベルの確認
+    const checkLevel = (0, _react.useCallback)((totalScore)=>{
+        let newLevel = _levels.LEVELS[0];
+        for (const level of _levels.LEVELS){
+            if (totalScore >= level.requiredScore) {
+                newLevel = level;
+            } else {
+                break;
+            }
+        }
+        return newLevel;
+    }, []);
+    // 進捗の更新
+    const updateProgress = (0, _react.useCallback)(async (activityType, scoreChange)=>{
+        try {
+            const newBadges = checkBadgeProgress(activityType);
+            const newTotalScore = userProgress.totalScore + scoreChange;
+            const newLevel = checkLevel(newTotalScore);
+            const updatedProgress = {
+                ...userProgress,
+                level: newLevel.number,
+                totalScore: newTotalScore,
+                badges: [
+                    ...userProgress.badges,
+                    ...newBadges
+                ],
+                lastActivityDate: new Date()
+            };
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+            const response = await fetch(`${apiUrl}/update_progress.php`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updatedProgress)
+            });
+            if (!response.ok) {
+                throw new Error("進捗の更新に失敗しました");
+            }
+            setUserProgress(updatedProgress);
+            return {
+                newBadges,
+                levelUp: newLevel.number > userProgress.level
+            };
+        } catch (error) {
+            console.error("進捗の更新中にエラーが発生しました:", error);
+            throw error;
+        }
+    }, [
+        userProgress,
+        checkBadgeProgress,
+        checkLevel
+    ]);
+    // 初期データの取得
+    (0, _react.useEffect)(()=>{
+        fetchProgress();
+    }, [
+        fetchProgress
+    ]);
+    return {
+        progress: userProgress,
+        updateProgress,
+        fetchProgress
+    };
+};
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9zcmMvaG9va3MvdXNlUHJvZ3Jlc3MudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgdXNlU3RhdGUsIHVzZUNhbGxiYWNrLCB1c2VFZmZlY3QgfSBmcm9tICdyZWFjdCc7XG5pbXBvcnQgeyBVc2VyUHJvZ3Jlc3MsIEJhZGdlLCBBY3Rpdml0eVR5cGUsIExldmVsLCBCYWRnZVR5cGUgfSBmcm9tICdAL3R5cGVzL3F1aXonO1xuaW1wb3J0IHsgQkFER0VfREVGSU5JVElPTlMgfSBmcm9tICdAL2RhdGEvYmFkZ2VzJztcbmltcG9ydCB7IExFVkVMUyB9IGZyb20gJ0AvZGF0YS9sZXZlbHMnO1xuXG5leHBvcnQgY29uc3QgdXNlUHJvZ3Jlc3MgPSAodXNlcklkOiBudW1iZXIpID0+IHtcbiAgY29uc3QgW3VzZXJQcm9ncmVzcywgc2V0VXNlclByb2dyZXNzXSA9IHVzZVN0YXRlPFVzZXJQcm9ncmVzcz4oe1xuICAgIHVzZXJJZCxcbiAgICBsZXZlbDogMSxcbiAgICB0b3RhbFNjb3JlOiAwLFxuICAgIGJhZGdlczogW10sXG4gICAgc3RyZWFrRGF5czogMCxcbiAgICBsYXN0QWN0aXZpdHlEYXRlOiBuZXcgRGF0ZSgpXG4gIH0pO1xuXG4gIC8vIOmAsuaNl+ODh+ODvOOCv+OBruWPluW+l1xuICBjb25zdCBmZXRjaFByb2dyZXNzID0gdXNlQ2FsbGJhY2soYXN5bmMgKCkgPT4ge1xuICAgIHRyeSB7XG4gICAgICBjb25zdCBhcGlVcmwgPSBwcm9jZXNzLmVudi5ORVhUX1BVQkxJQ19BUElfVVJMIHx8ICdodHRwOi8vbG9jYWxob3N0OjgwODAnO1xuICAgICAgY29uc3QgcmVzcG9uc2UgPSBhd2FpdCBmZXRjaChgJHthcGlVcmx9L2dldF9wcm9ncmVzcy5waHA/dXNlcklkPSR7dXNlcklkfWApO1xuICAgICAgXG4gICAgICBpZiAoIXJlc3BvbnNlLm9rKSB7XG4gICAgICAgIHRocm93IG5ldyBFcnJvcign6YCy5o2X44OH44O844K/44Gu5Y+W5b6X44Gr5aSx5pWX44GX44G+44GX44GfJyk7XG4gICAgICB9XG5cbiAgICAgIGNvbnN0IGRhdGEgPSBhd2FpdCByZXNwb25zZS5qc29uKCk7XG4gICAgICBzZXRVc2VyUHJvZ3Jlc3MoZGF0YSk7XG4gICAgfSBjYXRjaCAoZXJyb3IpIHtcbiAgICAgIGNvbnNvbGUuZXJyb3IoJ+mAsuaNl+ODh+ODvOOCv+OBruWPluW+l+S4reOBq+OCqOODqeODvOOBjOeZuueUn+OBl+OBvuOBl+OBnzonLCBlcnJvcik7XG4gICAgICB0aHJvdyBlcnJvcjtcbiAgICB9XG4gIH0sIFt1c2VySWRdKTtcblxuICAvLyDjg5Djg4Pjgrjjga7pgLLmjZfnorroqo1cbiAgY29uc3QgY2hlY2tCYWRnZVByb2dyZXNzID0gdXNlQ2FsbGJhY2soKGFjdGl2aXR5VHlwZTogQWN0aXZpdHlUeXBlKTogQmFkZ2VbXSA9PiB7XG4gICAgY29uc3QgbmV3QmFkZ2VzOiBCYWRnZVtdID0gW107XG4gICAgXG4gICAgKE9iamVjdC5lbnRyaWVzKEJBREdFX0RFRklOSVRJT05TKSBhcyBbQmFkZ2VUeXBlLCBPbWl0PEJhZGdlLCAnYWNxdWlyZWRBdCcgfCAncHJvZ3Jlc3MnPl1bXSkuZm9yRWFjaCgoW18sIGJhZGdlRGVmXSkgPT4ge1xuICAgICAgY29uc3QgZXhpc3RpbmdCYWRnZSA9IHVzZXJQcm9ncmVzcy5iYWRnZXMuZmluZChiID0+IGIudHlwZSA9PT0gYmFkZ2VEZWYudHlwZSk7XG4gICAgICBpZiAoZXhpc3RpbmdCYWRnZSkgcmV0dXJuO1xuXG4gICAgICBjb25zdCByZWxldmFudFJlcXVpcmVtZW50cyA9IGJhZGdlRGVmLnJlcXVpcmVtZW50cy5maWx0ZXIoXG4gICAgICAgIChyZXE6IHsgYWN0aXZpdHlUeXBlOiBBY3Rpdml0eVR5cGU7IGNvdW50OiBudW1iZXIgfSkgPT4gcmVxLmFjdGl2aXR5VHlwZSA9PT0gYWN0aXZpdHlUeXBlXG4gICAgICApO1xuXG4gICAgICBpZiAocmVsZXZhbnRSZXF1aXJlbWVudHMubGVuZ3RoID09PSAwKSByZXR1cm47XG5cbiAgICAgIC8vIOmAsuaNl+OBruioiOeul++8iOS7ruWun+ijhe+8iVxuICAgICAgY29uc3QgcHJvZ3Jlc3MgPSBNYXRoLm1pbihcbiAgICAgICAgcmVsZXZhbnRSZXF1aXJlbWVudHMucmVkdWNlKChhY2M6IG51bWJlciwgcmVxOiB7IGNvdW50OiBudW1iZXIgfSkgPT4gYWNjICsgKHJlcS5jb3VudCAqIDEwKSwgMCksXG4gICAgICAgIDEwMFxuICAgICAgKTtcblxuICAgICAgaWYgKHByb2dyZXNzID49IDEwMCkge1xuICAgICAgICBjb25zdCBuZXdCYWRnZTogQmFkZ2UgPSB7XG4gICAgICAgICAgLi4uYmFkZ2VEZWYsXG4gICAgICAgICAgYWNxdWlyZWRBdDogbmV3IERhdGUoKSxcbiAgICAgICAgICBwcm9ncmVzczogMTAwXG4gICAgICAgIH07XG4gICAgICAgIG5ld0JhZGdlcy5wdXNoKG5ld0JhZGdlKTtcbiAgICAgIH1cbiAgICB9KTtcblxuICAgIHJldHVybiBuZXdCYWRnZXM7XG4gIH0sIFt1c2VyUHJvZ3Jlc3MuYmFkZ2VzXSk7XG5cbiAgLy8g44Os44OZ44Or44Gu56K66KqNXG4gIGNvbnN0IGNoZWNrTGV2ZWwgPSB1c2VDYWxsYmFjaygodG90YWxTY29yZTogbnVtYmVyKTogTGV2ZWwgPT4ge1xuICAgIGxldCBuZXdMZXZlbCA9IExFVkVMU1swXTtcbiAgICBcbiAgICBmb3IgKGNvbnN0IGxldmVsIG9mIExFVkVMUykge1xuICAgICAgaWYgKHRvdGFsU2NvcmUgPj0gbGV2ZWwucmVxdWlyZWRTY29yZSkge1xuICAgICAgICBuZXdMZXZlbCA9IGxldmVsO1xuICAgICAgfSBlbHNlIHtcbiAgICAgICAgYnJlYWs7XG4gICAgICB9XG4gICAgfVxuXG4gICAgcmV0dXJuIG5ld0xldmVsO1xuICB9LCBbXSk7XG5cbiAgLy8g6YCy5o2X44Gu5pu05pawXG4gIGNvbnN0IHVwZGF0ZVByb2dyZXNzID0gdXNlQ2FsbGJhY2soYXN5bmMgKFxuICAgIGFjdGl2aXR5VHlwZTogQWN0aXZpdHlUeXBlLFxuICAgIHNjb3JlQ2hhbmdlOiBudW1iZXJcbiAgKSA9PiB7XG4gICAgdHJ5IHtcbiAgICAgIGNvbnN0IG5ld0JhZGdlcyA9IGNoZWNrQmFkZ2VQcm9ncmVzcyhhY3Rpdml0eVR5cGUpO1xuICAgICAgY29uc3QgbmV3VG90YWxTY29yZSA9IHVzZXJQcm9ncmVzcy50b3RhbFNjb3JlICsgc2NvcmVDaGFuZ2U7XG4gICAgICBjb25zdCBuZXdMZXZlbCA9IGNoZWNrTGV2ZWwobmV3VG90YWxTY29yZSk7XG5cbiAgICAgIGNvbnN0IHVwZGF0ZWRQcm9ncmVzczogVXNlclByb2dyZXNzID0ge1xuICAgICAgICAuLi51c2VyUHJvZ3Jlc3MsXG4gICAgICAgIGxldmVsOiBuZXdMZXZlbC5udW1iZXIsXG4gICAgICAgIHRvdGFsU2NvcmU6IG5ld1RvdGFsU2NvcmUsXG4gICAgICAgIGJhZGdlczogWy4uLnVzZXJQcm9ncmVzcy5iYWRnZXMsIC4uLm5ld0JhZGdlc10sXG4gICAgICAgIGxhc3RBY3Rpdml0eURhdGU6IG5ldyBEYXRlKClcbiAgICAgIH07XG5cbiAgICAgIGNvbnN0IGFwaVVybCA9IHByb2Nlc3MuZW52Lk5FWFRfUFVCTElDX0FQSV9VUkwgfHwgJ2h0dHA6Ly9sb2NhbGhvc3Q6ODA4MCc7XG4gICAgICBjb25zdCByZXNwb25zZSA9IGF3YWl0IGZldGNoKGAke2FwaVVybH0vdXBkYXRlX3Byb2dyZXNzLnBocGAsIHtcbiAgICAgICAgbWV0aG9kOiAnUE9TVCcsXG4gICAgICAgIGhlYWRlcnM6IHtcbiAgICAgICAgICAnQ29udGVudC1UeXBlJzogJ2FwcGxpY2F0aW9uL2pzb24nLFxuICAgICAgICB9LFxuICAgICAgICBib2R5OiBKU09OLnN0cmluZ2lmeSh1cGRhdGVkUHJvZ3Jlc3MpLFxuICAgICAgfSk7XG5cbiAgICAgIGlmICghcmVzcG9uc2Uub2spIHtcbiAgICAgICAgdGhyb3cgbmV3IEVycm9yKCfpgLLmjZfjga7mm7TmlrDjgavlpLHmlZfjgZfjgb7jgZfjgZ8nKTtcbiAgICAgIH1cblxuICAgICAgc2V0VXNlclByb2dyZXNzKHVwZGF0ZWRQcm9ncmVzcyk7XG4gICAgICByZXR1cm4geyBuZXdCYWRnZXMsIGxldmVsVXA6IG5ld0xldmVsLm51bWJlciA+IHVzZXJQcm9ncmVzcy5sZXZlbCB9O1xuICAgIH0gY2F0Y2ggKGVycm9yKSB7XG4gICAgICBjb25zb2xlLmVycm9yKCfpgLLmjZfjga7mm7TmlrDkuK3jgavjgqjjg6njg7zjgYznmbrnlJ/jgZfjgb7jgZfjgZ86JywgZXJyb3IpO1xuICAgICAgdGhyb3cgZXJyb3I7XG4gICAgfVxuICB9LCBbdXNlclByb2dyZXNzLCBjaGVja0JhZGdlUHJvZ3Jlc3MsIGNoZWNrTGV2ZWxdKTtcblxuICAvLyDliJ3mnJ/jg4fjg7zjgr/jga7lj5blvpdcbiAgdXNlRWZmZWN0KCgpID0+IHtcbiAgICBmZXRjaFByb2dyZXNzKCk7XG4gIH0sIFtmZXRjaFByb2dyZXNzXSk7XG5cbiAgcmV0dXJuIHtcbiAgICBwcm9ncmVzczogdXNlclByb2dyZXNzLFxuICAgIHVwZGF0ZVByb2dyZXNzLFxuICAgIGZldGNoUHJvZ3Jlc3NcbiAgfTtcbn07ICJdLCJuYW1lcyI6WyJ1c2VQcm9ncmVzcyIsInVzZXJJZCIsInVzZXJQcm9ncmVzcyIsInNldFVzZXJQcm9ncmVzcyIsInVzZVN0YXRlIiwibGV2ZWwiLCJ0b3RhbFNjb3JlIiwiYmFkZ2VzIiwic3RyZWFrRGF5cyIsImxhc3RBY3Rpdml0eURhdGUiLCJEYXRlIiwiZmV0Y2hQcm9ncmVzcyIsInVzZUNhbGxiYWNrIiwiYXBpVXJsIiwicHJvY2VzcyIsImVudiIsIk5FWFRfUFVCTElDX0FQSV9VUkwiLCJyZXNwb25zZSIsImZldGNoIiwib2siLCJFcnJvciIsImRhdGEiLCJqc29uIiwiZXJyb3IiLCJjb25zb2xlIiwiY2hlY2tCYWRnZVByb2dyZXNzIiwiYWN0aXZpdHlUeXBlIiwibmV3QmFkZ2VzIiwiT2JqZWN0IiwiZW50cmllcyIsIkJBREdFX0RFRklOSVRJT05TIiwiZm9yRWFjaCIsIl8iLCJiYWRnZURlZiIsImV4aXN0aW5nQmFkZ2UiLCJmaW5kIiwiYiIsInR5cGUiLCJyZWxldmFudFJlcXVpcmVtZW50cyIsInJlcXVpcmVtZW50cyIsImZpbHRlciIsInJlcSIsImxlbmd0aCIsInByb2dyZXNzIiwiTWF0aCIsIm1pbiIsInJlZHVjZSIsImFjYyIsImNvdW50IiwibmV3QmFkZ2UiLCJhY3F1aXJlZEF0IiwicHVzaCIsImNoZWNrTGV2ZWwiLCJuZXdMZXZlbCIsIkxFVkVMUyIsInJlcXVpcmVkU2NvcmUiLCJ1cGRhdGVQcm9ncmVzcyIsInNjb3JlQ2hhbmdlIiwibmV3VG90YWxTY29yZSIsInVwZGF0ZWRQcm9ncmVzcyIsIm51bWJlciIsIm1ldGhvZCIsImhlYWRlcnMiLCJib2R5IiwiSlNPTiIsInN0cmluZ2lmeSIsImxldmVsVXAiLCJ1c2VFZmZlY3QiXSwibWFwcGluZ3MiOiI7Ozs7K0JBS2FBOzs7ZUFBQUE7Ozt1QkFMb0M7d0JBRWY7d0JBQ1g7QUFFaEIsTUFBTUEsY0FBYyxDQUFDQztJQUMxQixNQUFNLENBQUNDLGNBQWNDLGdCQUFnQixHQUFHQyxJQUFBQSxlQUFRLEVBQWU7UUFDN0RIO1FBQ0FJLE9BQU87UUFDUEMsWUFBWTtRQUNaQyxRQUFRLEVBQUU7UUFDVkMsWUFBWTtRQUNaQyxrQkFBa0IsSUFBSUM7SUFDeEI7SUFFQSxXQUFXO0lBQ1gsTUFBTUMsZ0JBQWdCQyxJQUFBQSxrQkFBVyxFQUFDO1FBQ2hDLElBQUk7WUFDRixNQUFNQyxTQUFTQyxRQUFRQyxHQUFHLENBQUNDLG1CQUFtQixJQUFJO1lBQ2xELE1BQU1DLFdBQVcsTUFBTUMsTUFBTSxDQUFDLEVBQUVMLE9BQU8seUJBQXlCLEVBQUVaLE9BQU8sQ0FBQztZQUUxRSxJQUFJLENBQUNnQixTQUFTRSxFQUFFLEVBQUU7Z0JBQ2hCLE1BQU0sSUFBSUMsTUFBTTtZQUNsQjtZQUVBLE1BQU1DLE9BQU8sTUFBTUosU0FBU0ssSUFBSTtZQUNoQ25CLGdCQUFn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

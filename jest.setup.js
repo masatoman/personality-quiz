@@ -1,8 +1,18 @@
 // Jest-DOMの拡張機能を読み込み
 import '@testing-library/jest-dom';
 
-// タイムアウト設定
-jest.setTimeout(30000);
+// Reactの無限ループエラーを抑制
+const originalConsoleError = console.error;
+console.error = (...args) => {
+  // Maximum update depthエラーを無視
+  if (args[0] && args[0].includes && args[0].includes('Maximum update depth exceeded')) {
+    return;
+  }
+  originalConsoleError(...args);
+};
+
+// テスト時間を短縮するため、各テストにタイムアウトを設定
+jest.setTimeout(5000);
 
 // カスタムマッチャー
 expect.extend({

@@ -1,0 +1,237 @@
+d852c43f4dadfb2d82bd07077aff5576
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "default", {
+    enumerable: true,
+    get: function() {
+        return _default;
+    }
+});
+const _jsxruntime = require("react/jsx-runtime");
+const _react = /*#__PURE__*/ _interop_require_default(require("react"));
+const _recharts = require("recharts");
+const _datefns = require("date-fns");
+const _locale = require("date-fns/locale");
+const _framermotion = require("framer-motion");
+function _interop_require_default(obj) {
+    return obj && obj.__esModule ? obj : {
+        default: obj
+    };
+}
+const GiverScoreChart = ({ data, height = 300 })=>{
+    // サンプルデータ
+    const sampleData = [
+        {
+            date: "2023-04-01",
+            score: 0
+        },
+        {
+            date: "2023-04-08",
+            score: 10
+        },
+        {
+            date: "2023-04-15",
+            score: 15
+        },
+        {
+            date: "2023-04-22",
+            score: 20
+        },
+        {
+            date: "2023-04-29",
+            score: 25
+        },
+        {
+            date: "2023-05-06",
+            score: 40
+        },
+        {
+            date: "2023-05-13",
+            score: 50
+        }
+    ];
+    // 実際のデータがない場合はサンプルデータを使用
+    const chartData = data || sampleData;
+    const formatDate = (dateStr)=>{
+        try {
+            const date = new Date(dateStr);
+            return (0, _datefns.format)(date, "MM/dd", {
+                locale: _locale.ja
+            });
+        } catch (error) {
+            console.error("日付の変換エラー:", error);
+            return dateStr;
+        }
+    };
+    // デザイン仕様書に合わせた色
+    const mainColor = "#3B82F6"; // メインカラー
+    const gridColor = "#E5E7EB"; // ボーダー色
+    // アニメーション設定
+    const containerVariants = {
+        hidden: {
+            opacity: 0,
+            y: 20
+        },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.5,
+                ease: "easeOut"
+            }
+        }
+    };
+    const titleVariants = {
+        hidden: {
+            opacity: 0,
+            x: -20
+        },
+        visible: {
+            opacity: 1,
+            x: 0,
+            transition: {
+                delay: 0.2,
+                duration: 0.4
+            }
+        }
+    };
+    return /*#__PURE__*/ (0, _jsxruntime.jsxs)(_framermotion.motion.div, {
+        className: "bg-white rounded-lg shadow-md p-4 sm:p-6",
+        initial: "hidden",
+        animate: "visible",
+        variants: containerVariants,
+        children: [
+            /*#__PURE__*/ (0, _jsxruntime.jsx)(_framermotion.motion.h3, {
+                className: "text-lg font-semibold text-gray-700 mb-4",
+                variants: titleVariants,
+                children: "ギバースコア推移"
+            }),
+            /*#__PURE__*/ (0, _jsxruntime.jsx)(_framermotion.motion.div, {
+                className: "mt-2 mb-1 text-sm text-gray-500",
+                initial: {
+                    opacity: 0
+                },
+                animate: {
+                    opacity: 1
+                },
+                transition: {
+                    delay: 0.4,
+                    duration: 0.3
+                },
+                children: "過去の活動によるスコア変化を確認できます"
+            }),
+            /*#__PURE__*/ (0, _jsxruntime.jsx)(_framermotion.motion.div, {
+                initial: {
+                    opacity: 0,
+                    scale: 0.9
+                },
+                animate: {
+                    opacity: 1,
+                    scale: 1
+                },
+                transition: {
+                    delay: 0.5,
+                    duration: 0.5,
+                    type: "spring",
+                    stiffness: 100
+                },
+                style: {
+                    width: "100%",
+                    height: height
+                },
+                children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_recharts.ResponsiveContainer, {
+                    width: "100%",
+                    height: "100%",
+                    children: /*#__PURE__*/ (0, _jsxruntime.jsxs)(_recharts.LineChart, {
+                        data: chartData,
+                        margin: {
+                            top: 5,
+                            right: 10,
+                            left: 0,
+                            bottom: 5
+                        },
+                        children: [
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_recharts.CartesianGrid, {
+                                strokeDasharray: "3 3",
+                                stroke: gridColor
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_recharts.XAxis, {
+                                dataKey: "date",
+                                tickFormatter: formatDate,
+                                tick: {
+                                    fontSize: 12,
+                                    fill: "#6B7280"
+                                },
+                                axisLine: {
+                                    stroke: gridColor
+                                },
+                                tickLine: {
+                                    stroke: gridColor
+                                },
+                                dy: 10
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_recharts.YAxis, {
+                                tick: {
+                                    fontSize: 12,
+                                    fill: "#6B7280"
+                                },
+                                domain: [
+                                    0,
+                                    (dataMax)=>Math.ceil(dataMax * 1.1)
+                                ],
+                                axisLine: {
+                                    stroke: gridColor
+                                },
+                                tickLine: {
+                                    stroke: gridColor
+                                },
+                                width: 30
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_recharts.Tooltip, {
+                                formatter: (value)=>[
+                                        `${value} ポイント`,
+                                        "ギバースコア"
+                                    ],
+                                labelFormatter: (label)=>`日付: ${formatDate(label.toString())}`,
+                                contentStyle: {
+                                    borderRadius: "0.375rem",
+                                    border: "1px solid #E5E7EB",
+                                    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)"
+                                }
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_recharts.Legend, {
+                                verticalAlign: "top",
+                                height: 30,
+                                formatter: ()=>"獲得ポイント"
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_recharts.Line, {
+                                type: "monotone",
+                                dataKey: "score",
+                                name: "ギバースコア",
+                                stroke: mainColor,
+                                activeDot: {
+                                    r: 7,
+                                    stroke: "white",
+                                    strokeWidth: 2
+                                },
+                                strokeWidth: 2.5,
+                                dot: {
+                                    stroke: mainColor,
+                                    strokeWidth: 2,
+                                    r: 4,
+                                    fill: "white"
+                                }
+                            })
+                        ]
+                    })
+                })
+            })
+        ]
+    });
+};
+const _default = GiverScoreChart;
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9zcmMvY29tcG9uZW50cy9kYXNoYm9hcmQvR2l2ZXJTY29yZUNoYXJ0LnRzeCJdLCJzb3VyY2VzQ29udGVudCI6WyIndXNlIGNsaWVudCc7XG5cbmltcG9ydCBSZWFjdCBmcm9tICdyZWFjdCc7XG5pbXBvcnQgeyBcbiAgTGluZUNoYXJ0LCBcbiAgTGluZSwgXG4gIFhBeGlzLCBcbiAgWUF4aXMsIFxuICBDYXJ0ZXNpYW5HcmlkLCBcbiAgVG9vbHRpcCwgXG4gIExlZ2VuZCwgXG4gIFJlc3BvbnNpdmVDb250YWluZXIgXG59IGZyb20gJ3JlY2hhcnRzJztcbmltcG9ydCB7IGZvcm1hdCB9IGZyb20gJ2RhdGUtZm5zJztcbmltcG9ydCB7IGphIH0gZnJvbSAnZGF0ZS1mbnMvbG9jYWxlJztcbmltcG9ydCB7IG1vdGlvbiB9IGZyb20gJ2ZyYW1lci1tb3Rpb24nO1xuXG5pbnRlcmZhY2UgR2l2ZXJTY29yZURhdGFQb2ludCB7XG4gIGRhdGU6IHN0cmluZztcbiAgc2NvcmU6IG51bWJlcjtcbn1cblxuaW50ZXJmYWNlIEdpdmVyU2NvcmVDaGFydFByb3BzIHtcbiAgZGF0YT86IEdpdmVyU2NvcmVEYXRhUG9pbnRbXTtcbiAgaGVpZ2h0PzogbnVtYmVyO1xufVxuXG5jb25zdCBHaXZlclNjb3JlQ2hhcnQ6IFJlYWN0LkZDPEdpdmVyU2NvcmVDaGFydFByb3BzPiA9ICh7IGRhdGEsIGhlaWdodCA9IDMwMCB9KSA9PiB7XG4gIC8vIOOCteODs+ODl+ODq+ODh+ODvOOCv1xuICBjb25zdCBzYW1wbGVEYXRhID0gW1xuICAgIHsgZGF0ZTogJzIwMjMtMDQtMDEnLCBzY29yZTogMCB9LFxuICAgIHsgZGF0ZTogJzIwMjMtMDQtMDgnLCBzY29yZTogMTAgfSxcbiAgICB7IGRhdGU6ICcyMDIzLTA0LTE1Jywgc2NvcmU6IDE1IH0sXG4gICAgeyBkYXRlOiAnMjAyMy0wNC0yMicsIHNjb3JlOiAyMCB9LFxuICAgIHsgZGF0ZTogJzIwMjMtMDQtMjknLCBzY29yZTogMjUgfSxcbiAgICB7IGRhdGU6ICcyMDIzLTA1LTA2Jywgc2NvcmU6IDQwIH0sXG4gICAgeyBkYXRlOiAnMjAyMy0wNS0xMycsIHNjb3JlOiA1MCB9XG4gIF07XG5cbiAgLy8g5a6f6Zqb44Gu44OH44O844K/44GM44Gq44GE5aC05ZCI44Gv44K144Oz44OX44Or44OH44O844K/44KS5L2/55SoXG4gIGNvbnN0IGNoYXJ0RGF0YSA9IGRhdGEgfHwgc2FtcGxlRGF0YTtcblxuICBjb25zdCBmb3JtYXREYXRlID0gKGRhdGVTdHI6IHN0cmluZykgPT4ge1xuICAgIHRyeSB7XG4gICAgICBjb25zdCBkYXRlID0gbmV3IERhdGUoZGF0ZVN0cik7XG4gICAgICByZXR1cm4gZm9ybWF0KGRhdGUsICdNTS9kZCcsIHsgbG9jYWxlOiBqYSB9KTtcbiAgICB9IGNhdGNoIChlcnJvcikge1xuICAgICAgY29uc29sZS5lcnJvcign5pel5LuY44Gu5aSJ5o+b44Ko44Op44O8OicsIGVycm9yKTtcbiAgICAgIHJldHVybiBkYXRlU3RyO1xuICAgIH1cbiAgfTtcblxuICAvLyDjg4fjgrbjgqTjg7Pku5Xmp5jmm7jjgavlkIjjgo/jgZvjgZ/oibJcbiAgY29uc3QgbWFpbkNvbG9yID0gJyMzQjgyRjYnOyAvLyDjg6HjgqTjg7Pjgqvjg6njg7xcbiAgY29uc3QgZ3JpZENvbG9yID0gJyNFNUU3RUInOyAvLyDjg5zjg7zjg4Djg7zoibJcblxuICAvLyDjgqLjg4vjg6Hjg7zjgrfjg6fjg7PoqK3lrppcbiAgY29uc3QgY29udGFpbmVyVmFyaWFudHMgPSB7XG4gICAgaGlkZGVuOiB7IG9wYWNpdHk6IDAsIHk6IDIwIH0sXG4gICAgdmlzaWJsZToge1xuICAgICAgb3BhY2l0eTogMSxcbiAgICAgIHk6IDAsXG4gICAgICB0cmFuc2l0aW9uOiB7XG4gICAgICAgIGR1cmF0aW9uOiAwLjUsXG4gICAgICAgIGVhc2U6ICdlYXNlT3V0J1xuICAgICAgfVxuICAgIH1cbiAgfTtcblxuICBjb25zdCB0aXRsZVZhcmlhbnRzID0ge1xuICAgIGhpZGRlbjogeyBvcGFjaXR5OiAwLCB4OiAtMjAgfSxcbiAgICB2aXNpYmxlOiB7XG4gICAgICBvcGFjaXR5OiAxLFxuICAgICAgeDogMCxcbiAgICAgIHRyYW5zaXRpb246IHtcbiAgICAgICAgZGVsYXk6IDAuMixcbiAgICAgICAgZHVyYXRpb246IDAuNFxuICAgICAgfVxuICAgIH1cbiAgfTtcblxuICByZXR1cm4gKFxuICAgIDxtb3Rpb24uZGl2IFxuICAgICAgY2xhc3NOYW1lPVwiYmctd2hpdGUgcm91bmRlZC1sZyBzaGFkb3ctbWQgcC00IHNtOnAtNlwiXG4gICAgICBpbml0aWFsPVwiaGlkZGVuXCJcbiAgICAgIGFuaW1hdGU9XCJ2aXNpYmxlXCJcbiAgICAgIHZhcmlhbnRzPXtjb250YWluZXJWYXJpYW50c31cbiAgICA+XG4gICAgICA8bW90aW9uLmgzIFxuICAgICAgICBjbGFzc05hbWU9XCJ0ZXh0LWxnIGZvbnQtc2VtaWJvbGQgdGV4dC1ncmF5LTcwMCBtYi00XCJcbiAgICAgICAgdmFyaWFudHM9e3RpdGxlVmFyaWFudHN9XG4gICAgICA+XG4gICAgICAgIOOCruODkOODvOOCueOCs+OCouaOqOenu1xuICAgICAgPC9tb3Rpb24uaDM+XG4gICAgICA8bW90aW9uLmRpdiBcbiAgICAgICAgY2xhc3NOYW1lPVwibXQtMiBtYi0xIHRleHQtc20gdGV4dC1ncmF5LTUwMFwiXG4gICAgICAgIGluaXRpYWw9e3sgb3BhY2l0eTogMCB9fVxuICAgICAgICBhbmltYXRlPXt7IG9wYWNpdHk6IDEgfX1cbiAgICAgICAgdHJhbnNpdGlvbj17eyBkZWxheTogMC40LCBkdXJhdGlvbjogMC4zIH19XG4gICAgICA+XG4gICAgICAgIOmBjuWOu+OBrua0u+WLleOBq+OCiOOCi+OCueOCs+OCouWkieWMluOCkueiuuiqjeOBp+OBjeOBvuOBmVxuICAgICAgPC9tb3Rpb24uZGl2PlxuICAgICAgPG1vdGlvbi5kaXZcbiAgICAgICAgaW5pdGlhbD17eyBvcGFjaXR5OiAwLCBzY2FsZTogMC45IH19XG4gICAgICAgIGFuaW1hdGU9e3sgb3BhY2l0eTogMSwgc2NhbGU6IDEgfX1cbiAgICAgICAgdHJhbnNpdGlvbj17eyBcbiAgICAgICAgICBkZWxheTogMC41LCBcbiAgICAgICAgICBkdXJhdGlvbjogMC41LFxuICAgICAgICAgIHR5cGU6ICdzcHJpbmcnLFxuICAgICAgICAgIHN0aWZmbmVzczogMTAwXG4gICAgICAgIH19XG4gICAgICAgIHN0eWxlPXt7IHdpZHRoOiAnMTAwJScsIGhlaWdodDogaGVpZ2h0IH19XG4gICAgICA+XG4gICAgICAgIDxSZXNwb25zaXZlQ29udGFpbmVyIHdpZHRoPVwiMTAwJVwiIGhlaWdodD1cIjEwMCVcIj5cbiAgICAgICAgICA8TGluZUNoYXJ0XG4gICAgICAgICAgICBkYXRhPXtjaGFydERhdGF9XG4gICAgICAgICAgICBtYXJnaW49e3tcbiAgICAgICAgICAgICAgdG9wOiA1LFxuICAgICAgICAgICAgICByaWdodDogMTAsXG4gICAgICAgICAgICAgIGxlZnQ6IDAsXG4gICAgICAgICAgICAgIGJvdHRvbTogNSxcbiAgICAgICAgICAgIH19XG4gICAgICAgICAgPlxuICAgICAgICAgICAgPENhcnRlc2lhbkdyaWQgc3Ryb2tlRGFzaGFycmF5PVwiMyAzXCIgc3Ryb2tlPXtncmlkQ29sb3J9IC8+XG4gICAgICAgICAgICA8WEF4aXMgXG4gICAgICAgICAgICAgIGRhdGFLZXk9XCJkYXRlXCIgXG4gICAgICAgICAgICAgIHRpY2tGb3JtYXR0ZXI9e2Zvcm1hdERhdGV9XG4gICAgICAgICAgICAgIHRpY2s9e3sgZm9udFNpemU6IDEyLCBmaWxsOiAnIzZCNzI4MCcgfX1cbiAgICAgICAgICAgICAgYXhpc0xpbmU9e3sgc3Ryb2tlOiBncmlkQ29sb3IgfX1cbiAgICAgICAgICAgICAgdGlja0xpbmU9e3sgc3Ryb2tlOiBncmlkQ29sb3IgfX1cbiAgICAgICAgICAgICAgZHk9ezEwfVxuICAgICAgICAgICAgLz5cbiAgICAgICAgICAgIDxZQXhpcyBcbiAgICAgICAgICAgICAgdGljaz17eyBmb250U2l6ZTogMTIsIGZpbGw6ICcjNkI3MjgwJyB9fVxuICAgICAgICAgICAgICBkb21haW49e1swLCAoZGF0YU1heDogbnVtYmVyKSA9PiBNYXRoLmNlaWwoZGF0YU1heCAqIDEuMSldfVxuICAgICAgICAgICAgICBheGlzTGluZT17eyBzdHJva2U6IGdyaWRDb2xvciB9fVxuICAgICAgICAgICAgICB0aWNrTGluZT17eyBzdHJva2U6IGdyaWRDb2xvciB9fVxuICAgICAgICAgICAgICB3aWR0aD17MzB9XG4gICAgICAgICAgICAvPlxuICAgICAgICAgICAgPFRvb2x0aXAgXG4gICAgICAgICAgICAgIGZvcm1hdHRlcj17KHZhbHVlKSA9PiBbYCR7dmFsdWV9IOODneOCpOODs+ODiGAsICfjgq7jg5Djg7zjgrnjgrPjgqInXX1cbiAgICAgICAgICAgICAgbGFiZWxGb3JtYXR0ZXI9eyhsYWJlbCkgPT4gYOaXpeS7mDogJHtmb3JtYXREYXRlKGxhYmVsLnRvU3RyaW5nKCkpfWB9XG4gICAgICAgICAgICAgIGNvbnRlbnRTdHlsZT17eyBcbiAgICAgICAgICAgICAgICBib3JkZXJSYWRpdXM6ICcwLjM3NXJlbScsIFxuICAgICAgICAgICAgICAgIGJvcmRlcjogJzFweCBzb2xpZCAjRTVFN0VCJyxcbiAgICAgICAgICAgICAgICBib3hTaGFkb3c6ICcwIDFweCAycHggcmdiYSgwLCAwLCAwLCAwLjA1KSdcbiAgICAgICAgICAgICAgfX1cbiAgICAgICAgICAgIC8+XG4gICAgICAgICAgICA8TGVnZW5kIFxuICAgICAgICAgICAgICB2ZXJ0aWNhbEFsaWduPVwidG9wXCIgXG4gICAgICAgICAgICAgIGhlaWdodD17MzB9IFxuICAgICAgICAgICAgICBmb3JtYXR0ZXI9eygpID0+ICfnjbLlvpfjg53jgqTjg7Pjg4gnfVxuICAgICAgICAgICAgLz5cbiAgICAgICAgICAgIDxMaW5lXG4gICAgICAgICAgICAgIHR5cGU9XCJtb25vdG9uZVwiXG4gICAgICAgICAgICAgIGRhdGFLZXk9XCJzY29yZVwiXG4gICAgICAgICAgICAgIG5hbWU9XCLjgq7jg5Djg7zjgrnjgrPjgqJcIlxuICAgICAgICAgICAgICBzdHJva2U9e21haW5Db2xvcn1cbiAgICAgICAgICAgICAgYWN0aXZlRG90PXt7IHI6IDcsIHN0cm9rZTogJ3doaXRlJywgc3Ryb2tlV2lkdGg6IDIgfX1cbiAgICAgICAgICAgICAgc3Ryb2tlV2lkdGg9ezIuNX1cbiAgICAgICAgICAgICAgZG90PXt7IHN0cm9rZTogbWFpbkNvbG9yLCBzdHJva2VXaWR0aDogMiwgcjogNCwgZmlsbDogJ3doaXRlJyB9fVxuICAgICAgICAgICAgLz5cbiAgICAgICAgICA8L0xpbmVDaGFydD5cbiAgICAgICAgPC9SZXNwb25zaXZlQ29udGFpbmVyPlxuICAgICAgPC9tb3Rpb24uZGl2PlxuICAgIDwvbW90aW9uLmRpdj5cbiAgKTtcbn07XG5cbmV4cG9ydCBkZWZhdWx0IEdpdmVyU2NvcmVDaGFydDsgIl0sIm5hbWVzIjpbIkdpdmVyU2NvcmVDaGFydCIsImRhdGEiLCJoZWlnaHQiLCJzYW1wbGVEYXRhIiwiZGF0ZSIsInNjb3JlIiwiY2hhcnREYXRhIiwiZm9ybWF0RGF0ZSIsImRhdGVTdHIiLCJEYXRlIiwiZm9ybWF0IiwibG9jYWxlIiwiamEiLCJlcnJvciIsImNvbnNvbGUiLCJtYWluQ29sb3IiLCJncmlkQ29sb3IiLCJjb250YWluZXJWYXJpYW50cyIsImhpZGRlbiIsIm9wYWNpdHkiLCJ5IiwidmlzaWJsZSIsInRyYW5zaXRpb24iLCJkdXJhdGlvbiIsImVhc2UiLCJ0aXRsZVZhcmlhbnRzIiwieCIsImRlbGF5IiwibW90aW9uIiwiZGl2IiwiY2xhc3NOYW1lIiwiaW5pdGlhbCIsImFuaW1hdGUiLCJ2YXJpYW50cyIsImgzIiwic2NhbGUiLCJ0eXBlIiwic3RpZmZuZXNzIiwic3R5bGUiLCJ3aWR0aCIsIlJlc3BvbnNpdmVDb250YWluZXIiLCJMaW5lQ2hhcnQiLCJtYXJnaW4iLCJ0b3AiLCJyaWdodCIsImxlZnQiLCJib3R0b20iLCJDYXJ0ZXNpYW5HcmlkIiwic3Ryb2tlRGFzaGFycmF5Iiwic3Ryb2tlIiwiWEF4aXMiLCJkYXRhS2V5IiwidGlja0Zvcm1hdHRlciIsInRpY2siLCJmb250U2l6ZSIsImZpbGwiLCJheGlzTGluZSIsInRpY2tMaW5lIiwiZHkiLCJZQXhpcyIsImRvbWFpbiIsImRhdGFNYXgiLCJNYXRoIiwiY2VpbCIsIlRvb2x0aXAiLCJmb3JtYXR0ZXIiLCJ2YWx1ZSIsImxhYmVsRm9ybWF0dGVyIiwibGFiZWwiLCJ0b1N0cmluZyIsImNvbnRlbnRTdHlsZSIsImJvcmRlclJhZGl1cyIsImJvcmRlciIsImJveFNoYWRvdyIsIkxlZ2VuZCIsInZlcnRpY2FsQWxpZ24iLCJMaW5lIiwibmFtZSIsImFjdGl2ZURvdCIsInIiLCJzdHJva2VXaWR0aCIsImRvdCJdLCJtYXBwaW5ncyI6IkFBQUE7Ozs7OytCQXlLQTs7O2VBQUE7Ozs7OERBdktrQjswQkFVWDt5QkFDZ0I7d0JBQ0o7OEJBQ0k7Ozs7OztBQVl2QixNQUFNQSxrQkFBa0QsQ0FBQyxFQUFFQyxJQUFJLEVBQUVDLFNBQVMsR0FBRyxFQUFFO0lBQzdFLFVBQVU7SUFDVixNQUFNQyxhQUFhO1FBQ2pCO1lBQUVDLE1BQU07WUFBY0MsT0FBTztRQUFFO1FBQy9CO1lBQUVELE1BQU07WUFBY0MsT0FBTztRQUFHO1FBQ2hDO1lBQUVELE1BQU07WUFBY0MsT0FBTztRQUFHO1FBQ2hDO1lBQUVELE1BQU07WUFBY0MsT0FBTztRQUFHO1FBQ2hDO1lBQUVELE1BQU07WUFBY0MsT0FBTztRQUFHO1FBQ2hDO1lBQUVELE1BQU07WUFBY0MsT0FBTztRQUFHO1FBQ2hDO1lBQUVELE1BQU07WUFBY0MsT0FBTztRQUFHO0tBQ2pDO0lBRUQseUJBQXlCO0lBQ3pCLE1BQU1DLFlBQVlMLFFBQVFFO0lBRTFCLE1BQU1JLGFBQWEsQ0FBQ0M7UUFDbEIsSUFBSTtZQUNGLE1BQU1KLE9BQU8sSUFBSUssS0FBS0Q7WUFDdEIsT0FBT0UsSUFBQUEsZUFBTSxFQUFDTixNQUFNLFNBQVM7Z0JBQUVPLFFBQVFDLFVBQUU7WUFBQztRQUM1QyxFQUFFLE9BQU9DLE9BQU87WUFDZEMsUUFBUUQsS0FBSyxDQUFDLGFBQWFBO1lBQzNCLE9BQU9MO1FBQ1Q7SUFDRjtJQUVBLGdCQUFnQjtJQUNoQixNQUFNTyxZQUFZLFdBQVcsU0FBUztJQUN0QyxNQUFNQyxZQUFZLFdBQVcsUUFBUTtJQUVyQyxZQUFZO0lBQ1osTUFBTUMsb0JBQW9CO1FBQ3hCQyxRQUFRO1lBQUVDLFNBQVM7WUFBR0MsR0FBRztRQUFHO1FBQzVCQyxTQUFTO1lBQ1BGLFNBQVM7WUFDVEMsR0FBRztZQUNIRSxZQUFZO2dCQUNWQyxVQUFVO2dCQUNWQyxNQUFNO1lBQ1I7UUFDRjtJQUNGO0lBRUEsTUFBTUMsZ0JBQWdCO1FBQ3BCUCxRQUFRO1lBQUVDLFNBQVM7WUFBR08sR0FBRyxDQUFDO1FBQUc7UUFDN0JMLFNBQVM7WUFDUEYsU0FBUztZQUNUTyxHQUFHO1lBQ0hKLFlBQVk7Z0JBQ1ZLLE9BQU87Z0JBQ1BKLFVBQVU7WUFDWjtRQUNGO0lBQ0Y7SUFFQSxxQkFDRSxzQkFBQ0ssb0JBQU0sQ0FBQ0MsR0FBRztRQUNUQyxXQUFVO1FBQ1ZDLFNBQVE7UUFDUkMsU0FBUTtRQUNSQyxVQUFVaEI7OzBCQUVWLHFCQUFDVyxvQkFBTSxDQUFDTSxFQUFFO2dCQUNSSixXQUFVO2dCQUNWRyxVQUFVUjswQkFDWDs7MEJBR0QscUJBQUNHLG9CQUFNLENBQUNDLEdBQUc7Z0JBQ1RDLFdBQVU7Z0JBQ1ZDLFNBQVM7b0JBQUVaLFNBQVM7Z0JBQUU7Z0JBQ3RCYSxTQUFTO29CQUFFYixTQUFTO2dCQUFFO2dCQUN0QkcsWUFBWTtvQkFBRUssT0FBTztvQkFBS0osVUFBVTtnQkFBSTswQkFDekM7OzBCQUdELHFCQUFDSyxvQkFBTSxDQUFDQyxHQUFHO2dCQUNURSxTQUFTO29CQUFFWixTQUFTO29CQUFHZ0IsT0FBTztnQkFBSTtnQkFDbENILFNBQVM7b0JBQUViLFNBQVM7b0JBQUdnQixPQUFPO2dCQUFFO2dCQUNoQ2IsWUFBWTtvQkFDVkssT0FBTztvQkFDUEosVUFBVTtvQkFDVmEsTUFBTTtvQkFDTkMsV0FBVztnQkFDYjtnQkFDQUMsT0FBTztvQkFBRUMsT0FBTztvQkFBUXJDLFFBQVFBO2dCQUFPOzBCQUV2QyxjQUFBLHFCQUFDc0MsNkJBQW1CO29CQUFDRCxPQUFNO29CQUFPckMsUUFBTzs4QkFDdkMsY0FBQSxzQkFBQ3VDLG1CQUFTO3dCQUNSeEMsTUFBTUs7d0JBQ05vQyxRQUFROzRCQUNOQyxLQUFLOzRCQUNMQyxPQUFPOzRCQUNQQyxNQUFNOzRCQUNOQyxRQUFRO3dCQUNWOzswQ0FFQSxxQkFBQ0MsdUJBQWE7Z0NBQUNDLGlCQUFnQjtnQ0FBTUMsUUFBUWpDOzswQ0FDN0MscUJBQUNrQyxlQUFLO2dDQUNKQyxTQUFRO2dDQUNSQyxlQUFlN0M7Z0NBQ2Y4QyxNQUFNO29DQUFFQyxVQUFVO29DQUFJQyxNQUFNO2dDQUFVO2dDQUN0Q0MsVUFBVTtvQ0FBRVAsUUFBUWpDO2dDQUFVO2dDQUM5QnlDLFVBQVU7b0NBQUVSLFFBQVFqQztnQ0FBVTtnQ0FDOUIwQyxJQUFJOzswQ0FFTixxQkFBQ0MsZUFBSztnQ0FDSk4sTUFBTTtvQ0FBRUMsVUFBVTtvQ0FBSUMsTUFBTTtnQ0FBVTtnQ0FDdENLLFFBQVE7b0NBQUM7b0NBQUcsQ0FBQ0MsVUFBb0JDLEtBQUtDLElBQUksQ0FBQ0YsVUFBVTtpQ0FBSztnQ0FDMURMLFVBQVU7b0NBQUVQLFFBQVFqQztnQ0FBVTtnQ0FDOUJ5QyxVQUFVO29DQUFFUixRQUFRakM7Z0NBQVU7Z0NBQzlCdUIsT0FBTzs7MENBRVQscUJBQUN5QixpQkFBTztnQ0FDTkMsV0FBVyxDQUFDQyxRQUFVO3dDQUFDLENBQUMsRUFBRUEsTUFBTSxLQUFLLENBQUM7d0NBQUU7cUNBQVM7Z0NBQ2pEQyxnQkFBZ0IsQ0FBQ0MsUUFBVSxDQUFDLElBQUksRUFBRTdELFdBQVc2RCxNQUFNQyxRQUFRLElBQUksQ0FBQztnQ0FDaEVDLGNBQWM7b0NBQ1pDLGNBQWM7b0NBQ2RDLFFBQVE7b0NBQ1JDLFdBQVc7Z0NBQ2I7OzBDQUVGLHFCQUFDQyxnQkFBTTtnQ0FDTEMsZUFBYztnQ0FDZHpFLFFBQVE7Z0NBQ1IrRCxXQUFXLElBQU07OzBDQUVuQixxQkFBQ1csY0FBSTtnQ0FDSHhDLE1BQUs7Z0NBQ0xlLFNBQVE7Z0NBQ1IwQixNQUFLO2dDQUNMNUIsUUFBUWxDO2dDQUNSK0QsV0FBVztvQ0FBRUMsR0FBRztvQ0FBRzlCLFFBQVE7b0NBQVMrQixhQUFhO2dDQUFFO2dDQUNuREEsYUFBYTtnQ0FDYkMsS0FBSztvQ0FBRWhDLFFBQVFsQztvQ0FBV2lFLGFBQWE7b0NBQUdELEdBQUc7b0NBQUd4QixNQUFNO2dDQUFROzs7Ozs7OztBQU81RTtNQUVBLFdBQWV2RCJ9
