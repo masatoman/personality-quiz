@@ -1,176 +1,181 @@
-import React from 'react';
-import { FaUsers, FaBalanceScale, FaBook } from 'react-icons/fa';
-import { ResultsData } from '@/types/quiz';
+import React, { ReactNode } from 'react';
+import { FaUsers, FaBalanceScale, FaBook, FaGift, FaHandHolding, FaExchangeAlt } from 'react-icons/fa';
+import { ResultsData, LearningType } from '@/types/quiz';
 
 // 詳細な診断データ
 export const resultsData: ResultsData = {
   personality_types: {
-    "giver": {
-      "title": "共感型学習者",
-      "short_title": "共感型",
-      "color": "#6246EA",
-      "icon": <FaUsers size={60} className="text-blue-600 mx-auto mb-4" />,
-      "description": "他者との関わりを通じて学ぶことに喜びを感じるタイプです。教えることで自身の理解も深まり、社会的な学習環境で最も力を発揮します。",
-      "extended_description": "共感型学習者の詳細説明",
-      "strengths": [
-        "教えることで記憶の定着率が高い（プロテジェ効果）",
-        "他者の理解度や状況に応じて説明を調整できる能力が高い",
-        "社会的な学習環境でモチベーションが維持しやすい",
-        "異なる視点からの知識を統合する能力が優れている"
+    giver: {
+      title: "思いやりのある学習者",
+      short_title: "ギバー",
+      color: "#4CAF50",
+      icon: React.createElement(FaGift),
+      description: "他者を助けることで学ぶことを好む学習者",
+      extended_description: "ギバーは、他者を助けることで自身も成長する学習スタイルを持っています。教えることで理解が深まり、共有することで知識が定着します。",
+      strengths: [
+        "教えることで学習内容の理解が深まる",
+        "他者との協力を通じて視野が広がる",
+        "学習コミュニティへの貢献度が高い"
       ],
-      "weaknesses": [
-        "完璧主義になりやすい（他者の期待に応えようとする）",
-        "一人での学習時に集中力が途切れることがある",
-        "他者の学習を優先し、自身の学習が疎かになりがち",
-        "人前での失敗を過度に恐れる傾向がある"
+      weaknesses: [
+        "自身の学習時間が不足しがちになる",
+        "他者への過度な配慮で進度が遅くなる",
+        "完璧主義的な傾向がある"
       ],
-      "learning_advice": {
-        "tips": [
-          "教えることを通じて学ぶ（ラーニング・バイ・ティーチング）",
-          "学習グループやコミュニティでの活動を積慣的に行う",
-          "知識を整理して人に説明できる形にまとめる習慣をつける",
-          "自己学習の時間も確保し、バランスを取る"
+      learning_advice: {
+        tips: [
+          "教える時間と自習時間のバランスを取る",
+          "学習グループでリーダーシップを発揮する",
+          "オンラインフォーラムで質問に回答する"
         ],
-        "tools": [
-          { "name": "Anki", "description": "スペース型復習で効率的な暗記" },
-          { "name": "Quizlet", "description": "他者と共有できるフラッシュカード" },
-          { "name": "Discord", "description": "学習コミュニティでの交流" },
-          { "name": "HelloTalk", "description": "言語交換アプリ" }
+        tools: [
+          {
+            name: "教育用ブログ",
+            description: "学んだことを共有するプラットフォーム"
+          },
+          {
+            name: "オンライン学習コミュニティ",
+            description: "知識共有の場"
+          }
         ]
       },
-      "scenarios": [
+      scenarios: [
         {
-          "scenario": "英語の新しい文法を学ぶとき",
-          "approach": "その文法を使った例文を自分で作り、クラスメイトに説明してみる。質問に答えることで理解が深まる。",
-          "effectiveness_rate": 85
+          scenario: "新しい文法規則を学ぶ時",
+          approach: "学習グループを作り、互いに教え合う",
+          effectiveness_rate: 85
         },
         {
-          "scenario": "英単語を覚えるとき",
-          "approach": "単語の意味を他の人に説明しながら覚える。アウトプットすることで記憶に定着しやすくなる。",
-          "effectiveness_rate": 90
+          scenario: "語彙を増やす時",
+          approach: "単語カードを作成し、共有する",
+          effectiveness_rate: 80
         }
       ]
     },
-    "taker": {
-      "title": "没入型学習者",
-      "short_title": "没入型",
-      "color": "#36B9CC",
-      "icon": <FaBook size={60} className="text-cyan-600 mx-auto mb-4" />,
-      "description": "深い集中状態で学ぶことを好むタイプです。自己ペースでの学習を重視し、フロー状態に入りやすい特徴があります。",
-      "extended_description": "没入型学習者の詳細説明",
-      "strengths": [
-        "集中力が高く、フロー状態に入りやすい",
-        "自分のペースで学習を進められる",
-        "深い理解と知識の定着に優れている",
-        "自己主導型の学習スタイルが確立している"
+    taker: {
+      title: "効率重視の学習者",
+      short_title: "テイカー",
+      color: "#2196F3",
+      icon: React.createElement(FaHandHolding),
+      description: "効率的な学習方法を追求する学習者",
+      extended_description: "テイカーは、最短で目標を達成することを重視します。効率的な学習リソースを見つけ、集中的に学習を進めます。",
+      strengths: [
+        "時間を効率的に使用する",
+        "目標達成への強い意志がある",
+        "学習リソースを最大限活用する"
       ],
-      "weaknesses": [
-        "他者からのフィードバックを受けにくい",
-        "視野が狭くなりがちで、異なる視点を見落とすことがある",
-        "実践的なコミュニケーションスキルの向上が遅れることがある",
-        "学習の偏りが生じやすい"
+      weaknesses: [
+        "他者との協力が少なくなりがち",
+        "柔軟性に欠けることがある",
+        "長期的な理解よりも短期的な成果を重視"
       ],
-      "learning_advice": {
-        "tips": [
-          "ポモドーロ・テクニックで集中と休憩のリズムを作る",
-          "定期的に学習内容をアウトプットする機会を設ける",
-          "学習環境の整備に気を配る（音、光、温度など）",
-          "自分の理解度を客観的に確認するためのテストを活用する"
+      learning_advice: {
+        tips: [
+          "グループ学習にも時間を割く",
+          "長期的な学習計画を立てる",
+          "他者のフィードバックを積極的に求める"
         ],
-        "tools": [
-          { "name": "Forest", "description": "集中力を高めるタイマーアプリ" },
-          { "name": "Brain.fm", "description": "集中のための音楽" },
-          { "name": "Notion", "description": "個人の学習ノート作成" },
-          { "name": "Kindle", "description": "電子書籍で場所を選ばず学習" }
+        tools: [
+          {
+            name: "学習管理アプリ",
+            description: "進捗管理と目標設定"
+          },
+          {
+            name: "オンライン学習プラットフォーム",
+            description: "効率的な学習コンテンツ"
+          }
         ]
       },
-      "scenarios": [
+      scenarios: [
         {
-          "scenario": "英語の新しい文法を学ぶとき",
-          "approach": "文法書で体系的に学んだ後、練習問題を解いて理解を確認。疑問点は自分で調べて解決する。",
-          "effectiveness_rate": 87
+          scenario: "新しい文法規則を学ぶ時",
+          approach: "オンライン講座で集中的に学習",
+          effectiveness_rate: 90
         },
         {
-          "scenario": "英単語を覚えるとき",
-          "approach": "単語帳アプリを使って自分のペースで繰り返し練習する。関連する単語をグループ化して記憶する。",
-          "effectiveness_rate": 92
+          scenario: "語彙を増やす時",
+          approach: "フラッシュカードアプリを使用",
+          effectiveness_rate: 85
         }
       ]
     },
-    "matcher": {
-      "title": "バランス型学習者",
-      "short_title": "バランス型",
-      "color": "#4CAF50",
-      "icon": <FaBalanceScale size={60} className="text-green-600 mx-auto mb-4" />,
-      "description": "柔軟な学習スタイルを持ち、状況に応じて適応するタイプです。多様な学習方法を取り入れ、バランスの取れた成長を遂げます。",
-      "extended_description": "バランス型学習者の詳細説明",
-      "strengths": [
-        "様々な学習状況に適応できる柔軟性",
-        "多様な視点から学習内容を理解できる",
-        "グループ学習と個人学習を効果的に組み合わせられる",
-        "実践的なコミュニケーションと深い理解をバランスよく獲得できる"
+    matcher: {
+      title: "バランス重視の学習者",
+      short_title: "マッチャー",
+      color: "#FF9800",
+      icon: React.createElement(FaExchangeAlt),
+      description: "相互学習を重視する学習者",
+      extended_description: "マッチャーは、与えることと得ることのバランスを重視します。協力的な学習環境で最も効果を発揮します。",
+      strengths: [
+        "バランスの取れた学習アプローチ",
+        "協力的な学習環境での高いパフォーマンス",
+        "長期的な学習関係の構築が得意"
       ],
-      "weaknesses": [
-        "特定の分野で専門性を深めるのに時間がかかることがある",
-        "あまりに多様なアプローチを試みて焦点が定まらないことがある",
-        "最適な学習方法の選択に迷うことがある",
-        "特定の学習スタイルへの深い理解が不足することがある"
+      weaknesses: [
+        "決断に時間がかかることがある",
+        "過度な公平性の追求",
+        "状況に応じた柔軟な対応が必要"
       ],
-      "learning_advice": {
-        "tips": [
-          "多様な学習リソースを組み合わせる",
-          "学習目的に応じて適切な学習方法を選択する",
-          "定期的に学習方法の効果を振り返り、調整する",
-          "個人学習とグループ学習のバランスを意識する"
+      learning_advice: {
+        tips: [
+          "学習パートナーを見つける",
+          "相互学習の機会を作る",
+          "フィードバックの交換を定期的に行う"
         ],
-        "tools": [
-          { "name": "Notion", "description": "多様なフォーマットで学習管理" },
-          { "name": "Duolingo", "description": "ゲーム形式で楽しく学習" },
-          { "name": "YouTube", "description": "様々な解説動画で理解を深める" },
-          { "name": "Evernote", "description": "様々な形式のノートを整理" }
+        tools: [
+          {
+            name: "言語交換アプリ",
+            description: "相互学習のプラットフォーム"
+          },
+          {
+            name: "グループ学習ツール",
+            description: "協力学習の支援"
+          }
         ]
       },
-      "scenarios": [
+      scenarios: [
         {
-          "scenario": "英語の新しい文法を学ぶとき",
-          "approach": "オンライン動画で概要を理解し、友人とのディスカッションで実践。その後、個人学習で定着を図る。",
-          "effectiveness_rate": 83
+          scenario: "新しい文法規則を学ぶ時",
+          approach: "パートナーと交互に教え合う",
+          effectiveness_rate: 80
         },
         {
-          "scenario": "英単語を覚えるとき",
-          "approach": "アプリでの学習と実際の会話での使用を組み合わせる。様々なコンテキストで単語を使うことで記憶を強化。",
-          "effectiveness_rate": 88
+          scenario: "語彙を増やす時",
+          approach: "学習グループで単語ゲームを行う",
+          effectiveness_rate: 75
         }
       ]
     }
   },
   type_combinations: {
     giver_taker: {
-      title: "教える没入型",
-      description: "深い理解と知識共有のバランスが取れたタイプ",
+      title: "ギバー・テイカーの組み合わせ",
+      description: "効率と思いやりのバランスを取る学習スタイル",
       tips: [
-        "個人学習の成果を定期的に他者と共有する",
-        "集中学習の後に教えることで理解を深める",
-        "他者に教えることで自分の知識の穴を発見する"
+        "互いの長所を活かした学習計画を立てる",
+        "定期的なフィードバック交換を行う",
+        "共同プロジェクトで役割分担を明確にする"
       ]
     },
     giver_matcher: {
-      title: "柔軟な教え手",
-      description: "状況に応じて教えることと学ぶことを切り替えられるタイプ",
+      title: "ギバー・マッチャーの組み合わせ",
+      description: "協力的で相互支援的な学習スタイル",
       tips: [
-        "グループ学習とソロ学習のバランスを意識する",
-        "異なる学習スタイルの人々と積慣的に交流する",
-        "様々な教え方を試して自分のレパートリーを広げる"
+        "学習リソースの共有を積極的に行う",
+        "定期的な振り返りセッションを設ける",
+        "グループ学習の機会を多く設ける"
       ]
     },
     taker_matcher: {
-      title: "適応する深掘り型",
-      description: "状況に応じて集中学習と相互学習を使い分けるタイプ",
+      title: "テイカー・マッチャーの組み合わせ",
+      description: "効率と協力のバランスを重視する学習スタイル",
       tips: [
-        "深い集中の後に学びを共有する習慣をつける",
-        "社会的学習と個人学習の適切な切り替えを意識する",
-        "自分の理解度に応じて学習方法を柔軟に変更する"
+        "目標達成と相互支援のバランスを取る",
+        "時間管理を重視しつつ協力も大切にする",
+        "競争と協力の適切な配分を見つける"
       ]
     }
   }
 };
+
+export default resultsData;

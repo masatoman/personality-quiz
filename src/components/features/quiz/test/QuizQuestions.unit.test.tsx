@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import QuizQuestions from '../QuizQuestions';
+import QuizQuestions from '@/components/features/quiz/QuizQuestions';
 import { QuizQuestion, QuizOption } from '@/types/quiz';
 
 // モックデータ

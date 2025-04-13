@@ -34,4 +34,31 @@ expect.extend({
 });
 
 // 注: TypeScriptの型定義はJSDocコメントで代用するか、
-// 別の.d.tsファイルに記述することをお勧めします。 
+// 別の.d.tsファイルに記述することをお勧めします。
+
+// グローバルモックの設定
+const mockResponse = {
+  json: jest.fn(),
+  status: 200,
+  headers: new Map(),
+};
+
+global.Response = jest.fn(() => mockResponse);
+global.Headers = jest.fn();
+global.Request = jest.fn();
+
+// Next.jsのResponse型の拡張
+const createNextResponse = (body, init = {}) => {
+  const response = {
+    ...mockResponse,
+    ...init,
+    json: () => Promise.resolve(body),
+  };
+  return response;
+};
+
+jest.mock('next/server', () => ({
+  NextResponse: {
+    json: jest.fn((body, init) => createNextResponse(body, init)),
+  },
+})); 
