@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import TodoForm from './TodoForm';
 import TaskItem from './TaskItem';
-import useTodoStorage from '../../../hooks/useTodoStorage';
+import useTodoStorage from '@/hooks/useTodoStorage';
 
 export default function TodoList() {
   const {

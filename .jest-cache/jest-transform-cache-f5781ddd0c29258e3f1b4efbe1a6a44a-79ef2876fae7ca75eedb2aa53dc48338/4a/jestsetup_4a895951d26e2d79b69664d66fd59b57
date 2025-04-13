@@ -1,0 +1,63 @@
+cd39036f83a6ddadef7a56706f819788
+// Jest-DOMの拡張機能を読み込み
+"use strict";
+jest.mock("next/server", ()=>({
+        NextResponse: {
+            json: jest.fn((body, init)=>createNextResponse(body, init))
+        }
+    }));
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+require("@testing-library/jest-dom");
+// Reactの無限ループエラーを抑制
+const originalConsoleError = console.error;
+console.error = (...args)=>{
+    // Maximum update depthエラーを無視
+    if (args[0] && args[0].includes && args[0].includes("Maximum update depth exceeded")) {
+        return;
+    }
+    originalConsoleError(...args);
+};
+// テスト時間を短縮するため、各テストにタイムアウトを設定
+jest.setTimeout(5000);
+// カスタムマッチャー
+expect.extend({
+    // 基本的なカスタムマッチャー例
+    toBeWithinRange (received, floor, ceiling) {
+        const pass = received >= floor && received <= ceiling;
+        if (pass) {
+            return {
+                message: ()=>`expected ${received} not to be within range ${floor} - ${ceiling}`,
+                pass: true
+            };
+        } else {
+            return {
+                message: ()=>`expected ${received} to be within range ${floor} - ${ceiling}`,
+                pass: false
+            };
+        }
+    }
+});
+// 注: TypeScriptの型定義はJSDocコメントで代用するか、
+// 別の.d.tsファイルに記述することをお勧めします。
+// グローバルモックの設定
+const mockResponse = {
+    json: jest.fn(),
+    status: 200,
+    headers: new Map()
+};
+global.Response = jest.fn(()=>mockResponse);
+global.Headers = jest.fn();
+global.Request = jest.fn();
+// Next.jsのResponse型の拡張
+const createNextResponse = (body, init = {})=>{
+    const response = {
+        ...mockResponse,
+        ...init,
+        json: ()=>Promise.resolve(body)
+    };
+    return response;
+};
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYXN0ZXIvTG9jYWwgU2l0ZXMvdGVzdGN1cnNvci9qZXN0LnNldHVwLmpzIl0sInNvdXJjZXNDb250ZW50IjpbIi8vIEplc3QtRE9N44Gu5ouh5by15qmf6IO944KS6Kqt44G/6L6844G/XG5pbXBvcnQgJ0B0ZXN0aW5nLWxpYnJhcnkvamVzdC1kb20nO1xuXG4vLyBSZWFjdOOBrueEoemZkOODq+ODvOODl+OCqOODqeODvOOCkuaKkeWItlxuY29uc3Qgb3JpZ2luYWxDb25zb2xlRXJyb3IgPSBjb25zb2xlLmVycm9yO1xuY29uc29sZS5lcnJvciA9ICguLi5hcmdzKSA9PiB7XG4gIC8vIE1heGltdW0gdXBkYXRlIGRlcHRo44Ko44Op44O844KS54Sh6KaWXG4gIGlmIChhcmdzWzBdICYmIGFyZ3NbMF0uaW5jbHVkZXMgJiYgYXJnc1swXS5pbmNsdWRlcygnTWF4aW11bSB1cGRhdGUgZGVwdGggZXhjZWVkZWQnKSkge1xuICAgIHJldHVybjtcbiAgfVxuICBvcmlnaW5hbENvbnNvbGVFcnJvciguLi5hcmdzKTtcbn07XG5cbi8vIOODhuOCueODiOaZgumWk+OCkuefree4ruOBmeOCi+OBn+OCgeOAgeWQhOODhuOCueODiOOBq+OCv+OCpOODoOOCouOCpuODiOOCkuioreWumlxuamVzdC5zZXRUaW1lb3V0KDUwMDApO1xuXG4vLyDjgqvjgrnjgr/jg6Djg57jg4Pjg4Hjg6Pjg7xcbmV4cGVjdC5leHRlbmQoe1xuICAvLyDln7rmnKznmoTjgarjgqvjgrnjgr/jg6Djg57jg4Pjg4Hjg6Pjg7zkvotcbiAgdG9CZVdpdGhpblJhbmdlKHJlY2VpdmVkLCBmbG9vciwgY2VpbGluZykge1xuICAgIGNvbnN0IHBhc3MgPSByZWNlaXZlZCA+PSBmbG9vciAmJiByZWNlaXZlZCA8PSBjZWlsaW5nO1xuICAgIGlmIChwYXNzKSB7XG4gICAgICByZXR1cm4ge1xuICAgICAgICBtZXNzYWdlOiAoKSA9PiBgZXhwZWN0ZWQgJHtyZWNlaXZlZH0gbm90IHRvIGJlIHdpdGhpbiByYW5nZSAke2Zsb29yfSAtICR7Y2VpbGluZ31gLFxuICAgICAgICBwYXNzOiB0cnVlLFxuICAgICAgfTtcbiAgICB9IGVsc2Uge1xuICAgICAgcmV0dXJuIHtcbiAgICAgICAgbWVzc2FnZTogKCkgPT4gYGV4cGVjdGVkICR7cmVjZWl2ZWR9IHRvIGJlIHdpdGhpbiByYW5nZSAke2Zsb29yfSAtICR7Y2VpbGluZ31gLFxuICAgICAgICBwYXNzOiBmYWxzZSxcbiAgICAgIH07XG4gICAgfVxuICB9XG59KTtcblxuLy8g5rOoOiBUeXBlU2NyaXB044Gu5Z6L5a6a576p44GvSlNEb2PjgrPjg6Hjg7Pjg4jjgafku6PnlKjjgZnjgovjgYvjgIFcbi8vIOWIpeOBri5kLnRz44OV44Kh44Kk44Or44Gr6KiY6L+w44GZ44KL44GT44Go44KS44GK5Yun44KB44GX44G+44GZ44CCXG5cbi8vIOOCsOODreODvOODkOODq+ODouODg+OCr+OBruioreWumlxuY29uc3QgbW9ja1Jlc3BvbnNlID0ge1xuICBqc29uOiBqZXN0LmZuKCksXG4gIHN0YXR1czogMjAwLFxuICBoZWFkZXJzOiBuZXcgTWFwKCksXG59O1xuXG5nbG9iYWwuUmVzcG9uc2UgPSBqZXN0LmZuKCgpID0+IG1vY2tSZXNwb25zZSk7XG5nbG9iYWwuSGVhZGVycyA9IGplc3QuZm4oKTtcbmdsb2JhbC5SZXF1ZXN0ID0gamVzdC5mbigpO1xuXG4vLyBOZXh0Lmpz44GuUmVzcG9uc2Xlnovjga7mi6HlvLVcbmNvbnN0IGNyZWF0ZU5leHRSZXNwb25zZSA9IChib2R5LCBpbml0ID0ge30pID0+IHtcbiAgY29uc3QgcmVzcG9uc2UgPSB7XG4gICAgLi4ubW9ja1Jlc3BvbnNlLFxuICAgIC4uLmluaXQsXG4gICAganNvbjogKCkgPT4gUHJvbWlzZS5yZXNvbHZlKGJvZHkpLFxuICB9O1xuICByZXR1cm4gcmVzcG9uc2U7XG59O1xuXG5qZXN0Lm1vY2soJ25leHQvc2VydmVyJywgKCkgPT4gKHtcbiAgTmV4dFJlc3BvbnNlOiB7XG4gICAganNvbjogamVzdC5mbigoYm9keSwgaW5pdCkgPT4gY3JlYXRlTmV4dFJlc3BvbnNlKGJvZHksIGluaXQpKSxcbiAgfSxcbn0pKTsgIl0sIm5hbWVzIjpbImplc3QiLCJtb2NrIiwiTmV4dFJlc3BvbnNlIiwianNvbiIsImZuIiwiYm9keSIsImluaXQiLCJjcmVhdGVOZXh0UmVzcG9uc2UiLCJvcmlnaW5hbENvbnNvbGVFcnJvciIsImNvbnNvbGUiLCJlcnJvciIsImFyZ3MiLCJpbmNsdWRlcyIsInNldFRpbWVvdXQiLCJleHBlY3QiLCJleHRlbmQiLCJ0b0JlV2l0aGluUmFuZ2UiLCJyZWNlaXZlZCIsImZsb29yIiwiY2VpbGluZyIsInBhc3MiLCJtZXNzYWdlIiwibW9ja1Jlc3BvbnNlIiwic3RhdHVzIiwiaGVhZGVycyIsIk1hcCIsImdsb2JhbCIsIlJlc3BvbnNlIiwiSGVhZGVycyIsIlJlcXVlc3QiLCJyZXNwb25zZSIsIlByb21pc2UiLCJyZXNvbHZlIl0sIm1hcHBpbmdzIjoiQUFBQSxxQkFBcUI7O0FBMkRyQkEsS0FBS0MsSUFBSSxDQUFDLGVBQWUsSUFBTyxDQUFBO1FBQzlCQyxjQUFjO1lBQ1pDLE1BQU1ILEtBQUtJLEVBQUUsQ0FBQyxDQUFDQyxNQUFNQyxPQUFTQyxtQkFBbUJGLE1BQU1DO1FBQ3pEO0lBQ0YsQ0FBQTs7OztRQTlETztBQUVQLG9CQUFvQjtBQUNwQixNQUFNRSx1QkFBdUJDLFFBQVFDLEtBQUs7QUFDMUNELFFBQVFDLEtBQUssR0FBRyxDQUFDLEdBQUdDO0lBQ2xCLDZCQUE2QjtJQUM3QixJQUFJQSxJQUFJLENBQUMsRUFBRSxJQUFJQSxJQUFJLENBQUMsRUFBRSxDQUFDQyxRQUFRLElBQUlELElBQUksQ0FBQyxFQUFFLENBQUNDLFFBQVEsQ0FBQyxrQ0FBa0M7UUFDcEY7SUFDRjtJQUNBSix3QkFBd0JHO0FBQzFCO0FBRUEsOEJBQThCO0FBQzlCWCxLQUFLYSxVQUFVLENBQUM7QUFFaEIsWUFBWTtBQUNaQyxPQUFPQyxNQUFNLENBQUM7SUFDWixpQkFBaUI7SUFDakJDLGlCQUFnQkMsUUFBUSxFQUFFQyxLQUFLLEVBQUVDLE9BQU87UUFDdEMsTUFBTUMsT0FBT0gsWUFBWUMsU0FBU0QsWUFBWUU7UUFDOUMsSUFBSUMsTUFBTTtZQUNSLE9BQU87Z0JBQ0xDLFNBQVMsSUFBTSxDQUFDLFNBQVMsRUFBRUosU0FBUyx3QkFBd0IsRUFBRUMsTUFBTSxHQUFHLEVBQUVDLFFBQVEsQ0FBQztnQkFDbEZDLE1BQU07WUFDUjtRQUNGLE9BQU87WUFDTCxPQUFPO2dCQUNMQyxTQUFTLElBQU0sQ0FBQyxTQUFTLEVBQUVKLFNBQVMsb0JBQW9CLEVBQUVDLE1BQU0sR0FBRyxFQUFFQyxRQUFRLENBQUM7Z0JBQzlFQyxNQUFNO1lBQ1I7UUFDRjtJQUNGO0FBQ0Y7QUFFQSxxQ0FBcUM7QUFDckMsNkJBQTZCO0FBRTdCLGNBQWM7QUFDZCxNQUFNRSxlQUFlO0lBQ25CbkIsTUFBTUgsS0FBS0ksRUFBRTtJQUNibUIsUUFBUTtJQUNSQyxTQUFTLElBQUlDO0FBQ2Y7QUFFQUMsT0FBT0MsUUFBUSxHQUFHM0IsS0FBS0ksRUFBRSxDQUFDLElBQU1rQjtBQUNoQ0ksT0FBT0UsT0FBTyxHQUFHNUIsS0FBS0ksRUFBRTtBQUN4QnNCLE9BQU9HLE9BQU8sR0FBRzdCLEtBQUtJLEVBQUU7QUFFeEIsdUJBQXVCO0FBQ3ZCLE1BQU1HLHFCQUFxQixDQUFDRixNQUFNQyxPQUFPLENBQUMsQ0FBQztJQUN6QyxNQUFNd0IsV0FBVztRQUNmLEdBQUdSLFlBQVk7UUFDZixHQUFHaEIsSUFBSTtRQUNQSCxNQUFNLElBQU00QixRQUFRQyxPQUFPLENBQUMzQjtJQUM5QjtJQUNBLE9BQU95QjtBQUNUIn0=

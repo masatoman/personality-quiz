@@ -4,44 +4,80 @@ import { PersonalityType, TypeTotals, TypeStats, Stats } from '@/types/quiz';
 import { Pool } from 'pg';
 
 // PostgreSQLの接続プール設定
-let pool: Pool;
+export let pool: Pool;
 
-try {
-  pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' 
-      ? {
-          rejectUnauthorized: false
+// 接続設定
+const dbConfig = {
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
+  ssl: process.env.NODE_ENV === 'production' 
+    ? {
+        rejectUnauthorized: false
+      }
+    : false,
+  // 接続タイムアウトを30秒に設定
+  connectionTimeoutMillis: 30000,
+  // アイドル接続のタイムアウトを10秒に設定
+  idleTimeoutMillis: 10000,
+  // 最大接続数を20に設定
+  max: 20
+};
+
+// プールの初期化関数
+export async function initPool() {
+  try {
+    if (!pool) {
+      pool = new Pool(dbConfig);
+      
+      // エラーイベントのハンドリング
+      pool.on('error', (err: Error & { client?: any }) => {
+        console.error('PostgreSQL接続エラー:', err);
+        // エラーが発生した接続を破棄
+        if (err.client) {
+          err.client.release(true);
         }
-      : false
-  });
-  
-  // 接続のテスト
-  pool.on('error', (err) => {
-    console.error('PostgreSQL接続エラー:', err);
-    console.log('ローカルファイルシステムのデータにフォールバックします');
-  });
-} catch (error) {
-  console.error('PostgreSQLプールの初期化に失敗しました:', error);
-  console.log('ローカルファイルシステムのデータにフォールバックします');
+      });
+
+      // 接続テスト
+      const client = await pool.connect();
+      try {
+        await client.query('SELECT NOW()');
+        console.log('データベース接続が正常に確立されました');
+      } finally {
+        client.release();
+      }
+    }
+    return pool;
+  } catch (error) {
+    console.error('PostgreSQLプールの初期化に失敗しました:', error);
+    throw error;
+  }
 }
 
 export async function query(text: string, params?: any[]) {
   try {
-    // PostgreSQLへの接続を試みる
-    if (pool) {
-      const client = await pool.connect();
-      try {
-        return await client.query(text, params);
-      } finally {
-        client.release();
-      }
-    } else {
-      throw new Error('PostgreSQLプールが利用できません');
+    // プールが未初期化の場合は初期化
+    if (!pool) {
+      await initPool();
+    }
+
+    // クライアントの取得
+    const client = await pool.connect();
+    try {
+      const result = await client.query(text, params);
+      return result;
+    } catch (queryError) {
+      console.error('クエリ実行エラー:', queryError);
+      console.error('実行されたクエリ:', text);
+      console.error('パラメータ:', params);
+      throw queryError;
+    } finally {
+      client.release();
     }
   } catch (error) {
-    console.error('クエリ実行中にエラーが発生:', error);
-    // エラーを投げて呼び出し元で処理する
+    console.error('データベース操作エラー:', error);
     throw error;
   }
 }

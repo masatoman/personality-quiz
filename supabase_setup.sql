@@ -131,6 +131,17 @@ CREATE TABLE IF NOT EXISTS public.personality_results (
 );
 COMMENT ON TABLE public.personality_results IS 'ユーザーの診断結果履歴（スコア変動の追跡用）';
 
+-- クイズ結果テーブル
+CREATE TABLE IF NOT EXISTS public.quiz_results (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  score INTEGER NOT NULL CHECK (score >= 0),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+COMMENT ON TABLE public.quiz_results IS 'ユーザーのクイズ結果';
+CREATE INDEX quiz_results_user_id_idx ON public.quiz_results(user_id);
+CREATE INDEX quiz_results_created_at_idx ON public.quiz_results(created_at);
+
 -- インデックス作成
 CREATE INDEX materials_user_id_idx ON public.materials(user_id);
 CREATE INDEX materials_category_idx ON public.materials(category);
