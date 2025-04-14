@@ -2,150 +2,254 @@ import { NextResponse } from 'next/server';
 import { pool, initPool } from '@/lib/db';
 import { QueryResult } from 'pg';
 import { unstable_cache } from 'next/cache';
+import { headers } from 'next/headers';
 
 type RankingUser = {
   id: string;
   username: string;
   score: number;
   rank: number;
+  activityCount: number;
+  lastActive: string;
 };
 
 type RankingRow = {
   user_id: string;
   username: string;
   total_score: number;
+  activity_count: number;
+  last_activity: string;
+  rank: number;
 };
+
+// キャッシュ設定の最適化
+const CACHE_CONFIG = {
+  REVALIDATE_SECONDS: 300, // 5分
+  STALE_SECONDS: 60, // 1分間は古いデータを許容
+  ERROR_RETRY_SECONDS: 30, // エラー時の再試行間隔
+  TAGS: {
+    RANKINGS: 'rankings',
+    WEEKLY: 'weekly-rankings',
+    USER_SCORES: 'user-scores'
+  }
+};
+
+// データベース接続の初期化とテスト
+async function initializeAndTestConnection() {
+  try {
+    // 接続タイムアウトを30秒に設定
+    await Promise.race([
+      initPool(),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('データベース接続がタイムアウトしました')), 30000)
+      )
+    ]);
+
+    // データベース接続テスト
+    const testResult = await pool.query('SELECT NOW()');
+    
+    // テーブル存在確認とインデックス最適化
+    await Promise.all([
+      verifyTableExists(),
+      optimizeIndexes()
+    ]);
+
+    return true;
+  } catch (error) {
+    console.error('データベース初期化エラー:', error);
+    throw error;
+  }
+}
+
+// テーブル存在確認
+async function verifyTableExists() {
+  const tableCheck = await pool.query(`
+    SELECT EXISTS (
+      SELECT FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+      AND table_name = 'quiz_results'
+    )
+  `);
+  
+  if (!tableCheck.rows[0].exists) {
+    throw new Error('quiz_resultsテーブルが存在しません');
+  }
+}
+
+// インデックス最適化
+async function optimizeIndexes() {
+  const requiredIndexes = [
+    {
+      name: 'idx_quiz_results_created_at',
+      definition: 'CREATE INDEX idx_quiz_results_created_at ON quiz_results (created_at)'
+    },
+    {
+      name: 'idx_quiz_results_user_score',
+      definition: 'CREATE INDEX idx_quiz_results_user_score ON quiz_results (user_id, score)'
+    }
+  ];
+
+  for (const index of requiredIndexes) {
+    const indexExists = await pool.query(`
+      SELECT EXISTS (
+        SELECT FROM pg_indexes
+        WHERE schemaname = 'public'
+        AND tablename = 'quiz_results'
+        AND indexname = $1
+      )
+    `, [index.name]);
+
+    if (!indexExists.rows[0].exists) {
+      console.log(`${index.name}のインデックスを作成します`);
+      await pool.query(index.definition);
+    }
+  }
+}
 
 // ランキングデータ取得関数をキャッシュ化
 const getWeeklyRankings = unstable_cache(
   async () => {
+    const startTime = Date.now();
     try {
-      await initPool();
-      
-      // データベース接続テスト
-      const testResult = await pool.query('SELECT NOW()');
-      console.log('データベース接続テスト結果:', testResult.rows[0]);
+      await initializeAndTestConnection();
 
-      // テーブル存在確認
-      const tableCheck = await pool.query(`
-        SELECT EXISTS (
-          SELECT FROM information_schema.tables 
-          WHERE table_schema = 'public' 
-          AND table_name = 'quiz_results'
-        )
-      `);
-      
-      if (!tableCheck.rows[0].exists) {
-        throw new Error('quiz_resultsテーブルが存在しません');
-      }
-
-      console.log('quiz_resultsテーブルの存在を確認しました');
-
-      // インデックス確認と作成
-      const indexCheck = await pool.query(`
-        SELECT EXISTS (
-          SELECT FROM pg_indexes
-          WHERE schemaname = 'public'
-          AND tablename = 'quiz_results'
-          AND indexname = 'idx_quiz_results_created_at'
-        )
-      `);
-
-      if (!indexCheck.rows[0].exists) {
-        console.log('created_atのインデックスを作成します');
-        await pool.query(`
-          CREATE INDEX idx_quiz_results_created_at
-          ON quiz_results (created_at)
-        `);
-      }
-
-      // 最適化されたクエリ
       const result = await pool.query(`
-        WITH WeeklyScores AS (
-          SELECT 
-            user_id,
-            SUM(score) as total_score
-          FROM quiz_results
-          WHERE created_at >= NOW() - INTERVAL '7 days'
-          GROUP BY user_id
-        ),
-        RankedUsers AS (
+        WITH RankedScores AS (
           SELECT 
             u.id as user_id,
             u.username,
-            COALESCE(ws.total_score, 0) as total_score
+            COALESCE(SUM(qr.score), 0) as total_score,
+            COUNT(qr.id) as activity_count,
+            MAX(qr.created_at) as last_activity,
+            ROW_NUMBER() OVER (
+              ORDER BY COALESCE(SUM(qr.score), 0) DESC,
+                       COUNT(qr.id) DESC,
+                       MAX(qr.created_at) DESC
+            ) as rank
           FROM users u
-          LEFT JOIN WeeklyScores ws ON u.id = ws.user_id
-          WHERE ws.total_score > 0
-          ORDER BY ws.total_score DESC
+          LEFT JOIN LATERAL (
+            SELECT id, score, created_at, user_id
+            FROM quiz_results
+            WHERE created_at >= NOW() - INTERVAL '7 days'
+            AND user_id = u.id
+          ) qr ON true
+          GROUP BY u.id, u.username
+          HAVING COUNT(qr.id) > 0 OR EXISTS (
+            SELECT 1 FROM quiz_results qr2 
+            WHERE qr2.user_id = u.id 
+            AND qr2.created_at >= NOW() - INTERVAL '30 days'
+          )
         )
-        SELECT *
-        FROM RankedUsers
+        SELECT 
+          user_id,
+          username,
+          total_score,
+          activity_count,
+          last_activity,
+          rank
+        FROM RankedScores
+        WHERE rank <= 100
+        ORDER BY total_score DESC, activity_count DESC, last_activity DESC
       `);
 
-      console.log('ランキングクエリ実行結果:', {
-        rowCount: result.rowCount ?? 0,
-        firstRow: result.rows[0],
-        lastRow: result.rows[result.rows.length - 1]
+      // パフォーマンスメトリクスの記録
+      const executionTime = Date.now() - startTime;
+      console.log('ランキングクエリパフォーマンス:', {
+        rowCount: result.rowCount,
+        executionTimeMs: executionTime,
+        timestamp: new Date().toISOString()
       });
 
-      // データ変換
-      return result.rows.map((row: RankingRow, index: number) => ({
+      return result.rows.map((row: RankingRow) => ({
         id: row.user_id,
         username: row.username,
         score: row.total_score,
-        rank: index + 1
+        rank: row.rank,
+        activityCount: row.activity_count,
+        lastActive: row.last_activity
       }));
+
     } catch (error) {
-      console.error('ランキングデータ取得中にエラーが発生しました:', error);
+      console.error('ランキングデータ取得エラー:', error);
       throw error;
     }
   },
-  ['weekly-rankings'],
-  { 
-    revalidate: 300, // 5分
-    tags: ['rankings']
+  [CACHE_CONFIG.TAGS.WEEKLY],
+  {
+    revalidate: CACHE_CONFIG.REVALIDATE_SECONDS,
+    tags: Object.values(CACHE_CONFIG.TAGS)
   }
 );
 
 export async function GET() {
+  const startTime = Date.now();
   try {
+    const headersList = headers();
     const rankings = await getWeeklyRankings();
+    const responseTime = Date.now() - startTime;
     
     // 空のデータの場合の処理
     if (!rankings || rankings.length === 0) {
-      return Response.json(
+      console.log('ランキングデータが空です');
+      return NextResponse.json(
         { 
           data: [],
           message: 'ランキングデータが存在しません',
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          status: 'empty'
         },
-        { status: 204 }
+        { 
+          status: 204,
+          headers: {
+            'Cache-Control': `public, s-maxage=${CACHE_CONFIG.REVALIDATE_SECONDS}, stale-while-revalidate=${CACHE_CONFIG.STALE_SECONDS}`,
+            'CDN-Cache-Control': `public, s-maxage=${CACHE_CONFIG.REVALIDATE_SECONDS}`,
+            'Vercel-CDN-Cache-Control': `public, s-maxage=${CACHE_CONFIG.REVALIDATE_SECONDS}`,
+            'Surrogate-Control': `public, s-maxage=${CACHE_CONFIG.REVALIDATE_SECONDS}`,
+            'Vary': 'Accept-Encoding',
+            'X-Response-Time': `${responseTime}ms`
+          }
+        }
       );
     }
 
     // 正常なレスポンス
-    return Response.json({
+    return NextResponse.json({
       data: rankings,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      status: 'success',
+      totalUsers: rankings.length,
+      metrics: {
+        responseTime: responseTime
+      }
+    }, {
+      headers: {
+        'Cache-Control': `public, s-maxage=${CACHE_CONFIG.REVALIDATE_SECONDS}, stale-while-revalidate=${CACHE_CONFIG.STALE_SECONDS}`,
+        'CDN-Cache-Control': `public, s-maxage=${CACHE_CONFIG.REVALIDATE_SECONDS}`,
+        'Vercel-CDN-Cache-Control': `public, s-maxage=${CACHE_CONFIG.REVALIDATE_SECONDS}`,
+        'Surrogate-Control': `public, s-maxage=${CACHE_CONFIG.REVALIDATE_SECONDS}`,
+        'Vary': 'Accept-Encoding',
+        'X-Response-Time': `${responseTime}ms`
+      }
     });
   } catch (error) {
-    console.error('ランキングの取得中にエラーが発生しました:', error);
-    if (error instanceof Error) {
-      console.error('エラーの詳細:', {
-        message: error.message,
-        stack: error.stack,
-        name: error.name
-      });
-    }
+    console.error('ランキング取得エラー:', error);
+    const errorResponse = {
+      error: 'ランキングの取得に失敗しました',
+      details: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString(),
+      status: 'error'
+    };
 
-    return Response.json(
-      { 
-        error: 'ランキングの取得に失敗しました',
-        details: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
-      },
-      { status: 500 }
-    );
+    // エラー時は短いキャッシュ時間を設定
+    return NextResponse.json(errorResponse, { 
+      status: 500,
+      headers: {
+        'Cache-Control': `public, max-age=0, s-maxage=${CACHE_CONFIG.ERROR_RETRY_SECONDS}`,
+        'CDN-Cache-Control': `public, max-age=${CACHE_CONFIG.ERROR_RETRY_SECONDS}`,
+        'Vercel-CDN-Cache-Control': `public, max-age=${CACHE_CONFIG.ERROR_RETRY_SECONDS}`,
+        'Surrogate-Control': `public, max-age=${CACHE_CONFIG.ERROR_RETRY_SECONDS}`,
+        'X-Error-Time': new Date().toISOString()
+      }
+    });
   }
 } 
