@@ -1,4 +1,4 @@
-import React from 'react';
+import { redirect } from 'next/navigation';
 import { Metadata } from 'next';
 import HomePage from '@/components/HomePage';
 
@@ -19,6 +19,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
-  return <HomePage />;
+export default function RootPage() {
+  redirect('/materials');
 } 

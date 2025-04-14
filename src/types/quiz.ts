@@ -21,6 +21,7 @@ export type QuizResults = {
   };
   // 詳細データ（オプショナル）
   details?: QuestionDetail[];
+  timestamp: number;
 };
 
 export type Tool = {
@@ -92,17 +93,28 @@ export type TypeCombination = {
   tips: string[];
 };
 
-export type ResultsData = {
+export interface ResultsData {
   personality_types: Record<LearningType, PersonalityTypeInfo>;
   type_combinations: {
     giver_taker: TypeCombination;
     giver_matcher: TypeCombination;
     taker_matcher: TypeCombination;
   };
-};
+  [key: string]: {
+    title: string;
+    description: string;
+    strengths: string[];
+    weaknesses: string[];
+    tips: string[];
+  } | Record<LearningType, PersonalityTypeInfo> | {
+    giver_taker: TypeCombination;
+    giver_matcher: TypeCombination;
+    taker_matcher: TypeCombination;
+  };
+}
 
 // タブの種類
-export type TabType = 'strengths' | 'weaknesses' | 'advice' | 'tools' | 'scenarios';
+export type TabType = 'overview' | 'strengths' | 'weaknesses' | 'tips';
 
 // スコア変更オブジェクト
 export interface ScoreChange {
@@ -178,4 +190,78 @@ export interface GiverScoreHistoryItem {
   date: string;
   score: number;
   userId: string;
+}
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  name?: string;
+}
+
+// コンポーネントのProps型定義
+export interface ResultsHeaderProps {
+  type: LearningType;
+  secondaryType: LearningType;
+  scores: {
+    giver: number;
+    taker: number;
+    matcher: number;
+  };
+  resultsData: ResultsData;
+}
+
+export interface ResultsTabsProps {
+  activeTab: TabType;
+  onTabChange: (tab: TabType) => void;
+}
+
+export interface ResultsTabContentProps {
+  activeTab: TabType;
+  learningType: {
+    primary: LearningType;
+    secondary: LearningType;
+    scores: {
+      giver: number;
+      taker: number;
+      matcher: number;
+    };
+  };
+  quizResults: QuizResults;
+  resultsData: ResultsData;
+}
+
+export interface ResultsChartProps {
+  scores: {
+    giver: number;
+    taker: number;
+    matcher: number;
+  };
+}
+
+export interface NextStepsProps {
+  learningType: {
+    primary: LearningType;
+    secondary: LearningType;
+    scores: {
+      giver: number;
+      taker: number;
+      matcher: number;
+    };
+  };
+  resultsData: ResultsData;
+}
+
+export interface ResultsFooterProps {
+  user: AuthUser | null;
+  isSaved: boolean;
+  onSave: () => Promise<void>;
+}
+
+export interface LoginPromptProps {
+  onLogin: () => void;
+}
+
+export interface SaveNotificationProps {
+  success: boolean;
+  error: string | null;
 }

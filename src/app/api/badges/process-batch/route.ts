@@ -1,15 +1,68 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { createClient, SupabaseClient } from '@/utils/supabase/server';
 import { auth } from '@/lib/auth';
 import { BadgeType } from '@/types/badges';
 import { BADGE_DEFINITIONS } from '@/data/badges';
 import { BadgeEvaluator } from '@/utils/badgeEvaluator';
+
+interface User {
+  id: string;
+  last_badge_check: string | null;
+}
+
+const BATCH_SIZE = 50; // 一度に処理するユーザー数
+const PROCESSING_DELAY = 100; // バッチ間の遅延（ミリ秒）
+const CACHE_TTL = 5 * 60 * 1000; // キャッシュの有効期限（5分）
+
+// メモリ内キャッシュ
+const processedUsersCache = new Map<string, { timestamp: number }>();
+
+/**
+ * ユーザーのバッジを評価し、新しく獲得したバッジを返す
+ */
+async function processUserBadges(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<BadgeType[]> {
+  const evaluator = new BadgeEvaluator(supabase);
+  const newBadges: BadgeType[] = [];
+
+  // ユーザーの既存バッジを取得
+  const { data: existingBadges } = await supabase
+    .from('user_badges')
+    .select('badge_type')
+    .eq('user_id', userId);
+
+  const existingBadgeTypes = new Set(existingBadges?.map(b => b.badge_type) || []);
+
+  // 各バッジ定義に対して評価を実行
+  for (const [badgeType, definition] of Object.entries(BADGE_DEFINITIONS)) {
+    if (!existingBadgeTypes.has(badgeType)) {
+      const isEarned = await evaluator.evaluateBadge(userId, badgeType as BadgeType);
+      if (isEarned) {
+        // 新しいバッジを保存
+        await supabase
+          .from('user_badges')
+          .insert({
+            user_id: userId,
+            badge_type: badgeType,
+            earned_at: new Date().toISOString()
+          });
+        newBadges.push(badgeType as BadgeType);
+      }
+    }
+  }
+
+  return newBadges;
+}
 
 /**
  * バッジ評価のバッチ処理API
  * このAPIは管理者専用であり、スケジューラーから呼び出されることを想定しています
  */
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+  
   try {
     // 認証チェック - 管理者のみが実行可能
     const session = await auth();
@@ -20,14 +73,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // リクエストから処理対象のユーザー数を取得（デフォルトは100）
-    const { batchSize = 100, processAll = false } = await request.json();
+    // リクエストからパラメータを取得
+    const { batchSize = BATCH_SIZE, processAll = false } = await request.json();
 
     // Supabaseクライアントを作成
     const supabase = createClient();
     
     // 処理対象のユーザーを取得
-    // 最終バッジチェック日時から1日以上経過したユーザー、または未チェックのユーザーを優先
     let query = supabase
       .from('users')
       .select('id, last_badge_check')
@@ -49,32 +101,79 @@ export async function POST(request: NextRequest) {
     }
 
     // 処理結果を保存する配列
-    const results: { userId: string; newBadges: string[] }[] = [];
+    const results: { userId: string; newBadges: BadgeType[] }[] = [];
+    const errors: { userId: string; error: string }[] = [];
 
-    // 各ユーザーのバッジを評価・更新
-    for (const user of users) {
-      const newBadges = await processUserBadges(supabase, user.id);
+    // ユーザーをバッチで処理
+    for (let i = 0; i < users.length; i += BATCH_SIZE) {
+      const userBatch = users.slice(i, i + BATCH_SIZE);
       
-      // 最終チェック日時を更新
-      await supabase
-        .from('users')
-        .update({ last_badge_check: new Date().toISOString() })
-        .eq('id', user.id);
+      // 各ユーザーのバッジを並行して評価
+      const batchPromises = userBatch.map(async (user) => {
+        try {
+          // キャッシュをチェック
+          const cached = processedUsersCache.get(user.id);
+          if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+            return;
+          }
+
+          const newBadges = await processUserBadges(supabase, user.id);
+          
+          // 最終チェック日時を更新
+          await supabase
+            .from('users')
+            .update({ last_badge_check: new Date().toISOString() })
+            .eq('id', user.id);
+          
+          // キャッシュを更新
+          processedUsersCache.set(user.id, { timestamp: Date.now() });
+          
+          if (newBadges.length > 0) {
+            results.push({
+              userId: user.id,
+              newBadges
+            });
+          }
+        } catch (error) {
+          console.error(`ユーザー ${user.id} のバッジ処理エラー:`, error);
+          errors.push({
+            userId: user.id,
+            error: error instanceof Error ? error.message : '不明なエラー'
+          });
+        }
+      });
       
-      if (newBadges.length > 0) {
-        results.push({
-          userId: user.id,
-          newBadges
-        });
+      // バッチ内のすべての処理を待機
+      await Promise.all(batchPromises);
+      
+      // バッチ間で遅延を入れる
+      if (i + BATCH_SIZE < users.length) {
+        await new Promise(resolve => setTimeout(resolve, PROCESSING_DELAY));
       }
     }
+
+    // 実行時間を計算
+    const executionTime = Date.now() - startTime;
+
+    // パフォーマンスメトリクスをログ
+    console.log('バッジバッチ処理パフォーマンス:', {
+      totalUsers: users.length,
+      processedBatches: Math.ceil(users.length / BATCH_SIZE),
+      successfulUpdates: results.length,
+      errors: errors.length,
+      executionTimeMs: executionTime,
+      timestamp: new Date().toISOString()
+    });
 
     // レスポンスを返す
     return NextResponse.json({
       success: true,
       processedUsers: users.length,
       newBadgesAwarded: results.length,
-      details: results
+      errors: errors.length,
+      executionTime,
+      details: results,
+      errorDetails: errors
     });
 
   } catch (error) {
@@ -83,93 +182,5 @@ export async function POST(request: NextRequest) {
       { error: 'サーバーエラーが発生しました' },
       { status: 500 }
     );
-  }
-}
-
-/**
- * ユーザーのバッジを評価・更新する関数
- */
-async function processUserBadges(supabase: any, userId: string): Promise<string[]> {
-  try {
-    // ユーザーのアクティビティ集計を取得
-    const { data: activitySummary, error: summaryError } = await supabase
-      .from('user_activities_summary')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-
-    if (summaryError && summaryError.code !== 'PGRST116') {
-      console.error(`ユーザー ${userId} のアクティビティ取得エラー:`, summaryError);
-      return [];
-    }
-
-    // 現在のバッジ獲得状況を取得
-    const { data: currentBadges, error: badgesError } = await supabase
-      .from('user_badges')
-      .select('*')
-      .eq('user_id', userId);
-
-    if (badgesError) {
-      console.error(`ユーザー ${userId} のバッジ情報取得エラー:`, badgesError);
-      return [];
-    }
-
-    // 獲得済みバッジのIDリスト
-    const acquiredBadgeIds = (currentBadges || []).map(badge => badge.badge_id);
-
-    // 新しく獲得したバッジを保存する配列
-    const newlyAcquiredBadges: string[] = [];
-
-    // 各バッジの要件をチェックし、獲得条件を満たしているか確認
-    for (const badgeKey in BADGE_DEFINITIONS) {
-      const badge = BADGE_DEFINITIONS[badgeKey as BadgeType];
-      
-      // すでに獲得しているバッジはスキップ
-      if (acquiredBadgeIds.includes(badge.id)) {
-        continue;
-      }
-
-      // すべての要件を満たしているかどうかをチェック
-      const allRequirementsMet = BadgeEvaluator.evaluateAllRequirements(
-        badge.requirements,
-        activitySummary || {}
-      );
-
-      // すべての要件を満たしていれば、バッジを獲得
-      if (allRequirementsMet) {
-        const { error: insertError } = await supabase
-          .from('user_badges')
-          .insert({
-            user_id: userId,
-            badge_id: badge.id,
-            acquired_at: new Date().toISOString(),
-            progress: 100
-          });
-
-        if (insertError) {
-          console.error(`バッジ ${badge.id} の追加エラー:`, insertError);
-        } else {
-          newlyAcquiredBadges.push(badge.id);
-          
-          // 通知を作成
-          await supabase
-            .from('notifications')
-            .insert({
-              user_id: userId,
-              type: 'badge_earned',
-              title: 'バッジを獲得しました！',
-              content: `「${badge.name}」バッジを獲得しました。おめでとうございます！`,
-              is_read: false,
-              created_at: new Date().toISOString(),
-              metadata: JSON.stringify({ badgeId: badge.id })
-            });
-        }
-      }
-    }
-
-    return newlyAcquiredBadges;
-  } catch (error) {
-    console.error(`ユーザー ${userId} のバッジ処理エラー:`, error);
-    return [];
   }
 } 

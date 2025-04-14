@@ -1,6 +1,7 @@
 import React, { useState, useRef, ChangeEvent } from 'react';
 import Image from 'next/image';
 import { ArrowLeftIcon, PlusCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 // 基本情報の型定義
 interface BasicInfo {
@@ -307,11 +308,11 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           
           {basicInfo.coverImage ? (
             <div className="relative w-full h-48 border border-gray-300 rounded-lg overflow-hidden">
-              <Image 
+              <OptimizedImage 
                 src={basicInfo.coverImage} 
                 alt="カバー画像"
                 fill
-                style={{ objectFit: 'cover' }}
+                objectFit="cover"
               />
               <button
                 type="button"

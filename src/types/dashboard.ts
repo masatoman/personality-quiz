@@ -12,4 +12,10 @@ export interface DashboardData {
     type: string;
     percentage: number;
   }>;
+  activities: {
+    id: string;
+    type: string;
+    timestamp: string;
+    details: Record<string, any>;
+  }[];
 } 
