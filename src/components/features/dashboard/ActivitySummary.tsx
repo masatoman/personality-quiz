@@ -43,6 +43,13 @@ interface ActivitySummaryProps {
   userId: string;
 }
 
+// ActivitySummaryCardの型定義を追加
+interface ActivitySummaryCardProps {
+  title: string;
+  value: number;
+  change?: number;
+}
+
 // 活動サマリーコンポーネント
 export const ActivitySummary: React.FC<ActivitySummaryProps> = ({ userId }) => {
   const { data, isLoading, error } = useQuery<ActivitySummaryData>({
@@ -107,6 +114,20 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({ userId }) => {
 };
 
 const ActivitySummaryCard = ({ title, value, change }: ActivitySummaryCardProps) => {
+  // renderChangeをコンポーネント内で定義
+  const renderChange = (value: number) => {
+    const isPositive = value > 0;
+    return (
+      <motion.span
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`text-sm ${isPositive ? 'text-green-500' : 'text-red-500'}`}
+      >
+        {isPositive ? '+' : ''}{value}%
+      </motion.span>
+    );
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}

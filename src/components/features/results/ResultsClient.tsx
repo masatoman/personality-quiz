@@ -87,7 +87,7 @@ const ResultsClient: React.FC = () => {
 
   // ログインプロンプトの処理
   const handleLoginPrompt = () => {
-    if (signIn) signIn();
+    if (signIn) signIn('google', { callbackUrl: window.location.href });
   };
 
   // ローディング中
