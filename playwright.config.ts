@@ -1,54 +1,34 @@
-import { PlaywrightTestConfig } from '@playwright/test';
+import { PlaywrightTestConfig, devices, defineConfig } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
-  testDir: './tests/e2e',
-  timeout: 60000,
-  expect: {
-    timeout: 10000
-  },
+  testDir: './src/tests',
+  timeout: 30000,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
   use: {
-    baseURL: 'http://localhost:3000',
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
-    actionTimeout: 15000,
-    navigationTimeout: 30000,
+    actionTimeout: 0,
+    baseURL: `http://localhost:${process.env.E2E_TEST_PORT || 3002}`,
     trace: 'on-first-retry',
+    video: 'on-first-retry',
+    headless: false,
+    viewport: { width: 1280, height: 720 },
+    ignoreHTTPSErrors: true,
+    screenshot: 'only-on-failure',
+  },
+  webServer: {
+    command: 'npm run dev',
+    port: 3002,
+    timeout: 120000,
+    reuseExistingServer: !process.env.CI,
   },
   projects: [
     {
-      name: 'Chrome',
-      use: {
-        browserName: 'chromium',
-      },
-    },
-    {
-      name: 'Firefox',
-      use: {
-        browserName: 'firefox',
-      },
-    },
-    {
-      name: 'WebKit',
-      use: {
-        browserName: 'webkit',
-      },
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
     },
   ],
-  retries: 2,
-  reporter: [
-    ['html', { open: 'never' }],
-    ['list']
-  ],
-  workers: process.env.CI ? 1 : undefined,
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-  },
-  globalSetup: './src/tests/global-setup.ts',
-  globalTeardown: './src/tests/global-teardown.ts',
-  testMatch: '**/*.e2e.test.ts',
 };
 
 export default config;

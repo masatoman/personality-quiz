@@ -17,65 +17,78 @@
 - **コミュニティ貢献**: 教材作成、フィードバック提供、質問回答などで他のユーザーをサポート
 - **ゲーミフィケーション**: バッジ、レベル、ポイントシステムによる学習モチベーションの維持
 
-## 🛠️ 開発環境のセットアップ
+## 🚀 クイックスタート
 
-### 前提条件
-
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
-- [Node.js](https://nodejs.org/) (v18以上)
-
-### クイックスタート
-
+1. リポジトリをクローン:
 ```bash
-# リポジトリをクローン
-git clone https://github.com/yourusername/engtype.git
-cd engtype
-
-# セットアップスクリプトを実行
-chmod +x dev-setup.sh
-./dev-setup.sh
+git clone https://github.com/your-repo/shiftwith.git
+cd shiftwith
 ```
 
-セットアップスクリプトは以下を自動で行います：
-1. 環境変数の設定
-2. Dockerコンテナ（Supabase環境）の起動
-3. データベースの初期化
-4. 依存関係のインストール（必要な場合）
+2. インストールスクリプトを実行:
+```bash
+chmod +x install.sh
+./install.sh
+```
 
-### 手動セットアップ
+これで以下の環境が自動的にセットアップされます：
+- Next.jsアプリケーション
+- Supabaseサービス（Auth, Storage, REST API）
+- PostgreSQLデータベース
+- テスト環境（Jest, Playwright）
+- 開発用APIサーバー
+
+## 📝 環境変数
+
+環境変数は `.env` ファイルで管理されています。デフォルト値は `.env.example` から自動的にコピーされますが、必要に応じて以下の値をカスタマイズできます：
 
 ```bash
-# 環境変数ファイルを作成
-cp .env.example .env.local
+# アプリケーションポート
+PORT=3000                    # Next.jsアプリ
+SUPABASE_API_PORT=3001      # Supabase REST API
+SUPABASE_AUTH_PORT=9999     # Supabase Auth
+SUPABASE_STORAGE_PORT=9000  # Supabase Storage
+API_SERVER_PORT=8080        # 開発用APIサーバー
+E2E_TEST_PORT=3002         # E2Eテスト用
+DATABASE_PORT=5432         # PostgreSQL
+```
 
-# Dockerコンテナを起動
-docker-compose up -d
+## 🛠️ 開発コマンド
 
-# 依存関係をインストール
-npm install
+開発に使用する主なコマンド：
 
-# 開発サーバーを起動
+```bash
+# 開発サーバーの起動
 npm run dev
+
+# テストの実行
+npm test                 # ユニットテスト
+npm run test:e2e        # E2Eテスト
+
+# Docker環境の管理
+docker-compose down     # 環境の停止
+docker-compose restart  # 環境の再起動
+docker-compose down -v  # DBを含む環境の初期化
 ```
 
-### 開発環境へのアクセス
+## 🔑 テストアカウント
 
-- Next.jsアプリ: http://localhost:3000
-- Supabase REST API: http://localhost:3001
-- Supabase Auth: http://localhost:9999
-- Supabase Storage: http://localhost:9000
+開発環境では以下のテストアカウントが利用可能です：
 
-### テストアカウント（開発環境用）
+- 管理者: admin@example.com
+- ギバー: giver@example.com
+- マッチャー: matcher@example.com
+- テイカー: taker@example.com
 
-| アカウント | メールアドレス | タイプ | 説明 |
-|------------|----------------|--------|------|
-| 管理者 | admin@example.com | ギバー | 管理者権限を持つユーザー |
-| ギバー太郎 | giver@example.com | ギバー | 教材作成や支援に積極的 |
-| マッチャー花子 | matcher@example.com | マッチャー | 互恵的な交流を好む |
-| テイカー次郎 | taker@example.com | テイカー | 効率的に学びたい |
+※開発環境では任意のパスワードでログインできます
 
-開発環境では、パスワードは任意の文字列で認証可能です。
+## 📚 その他のドキュメント
+
+詳細な情報は以下のドキュメントを参照してください：
+
+- [開発ガイド](./docs/02_開発ガイド/)
+- [テスト標準](./docs/02_開発ガイド/02_テスト標準.md)
+- [デプロイメントガイド](./docs/02_開発ガイド/06_デプロイメント構成図.md)
 
 ## 📁 プロジェクト構成
 
