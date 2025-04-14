@@ -9,7 +9,7 @@ export type QuestionDetail = {
   timeSpent: number;
 };
 
-export type QuizResults = {
+export interface QuizResults {
   giver: number;
   taker: number;
   matcher: number;
@@ -19,10 +19,10 @@ export type QuizResults = {
     taker: number;
     matcher: number;
   };
+  timestamp?: Date;
   // 詳細データ（オプショナル）
   details?: QuestionDetail[];
-  timestamp: number;
-};
+}
 
 export type Tool = {
   name: string;
