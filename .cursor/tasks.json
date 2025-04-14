@@ -85,5 +85,164 @@
     "testing": [
       "Jest"
     ]
-  }
+  },
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "ランキングAPIの移行",
+      "description": "src/pages/api/rankingsからsrc/app/api/rankingsへの移行",
+      "priority": "high",
+      "status": "in_progress",
+      "subtasks": [
+        {
+          "id": "TASK-001-1",
+          "title": "データベース接続エラーの修正",
+          "tasks": [
+            "poolの初期化確認",
+            "エラーログの追加",
+            "接続タイムアウト設定の調整"
+          ]
+        },
+        {
+          "id": "TASK-001-2",
+          "title": "空のレスポンス問題の解決",
+          "tasks": [
+            "クエリ結果の検証",
+            "テストデータの確認",
+            "エラーハンドリングの改善"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "TASK-002",
+      "title": "テスト構造の再配置",
+      "description": "共通コンポーネントとその他機能のテスト移行",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": ["TASK-001"],
+      "subtasks": [
+        {
+          "id": "TASK-002-1",
+          "title": "共通コンポーネントのテスト移行",
+          "tasks": [
+            "Header/Footerコンポーネントのテスト移行",
+            "Navigationコンポーネントのテスト移行",
+            "共通UIコンポーネントのテスト移行"
+          ]
+        },
+        {
+          "id": "TASK-002-2",
+          "title": "その他機能のテスト移行",
+          "tasks": [
+            "認証関連機能のテスト移行",
+            "設定関連機能のテスト移行",
+            "通知関連機能のテスト移行"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "TASK-003",
+      "title": "エラーハンドリングのテスト完了",
+      "description": "実装済みのエラーハンドリング機能のテスト実装",
+      "priority": "high",
+      "status": "in-progress",
+      "dependencies": ["TASK-002"],
+      "subtasks": [
+        {
+          "id": "TASK-003-1",
+          "title": "グローバルエラーハンドラーのテスト",
+          "status": "completed"
+        },
+        {
+          "id": "TASK-003-2",
+          "title": "フォーム入力バリデーションのテスト",
+          "status": "completed"
+        },
+        {
+          "id": "TASK-003-3",
+          "title": "非認証ユーザーリダイレクトのテスト",
+          "tasks": [
+            "単体テストの実装",
+            "機能内結合テストの実装"
+          ]
+        },
+        {
+          "id": "TASK-003-4",
+          "title": "データロード中の状態表示のテスト",
+          "tasks": [
+            "単体テストの実装",
+            "機能内結合テストの実装"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "TASK-004",
+      "title": "エッジケース対応の実装",
+      "description": "データ不足時やパフォーマンス対策などの実装",
+      "priority": "medium",
+      "status": "pending",
+      "dependencies": ["TASK-003"],
+      "subtasks": [
+        {
+          "id": "TASK-004-1",
+          "title": "データ不足時の表示処理",
+          "tasks": [
+            "実装",
+            "単体テスト",
+            "機能内結合テスト"
+          ]
+        },
+        {
+          "id": "TASK-004-2",
+          "title": "大量データ時のパフォーマンス対策",
+          "tasks": [
+            "実装",
+            "単体テスト",
+            "機能内結合テスト",
+            "パフォーマンステスト"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "TASK-005",
+      "title": "初期教材コンテンツの作成",
+      "description": "英語学習基本教材の作成とテスト",
+      "priority": "medium",
+      "status": "pending",
+      "dependencies": ["TASK-004"],
+      "subtasks": [
+        {
+          "id": "TASK-005-1",
+          "title": "初級者向け教材（3件）",
+          "tasks": [
+            "教材作成",
+            "単体テスト",
+            "機能内結合テスト"
+          ]
+        },
+        {
+          "id": "TASK-005-2",
+          "title": "中級者向け教材（5件）",
+          "tasks": [
+            "教材作成",
+            "単体テスト",
+            "機能内結合テスト"
+          ]
+        },
+        {
+          "id": "TASK-005-3",
+          "title": "上級者向け教材（2件）",
+          "tasks": [
+            "教材作成",
+            "単体テスト",
+            "機能内結合テスト"
+          ]
+        }
+      ]
+    }
+  ]
 }

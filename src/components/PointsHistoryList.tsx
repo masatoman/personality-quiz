@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { PointHistoryItem } from '@/types/quiz';
+import { useVirtualizer, VirtualItem } from '@tanstack/react-virtual';
 
 interface PointsHistoryListProps {
   limit?: number;
@@ -29,9 +30,22 @@ const PointsHistoryList: React.FC<PointsHistoryListProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [selectedActionType, setSelectedActionType] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+
+  // 仮想スクロール用のコンテナ参照
+  const parentRef = React.useRef<HTMLDivElement>(null);
+  
+  // 仮想スクロールの設定
+  const rowVirtualizer = useVirtualizer({
+    count: history.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 50, // 各行の推定高さ
+    overscan: 5, // 表示範囲外に事前に描画する行数
+  });
   
   const fetchHistory = useCallback(async (page: number = 1, actionType: string = '') => {
     setLoading(true);
+    setError(null);
     try {
       const offset = (page - 1) * limit;
       let url = `/api/points/history?limit=${limit}&offset=${offset}`;
@@ -53,6 +67,7 @@ const PointsHistoryList: React.FC<PointsHistoryListProps> = ({
       setTotalItems(data.count || 0);
     } catch (error) {
       console.error('ポイント履歴取得エラー:', error);
+      setError(error instanceof Error ? error.message : '履歴の取得中にエラーが発生しました');
     } finally {
       setLoading(false);
     }
@@ -73,17 +88,35 @@ const PointsHistoryList: React.FC<PointsHistoryListProps> = ({
     fetchHistory(currentPage, selectedActionType);
   }, [currentPage, selectedActionType, fetchHistory]);
   
-  // 一意のアクションタイプを取得
-  const uniqueActionTypes = Array.from(
-    new Set(history.map(item => item.actionType))
+  // 一意のアクションタイプを取得（メモ化）
+  const uniqueActionTypes = React.useMemo(() => 
+    Array.from(new Set(history.map(item => item.actionType))),
+    [history]
   );
   
-  // 総ページ数を計算
-  const totalPages = Math.ceil(totalItems / limit);
+  // 総ページ数を計算（メモ化）
+  const totalPages = React.useMemo(() => 
+    Math.ceil(totalItems / limit),
+    [totalItems, limit]
+  );
   
-  const formatDate = (dateString: string) => {
+  const formatDate = useCallback((dateString: string) => {
     return format(new Date(dateString), 'yyyy年MM月dd日 HH:mm', { locale: ja });
-  };
+  }, []);
+
+  if (error) {
+    return (
+      <div className="bg-red-50 dark:bg-red-900 rounded-lg p-4 mb-4">
+        <p className="text-red-600 dark:text-red-200">{error}</p>
+        <button
+          onClick={() => fetchHistory(currentPage, selectedActionType)}
+          className="mt-2 text-red-600 dark:text-red-200 underline hover:no-underline"
+        >
+          再試行
+        </button>
+      </div>
+    );
+  }
   
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 w-full">
@@ -132,9 +165,12 @@ const PointsHistoryList: React.FC<PointsHistoryListProps> = ({
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto">
+          <div 
+            ref={parentRef}
+            className="overflow-x-auto max-h-[600px]"
+          >
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-10">
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     日時
@@ -151,26 +187,36 @@ const PointsHistoryList: React.FC<PointsHistoryListProps> = ({
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {history.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-                      {formatDate(item.createdAt.toString())}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-                      {actionTypeLabels[item.actionType] || item.actionType}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
-                      {item.description || '-'}
-                    </td>
-                    <td className={`px-4 py-3 whitespace-nowrap text-sm font-medium text-right ${
-                      item.points > 0 
-                        ? 'text-green-600 dark:text-green-400' 
-                        : 'text-red-600 dark:text-red-400'
-                    }`}>
-                      {item.points > 0 ? `+${item.points}` : item.points}
-                    </td>
-                  </tr>
-                ))}
+                {rowVirtualizer.getVirtualItems().map((virtualRow: VirtualItem) => {
+                  const item = history[virtualRow.index];
+                  return (
+                    <tr 
+                      key={item.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                      style={{
+                        height: `${virtualRow.size}px`,
+                        transform: `translateY(${virtualRow.start}px)`,
+                      }}
+                    >
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                        {formatDate(item.createdAt.toString())}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                        {actionTypeLabels[item.actionType] || item.actionType}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
+                        {item.description || '-'}
+                      </td>
+                      <td className={`px-4 py-3 whitespace-nowrap text-sm font-medium text-right ${
+                        item.points > 0 
+                          ? 'text-green-600 dark:text-green-400' 
+                          : 'text-red-600 dark:text-red-400'
+                      }`}>
+                        {item.points > 0 ? `+${item.points}` : item.points}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -198,7 +244,7 @@ const PointsHistoryList: React.FC<PointsHistoryListProps> = ({
                       className={`relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium ${
                         currentPage === pageNum
                           ? 'z-10 bg-blue-50 dark:bg-blue-900 border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-200'
-                          : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
+                          : 'bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
                       }`}
                     >
                       {pageNum}

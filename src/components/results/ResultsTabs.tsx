@@ -1,62 +1,43 @@
 'use client';
 
 import React from 'react';
-import { 
-  FaCheckCircle, 
-  FaExclamationTriangle, 
-  FaLightbulb, 
-  FaTools, 
-  FaRegLightbulb 
-} from 'react-icons/fa';
-import { TabType } from '@/types/quiz';
+import { TabType } from '@/types/results';
+import clsx from 'clsx';
 
-// タブのプロパティの型定義
 interface ResultsTabsProps {
   selectedTab: TabType;
-  setSelectedTab: (tab: TabType) => void;
+  onTabChange: (tab: TabType) => void;
 }
 
-// 結果タブコンポーネント
-const ResultsTabs: React.FC<ResultsTabsProps> = ({ selectedTab, setSelectedTab }) => {
+const tabs: { id: TabType; label: string }[] = [
+  { id: 'overview', label: '概要' },
+  { id: 'strengths', label: '強み' },
+  { id: 'weaknesses', label: '課題' },
+  { id: 'tips', label: '改善のヒント' }
+];
+
+export function ResultsTabs({ selectedTab, onTabChange }: ResultsTabsProps) {
   return (
-    <div className="tabs flex border-b overflow-x-auto">
-      <button 
-        className={`px-4 py-2 font-medium ${selectedTab === 'strengths' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
-        onClick={() => setSelectedTab('strengths')}
-      >
-        <FaCheckCircle className="inline mr-2" />
-        強み
-      </button>
-      <button 
-        className={`px-4 py-2 font-medium ${selectedTab === 'weaknesses' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
-        onClick={() => setSelectedTab('weaknesses')}
-      >
-        <FaExclamationTriangle className="inline mr-2" />
-        弱み
-      </button>
-      <button 
-        className={`px-4 py-2 font-medium ${selectedTab === 'advice' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
-        onClick={() => setSelectedTab('advice')}
-      >
-        <FaLightbulb className="inline mr-2" />
-        アドバイス
-      </button>
-      <button 
-        className={`px-4 py-2 font-medium ${selectedTab === 'tools' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
-        onClick={() => setSelectedTab('tools')}
-      >
-        <FaTools className="inline mr-2" />
-        ツール
-      </button>
-      <button 
-        className={`px-4 py-2 font-medium ${selectedTab === 'scenarios' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
-        onClick={() => setSelectedTab('scenarios')}
-      >
-        <FaRegLightbulb className="inline mr-2" />
-        シナリオ
-      </button>
+    <div className="border-b border-gray-200 mt-8">
+      <nav className="-mb-px flex space-x-8" aria-label="診断結果タブ">
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => onTabChange(tab.id)}
+            className={clsx(
+              'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm',
+              selectedTab === tab.id
+                ? 'border-indigo-500 text-indigo-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            )}
+            aria-current={selectedTab === tab.id ? 'page' : undefined}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </nav>
     </div>
   );
-};
+}
 
-export default ResultsTabs; 
+export default React.memo(ResultsTabs); 

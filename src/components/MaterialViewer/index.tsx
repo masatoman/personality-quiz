@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
-import { Section, QuizQuestion, ImageSection, TextSection, QuizSection } from '../../types/material';
+import { Section, Question, ImageSection, TextSection, QuizSection as QuizSectionType } from '../../types/material';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 interface MaterialViewerProps {
   sections: Section[];
@@ -10,15 +11,103 @@ interface MaterialViewerProps {
   onQuizSubmit?: (quizId: string, answers: Record<string, string>, score: number) => void;
 }
 
+interface QuizSectionProps {
+  section: QuizSectionType;
+  onAnswerSubmit?: (questionId: string, isCorrect: boolean) => void;
+}
+
+const QuizSection: React.FC<QuizSectionProps> = ({ section, onAnswerSubmit }) => {
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
+  const [submittedQuestions, setSubmittedQuestions] = useState<Record<string, boolean>>({});
+
+  const handleAnswerSelect = useCallback((questionId: string, answerIndex: number) => {
+    setSelectedAnswers(prev => ({
+      ...prev,
+      [questionId]: answerIndex
+    }));
+  }, []);
+
+  const handleSubmit = useCallback((question: Question) => {
+    const selectedAnswer = selectedAnswers[question.id];
+    const isCorrect = selectedAnswer === question.correctAnswer;
+    
+    setSubmittedQuestions(prev => ({
+      ...prev,
+      [question.id]: true
+    }));
+
+    if (onAnswerSubmit) {
+      onAnswerSubmit(question.id, isCorrect);
+    }
+  }, [selectedAnswers, onAnswerSubmit]);
+
+  return (
+    <div className="quiz-section">
+      <h3>{section.title}</h3>
+      {section.questions.map((question) => (
+        <div key={question.id} className="question-container">
+          <h4>{question.question}</h4>
+          <div className="options-container">
+            {question.options.map((option, index) => (
+              <button
+                key={index}
+                onClick={() => handleAnswerSelect(question.id, index)}
+                className={`option-button ${
+                  selectedAnswers[question.id] === index ? 'selected' : ''
+                } ${
+                  submittedQuestions[question.id]
+                    ? index === question.correctAnswer
+                      ? 'correct'
+                      : selectedAnswers[question.id] === index
+                      ? 'incorrect'
+                      : ''
+                    : ''
+                }`}
+                disabled={submittedQuestions[question.id]}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+          {!submittedQuestions[question.id] ? (
+            <button
+              onClick={() => handleSubmit(question)}
+              disabled={selectedAnswers[question.id] === undefined}
+              className="submit-button"
+            >
+              回答を送信
+            </button>
+          ) : (
+            <div className="result-feedback">
+              {selectedAnswers[question.id] === question.correctAnswer ? (
+                <p className="correct-feedback">正解です！</p>
+              ) : (
+                <p className="incorrect-feedback">
+                  不正解です。正解は: {question.options[question.correctAnswer]}
+                </p>
+              )}
+              {question.explanation && (
+                <p className="explanation">{question.explanation}</p>
+              )}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const MaterialViewer: React.FC<MaterialViewerProps> = ({ 
   sections, 
   onComplete,
   onQuizSubmit 
 }) => {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
-  const [quizAnswers, setQuizAnswers] = useState<Record<string, Record<string, string>>>({});
-  const [quizResults, setQuizResults] = useState<Record<string, { score: number; total: number; submitted: boolean }>>({});
+  const [quizAnswers, setQuizAnswers] = useState<Record<string, Record<string, number>>>({});
+  const [quizResults, setQuizResults] = useState<Record<string, { score: number; submitted: boolean }>>({});
   const [activeTab, setActiveTab] = useState('content'); // content または outline
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+  const [showResults, setShowResults] = useState(false);
 
   const currentSection = sections[currentSectionIndex];
   
@@ -58,56 +147,75 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
     }));
   };
   
-  // クイズを提出して採点
-  const submitQuiz = (quizSection: QuizSection) => {
-    const answers = quizAnswers[quizSection.id] || {};
-    const questions = quizSection.questions;
-    
+  // クイズの採点を行う
+  const handleQuizSubmit = useCallback((quizId: string, questions: Question[]) => {
+    const answers = quizAnswers[quizId] || {};
     let correctCount = 0;
     
-    // 正答数を計算
-    questions.forEach(question => {
+    questions.forEach((question) => {
       if (answers[question.id] === question.correctAnswer) {
         correctCount++;
       }
     });
+
+    const score = Math.round((correctCount / questions.length) * 100);
     
-    const score = questions.length > 0 ? Math.round((correctCount / questions.length) * 100) : 0;
-    
-    // 結果を保存
-    setQuizResults(prev => ({
+    setQuizResults((prev) => ({
       ...prev,
-      [quizSection.id]: {
-        score,
-        total: questions.length,
-        submitted: true
-      }
+      [quizId]: { score, submitted: true }
     }));
-    
-    // コールバックがあれば呼び出し
-    if (onQuizSubmit) {
-      onQuizSubmit(quizSection.id, answers, score);
-    }
-  };
+
+    onQuizSubmit?.(quizId, answers, score);
+  }, [quizAnswers, onQuizSubmit]);
   
   // テキストセクションのレンダリング
-  const renderTextSection = (section: TextSection) => (
-    <div className="prose max-w-none">
-      <h2 className="text-xl font-bold mb-4">{section.title}</h2>
-      <div dangerouslySetInnerHTML={{ __html: section.content }} />
-    </div>
-  );
+  const renderTextSection = (section: TextSection) => {
+    const maxLength = 500; // 表示する最大文字数
+    const content = section.content || '';
+    const isLongContent = content.length > maxLength;
+    const isExpanded = expandedSections[section.id] || false;
+
+    const toggleExpand = () => {
+      setExpandedSections(prev => ({
+        ...prev,
+        [section.id]: !prev[section.id]
+      }));
+    };
+
+    return (
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold text-gray-900">{section.title}</h2>
+        <div className={`relative ${!isExpanded && isLongContent ? 'max-h-[300px] overflow-hidden' : ''}`}>
+          <div className={`prose max-w-none ${!isExpanded && isLongContent ? 'mask-bottom' : ''}`}
+            dangerouslySetInnerHTML={{ 
+              __html: isExpanded ? content : content.slice(0, maxLength) + (isLongContent ? '...' : '') 
+            }} 
+          />
+          {isLongContent && (
+            <div className={`${!isExpanded ? 'absolute bottom-0 w-full pt-16 pb-4 bg-gradient-to-t from-white' : 'mt-4'}`}>
+              <button
+                onClick={toggleExpand}
+                className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 focus:outline-none"
+              >
+                {isExpanded ? '折りたたむ' : 'もっと見る'}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
   
   // 画像セクションのレンダリング
   const renderImageSection = (section: ImageSection) => (
     <div>
       <h2 className="text-xl font-bold mb-4">{section.title}</h2>
       <div className="relative w-full aspect-video bg-gray-100 rounded-lg overflow-hidden mb-4">
-        <Image
+        <OptimizedImage
           src={section.imageUrl}
-          alt={section.title}
+          alt={section.altText || section.title}
           fill
-          style={{ objectFit: 'contain' }}
+          objectFit="contain"
         />
       </div>
       {section.description && (
@@ -117,80 +225,66 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
   );
   
   // クイズセクションのレンダリング
-  const renderQuizSection = (section: QuizSection) => {
+  const renderQuizSection = (section: QuizSectionType) => {
     const quizResult = quizResults[section.id];
-    const isSubmitted = quizResult?.submitted;
+    const answers = quizAnswers[section.id] || {};
+    const isSubmitted = !!quizResult;
     
     return (
-      <div>
-        <h2 className="text-xl font-bold mb-4">{section.title}</h2>
+      <div className="space-y-6">
+        <h2 className="text-xl font-bold text-gray-900">{section.title}</h2>
         
-        {isSubmitted ? (
-          <div className="mb-6">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <p className="font-bold text-lg">
-                得点: {quizResult.score}% ({quizResult.total}問中{Math.round(quizResult.total * quizResult.score / 100)}問正解)
-              </p>
-            </div>
-            
-            <button
-              onClick={() => setQuizResults(prev => ({
-                ...prev,
-                [section.id]: { ...quizResult, submitted: false }
-              }))}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-            >
-              再挑戦する
-            </button>
-          </div>
-        ) : (
-          <div>
-            {section.questions.map((question, qIndex) => {
-              const selectedAnswer = quizAnswers[section.id]?.[question.id];
-              
-              return (
-                <div key={question.id} className="mb-8 p-4 bg-gray-50 rounded-lg">
-                  <p className="font-medium mb-3">
-                    問題 {qIndex + 1}: {question.question}
-                  </p>
-                  
-                  <div className="space-y-2">
-                    {question.options.map(option => (
-                      <label
-                        key={option.id}
-                        className={`flex items-center p-3 border rounded-lg cursor-pointer transition ${
-                          selectedAnswer === option.id 
-                            ? 'border-blue-500 bg-blue-50' 
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name={`quiz-${section.id}-question-${question.id}`}
-                          value={option.id}
-                          checked={selectedAnswer === option.id}
-                          onChange={() => handleQuizAnswerChange(section.id, question.id, option.id)}
-                          className="mr-3"
-                        />
-                        <span>{option.text}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-            
-            <button
-              onClick={() => submitQuiz(section)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-              disabled={
-                !section.questions.every(q => quizAnswers[section.id]?.[q.id])
-              }
-            >
-              回答を提出する
-            </button>
+        {isSubmitted && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+            <p className="font-bold text-lg">
+              得点: {quizResult.score}% ({section.questions.length}問中{Math.round(section.questions.length * quizResult.score / 100)}問正解)
+            </p>
           </div>
         )}
+        
+        {section.questions.map((question, index) => (
+          <div key={question.id} className="bg-white p-6 rounded-lg border border-gray-200">
+            <p className="font-medium text-lg mb-4">問題 {index + 1}: {question.text}</p>
+            <div className="space-y-3">
+              {question.answers.map(answer => (
+                <label key={answer.id} className="flex items-center space-x-3">
+                  <input
+                    type="radio"
+                    name={`question-${question.id}`}
+                    value={answer.id}
+                    checked={answers[question.id] === answer.id}
+                    onChange={() => handleQuizAnswerChange(section.id, question.id, answer.id)}
+                    disabled={isSubmitted}
+                    className="h-4 w-4 text-blue-600"
+                  />
+                  <span className="text-gray-700">{answer.text}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        ))}
+        
+        <div className="flex justify-end">
+          {isSubmitted ? (
+            <button
+              onClick={() => setQuizResults(prev => {
+                const newResults = { ...prev };
+                delete newResults[section.id];
+                return newResults;
+              })}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            >
+              やり直す
+            </button>
+          ) : (
+            <button
+              onClick={() => handleQuizSubmit(section.id, section.questions)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            >
+              回答を送信
+            </button>
+          )}
+        </div>
       </div>
     );
   };
@@ -205,7 +299,7 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
       case 'image':
         return renderImageSection(currentSection as ImageSection);
       case 'quiz':
-        return renderQuizSection(currentSection as QuizSection);
+        return renderQuizSection(currentSection as QuizSectionType);
       default:
         return <p>サポートされていないセクションタイプです</p>;
     }
@@ -280,32 +374,24 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
           </>
         ) : (
           /* 目次 */
-          <div>
-            <h2 className="text-xl font-bold mb-4">教材の目次</h2>
-            <ul className="space-y-2">
-              {sections.map((section, index) => (
-                <li key={section.id}>
-                  <button
-                    onClick={() => goToSection(index)}
-                    className={`w-full text-left px-4 py-3 rounded-lg flex items-center ${
-                      index === currentSectionIndex
-                        ? 'bg-blue-50 text-blue-700 font-medium'
-                        : 'hover:bg-gray-50'
-                    }`}
-                  >
-                    <span className="w-6 h-6 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 text-xs mr-3">
-                      {index + 1}
-                    </span>
-                    <span className="flex-1">{section.title}</span>
-                    {section.type === 'quiz' && quizResults[section.id]?.submitted && (
-                      <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">
-                        {quizResults[section.id].score}%
-                      </span>
-                    )}
-                  </button>
-                </li>
-              ))}
-            </ul>
+          <div className="divide-y">
+            {sections.map((section, index) => (
+              <button
+                key={section.id}
+                onClick={() => goToSection(index)}
+                className="w-full px-4 py-3 flex items-center space-x-3 hover:bg-gray-50 transition text-left"
+              >
+                <span className="flex-none w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm text-gray-600">
+                  {index + 1}
+                </span>
+                <span className="flex-1">{section.title}</span>
+                {section.type === 'quiz' && quizResults[section.id] && (
+                  <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">
+                    {quizResults[section.id].score}%
+                  </span>
+                )}
+              </button>
+            ))}
           </div>
         )}
       </div>

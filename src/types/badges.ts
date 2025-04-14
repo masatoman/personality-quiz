@@ -6,13 +6,16 @@ import { ActivityType } from './learning';
  * バッジの種類を定義する型
  */
 export type BadgeType = 
-  | 'first_login'
-  | 'material_master'
+  | 'first_completion'
+  | 'learning_streak'
+  | 'multi_completion'
+  | 'perfect_score'
+  | 'fast_learner'
   | 'content_creator'
-  | 'social_butterfly'
-  | 'quiz_champion'
-  | 'streak_master'
-  | 'completionist';
+  | 'feedback_provider'
+  | 'community_contributor'
+  | 'diverse_learner'
+  | 'giver_champion';
 
 /**
  * バッジの要件を定義する型

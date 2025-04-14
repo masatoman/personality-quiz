@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   FaBookOpen, 
   FaPencilAlt, 
@@ -8,8 +8,13 @@ import {
   FaExclamationTriangle,
   FaArrowUp,
   FaArrowDown,
-  FaMinus
+  FaMinus,
+  FaChartBar
 } from 'react-icons/fa';
+import LoadingState from '@/components/common/LoadingState';
+import EmptyState from '@/components/common/EmptyState';
+import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 
 // アクティビティ統計情報の型定義
 interface ActivityStats {
@@ -22,162 +27,100 @@ interface ActivityStats {
   viewedMaterialsChange: number;
 }
 
+interface ActivityStat {
+  id: string;
+  title: string;
+  value: number;
+  change?: number;
+}
+
+interface ActivitySummaryData {
+  stats: ActivityStat[];
+}
+
 // コンポーネントのプロパティ
 interface ActivitySummaryProps {
   userId: string;
 }
 
 // 活動サマリーコンポーネント
-const ActivitySummary: React.FC<ActivitySummaryProps> = ({ userId }) => {
-  const [stats, setStats] = useState<ActivityStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // データ取得
-  useEffect(() => {
-    const fetchActivityStats = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        const response = await fetch(`/api/user/activity-summary?userId=${userId}`);
-        
-        if (!response.ok) {
-          throw new Error(`データの取得に失敗しました: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        setStats(data);
-      } catch (error) {
-        console.error('活動統計の取得に失敗しました:', error);
-        setError('活動統計の取得中にエラーが発生しました。');
-        
-        // 開発用のモックデータ
-        setStats({
-          createdMaterials: 12,
-          totalPoints: 1250,
-          viewedMaterials: 48,
-          createdMaterialsChange: 2,
-          totalPointsChange: 150,
-          viewedMaterialsChange: -3
-        });
-      } finally {
-        setLoading(false);
+export const ActivitySummary: React.FC<ActivitySummaryProps> = ({ userId }) => {
+  const { data, isLoading, error } = useQuery<ActivitySummaryData>({
+    queryKey: ['activitySummary', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/activity/summary/${userId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch activity summary');
       }
-    };
-    
-    fetchActivityStats();
-  }, [userId]);
+      const data: ActivitySummaryData = await response.json();
+      return data;
+    },
+    staleTime: 5 * 60 * 1000, // 5分
+    gcTime: 30 * 60 * 1000, // 30分
+  });
 
-  // 変化表示のヘルパー関数
-  const renderChange = (value: number) => {
-    if (value > 0) {
-      return (
-        <span className="text-green-500 flex items-center">
-          <FaArrowUp className="mr-1" />
-          {value}
-        </span>
-      );
-    } else if (value < 0) {
-      return (
-        <span className="text-red-500 flex items-center">
-          <FaArrowDown className="mr-1" />
-          {Math.abs(value)}
-        </span>
-      );
-    } else {
-      return (
-        <span className="text-gray-500 flex items-center">
-          <FaMinus className="mr-1" />
-          {value}
-        </span>
-      );
-    }
-  };
-
-  if (loading) {
+  const renderChange = useMemo(() => (value: number) => {
+    const isPositive = value > 0;
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-white rounded-lg shadow-md p-6 animate-pulse">
-            <div className="h-8 bg-gray-200 rounded mb-4"></div>
-            <div className="h-10 bg-gray-200 rounded w-1/2"></div>
-          </div>
-        ))}
+      <motion.span
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`text-sm ${isPositive ? 'text-green-500' : 'text-red-500'}`}
+      >
+        {isPositive ? '+' : ''}{value}%
+      </motion.span>
+    );
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="animate-pulse">
+        <div className="h-32 bg-gray-200 rounded-lg"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <FaExclamationTriangle className="h-5 w-5 text-red-500" />
-          </div>
-          <div className="ml-3">
-            <p className="text-sm text-red-700">{error}</p>
-          </div>
-        </div>
+      <div className="text-red-500">
+        {error instanceof Error ? error.message : '活動サマリーの取得に失敗しました'}
       </div>
     );
   }
 
-  if (!stats) {
+  if (!data) {
     return null;
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      {/* 作成した教材数 */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-700">作成した教材</h3>
-          <div className="p-2 bg-blue-100 rounded-full">
-            <FaPencilAlt className="text-blue-600" />
-          </div>
-        </div>
-        <div className="flex items-baseline justify-between">
-          <p className="text-3xl font-bold">{stats.createdMaterials}</p>
-          <div className="text-sm">
-            前週比 {renderChange(stats.createdMaterialsChange)}
-          </div>
-        </div>
-      </div>
-
-      {/* 獲得ポイント */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-700">獲得ポイント</h3>
-          <div className="p-2 bg-green-100 rounded-full">
-            <FaBookOpen className="text-green-600" />
-          </div>
-        </div>
-        <div className="flex items-baseline justify-between">
-          <p className="text-3xl font-bold">{stats.totalPoints}</p>
-          <div className="text-sm">
-            前週比 {renderChange(stats.totalPointsChange)}
-          </div>
-        </div>
-      </div>
-
-      {/* 閲覧した教材数 */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-700">閲覧した教材</h3>
-          <div className="p-2 bg-purple-100 rounded-full">
-            <FaEye className="text-purple-600" />
-          </div>
-        </div>
-        <div className="flex items-baseline justify-between">
-          <p className="text-3xl font-bold">{stats.viewedMaterials}</p>
-          <div className="text-sm">
-            前週比 {renderChange(stats.viewedMaterialsChange)}
-          </div>
-        </div>
-      </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {data.stats.map((stat: ActivityStat) => (
+        <ActivitySummaryCard
+          key={stat.id}
+          title={stat.title}
+          value={stat.value}
+          change={stat.change}
+        />
+      ))}
     </div>
   );
 };
+
+const ActivitySummaryCard = ({ title, value, change }: ActivitySummaryCardProps) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+      className="p-4 bg-white rounded-lg shadow-sm"
+    >
+      <h3 className="text-lg font-semibold">{title}</h3>
+      <div className="mt-2 text-2xl font-bold">{value}</div>
+      {change !== undefined && renderChange(change)}
+    </motion.div>
+  );
+};
+
+ActivitySummaryCard.displayName = 'ActivitySummaryCard';
 
 export default ActivitySummary; 

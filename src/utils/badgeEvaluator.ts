@@ -1,37 +1,42 @@
-import { BadgeRequirement, BadgeType } from '@/types/badges';
+import { BadgeRequirement, BadgeType, BADGE_DEFINITIONS } from '@/types/badges';
 import { ActivityType } from '@/types/learning';
+import { ActivitySummary } from '@/types/activitySummary';
 
 /**
  * バッジ評価ユーティリティクラス
  * 様々な条件に基づいてバッジ要件を評価するための拡張可能なクラス
  */
 export class BadgeEvaluator {
-  /**
-   * 特定の要件が満たされているかどうかを評価
-   */
-  static evaluateRequirement(
-    requirement: BadgeRequirement, 
-    activitySummary: Record<string, any>,
-    currentActivityType?: ActivityType
-  ): boolean {
-    if (!activitySummary) return false;
+  private activitySummary: ActivitySummary;
+  private currentActivityType: ActivityType;
 
-    // アクティビティタイプに基づいたカウントを取得
-    const activityTypeKey = `${requirement.activityType}_count`;
-    const activityCount = activitySummary[activityTypeKey] || 0;
+  constructor(activitySummary: ActivitySummary, currentActivityType: ActivityType) {
+    this.activitySummary = activitySummary;
+    this.currentActivityType = currentActivityType;
+  }
 
-    // 特殊条件の評価
-    if (this.hasSpecialCondition(requirement)) {
-      return this.evaluateSpecialCondition(requirement, activitySummary, currentActivityType);
+  public evaluateBadge(badgeType: BadgeType): boolean {
+    const badgeDefinition = BADGE_DEFINITIONS[badgeType];
+    if (!badgeDefinition) {
+      return false;
     }
+    return this.evaluateAllRequirements(badgeDefinition.requirements);
+  }
 
-    // メタデータ条件の評価
-    if (requirement.metadata) {
-      return this.evaluateMetadataCondition(requirement, activitySummary, activityCount);
-    }
+  private evaluateAllRequirements(requirements: BadgeRequirement[]): boolean {
+    return requirements.every(req => this.evaluateRequirement(req));
+  }
 
-    // 標準的なカウントベースの評価
+  private evaluateRequirement(requirement: BadgeRequirement): boolean {
+    const activityCount = this.getActivityCount(requirement);
     return activityCount >= requirement.count;
+  }
+
+  private getActivityCount(requirement: BadgeRequirement): number {
+    if (requirement.activityType === this.currentActivityType) {
+      return this.activitySummary.currentSession[requirement.activityType] || 0;
+    }
+    return this.activitySummary.total[requirement.activityType] || 0;
   }
 
   /**
@@ -89,18 +94,5 @@ export class BadgeEvaluator {
 
     // デフォルトはカウントベース
     return activityCount >= requirement.count;
-  }
-
-  /**
-   * すべての要件が満たされているかチェック
-   */
-  static evaluateAllRequirements(
-    requirements: BadgeRequirement[],
-    activitySummary: Record<string, any>,
-    currentActivityType?: ActivityType
-  ): boolean {
-    return requirements.every(req => 
-      this.evaluateRequirement(req, activitySummary, currentActivityType)
-    );
   }
 } 
