@@ -1,28 +1,154 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useAuth } from '@/hooks/useAuth';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { 
-  LearningType, QuizResults, TabType 
+  LearningType, QuizResults
 } from '@/types/quiz';
+import { TabType, ResultsData } from '@/types/results';
+import dynamic from 'next/dynamic';
+import type { ComponentType } from 'react';
+import { PersonalityTypeInfo } from '../types/results';
 
-// 分割したコンポーネントをインポート
-import ResultsTabs from './results/ResultsTabs';
-import ResultsTabContent from './results/ResultsTabContent';
-import ResultsChart from './results/ResultsChart';
-import NextSteps from './results/NextSteps';
-import ResultsHeader from './results/ResultsHeader';
-import SaveNotification from './results/SaveNotification';
-import LoginPrompt from './results/LoginPrompt';
-import ResultsFooter from './results/ResultsFooter';
+// チャンクサイズの定義
+const CHUNK_SIZE = 20;
+const INITIAL_LOAD_SIZE = 50;
+
+// ローディング表示用コンポーネント
+const LoadingDisplay: React.FC<{ message: string }> = ({ message }) => (
+  <div className="flex items-center justify-center p-4">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mr-3"></div>
+    <span className="text-gray-600">{message}</span>
+  </div>
+);
+
+// 仮想スクロールコンテナコンポーネント
+interface VirtualScrollContainerProps<T> {
+  items: T[];
+  renderItem: (item: T, index: number) => React.ReactNode;
+  height: number;
+  itemHeight: number;
+}
+
+function VirtualScrollContainer<T>({ 
+  items, 
+  renderItem, 
+  height, 
+  itemHeight 
+}: VirtualScrollContainerProps<T>) {
+  const parentRef = React.useRef<HTMLDivElement>(null);
+
+  const virtualizer = useVirtualizer({
+    count: items.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => itemHeight,
+  });
+
+  return (
+    <div
+      ref={parentRef}
+      className="overflow-auto"
+      style={{ height }}
+    >
+      <div
+        style={{
+          height: `${virtualizer.getTotalSize()}px`,
+          width: '100%',
+          position: 'relative',
+        }}
+      >
+        {virtualizer.getVirtualItems().map((virtualItem) => (
+          <div
+            key={virtualItem.key}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: `${virtualItem.size}px`,
+              transform: `translateY(${virtualItem.start}px)`,
+            }}
+          >
+            {renderItem(items[virtualItem.index], virtualItem.index)}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// コンポーネントのProps型定義
+interface ResultsHeaderProps {
+  data: ResultsData;
+  learningType: {
+    primary: LearningType;
+    secondary: LearningType;
+    scores: {
+      giver: number;
+      taker: number;
+      matcher: number;
+    };
+  };
+  isMobile: boolean;
+}
+
+interface ResultsTabsProps {
+  selectedTab: TabType;
+  onTabChange: (tab: TabType) => void;
+  isMobile: boolean;
+}
+
+interface ResultsTabContentProps {
+  tab: TabType;
+  data: ResultsData;
+  learningType: {
+    primary: LearningType;
+    secondary: LearningType;
+    scores: {
+      giver: number;
+      taker: number;
+      matcher: number;
+    };
+  };
+  isMobile: boolean;
+}
+
+interface SaveNotificationProps {
+  message: string;
+  success: boolean;
+  error?: string;
+  isMobile: boolean;
+}
+
+// 動的インポートの型アサーション
+const ResultsHeader = dynamic(() => import('./results/ResultsHeader'), {
+  loading: () => <LoadingDisplay message="ヘッダーを読み込み中..." />,
+  ssr: false
+}) as unknown as ComponentType<ResultsHeaderProps>;
+
+const ResultsTabs = dynamic(() => import('./results/ResultsTabs'), {
+  loading: () => <LoadingDisplay message="タブを読み込み中..." />,
+  ssr: false
+}) as unknown as ComponentType<ResultsTabsProps>;
+
+const ResultsTabContent = dynamic(() => import('./results/ResultsTabContent'), {
+  loading: () => <LoadingDisplay message="コンテンツを読み込み中..." />,
+  ssr: false
+}) as unknown as ComponentType<ResultsTabContentProps>;
+
+const SaveNotification = dynamic(() => import('./results/SaveNotification'), {
+  loading: () => null,
+  ssr: false
+}) as unknown as ComponentType<SaveNotificationProps>;
 
 // 詳細な診断データ
 import { resultsData } from '@/data/resultsData';
 
-// ユーティリティ関数
+// ユーティリティ関数（メモ化）
 const getSecondaryType = (
   giverScore: number, 
   takerScore: number, 
@@ -54,159 +180,299 @@ const getCombinationType = (
   }
 };
 
-const ResultsClient: React.FC = () => {
+export function ResultsClient() {
   const searchParams = useSearchParams();
-  const [loading, setLoading] = useState(true);
-  const [results, setResults] = useState<QuizResults | null>(null);
-  const [selectedTab, setSelectedTab] = useState<TabType>('strengths');
-  const [savingResults, setSavingResults] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  
-  // 認証状態を取得
-  const { user, signIn, loading: authLoading } = useAuth();
-
-  useEffect(() => {
-    // URLパラメータから結果を取得
-    const typeParam = searchParams?.get('type') as LearningType | null;
-    
-    if (typeParam && ['giver', 'taker', 'matcher'].includes(typeParam)) {
-      // ローカルストレージから結果を取得
-      try {
-        const storedResults = localStorage.getItem('quizResults');
-        if (storedResults) {
-          const parsedResults = JSON.parse(storedResults) as QuizResults;
-          setResults(parsedResults);
-          
-          // ログイン済みの場合、結果を自動保存
-          if (user) {
-            saveResultsToDatabase(parsedResults, user.id);
-          }
-        } else {
-          // 仮のデータ（実際のアプリではAPIから取得など）
-          const mockResults: QuizResults = {
-            giver: typeParam === 'giver' ? 70 : 30,
-            taker: typeParam === 'taker' ? 70 : 30,
-            matcher: typeParam === 'matcher' ? 70 : 40,
-            dominantType: typeParam,
-            percentage: {
-              giver: typeParam === 'giver' ? 50 : 25,
-              taker: typeParam === 'taker' ? 50 : 25,
-              matcher: typeParam === 'matcher' ? 50 : 25
-            }
-          };
-          setResults(mockResults);
-        }
-      } catch (error) {
-        console.error('結果の解析中にエラーが発生しました:', error);
+  const { user } = useAuth();
+  const [selectedTab, setSelectedTab] = useState<TabType>('overview');
+  const [isMobile, setIsMobile] = useState(false);
+  const [resultsData, setResultsData] = useState<ResultsData>({
+    answers: [],
+    recommendations: [],
+    timestamp: new Date().toISOString(),
+    personalityInfo: {
+      giver: {
+        title: 'Giver',
+        description: '他者を助け、知識を共有することに喜びを感じるタイプ',
+        strengths: [
+          '教えることで自身の理解も深まる',
+          '人との関係構築が得意',
+          '協調性が高い'
+        ],
+        weaknesses: [
+          '自身の学習時間が不足しがち',
+          '完璧を求めすぎる傾向がある',
+          '時間管理が難しい'
+        ],
+        tips: [
+          '自身の学習時間を確保する',
+          'メンタリングの時間を設定する',
+          '教えることと学ぶことのバランスを取る'
+        ]
+      },
+      taker: {
+        title: 'Taker',
+        description: '効率的に知識を吸収し、自己成長を重視するタイプ',
+        strengths: [
+          '学習効率が高い',
+          '目標達成への意識が強い',
+          '時間管理が得意'
+        ],
+        weaknesses: [
+          '他者との知識共有が少ない',
+          '協調学習が苦手',
+          'コミュニケーションが一方向的になりがち'
+        ],
+        tips: [
+          '学んだ内容を他者と共有する機会を作る',
+          'グループ学習に参加する',
+          '知識のアウトプットを意識する'
+        ]
+      },
+      matcher: {
+        title: 'Matcher',
+        description: '与えることと得ることのバランスを重視するタイプ',
+        strengths: [
+          'バランスの取れた学習スタイル',
+          '柔軟な対応力',
+          '持続可能な学習習慣'
+        ],
+        weaknesses: [
+          '特定分野での専門性が育ちにくい',
+          '決断に時間がかかる',
+          '中途半端になりがち'
+        ],
+        tips: [
+          '得意分野を見つけて伸ばす',
+          '明確な目標を設定する',
+          '定期的な振り返りを行う'
+        ]
       }
+    },
+    scores: {
+      giver: 0,
+      taker: 0,
+      matcher: 0
+    }
+  });
+  const [saveNotification, setSaveNotification] = useState<{
+    message: string;
+    success: boolean;
+    error?: string;
+  }>({
+    message: '',
+    success: false
+  });
+  
+  // 結果データの取得と解析（メモ化）
+  const quizResults = useMemo(() => {
+    const storedResults = localStorage.getItem('quizResults');
+    if (!storedResults) return null;
+    
+    try {
+      return JSON.parse(storedResults) as QuizResults;
+    } catch (error) {
+      console.error('結果データの解析に失敗:', error);
+      return null;
+    }
+  }, []);
+  
+  // スコアの計算（メモ化）
+  const scores = useMemo(() => {
+    if (!quizResults?.details) return null;
+    
+    const totalQuestions = quizResults.details.length;
+    const giverAnswers = quizResults.details.filter(d => d.answer === 0).length;
+    const takerAnswers = quizResults.details.filter(d => d.answer === 1).length;
+    const matcherAnswers = quizResults.details.filter(d => d.answer === 2).length;
+    
+    return {
+      giver: Math.round((giverAnswers / totalQuestions) * 100),
+      taker: Math.round((takerAnswers / totalQuestions) * 100),
+      matcher: Math.round((matcherAnswers / totalQuestions) * 100)
+    };
+  }, [quizResults]);
+  
+  // 学習タイプの判定（メモ化）
+  const learningType = useMemo(() => {
+    if (!scores) return null;
+    
+    const { giver, taker, matcher } = scores;
+    let dominantType: LearningType = 'matcher';
+    let maxScore = matcher;
+    
+    if (giver > maxScore) {
+      dominantType = 'giver';
+      maxScore = giver;
+    }
+    if (taker > maxScore) {
+      dominantType = 'taker';
+      maxScore = taker;
     }
     
-    setLoading(false);
-  }, [searchParams, user]);
-
-  // 結果をデータベースに保存する関数
-  const saveResultsToDatabase = async (results: QuizResults, userId: string) => {
+    return {
+      primary: dominantType,
+      secondary: getSecondaryType(giver, taker, matcher, dominantType),
+      scores: { giver, taker, matcher }
+    };
+  }, [scores]);
+  
+  // タブ切り替えハンドラ（メモ化）
+  const handleTabChange = useCallback((tab: TabType) => {
+    setSelectedTab(tab);
+  }, []);
+  
+  // 結果保存ハンドラ（メモ化）
+  const handleSave = useCallback(async () => {
+    if (!user || !quizResults) return;
+    
     try {
-      setSavingResults(true);
-      setSaveError(null);
-      
-      const response = await fetch('/api/quiz/save-results', {
+      const response = await fetch('/api/quiz/results', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...results,
-          userId
-        }),
+          userId: user.id,
+          results: quizResults
+        })
       });
       
-      if (!response.ok) {
-        throw new Error(`結果の保存に失敗しました: ${response.status}`);
+      if (response.ok) {
+        setSaveNotification({
+          message: '結果が正常に保存されました',
+          success: true
+        });
+      } else {
+        throw new Error('保存に失敗しました');
       }
-      
-      setSaveSuccess(true);
     } catch (error) {
-      console.error('結果の保存に失敗しました:', error);
-      setSaveError('結果の保存中にエラーが発生しました。');
-    } finally {
-      setSavingResults(false);
+      console.error('結果の保存に失敗:', error);
+      setSaveNotification({
+        message: '結果の保存に失敗しました',
+        success: false,
+        error: error instanceof Error ? error.message : '保存中にエラーが発生しました'
+      });
     }
-  };
+  }, [user, quizResults]);
+  
+  // データのチャンク処理用のstate
+  const [currentChunk, setCurrentChunk] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  // ログインプロンプトの処理
-  const handleLoginPrompt = () => {
-    if (signIn) signIn();
-  };
+  // チャンク化されたデータの取得（メモ化）
+  const chunkedData = useMemo(() => {
+    if (!quizResults?.details) return [];
+    
+    const startIndex = 0;
+    const endIndex = currentChunk * CHUNK_SIZE;
+    return quizResults.details.slice(startIndex, endIndex);
+  }, [quizResults, currentChunk]);
 
-  // ローディング中
-  if (loading || authLoading) {
+  // 追加データの読み込み
+  const loadMoreData = useCallback(() => {
+    if (isLoadingMore || !quizResults?.details) return;
+    
+    setIsLoadingMore(true);
+    setTimeout(() => {
+      setCurrentChunk(prev => prev + 1);
+      setIsLoadingMore(false);
+    }, 300);
+  }, [isLoadingMore, quizResults]);
+
+  // スクロール監視
+  useEffect(() => {
+    const handleScroll = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (
+        target.scrollHeight - target.scrollTop <= target.clientHeight * 1.5 &&
+        !isLoadingMore &&
+        quizResults?.details &&
+        chunkedData.length < quizResults.details.length
+      ) {
+        loadMoreData();
+      }
+    };
+
+    const contentElement = document.querySelector('.results-content');
+    if (contentElement) {
+      contentElement.addEventListener('scroll', handleScroll);
+      return () => contentElement.removeEventListener('scroll', handleScroll);
+    }
+  }, [loadMoreData, isLoadingMore, quizResults, chunkedData.length]);
+
+  // モバイルデバイスの検出
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  if (!quizResults || !learningType) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
-  // 結果がない場合
-  if (!results) {
-    return (
-      <div className="text-center p-8">
-        <h1 className="text-2xl font-bold mb-4">診断結果が見つかりません</h1>
-        <p className="mb-4">診断が完了していないか、結果が正しく保存されていません。</p>
-        <Link href="/quiz" className="text-blue-600 hover:underline flex items-center justify-center">
-          <FaArrowLeft className="mr-2" /> 診断に戻る
-        </Link>
-      </div>
-    );
-  }
-
-  const { dominantType } = results;
-  const personalityType = resultsData.personality_types[dominantType];
-  const secondaryType = getSecondaryType(results.giver, results.taker, results.matcher, dominantType);
-  const combinationType = getCombinationType(dominantType, secondaryType);
-
-  return (
-    <div className="results-page bg-gray-50 min-h-screen pb-12">
-      <ResultsHeader user={user} onLogin={handleLoginPrompt} />
-      
-      <main className="container mx-auto px-4 mt-8">
-        {/* 未ログイン時の結果保存プロンプト */}
-        {!user && results && (
-          <LoginPrompt onLogin={handleLoginPrompt} />
-        )}
-
-        {/* 保存状態通知 */}
-        <SaveNotification 
-          success={saveSuccess} 
-          error={saveError} 
-        />
-        
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <div className="text-center mb-6">
-            {personalityType.icon}
-            <h2 className="text-2xl md:text-3xl font-bold mb-2">{personalityType.title}</h2>
-            <p className="text-lg text-gray-600">{personalityType.description}</p>
+      <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <p className="text-center text-gray-600">
+            診断結果が見つかりません。診断を最初からやり直してください。
+          </p>
+          <div className="mt-4 text-center">
+            <Link href="/quiz" className="text-blue-600 hover:underline">
+              診断に戻る
+            </Link>
           </div>
-          
-          {/* タブコンポーネント */}
-          <ResultsTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
-          
-          {/* タブコンテンツコンポーネント */}
-          <ResultsTabContent selectedTab={selectedTab} personalityType={personalityType} />
         </div>
-        
-        {/* チャートコンポーネント */}
-        <ResultsChart results={results} />
-        
-        {/* 次のステップコンポーネント */}
-        <NextSteps />
-      </main>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="container mx-auto px-4 py-4 sm:py-8">
+      <Link 
+        href="/quiz" 
+        className="flex items-center text-gray-600 hover:text-gray-800 mb-4 sm:mb-6"
+      >
+        <FaArrowLeft className="mr-2" />
+        <span>クイズに戻る</span>
+      </Link>
       
-      <ResultsFooter />
+      <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+        <Suspense fallback={<LoadingDisplay message="読み込み中..." />}>
+          <ResultsHeader 
+            data={resultsData}
+            learningType={learningType}
+            isMobile={isMobile}
+          />
+        </Suspense>
+        
+        <Suspense fallback={<LoadingDisplay message="読み込み中..." />}>
+          <ResultsTabs 
+            selectedTab={selectedTab} 
+            onTabChange={handleTabChange}
+            isMobile={isMobile}
+          />
+        </Suspense>
+        
+        <Suspense fallback={<LoadingDisplay message="読み込み中..." />}>
+          <ResultsTabContent 
+            tab={selectedTab}
+            data={resultsData}
+            learningType={learningType}
+            isMobile={isMobile}
+          />
+        </Suspense>
+        
+        {saveNotification.message && (
+          <SaveNotification
+            message={saveNotification.message}
+            success={saveNotification.success}
+            error={saveNotification.error}
+            isMobile={isMobile}
+          />
+        )}
+      </div>
     </div>
   );
-};
+}
 
-export default ResultsClient; 
+export default React.memo(ResultsClient); 

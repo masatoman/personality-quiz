@@ -17,43 +17,127 @@ const dbConfig = {
         rejectUnauthorized: false
       }
     : false,
-  // 接続タイムアウトを30秒に設定
-  connectionTimeoutMillis: 30000,
-  // アイドル接続のタイムアウトを10秒に設定
-  idleTimeoutMillis: 10000,
-  // 最大接続数を20に設定
-  max: 20
+  // 接続タイムアウトを15秒に設定（短縮）
+  connectionTimeoutMillis: 15000,
+  // アイドル接続のタイムアウトを5秒に設定（短縮）
+  idleTimeoutMillis: 5000,
+  // 最大接続数を10に設定（調整）
+  max: 10,
+  // 最小プールサイズを2に設定（追加）
+  min: 2,
+  // アイドル状態の最大接続数を5に設定（追加）
+  maxUses: 5
 };
 
 // プールの初期化関数
 export async function initPool() {
   try {
     if (!pool) {
+      console.log('データベースプールを初期化します...');
       pool = new Pool(dbConfig);
       
       // エラーイベントのハンドリング
       pool.on('error', (err: Error & { client?: any }) => {
-        console.error('PostgreSQL接続エラー:', err);
+        console.error('PostgreSQL接続エラー:', {
+          message: err.message,
+          stack: err.stack,
+          code: (err as any).code,
+          detail: (err as any).detail
+        });
         // エラーが発生した接続を破棄
         if (err.client) {
+          console.log('問題のある接続を破棄します');
           err.client.release(true);
         }
       });
 
+      // プール状態の監視
+      pool.on('connect', () => {
+        console.log('新しい接続が確立されました');
+      });
+
+      pool.on('acquire', () => {
+        console.log('接続がプールから取得されました');
+      });
+
+      pool.on('remove', () => {
+        console.log('接続がプールから削除されました');
+      });
+
       // 接続テスト
+      console.log('接続テストを実行します...');
       const client = await pool.connect();
       try {
-        await client.query('SELECT NOW()');
-        console.log('データベース接続が正常に確立されました');
+        const result = await client.query('SELECT NOW()');
+        console.log('データベース接続テスト成功:', result.rows[0]);
+        
+        // 接続プールの状態を確認
+        const poolStatus = await client.query(`
+          SELECT count(*) as connection_count 
+          FROM pg_stat_activity 
+          WHERE datname = $1
+        `, [process.env.DB_NAME]);
+        console.log('アクティブな接続数:', poolStatus.rows[0].connection_count);
       } finally {
         client.release();
       }
+    } else {
+      console.log('既存のデータベースプールを再利用します');
     }
     return pool;
   } catch (error) {
-    console.error('PostgreSQLプールの初期化に失敗しました:', error);
+    console.error('PostgreSQLプールの初期化に失敗しました:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      code: (error as any).code,
+      detail: (error as any).detail
+    });
     throw error;
   }
+}
+
+// クエリ結果のキャッシュ管理
+const queryCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5分
+
+// キャッシュを使用するクエリ実行関数
+export async function cachedQuery(text: string, params?: any[], ttl: number = CACHE_TTL) {
+  const cacheKey = `${text}-${JSON.stringify(params)}`;
+  const cached = queryCache.get(cacheKey);
+  
+  if (cached && Date.now() - cached.timestamp < ttl) {
+    return cached.data;
+  }
+  
+  const result = await query(text, params);
+  queryCache.set(cacheKey, {
+    data: result,
+    timestamp: Date.now()
+  });
+  
+  return result;
+}
+
+// バッチ処理用のクエリ実行関数
+export async function batchQuery<T>(
+  items: T[],
+  batchSize: number,
+  queryFn: (batch: T[]) => Promise<any>
+): Promise<any[]> {
+  const results = [];
+  
+  for (let i = 0; i < items.length; i += batchSize) {
+    const batch = items.slice(i, i + batchSize);
+    const batchResults = await queryFn(batch);
+    results.push(...batchResults);
+    
+    // バッチ間で短い遅延を入れる
+    if (i + batchSize < items.length) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
+  
+  return results;
 }
 
 export async function query(text: string, params?: any[]) {
@@ -63,10 +147,30 @@ export async function query(text: string, params?: any[]) {
       await initPool();
     }
 
-    // クライアントの取得
+    // パフォーマンス計測開始
+    const startTime = Date.now();
+
+    // コネクションプールからクライアントを取得
     const client = await pool.connect();
+    
     try {
+      // クエリタイムアウトを設定（30秒）
+      await client.query('SET statement_timeout = 30000');
+      
+      // クエリを実行
       const result = await client.query(text, params);
+      
+      // パフォーマンス計測終了と記録
+      const executionTime = Date.now() - startTime;
+      if (executionTime > 1000) { // 1秒以上かかったクエリをログ
+        console.warn('スロークエリ検出:', {
+          query: text,
+          params,
+          executionTime,
+          timestamp: new Date().toISOString()
+        });
+      }
+      
       return result;
     } catch (queryError) {
       console.error('クエリ実行エラー:', queryError);

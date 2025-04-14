@@ -3,8 +3,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export type LoadingVariant = 'spinner' | 'dots' | 'pulse' | 'skeleton';
+export type LoadingVariant = 'spinner' | 'dots' | 'pulse' | 'skeleton' | 'error';
 export type LoadingSize = 'sm' | 'md' | 'lg' | 'xl';
+export type LoadingPhase = 'preparing' | 'loading' | 'processing' | 'error';
 
 interface LoadingStateProps {
   variant?: LoadingVariant;
@@ -14,6 +15,12 @@ interface LoadingStateProps {
   isFullPage?: boolean;
   className?: string;
   textClassName?: string;
+  progress?: number;
+  showProgress?: boolean;
+  phase?: LoadingPhase;
+  error?: string;
+  retryButton?: boolean;
+  onRetry?: () => void;
 }
 
 const LoadingState: React.FC<LoadingStateProps> = ({
@@ -23,7 +30,13 @@ const LoadingState: React.FC<LoadingStateProps> = ({
   showText = true,
   isFullPage = false,
   className = '',
-  textClassName = ''
+  textClassName = '',
+  progress,
+  showProgress = false,
+  phase,
+  error,
+  retryButton = false,
+  onRetry
 }) => {
   // サイズの設定
   const sizeClasses = {
@@ -147,7 +160,21 @@ const LoadingState: React.FC<LoadingStateProps> = ({
       {showText && (
         <p className={`mt-3 ${textSizeClasses[size]} text-gray-600 ${textClassName}`}>
           {text}
+          {showProgress && progress !== undefined && ` (${progress}%)`}
         </p>
+      )}
+      {error && (
+        <p className="mt-2 text-red-500">
+          {error}
+        </p>
+      )}
+      {retryButton && onRetry && (
+        <button
+          onClick={onRetry}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+        >
+          再試行
+        </button>
       )}
     </div>
   );

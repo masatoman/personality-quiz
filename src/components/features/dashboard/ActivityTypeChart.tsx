@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   PieChart, 
   Pie, 
@@ -10,6 +10,9 @@ import {
   Legend 
 } from 'recharts';
 import { ActivityType } from '@/types/quiz';
+import LoadingState from '@/components/common/LoadingState';
+import EmptyState from '@/components/common/EmptyState';
+import { FaChartPie } from 'react-icons/fa';
 
 // 活動タイプ情報の型定義
 interface ActivityTypeInfo {
@@ -40,46 +43,41 @@ const ActivityTypeChart: React.FC<ActivityTypeChartProps> = ({ userId }) => {
     'ASK_QUESTION': { label: '質問', color: '#9C27B0' }
   };
 
-  // データ取得
-  useEffect(() => {
-    const fetchActivityData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        const response = await fetch(`/api/user/activity-stats?userId=${userId}`);
-        
-        if (!response.ok) {
-          throw new Error(`データの取得に失敗しました: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        // データの形式を整える
-        const formattedData = Object.entries(data.activityCounts).map(([type, count]) => ({
-          type: type as ActivityType,
-          count: count as number,
-          label: activityTypeMap[type as ActivityType]?.label || type,
-          color: activityTypeMap[type as ActivityType]?.color || '#999999'
-        }));
-        
-        setActivityData(formattedData);
-      } catch (error) {
-        console.error('活動データの取得に失敗しました:', error);
-        setError('活動データの取得中にエラーが発生しました。');
-        
-        // 開発用のモックデータ
-        setActivityData(generateMockData());
-      } finally {
-        setLoading(false);
+  const fetchActivityData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch(`/api/user/activity-stats?userId=${userId}`);
+      
+      if (!response.ok) {
+        throw new Error(`データの取得に失敗しました: ${response.status}`);
       }
-    };
-    
-    fetchActivityData();
-  }, [userId]);
+      
+      const data = await response.json();
+      
+      // データの形式を整える
+      const formattedData = Object.entries(data.activityCounts).map(([type, count]) => ({
+        type: type as ActivityType,
+        count: count as number,
+        label: activityTypeMap[type as ActivityType]?.label || type,
+        color: activityTypeMap[type as ActivityType]?.color || '#999999'
+      }));
+      
+      setActivityData(formattedData);
+    } catch (error) {
+      console.error('活動データの取得に失敗しました:', error);
+      setError('活動データの取得中にエラーが発生しました。');
+      
+      // 開発用のモックデータ
+      setActivityData(generateMockData());
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // モックデータ生成関数（開発用）
-  const generateMockData = (): ActivityTypeInfo[] => {
+  // モックデータ生成関数（開発用）をuseCallbackでラップ
+  const generateMockData = useCallback((): ActivityTypeInfo[] => {
     const mockData: ActivityTypeInfo[] = [
       {
         type: 'CONSUME_CONTENT',
@@ -120,7 +118,15 @@ const ActivityTypeChart: React.FC<ActivityTypeChartProps> = ({ userId }) => {
     ];
     
     return mockData;
-  };
+  }, [activityTypeMap]);
+
+  useEffect(() => {
+    fetchActivityData();
+  }, [userId, fetchActivityData]);
+
+  useEffect(() => {
+    generateMockData();
+  }, [generateMockData, activityTypeMap]);
 
   // 合計活動数を計算
   const totalActivities = activityData.reduce((sum, item) => sum + item.count, 0);
@@ -139,47 +145,82 @@ const ActivityTypeChart: React.FC<ActivityTypeChartProps> = ({ userId }) => {
     return null;
   };
 
+  if (loading) {
+    return (
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-bold mb-4">活動種類の割合</h2>
+        <LoadingState
+          variant="spinner"
+          text="活動データを読み込み中..."
+          size="md"
+        />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-bold mb-4">活動種類の割合</h2>
+        <EmptyState
+          title="エラーが発生しました"
+          message={error}
+          icon={FaChartPie}
+          variant="card"
+          action={{
+            label: "再試行",
+            onClick: () => {
+              setError(null);
+              setLoading(true);
+              fetchActivityData();
+            }
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (!activityData || activityData.length === 0) {
+    return (
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-bold mb-4">活動種類の割合</h2>
+        <EmptyState
+          title="活動データがありません"
+          message="活動を開始して、データを記録しましょう。"
+          icon={FaChartPie}
+          variant="card"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-xl font-bold mb-4">活動種類の割合</h2>
       
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
-      ) : error ? (
-        <div className="flex justify-center items-center h-64 text-red-500">
-          <p>{error}</p>
-        </div>
-      ) : activityData.length === 0 ? (
-        <div className="flex justify-center items-center h-64 text-gray-500">
-          <p>まだ活動データがありません。</p>
-        </div>
-      ) : (
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={activityData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="count"
-                nameKey="label"
-                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-              >
-                {activityData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      )}
+      <div className="h-64">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={activityData}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              outerRadius={80}
+              fill="#8884d8"
+              dataKey="count"
+              nameKey="label"
+              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+            >
+              {activityData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
       
       <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2">
         {activityData.map((activity) => (

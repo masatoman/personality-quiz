@@ -1,46 +1,59 @@
 import { getMaterial, getMaterials } from '../materials';
-import { Material } from '@/types/material';
+import { Material, Difficulty } from '@/types/material';
 
 describe('Materials API', () => {
   describe('getMaterial', () => {
     it('指定されたIDに対応する教材データを返す', async () => {
-      // 特定のIDで教材を取得
       const material = await getMaterial('1');
       
-      // 戻り値が正しい形式かチェック
       expect(material).toBeDefined();
       expect(material.id).toBe('1');
-      expect(material.title).toBeDefined();
-      expect(material.description).toBeDefined();
+      expect(material.title).toBe('TypeScriptの基礎');
+      expect(material.description).toBe('TypeScriptの基本的な概念と使い方を学びます');
+      expect(material.difficulty).toBe('beginner');
       expect(material.sections).toBeInstanceOf(Array);
       expect(material.reviews).toBeInstanceOf(Array);
       expect(material.relatedMaterials).toBeInstanceOf(Array);
+      expect(material.targetAudience).toContain('beginner');
+      expect(material.language).toBe('ja');
+      expect(material.version).toBe('1.0.0');
+      expect(material.tags).toContain('TypeScript');
     });
-    
+
     it('教材データの内容が正しい', async () => {
       const material = await getMaterial('1');
       
-      // 教材本文の内容を検証
-      expect(material.title).toBe('英語初心者のための基礎文法');
-      expect(material.difficulty).toBe('beginner');
-      expect(material.allowComments).toBe(true);
       expect(material.author).toEqual(expect.objectContaining({
         id: expect.any(String),
-        name: expect.any(String)
+        name: expect.any(String),
+        expertise: expect.arrayContaining([expect.any(String)])
       }));
       
       // セクションの検証
       expect(material.sections.length).toBeGreaterThan(0);
-      const firstSection = material.sections[0];
-      expect(firstSection).toEqual(expect.objectContaining({
+      
+      // テキストセクションの検証
+      const textSection = material.sections.find(section => section.type === 'text');
+      expect(textSection).toEqual(expect.objectContaining({
         id: expect.any(String),
         title: expect.any(String),
-        type: expect.any(String)
+        content: expect.any(String),
+        format: 'markdown'
+      }));
+      
+      // 画像セクションの検証
+      const imageSection = material.sections.find(section => section.type === 'image');
+      expect(imageSection).toEqual(expect.objectContaining({
+        id: expect.any(String),
+        title: expect.any(String),
+        imageUrl: expect.any(String),
+        altText: expect.any(String)
       }));
       
       // クイズセクションの検証
       const quizSection = material.sections.find(section => section.type === 'quiz');
       if (quizSection && 'questions' in quizSection) {
+        expect(quizSection.timeLimit).toBeDefined();
         expect(quizSection.questions).toBeInstanceOf(Array);
         if (quizSection.questions.length > 0) {
           const firstQuestion = quizSection.questions[0];
@@ -53,7 +66,8 @@ describe('Materials API', () => {
                 text: expect.any(String)
               })
             ]),
-            correctAnswer: expect.any(String)
+            correctAnswer: expect.any(String),
+            points: expect.any(Number)
           }));
         }
       }
@@ -64,32 +78,31 @@ describe('Materials API', () => {
     it('教材一覧を取得できる', async () => {
       const materials = await getMaterials();
       
-      // 戻り値が配列であることを検証
       expect(materials).toBeInstanceOf(Array);
       expect(materials.length).toBeGreaterThan(0);
       
-      // 各教材のフォーマットを検証
       materials.forEach(material => {
         expect(material).toEqual(expect.objectContaining({
           id: expect.any(String),
           title: expect.any(String),
-          difficulty: expect.any(String)
+          difficulty: expect.stringMatching(/^(beginner|intermediate|advanced)$/),
+          targetAudience: expect.arrayContaining([expect.any(String)]),
+          language: expect.any(String),
+          version: expect.any(String),
+          tags: expect.arrayContaining([expect.any(String)])
         }));
       });
     });
     
     it('フィルターオプションを指定して教材を取得できる', async () => {
-      // 特定の難易度で絞り込み
       const materials = await getMaterials({
-        difficulty: 'beginner'
+        difficulty: 'beginner' as Difficulty
       });
       
-      // 結果の検証
       expect(materials).toBeInstanceOf(Array);
-      
-      // 実際のフィルタリングはモックデータのため機能しませんが、
-      // 引数が正しく渡されることだけを検証
-      // 実際のAPIでは、返されるデータがフィルター条件に合致することを検証するテストを追加
+      materials.forEach(material => {
+        expect(material.difficulty).toBe('beginner');
+      });
     });
     
     it('ページネーションオプションを指定して教材を取得できる', async () => {

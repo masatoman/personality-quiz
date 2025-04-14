@@ -2,42 +2,46 @@ import type { Config } from 'jest';
 import nextJest from 'next/jest.js';
 
 const createJestConfig = nextJest({
-  // Next.jsアプリのパスを指定
+  // Next.jsアプリのパスを指定して、next.config.jsと.envファイルを読み込む
   dir: './',
 });
 
 // Jestに渡すカスタム設定
 const config: Config = {
-  // テスト環境を指定
-  testEnvironment: 'jest-environment-jsdom',
-  
-  // テストマッチャーの設定
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
-  
-  // モジュールエイリアスの設定
-  moduleNameMapper: {
-    '^@/lib/(.*)$': '<rootDir>/src/lib/$1',
-    '^@/components/(.*)$': '<rootDir>/src/components/$1',
-    '^@/app/(.*)$': '<rootDir>/src/app/$1',
-  },
-  
-  // テストの対象外ディレクトリ
-  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
-  
+  // テストファイルのパターンを指定
+  testMatch: [
+    '**/__tests__/**/*.unit.test.[jt]s?(x)',
+    '**/__tests__/**/*.integration.test.[jt]s?(x)',
+    '**/test/**/*.unit.test.[jt]s?(x)',
+    '**/test/**/*.integration.test.[jt]s?(x)',
+  ],
   // カバレッジの設定
+  coverageProvider: 'v8',
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',
-    '!src/**/_*.{js,jsx,ts,tsx}',
-    '!src/**/node_modules/**',
+    '!src/**/*.stories.{js,jsx,ts,tsx}',
+    '!src/**/*.test.{js,jsx,ts,tsx}',
+    '!src/**/*.e2e.test.{js,jsx,ts,tsx}',
   ],
-  
-  // テストファイルのパターン
-  testMatch: [
-    '**/__tests__/**/*.test.[jt]s?(x)',
-    '**/?(*.)+(spec|test).[jt]s?(x)',
+  // テスト環境の設定
+  testEnvironment: 'jsdom',
+  // セットアップファイルの指定
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  // モジュールの名前解決設定
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '\\.(css|less|sass|scss)$': 'identity-obj-proxy',
+  },
+  // テスト実行時に無視するパス
+  modulePathIgnorePatterns: [
+    '<rootDir>/.next/',
+    '<rootDir>/node_modules/',
   ],
+  // テストタイムアウトの設定（ミリ秒）
+  testTimeout: 30000,
+  verbose: true,
 };
 
-// createJestConfigを非同期で実行し、Next.jsの設定を読み込む
+// createJestConfigを使用して、Next.jsの設定を非同期に読み込む
 export default createJestConfig(config); 

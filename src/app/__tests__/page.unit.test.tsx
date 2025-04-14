@@ -1,11 +1,25 @@
 /// <reference types="@testing-library/jest-dom" />
 import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/extend-expect';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import Home from '../page';
 import { useRouter } from 'next/navigation';
 import { test, expect } from '@playwright/test';
+import type { Matchers } from '@testing-library/jest-dom';
+
+// カスタムマッチャーの型定義
+declare global {
+  namespace jest {
+    interface Matchers<R> {
+      toBeInTheDocument(): R;
+      toHaveStyle(style: Record<string, any>): R;
+      toHaveAttribute(attr: string, value?: string): R;
+      toHaveClass(className: string): R;
+    }
+  }
+}
 
 // useRouterのモック
 jest.mock('next/navigation', () => ({
@@ -17,11 +31,15 @@ jest.mock('next/navigation', () => ({
 }));
 
 // window.openのモック
-const mockOpen = jest.fn();
-window.open = mockOpen;
+const mockOpen = jest.fn().mockImplementation(() => null) as unknown as jest.Mock;
+Object.defineProperty(window, 'open', {
+  value: mockOpen,
+  writable: true,
+  configurable: true
+});
 
 // fetchのモック
-const mockFetch = jest.fn(() =>
+const mockFetch = jest.fn().mockImplementation(() =>
   Promise.resolve({
     ok: true,
     status: 200,
@@ -34,9 +52,22 @@ const mockFetch = jest.fn(() =>
       }
     })
   } as Response)
-);
+) as unknown as jest.Mock;
 
 global.fetch = mockFetch;
+
+// テストのセットアップ
+beforeAll(() => {
+  // window.open のモック
+  Object.defineProperty(window, 'open', {
+    value: mockOpen,
+    writable: true,
+    configurable: true
+  });
+  
+  // fetch のモック
+  global.fetch = mockFetch;
+});
 
 describe('Home', () => {
   const mockRouter = {
@@ -46,9 +77,8 @@ describe('Home', () => {
 
   beforeEach(() => {
     (useRouter as jest.Mock).mockReturnValue(mockRouter);
-    jest.spyOn(window, 'open').mockImplementation(jest.fn());
-    // 各テストの前にモックをリセット
-    jest.clearAllMocks();
+    mockOpen.mockClear();
+    mockFetch.mockClear();
   });
 
   afterEach(() => {
@@ -242,9 +272,10 @@ describe('Home', () => {
 
   it('プログレスバーが適切なアクセシビリティ属性を持っている', () => {
     render(<Home />);
-    const progressBar = screen.getByRole('progressbar');
+    const progressBar = screen.getByTestId('progress-bar');
     
     expect(progressBar).toBeInTheDocument();
+    expect(progressBar).toHaveAttribute('role', 'progressbar');
     expect(progressBar).toHaveAttribute('aria-valuemin', '0');
     expect(progressBar).toHaveAttribute('aria-valuemax', '100');
     expect(progressBar).toHaveAttribute('aria-valuenow');

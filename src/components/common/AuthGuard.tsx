@@ -1,104 +1,76 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import LoadingState from './LoadingState';
+import { hasPermission, hasAnyPermission } from '@/lib/permissions';
+import { Spinner } from '@/components/ui/Spinner';
 
 interface AuthGuardProps {
   children: React.ReactNode;
+  requiredPermissions?: string | string[];
   redirectUrl?: string;
-  fallback?: React.ReactNode;
-  requiredRole?: string | string[];
-  message?: string;
 }
 
-const AuthGuard: React.FC<AuthGuardProps> = ({
+export const AuthGuard: React.FC<AuthGuardProps> = ({
   children,
-  redirectUrl = '/auth/login',
-  fallback,
-  requiredRole,
-  message = '認証が必要なページです。ログインしてください。'
+  requiredPermissions,
+  redirectUrl = '/login',
 }) => {
-  const { user, loading } = useAuth();
   const router = useRouter();
-  const pathname = usePathname();
+  const { user, loading } = useAuth();
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-  
-  // 認証状態が変更されたときにアクセス権をチェック
+
   useEffect(() => {
-    if (!loading) {
-      // ユーザーが存在するかチェック
+    const checkAccess = async () => {
+      if (loading) return;
+
       if (!user) {
         setHasAccess(false);
-        
-        // リダイレクト先URLに現在のパスを含める
-        const encodedRedirect = encodeURIComponent(pathname);
-        const redirectPath = `${redirectUrl}?redirect=${encodedRedirect}`;
-        
-        // 非同期でリダイレクト
-        setTimeout(() => {
-          router.push(redirectPath);
-        }, 100);
-        
         return;
       }
-      
-      // ロールが必要な場合はロールをチェック
-      if (requiredRole) {
-        const userRole = user.profile?.role || 'user';
-        
-        // 複数のロールが許可されている場合
-        if (Array.isArray(requiredRole)) {
-          setHasAccess(requiredRole.includes(userRole));
-          return;
+
+      if (!requiredPermissions) {
+        setHasAccess(true);
+        return;
+      }
+
+      try {
+        if (Array.isArray(requiredPermissions)) {
+          // いずれかの権限を持っているか確認
+          const hasAccess = await hasAnyPermission(user.id, requiredPermissions);
+          setHasAccess(hasAccess);
+        } else {
+          // 単一の権限を持っているか確認
+          const hasAccess = await hasPermission(user.id, requiredPermissions);
+          setHasAccess(hasAccess);
         }
-        
-        // 単一ロールの場合
-        setHasAccess(userRole === requiredRole);
-        return;
+      } catch (error) {
+        console.error('Error checking permissions:', error);
+        setHasAccess(false);
       }
-      
-      // ユーザーが存在し、ロール条件もない場合はアクセス許可
-      setHasAccess(true);
+    };
+
+    checkAccess();
+  }, [user, loading, requiredPermissions]);
+
+  useEffect(() => {
+    if (!loading && hasAccess === false) {
+      router.push(redirectUrl);
     }
-  }, [user, loading, pathname, redirectUrl, requiredRole, router]);
-  
-  // ロード中
+  }, [loading, hasAccess, redirectUrl, router]);
+
   if (loading || hasAccess === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingState text="認証状態を確認中..." />
+      <div className="flex justify-center items-center h-screen">
+        <Spinner />
       </div>
     );
   }
-  
-  // アクセス権がない場合
-  if (!hasAccess) {
-    if (fallback) {
-      return <>{fallback}</>;
-    }
-    
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-4">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">アクセス制限</h2>
-          <p className="text-gray-600 mb-6 max-w-md">
-            {message}
-          </p>
-          <button
-            onClick={() => router.push(redirectUrl)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            ログインページへ
-          </button>
-        </div>
-      </div>
-    );
-  }
-  
-  // アクセス権がある場合は子コンポーネントを表示
-  return <>{children}</>;
-};
 
-export default AuthGuard; 
+  if (!hasAccess) {
+    return null;
+  }
+
+  return <>{children}</>;
+}; 

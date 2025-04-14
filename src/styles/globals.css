@@ -1,0 +1,24 @@
+/* 長文コンテンツの最適化 */
+.mask-bottom {
+  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+}
+
+.prose {
+  will-change: transform;
+  contain: content;
+  overflow-anchor: none;
+}
+
+/* スクロールパフォーマンスの最適化 */
+.prose * {
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (max-width: 768px) {
+  .prose {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+} 

@@ -23,11 +23,40 @@ describe('週間ランキングAPI', () => {
 
   describe('初期化テスト', () => {
     it('データベース接続の初期化が行われる', async () => {
+      // モックデータの設定
+      const mockTestResult = { rows: [{ now: new Date() }] };
+      const mockTableCheck = { rows: [{ exists: true }] };
+      const mockIndexCheck = { rows: [{ exists: true }] };
+      const mockRankingResult = { rows: [], rowCount: 0 };
+
+      // モックの実装
+      (pool.query as jest.Mock)
+        .mockResolvedValueOnce(mockTestResult)
+        .mockResolvedValueOnce(mockTableCheck)
+        .mockResolvedValueOnce(mockIndexCheck)
+        .mockResolvedValueOnce(mockRankingResult);
+
       // API呼び出し
       await GET();
       
       // initPoolが呼び出されたことを確認
       expect(initPool).toHaveBeenCalledTimes(1);
+    });
+
+    it('接続タイムアウトが発生した場合、適切なエラーを返す', async () => {
+      // タイムアウトをシミュレート
+      (initPool as jest.Mock).mockImplementation(() => 
+        new Promise(resolve => setTimeout(resolve, 31000))
+      );
+
+      // API呼び出し
+      const response = await GET();
+      const data = await response.json();
+
+      // アサーション
+      expect(response.status).toBe(504);
+      expect(data.error).toBe('データベース接続がタイムアウトしました');
+      expect(data.status).toBe('error');
     });
   });
 
@@ -39,8 +68,20 @@ describe('週間ランキングAPI', () => {
       const mockIndexCheck = { rows: [{ exists: true }] };
       const mockRankingResult = {
         rows: [
-          { user_id: '1', username: 'user1', total_score: 100 },
-          { user_id: '2', username: 'user2', total_score: 90 },
+          { 
+            user_id: '1', 
+            username: 'user1', 
+            total_score: 100,
+            activity_count: 5,
+            last_activity: '2024-03-20T10:00:00Z'
+          },
+          { 
+            user_id: '2', 
+            username: 'user2', 
+            total_score: 90,
+            activity_count: 4,
+            last_activity: '2024-03-19T15:00:00Z'
+          },
         ],
         rowCount: 2,
       };
@@ -57,11 +98,27 @@ describe('週間ランキングAPI', () => {
       const data = await response.json();
 
       // アサーション
-      expect(response).toBeInstanceOf(NextResponse);
-      expect(data).toEqual([
-        { id: '1', username: 'user1', score: 100, rank: 1 },
-        { id: '2', username: 'user2', score: 90, rank: 2 },
+      expect(response.status).toBe(200);
+      expect(data.status).toBe('success');
+      expect(data.data).toEqual([
+        { 
+          id: '1', 
+          username: 'user1', 
+          score: 100, 
+          rank: 1,
+          activityCount: 5,
+          lastActive: '2024-03-20T10:00:00Z'
+        },
+        { 
+          id: '2', 
+          username: 'user2', 
+          score: 90, 
+          rank: 2,
+          activityCount: 4,
+          lastActive: '2024-03-19T15:00:00Z'
+        },
       ]);
+      expect(data.totalUsers).toBe(2);
     });
 
     it('空のランキングデータを正しく処理できる', async () => {
@@ -86,13 +143,57 @@ describe('週間ランキングAPI', () => {
       const data = await response.json();
 
       // アサーション
-      expect(response).toBeInstanceOf(NextResponse);
-      expect(data).toEqual([]);
+      expect(response.status).toBe(200);
+      expect(data.status).toBe('empty');
+      expect(data.data).toEqual([]);
+      expect(data.message).toBe('ランキングデータが存在しません');
+    });
+
+    it('100件以上のデータがある場合、上位100件のみを返す', async () => {
+      // 150件のモックデータを生成
+      const mockRows = Array.from({ length: 150 }, (_, i) => ({
+        user_id: `${i}`,
+        username: `user${i}`,
+        total_score: 1000 - i,
+        activity_count: Math.floor(Math.random() * 10) + 1,
+        last_activity: new Date(Date.now() - i * 3600000).toISOString()
+      }));
+
+      const mockTestResult = { rows: [{ now: new Date() }] };
+      const mockTableCheck = { rows: [{ exists: true }] };
+      const mockIndexCheck = { rows: [{ exists: true }] };
+      const mockRankingResult = {
+        rows: mockRows,
+        rowCount: 150,
+      };
+
+      // モックの実装
+      (pool.query as jest.Mock)
+        .mockResolvedValueOnce(mockTestResult)
+        .mockResolvedValueOnce(mockTableCheck)
+        .mockResolvedValueOnce(mockIndexCheck)
+        .mockResolvedValueOnce(mockRankingResult);
+
+      // API呼び出し
+      const response = await GET();
+      const data = await response.json();
+
+      // アサーション
+      expect(response.status).toBe(200);
+      expect(data.status).toBe('success');
+      expect(data.data.length).toBe(100);
+      expect(data.data[0].score).toBe(1000);
+      expect(data.data[99].score).toBe(901);
+      expect(data.totalUsers).toBe(100);
+      
+      // 追加フィールドの存在確認
+      expect(data.data[0]).toHaveProperty('activityCount');
+      expect(data.data[0]).toHaveProperty('lastActive');
     });
   });
 
   describe('異常系テスト', () => {
-    it('テーブルが存在しない場合、適切な日本語エラーメッセージを返す', async () => {
+    it('テーブルが存在しない場合、適切なエラーメッセージを返す', async () => {
       // モックデータの設定
       const mockTestResult = { rows: [{ now: new Date() }] };
       const mockTableCheck = { rows: [{ exists: false }] };
@@ -107,13 +208,13 @@ describe('週間ランキングAPI', () => {
       const data = await response.json();
 
       // アサーション
-      expect(response).toBeInstanceOf(NextResponse);
-      expect(response.status).toBe(500);
-      expect(data.error).toBe('ランキングの取得に失敗しました');
+      expect(response.status).toBe(503);
+      expect(data.status).toBe('error');
+      expect(data.error).toBe('データベースの準備ができていません');
       expect(data.details).toBe('quiz_resultsテーブルが存在しません');
     });
 
-    it('データベース接続エラー時、適切な日本語エラーメッセージを返す', async () => {
+    it('データベース接続エラー時、適切なエラーメッセージを返す', async () => {
       // モックの実装
       (pool.query as jest.Mock).mockRejectedValue(new Error('データベース接続エラー'));
 
@@ -122,8 +223,8 @@ describe('週間ランキングAPI', () => {
       const data = await response.json();
 
       // アサーション
-      expect(response).toBeInstanceOf(NextResponse);
       expect(response.status).toBe(500);
+      expect(data.status).toBe('error');
       expect(data.error).toBe('ランキングの取得に失敗しました');
       expect(data.details).toBe('データベース接続エラー');
     });
@@ -138,7 +239,10 @@ describe('週間ランキングAPI', () => {
       expect(unstable_cache).toHaveBeenCalledWith(
         expect.any(Function),
         ['weekly-rankings'],
-        { revalidate: 300 }
+        { 
+          revalidate: 300,
+          tags: ['rankings']
+        }
       );
     });
 
@@ -169,7 +273,7 @@ describe('週間ランキングAPI', () => {
   });
 
   describe('パフォーマンステスト', () => {
-    it('大量のランキングデータを処理できる', async () => {
+    it('大量のランキングデータを1秒以内に処理できる', async () => {
       // 1000件のモックデータを生成
       const mockRows = Array.from({ length: 1000 }, (_, i) => ({
         user_id: `${i}`,
@@ -198,9 +302,8 @@ describe('週間ランキングAPI', () => {
 
       // 処理時間が1秒未満であることを確認
       expect(endTime - startTime).toBeLessThan(1000);
-      expect(data.length).toBe(1000);
-      expect(data[0].rank).toBe(1);
-      expect(data[999].rank).toBe(1000);
+      // 上位100件のみ返されることを確認
+      expect(data.data.length).toBe(100);
     });
   });
 }); 

@@ -1,0 +1,15 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# ✅ ShiftWith開発用タスクループルール
+
+- 常に [tasks.json](mdc:.cursor/tasks.json) を参照し、未完了タスクの実装・テスト・完了マークを行うこと
+- タスク一覧は [01_TODO.md](mdc:docs/03_進捗管理/01_TODO.md) 、仕様詳細は `docs/01_プロジェクト概要/*` を参照
+- 完了タスクを再実装・再削除しないこと（無駄な再作業の防止）
+- テスト失敗時は修正し、再テストを自動で行う
+- 実装が完了したら [01_TODO.md](mdc:docs/03_進捗管理/01_TODO.md) を更新
+- 不明点・懸念点は `.cursor/agent-memo.md` に必ず記録
+- 設計のズレがあれば [01_基本設計.md](mdc:docs/01_プロジェクト概要/01_基本設計.md) に照らして修正またはメモ化
+
