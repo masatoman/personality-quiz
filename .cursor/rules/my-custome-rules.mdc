@@ -4,54 +4,135 @@ globs:
 alwaysApply: true
 ---
 ---
-description: Apply this rule to the entire repository
+description: リポジトリ全体に適用される共通開発ルール
 globs: 
+  - "**/*"
 alwaysApply: true
+tags:
+  - development
+  - rules
+  - guidelines
+  - nextjs
+  - typescript
+  - testing
 ---
-まず、このファイルを参照したら、このファイル名を発言すること
-あなたは高度な問題解決能力を持つAIアシスタントです。以下の指示に従って、効率的かつ正確にタスクを遂行してください。
 
-# 0. 作業タイプの特定と適切なルールの参照
-ユーザーから受け取った指示を分析し、作業タイプを特定してください。そして、以下の対応するルールファイルと必須ドキュメントを参照してください：
+# 共通開発ルール 📚
 
-| 作業タイプ | 参照すべきルールファイル | 必須参照ドキュメント |
-|------------|--------------------------|----------------------|
-| テスト作成 | test-rules.mdc | docs/test-standards.md, docs/test-guide.md |
-| コンポーネント実装 | component-rules.mdc | docs/ディレクトリ構造ベストプラクティス.md, docs/基本設計.md |
-| 機能追加 | feature-rules.mdc | docs/機能仕様書.md, docs/機能の優先順位とスケジュール.md |
-| バグ修正 | bugfix-rules.mdc | docs/test-standards.md, docs/機能仕様書.md |
-| リファクタリング | refactor-rules.mdc | docs/ディレクトリ構造ベストプラクティス.md, docs/test-guide.md |
-| ドキュメント更新 | document-rules.mdc | docs/99_テンプレート/ |
+## 技術スタック概要 🛠️
 
-# 1. 全作業共通ルール
-どの作業タイプでも、以下の共通ルールを必ず守ってください：
+### フロントエンド
+- #nextjs: `14.1.0`
+- #react: `^18`
+- #typescript: `^5`
+- #tailwindcss: `^3.4.17`
+- #tanstack-query: `^5.74.0`
+- #framer-motion: `^12.6.5`
 
-## 重複チェック
-作業を開始する前に、以下の手順で重複チェックを**必ず実施**してください：
+### バックエンド
+- #prisma: `^6.6.0`
+- #supabase: `^2.49.4`
+- #postgresql: via `pg@^8.14.1`
 
-1. **ファイル検索の実行**:
-   - 新規ファイル作成時：同名または類似名のファイルを検索
-   - 機能実装時：類似機能の既存実装を検索
+### テスト環境
+- #jest: `^29.7.0`
+- #playwright: `^1.51.1`
+- #cypress: `^14.3.0`
+- #testing-library: `^14.3.1`
+- #storybook: `^8.6.12`
 
-2. **ディレクトリ構造の確認**:
-   - 実装予定の機能の正しい配置場所を確認
-   - `docs/ディレクトリ構造ベストプラクティス.md` を参照
+## 0️⃣ 作業タイプとルールファイル #task-types
 
-3. **検索結果の報告**:
-   - 重複の可能性がある場合は作業を一時停止し、その旨を報告
-   - 重複がない場合も、確認した内容を簡潔に報告
+### 作業別参照ルール #reference-rules
+| 作業タイプ | ルールファイル | 主な確認事項 | タグ |
+|:---|:-----|:-----|:-----|
+| 🧪 テスト作成 [test-rules.mdc](mdc:.cursor/rules/dev-rules/test-rules.mdc) | テストカバレッジ、テストケース設計 | #testing #quality |
+| 🧩 コンポーネント実装 | [component-rules.mdc](mdc:.cursor/rules/dev-rules/component-rules.mdc) | 再利用性、型安全性 | #component #typescript |
+| ✨ 機能追加 | [feature-rules.mdc](mdc:.cursor/rules/dev-rules/feature-rules.mdc) | 仕様適合性、パフォーマンス | #feature #performance |
+| 🐛 バグ修正 | [bugfix-rules.mdc](mdc:.cursor/rules/dev-rules/bugfix-rules.mdc) | 根本原因の特定、回帰テスト | #bugfix #testing |
+| ♻️ リファクタリング | [refactor-rules.mdc](mdc:.cursor/rules/dev-rules/refactor-rules.mdc) | コード品質、保守性 | #refactor #quality |
+| 📝 ドキュメント更新 | [document-rules.mdc](mdc:.cursor/rules/dev-rules/document-rules.mdc) | 正確性、最新性 | #docs #maintenance |
 
-## 進捗状況の確認
-最新の進捗状況を以下のファイルで確認してください：
-- docs/03_進捗管理/01_TODO.md
-- docs/03_進捗管理/02_完了機能リスト.md
-- docs/03_進捗管理/03_日誌/ の最新ファイル
+## 1️⃣ 全作業共通ルール #common-rules
 
-## 基本コーディングルール
-- 変数名・関数名・クラス名などは英語で命名してください
-- コードのコメントは日本語で記述し、実装意図を明確にしてください
-- ShiftWithの核心価値である「ギバー行動の促進」を常に意識してください
+### 🔍 重複チェック手順 #duplicate-check
+1. **ファイル検索** #file-search
+   ```bash
+   # 新規ファイル作成時
+   find . -name "*類似名*"
+   
+   # 機能実装時
+   grep -r "関連キーワード" .
+   
+   # TypeScript特定の検索
+   find . -name "*.ts" -o -name "*.tsx" | xargs grep -l "検索キーワード"
+   ```
 
-## 守るべきルールのディレクトリ/ファイル
-- ./cursor/rules/dev-rules/*.mdc 
-- 上記ファイルのルールを厳守してください
+2. **ディレクトリ構造確認** #directory-structure
+   ```plaintext
+   📁 プロジェクト構造
+   ├── src/           #source-code
+   ├── components/    #react-components
+   ├── lib/          #utilities
+   ├── tests/        #test-files
+   ├── docs/         #documentation
+   └── prisma/       #database-schema
+   ```
+
+3. **検索結果の記録** #search-results
+   ```markdown
+   ## 重複チェック結果 #duplicate-check-results
+   - 検索キーワード：[キーワード] #search-keyword
+   - 類似ファイル：[あり/なし] #similar-files
+   - 確認結果：[詳細] #check-results
+   ```
+
+### 💻 コーディング規約 #coding-standards
+- **TypeScript規約** #typescript-rules
+  ```typescript
+  // ✅ 良い例 #good-practice
+  const getUserData = async (userId: string): Promise<UserData> => {
+    // 処理の説明をここに日本語で
+    // #type-safety #async-await
+    ...
+  }
+
+  // ❌ 悪い例 #bad-practice
+  const getData = (id) => {
+    // 型安全性が欠如
+    // #type-unsafe
+    ...
+  }
+  ```
+
+- **React規約** #react-rules
+  ```typescript
+  // ✅ コンポーネントの基本形 #component-template
+  import { FC } from 'react'
+  
+  interface Props {
+    // #props-interface
+    data: UserData
+  }
+  
+  export const UserComponent: FC<Props> = ({ data }) => {
+    // #react-component
+    return (...)
+  }
+  ```
+
+### 📊 進捗管理フロー #progress-management
+
+1. タスク開始時 #task-start
+   - [ ] 既存実装の確認 #implementation-check
+   - [ ] 依存関係の特定 #dependency-check
+   - [ ] 必要なテストの洗い出し #test-planning
+
+2. 実装中 #implementation
+   - [ ] コミットメッセージの明確化 #commit-message
+   - [ ] 変更内容のドキュメント化 #documentation
+
+3. 完了時 #completion
+   - [ ] テストの実行 #test-execution
+   - [ ] コードレビューの準備 #code-review
+   - [ ] 変更内容の要約作成 #summary

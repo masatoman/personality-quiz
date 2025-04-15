@@ -1,157 +1,132 @@
 import { useState, useEffect } from 'react';
-import { User, Session, AuthError } from '@supabase/supabase-js';
-import supabase from '@/lib/supabase';
+import { createClient, User as SupabaseUser, Session } from '@supabase/supabase-js';
 
-export type AuthUser = User | null;
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
-export interface UseAuthReturn {
-  user: AuthUser;
-  session: Session | null;
-  loading: boolean;
-  error: AuthError | null;
-  signUp: (email: string, password: string) => Promise<{
-    user: AuthUser;
-    error: AuthError | null;
-  }>;
-  signIn: (email: string, password: string) => Promise<{
-    user: AuthUser;
-    error: AuthError | null;
-  }>;
+export type User = {
+  id: string;
+  email: string;
+  name?: string;
+};
+
+const mapSupabaseUser = (user: SupabaseUser): User => ({
+  id: user.id,
+  email: user.email!,
+  name: user.user_metadata?.name
+});
+
+export type UseAuthReturn = {
+  user: User | null;
+  isLoading: boolean;
+  error: Error | null;
+  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
+  signInWithGithub: () => Promise<void>;
   signOut: () => Promise<void>;
-  resetPassword: (email: string) => Promise<{
-    error: AuthError | null;
-  }>;
-}
+};
 
-export function useAuth(): UseAuthReturn {
-  const [user, setUser] = useState<AuthUser>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<AuthError | null>(null);
+export const useAuth = (): UseAuthReturn => {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    let authListener: { subscription: { unsubscribe: () => void } } | null = null;
-    
-    // 現在のセッションとユーザーを取得
-    const getInitialSession = async () => {
-      try {
-        setLoading(true);
-        const { data: { session }, error } = await supabase.auth.getSession();
-
-        if (error) {
-          throw error;
-        }
-
-        setSession(session);
-        setUser(session?.user ?? null);
-
-        // 認証状態の変更を監視
-        const { data: listener } = supabase.auth.onAuthStateChange(
-          (_event, session) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            setLoading(false);
-          }
-        );
-        
-        authListener = listener;
-        setLoading(false);
-      } catch (error) {
-        setError(error as AuthError);
-        setLoading(false);
+    // セッションの確認
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUser(mapSupabaseUser(session.user));
       }
+      setIsLoading(false);
     };
 
-    getInitialSession();
+    checkSession();
+
+    // 認証状態の変更を監視
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser(mapSupabaseUser(session.user));
+      } else {
+        setUser(null);
+      }
+      setIsLoading(false);
+    });
 
     return () => {
-      // クリーンアップ関数
-      if (authListener) {
-        authListener.subscription.unsubscribe();
-      }
+      subscription.unsubscribe();
     };
   }, []);
 
-  // ユーザー登録
-  const signUp = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, rememberMe = false) => {
     try {
-      setLoading(true);
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-      
-      if (error) {
-        throw error;
-      }
-
-      return { user: data.user, error: null };
-    } catch (error) {
-      return { user: null, error: error as AuthError };
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ログイン
-  const signIn = async (email: string, password: string) => {
-    try {
-      setLoading(true);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password,
+        password
       });
-
-      if (error) {
-        throw error;
-      }
-
-      return { user: data.user, error: null };
-    } catch (error) {
-      return { user: null, error: error as AuthError };
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ログアウト
-  const signOut = async () => {
-    setLoading(true);
-    try {
-      await supabase.auth.signOut();
-    } catch (error) {
-      setError(error as AuthError);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // パスワードリセット
-  const resetPassword = async (email: string) => {
-    try {
-      setLoading(true);
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
       
-      if (error) {
-        throw error;
+      if (error) throw error;
+      if (data.user) {
+        setUser(mapSupabaseUser(data.user));
       }
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('ログインに失敗しました'));
+      throw err;
+    }
+  };
 
-      return { error: null };
-    } catch (error) {
-      return { error: error as AuthError };
-    } finally {
-      setLoading(false);
+  const signInWithGoogle = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
+      
+      if (error) throw error;
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Googleログインに失敗しました'));
+      throw err;
+    }
+  };
+
+  const signInWithGithub = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
+      
+      if (error) throw error;
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('GitHubログインに失敗しました'));
+      throw err;
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setUser(null);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('ログアウトに失敗しました'));
+      throw err;
     }
   };
 
   return {
     user,
-    session,
-    loading,
+    isLoading,
     error,
-    signUp,
     signIn,
-    signOut,
-    resetPassword,
+    signInWithGoogle,
+    signInWithGithub,
+    signOut
   };
-} 
+}; 

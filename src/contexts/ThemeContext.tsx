@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 
 // テーマの型定義
 export type ThemeName = 'tealPurpleTheme' | 'blueAmberTheme' | 'greenMagentaTheme';
@@ -8,39 +8,31 @@ export type ThemeName = 'tealPurpleTheme' | 'blueAmberTheme' | 'greenMagentaThem
 interface ThemeContextType {
   currentTheme: ThemeName;
   changeTheme: (theme: ThemeName) => void;
-  themeColors: {
-    [key in ThemeName]: {
-      primary: string;
-      primaryLight: string;
-      primaryDark: string;
-      accent: string;
-      accentLight: string;
-      accentDark: string;
-      secondary: string;
-      secondaryLight: string;
-      secondaryDark: string;
-      neutral: string;
-      neutralLight: string;
-      neutralDark: string;
-      base: string;
-      base100: string;
-      base200: string;
-      base300: string;
-    };
-  };
+  themeColors: typeof themeColors;
+  isLoading: boolean;
 }
 
 // カラーをRGBに変換するヘルパー関数
 const hexToRgb = (hex: string): string => {
-  // #を取り除く
-  hex = hex.replace('#', '');
-  
-  // RGB値に変換
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-  
-  return `${r}, ${g}, ${b}`;
+  try {
+    // 有効な16進数カラーコードかチェック
+    if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+      throw new Error(`無効なカラーコード: ${hex}`);
+    }
+    
+    // #を取り除く
+    hex = hex.replace('#', '');
+    
+    // RGB値に変換
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    
+    return `${r}, ${g}, ${b}`;
+  } catch (error) {
+    console.error('RGB変換エラー:', error);
+    return '0, 0, 0'; // フォールバック値
+  }
 };
 
 // テーマの色定義
@@ -102,37 +94,85 @@ const themeColors = {
 };
 
 // コンテキストの作成
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+export const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+// テーマフックを使用するためのカスタムフック
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
+};
 
 // テーマプロバイダーコンポーネント
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // ローカルストレージからテーマを読み込むか、デフォルトのテーマを使用
   const [currentTheme, setCurrentTheme] = useState<ThemeName>('tealPurpleTheme');
+  const [isLoading, setIsLoading] = useState(true);
 
-  // マウント時にローカルストレージからテーマを読み込む
-  useEffect(() => {
-    // クライアントサイドでのみ実行
-    if (typeof window === 'undefined') return;
+  // テーマの色をCSSカスタムプロパティに適用
+  const applyThemeColors = useCallback((theme: ThemeName) => {
+    // サーバーサイドレンダリング時には実行しない
+    if (typeof document === 'undefined') return;
+    
+    const colors = themeColors[theme];
+    const root = document.documentElement;
+    
+    // バッチ処理のためにRequestAnimationFrameを使用
+    requestAnimationFrame(() => {
+      try {
+        // メインカラー
+        root.style.setProperty('--color-primary', colors.primary);
+        root.style.setProperty('--color-primary-light', colors.primaryLight);
+        root.style.setProperty('--color-primary-dark', colors.primaryDark);
+        root.style.setProperty('--color-primary-rgb', hexToRgb(colors.primary));
+        root.style.setProperty('--color-primary-light-rgb', hexToRgb(colors.primaryLight));
+        root.style.setProperty('--color-primary-dark-rgb', hexToRgb(colors.primaryDark));
 
-    try {
-      const savedTheme = localStorage.getItem('theme') as ThemeName | null;
-      if (savedTheme && Object.keys(themeColors).includes(savedTheme)) {
-        setCurrentTheme(savedTheme);
-        applyThemeColors(savedTheme);
-      } else {
-        applyThemeColors('tealPurpleTheme');
+        // アクセントカラー
+        root.style.setProperty('--color-accent', colors.accent);
+        root.style.setProperty('--color-accent-light', colors.accentLight);
+        root.style.setProperty('--color-accent-dark', colors.accentDark);
+        root.style.setProperty('--color-accent-rgb', hexToRgb(colors.accent));
+        root.style.setProperty('--color-accent-light-rgb', hexToRgb(colors.accentLight));
+        root.style.setProperty('--color-accent-dark-rgb', hexToRgb(colors.accentDark));
+
+        // 補助カラー
+        root.style.setProperty('--color-secondary', colors.secondary);
+        root.style.setProperty('--color-secondary-light', colors.secondaryLight);
+        root.style.setProperty('--color-secondary-dark', colors.secondaryDark);
+        root.style.setProperty('--color-secondary-rgb', hexToRgb(colors.secondary));
+        root.style.setProperty('--color-secondary-light-rgb', hexToRgb(colors.secondaryLight));
+        root.style.setProperty('--color-secondary-dark-rgb', hexToRgb(colors.secondaryDark));
+
+        // ニュートラルカラー
+        root.style.setProperty('--color-neutral', colors.neutral);
+        root.style.setProperty('--color-neutral-light', colors.neutralLight);
+        root.style.setProperty('--color-neutral-dark', colors.neutralDark);
+        root.style.setProperty('--color-neutral-rgb', hexToRgb(colors.neutral));
+        root.style.setProperty('--color-neutral-light-rgb', hexToRgb(colors.neutralLight));
+        root.style.setProperty('--color-neutral-dark-rgb', hexToRgb(colors.neutralDark));
+
+        // ベースカラー
+        root.style.setProperty('--color-base', colors.base);
+        root.style.setProperty('--color-base-100', colors.base100);
+        root.style.setProperty('--color-base-200', colors.base200);
+        root.style.setProperty('--color-base-300', colors.base300);
+        root.style.setProperty('--color-base-rgb', hexToRgb(colors.base));
+        root.style.setProperty('--color-base-100-rgb', hexToRgb(colors.base100));
+        root.style.setProperty('--color-base-200-rgb', hexToRgb(colors.base200));
+        root.style.setProperty('--color-base-300-rgb', hexToRgb(colors.base300));
+
+        // トランジションの追加
+        document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+      } catch (error) {
+        console.error('テーマ適用エラー:', error);
       }
-    } catch (error) {
-      console.error('ローカルストレージアクセスエラー:', error);
-      applyThemeColors('tealPurpleTheme');
-    }
+    });
   }, []);
 
-  // テーマを変更する関数
-  const changeTheme = (theme: ThemeName) => {
+  const changeTheme = useCallback((theme: ThemeName) => {
     setCurrentTheme(theme);
-    
-    // クライアントサイドでのみローカルストレージに保存
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('theme', theme);
@@ -140,82 +180,48 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         console.error('ローカルストレージ保存エラー:', error);
       }
     }
-    
     applyThemeColors(theme);
-  };
+  }, [applyThemeColors]);
 
-  // テーマの色をCSSカスタムプロパティに適用
-  const applyThemeColors = (theme: ThemeName) => {
-    // サーバーサイドレンダリング時には実行しない
-    if (typeof document === 'undefined') return;
-    
-    const colors = themeColors[theme];
-    const root = document.documentElement;
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      setIsLoading(false);
+      return;
+    }
 
-    // メインカラー
-    root.style.setProperty('--color-primary', colors.primary);
-    root.style.setProperty('--color-primary-light', colors.primaryLight);
-    root.style.setProperty('--color-primary-dark', colors.primaryDark);
-    root.style.setProperty('--color-primary-rgb', hexToRgb(colors.primary));
-    root.style.setProperty('--color-primary-light-rgb', hexToRgb(colors.primaryLight));
-    root.style.setProperty('--color-primary-dark-rgb', hexToRgb(colors.primaryDark));
+    const initializeTheme = async () => {
+      try {
+        const savedTheme = localStorage.getItem('theme') as ThemeName | null;
+        if (savedTheme && Object.keys(themeColors).includes(savedTheme)) {
+          setCurrentTheme(savedTheme);
+          await new Promise(resolve => requestAnimationFrame(resolve));
+          applyThemeColors(savedTheme);
+        } else {
+          await new Promise(resolve => requestAnimationFrame(resolve));
+          applyThemeColors('tealPurpleTheme');
+        }
+      } catch (error) {
+        console.error('テーマ初期化エラー:', error);
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        applyThemeColors('tealPurpleTheme');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    // アクセントカラー
-    root.style.setProperty('--color-accent', colors.accent);
-    root.style.setProperty('--color-accent-light', colors.accentLight);
-    root.style.setProperty('--color-accent-dark', colors.accentDark);
-    root.style.setProperty('--color-accent-rgb', hexToRgb(colors.accent));
-    root.style.setProperty('--color-accent-light-rgb', hexToRgb(colors.accentLight));
-    root.style.setProperty('--color-accent-dark-rgb', hexToRgb(colors.accentDark));
+    initializeTheme();
+  }, [applyThemeColors]);
 
-    // 補助カラー
-    root.style.setProperty('--color-secondary', colors.secondary);
-    root.style.setProperty('--color-secondary-light', colors.secondaryLight);
-    root.style.setProperty('--color-secondary-dark', colors.secondaryDark);
-    root.style.setProperty('--color-secondary-rgb', hexToRgb(colors.secondary));
-    root.style.setProperty('--color-secondary-light-rgb', hexToRgb(colors.secondaryLight));
-    root.style.setProperty('--color-secondary-dark-rgb', hexToRgb(colors.secondaryDark));
-
-    // ニュートラルカラー
-    root.style.setProperty('--color-neutral', colors.neutral);
-    root.style.setProperty('--color-neutral-light', colors.neutralLight);
-    root.style.setProperty('--color-neutral-dark', colors.neutralDark);
-    root.style.setProperty('--color-neutral-rgb', hexToRgb(colors.neutral));
-    root.style.setProperty('--color-neutral-light-rgb', hexToRgb(colors.neutralLight));
-    root.style.setProperty('--color-neutral-dark-rgb', hexToRgb(colors.neutralDark));
-
-    // ベースカラー
-    root.style.setProperty('--color-base', colors.base);
-    root.style.setProperty('--color-base-100', colors.base100);
-    root.style.setProperty('--color-base-200', colors.base200);
-    root.style.setProperty('--color-base-300', colors.base300);
-    root.style.setProperty('--color-base-rgb', hexToRgb(colors.base));
-    root.style.setProperty('--color-base-100-rgb', hexToRgb(colors.base100));
-    root.style.setProperty('--color-base-200-rgb', hexToRgb(colors.base200));
-    root.style.setProperty('--color-base-300-rgb', hexToRgb(colors.base300));
-
-    // トランジションの追加
-    document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
-  };
+  const contextValue = useMemo(() => ({
+    currentTheme,
+    changeTheme,
+    themeColors,
+    isLoading
+  }), [currentTheme, changeTheme, isLoading]);
 
   return (
-    <ThemeContext.Provider
-      value={{
-        currentTheme,
-        changeTheme,
-        themeColors,
-      }}
-    >
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );
-};
-
-// テーマフックを使用するためのカスタムフック
-export const useTheme = (): ThemeContextType => {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
 }; 

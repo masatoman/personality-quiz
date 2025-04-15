@@ -4,13 +4,16 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaEnvelope, FaLock, FaGoogle, FaGithub } from 'react-icons/fa';
+import { useAuth } from '@/hooks/useAuth';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { signIn, signInWithGoogle, signInWithGithub } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,20 +21,39 @@ const LoginPage = () => {
     setError(null);
 
     try {
-      // 実際にはSupabaseなどの認証サービスを使用する
-      // 現在はテスト用の実装
-      console.log('ログイン処理:', { email, password });
-      
-      // テスト用：ローカルストレージにトークンを保存
-      localStorage.setItem('supabase.auth.token', 'test-token');
-
-      // 1秒後にダッシュボードへリダイレクト
-      setTimeout(() => {
-        router.push('/');
-      }, 1000);
+      await signIn(email, password, rememberMe);
+      router.push('/dashboard');
     } catch (err) {
       console.error('ログインエラー:', err);
       setError('ログインに失敗しました。メールアドレスとパスワードを確認してください。');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await signInWithGoogle();
+      router.push('/dashboard');
+    } catch (err) {
+      console.error('Googleログインエラー:', err);
+      setError('Googleログインに失敗しました。');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGithubLogin = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await signInWithGithub();
+      router.push('/dashboard');
+    } catch (err) {
+      console.error('GitHubログインエラー:', err);
+      setError('GitHubログインに失敗しました。');
     } finally {
       setLoading(false);
     }
@@ -136,7 +158,10 @@ const LoginPage = () => {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                aria-label="ログイン状態を保持する"
               />
               <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
                 ログイン状態を保持
@@ -144,7 +169,11 @@ const LoginPage = () => {
             </div>
 
             <div className="text-sm">
-              <Link href="/auth/reset-password" className="font-medium text-blue-600 hover:text-blue-500">
+              <Link 
+                href="/auth/reset-password" 
+                className="font-medium text-blue-600 hover:text-blue-500"
+                aria-label="パスワードをリセットする"
+              >
                 パスワードをお忘れですか？
               </Link>
             </div>
@@ -157,6 +186,7 @@ const LoginPage = () => {
                 loading ? 'opacity-70 cursor-not-allowed' : ''
               }`}
               disabled={loading}
+              aria-label="メールアドレスとパスワードでログイン"
             >
               {loading ? 'ログイン中...' : 'ログイン'}
             </button>
@@ -174,14 +204,20 @@ const LoginPage = () => {
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
+              onClick={handleGoogleLogin}
               className="group relative w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              disabled={loading}
+              aria-label="Googleアカウントでログイン"
             >
               <FaGoogle className="mr-2 h-5 w-5 text-red-500" />
               Google
             </button>
             <button
               type="button"
+              onClick={handleGithubLogin}
               className="group relative w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              disabled={loading}
+              aria-label="GitHubアカウントでログイン"
             >
               <FaGithub className="mr-2 h-5 w-5 text-gray-900" />
               GitHub

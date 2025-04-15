@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaRegLightbulb, FaRegCheckCircle } from 'react-icons/fa';
+import { Container, Paper, Typography, Button, Box, Stack, LinearProgress } from '@mui/material';
+import { Lightbulb, Refresh } from '@mui/icons-material';
 import { QuizResults as QuizResultsType } from './types';
 
 interface QuizResultsProps {
@@ -11,92 +12,144 @@ interface QuizResultsProps {
 }
 
 export const QuizResults: React.FC<QuizResultsProps> = ({ results, onRetake }) => {
-  const personalityDescriptions = {
-    giver: 'あなたは他者に貢献することに喜びを感じるタイプです。知識や経験を共有することで、コミュニティに価値を提供することができます。',
-    taker: 'あなたは効率的に学習を進めることを重視するタイプです。必要な知識を素早く吸収し、実践に活かすことができます。',
-    matcher: 'あなたは与えることと得ることのバランスを重視するタイプです。互恵的な関係を築きながら、コミュニティの発展に貢献できます。'
+  const getTypeDescription = (type: string) => {
+    switch (type) {
+      case 'giver':
+        return '他者の学習をサポートすることで、自身も成長するタイプです。教材作成や質問への回答を通じて学習効果を高められます。';
+      case 'taker':
+        return '効率的な学習方法を見つけ、積極的に知識を吸収するタイプです。質の高い教材を選び、集中的に学習することで成果を上げられます。';
+      case 'matcher':
+        return '他者との相互学習を通じて成長するタイプです。ディスカッションやグループ学習を活用することで、より深い理解が得られます。';
+      default:
+        return '';
+    }
   };
 
+  const dominantTypeLabel = {
+    giver: 'ギバータイプ',
+    taker: 'テイカータイプ',
+    matcher: 'マッチャータイプ'
+  }[results.dominantType];
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-2xl mx-auto p-6"
-    >
-      <div className="text-center mb-8">
-        <FaRegCheckCircle className="mx-auto text-green-500 text-5xl mb-4" />
-        <h2 className="text-3xl font-bold mb-2">診断完了！</h2>
-        <p className="text-gray-600">
-          あなたの主要なパーソナリティタイプは「
-          <span className="font-semibold text-blue-600">
-            {results.dominantType === 'giver' ? 'ギバー' :
-             results.dominantType === 'taker' ? 'テイカー' : 'マッチャー'}
-          </span>
-          」です
-        </p>
-      </div>
+    <Container maxWidth="md" sx={{ py: 8 }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        role="main"
+        aria-label="診断結果"
+      >
+        <Paper
+          elevation={3}
+          sx={{ p: 4, borderRadius: 2 }}
+          role="article"
+          aria-labelledby="results-title"
+        >
+          <Stack spacing={4}>
+            <Box
+              textAlign="center"
+              role="banner"
+            >
+              <Typography
+                variant="h3"
+                component="h1"
+                gutterBottom
+                fontWeight="bold"
+                color="primary"
+                id="results-title"
+              >
+                あなたの学習タイプ診断結果
+              </Typography>
+              <Typography
+                variant="h4"
+                color="text.secondary"
+                gutterBottom
+                aria-live="polite"
+              >
+                {dominantTypeLabel}
+              </Typography>
+            </Box>
 
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-        <h3 className="text-xl font-semibold mb-4">
-          <FaRegLightbulb className="inline-block mr-2 text-yellow-500" />
-          あなたの特徴
-        </h3>
-        <p className="text-gray-700 mb-6">
-          {personalityDescriptions[results.dominantType]}
-        </p>
+            <Box role="contentinfo">
+              <Typography
+                variant="body1"
+                paragraph
+                aria-label="タイプの説明"
+              >
+                {getTypeDescription(results.dominantType)}
+              </Typography>
+            </Box>
 
-        <div className="space-y-4">
-          <div className="relative pt-1">
-            <div className="flex justify-between mb-2">
-              <span className="font-medium">ギバー度</span>
-              <span className="text-blue-600">{results.percentage.giver}%</span>
-            </div>
-            <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-200">
-              <div
-                style={{ width: `${results.percentage.giver}%` }}
-                className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"
-              />
-            </div>
-          </div>
+            <Stack spacing={2} role="list" aria-label="タイプ別スコア">
+              {Object.entries(results.percentage).map(([type, value]) => (
+                <Box key={type} role="listitem">
+                  <Typography
+                    variant="body1"
+                    gutterBottom
+                    id={`${type}-score-label`}
+                  >
+                    {type === 'giver' && 'ギバー傾向'}
+                    {type === 'taker' && 'テイカー傾向'}
+                    {type === 'matcher' && 'マッチャー傾向'}
+                    : {value}%
+                  </Typography>
+                  <LinearProgress
+                    variant="determinate"
+                    value={value}
+                    sx={{ height: 10, borderRadius: 5 }}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={value}
+                    aria-labelledby={`${type}-score-label`}
+                  />
+                </Box>
+              ))}
+            </Stack>
 
-          <div className="relative pt-1">
-            <div className="flex justify-between mb-2">
-              <span className="font-medium">テイカー度</span>
-              <span className="text-green-600">{results.percentage.taker}%</span>
-            </div>
-            <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-200">
-              <div
-                style={{ width: `${results.percentage.taker}%` }}
-                className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"
-              />
-            </div>
-          </div>
+            <Box sx={{ mt: 4 }} role="complementary">
+              <Typography
+                variant="h5"
+                gutterBottom
+                id="advice-heading"
+                sx={{ display: 'flex', alignItems: 'center' }}
+              >
+                <Lightbulb sx={{ mr: 1 }} aria-hidden="true" />
+                あなたへのアドバイス
+              </Typography>
+              <Typography
+                variant="body1"
+                paragraph
+                aria-labelledby="advice-heading"
+              >
+                {results.dominantType === 'giver' && (
+                  '教材作成やフィードバック提供を通じて、知識の定着を図りましょう。他者の成長をサポートすることで、自身の理解も深まります。'
+                )}
+                {results.dominantType === 'taker' && (
+                  '質の高い教材を選び、効率的な学習計画を立てましょう。定期的に学習の振り返りを行い、理解度を確認することが重要です。'
+                )}
+                {results.dominantType === 'matcher' && (
+                  'ディスカッションやグループ学習に積極的に参加しましょう。他者との意見交換を通じて、多角的な視点を得ることができます。'
+                )}
+              </Typography>
+            </Box>
 
-          <div className="relative pt-1">
-            <div className="flex justify-between mb-2">
-              <span className="font-medium">マッチャー度</span>
-              <span className="text-purple-600">{results.percentage.matcher}%</span>
-            </div>
-            <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-200">
-              <div
-                style={{ width: `${results.percentage.matcher}%` }}
-                className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-500"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {onRetake && (
-        <div className="text-center">
-          <button
-            onClick={onRetake}
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-          >
-            診断をやり直す
-          </button>
-        </div>
-      )}
-    </motion.div>
+            {onRetake && (
+              <Box textAlign="center">
+                <Button
+                  variant="outlined"
+                  size="large"
+                  startIcon={<Refresh aria-hidden="true" />}
+                  onClick={onRetake}
+                  sx={{ mt: 2 }}
+                  aria-label="診断をやり直す"
+                >
+                  もう一度診断する
+                </Button>
+              </Box>
+            )}
+          </Stack>
+        </Paper>
+      </motion.div>
+    </Container>
   );
 }; 

@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { QuizQuestion, Answer } from './types';
+import { Box, Typography, Button, LinearProgress, Stack, ButtonBase } from '@mui/material';
+import { ArrowBack, ArrowForward } from '@mui/icons-material';
+import { QuizQuestion } from './types';
 
 interface QuizFormProps {
   question: QuizQuestion;
@@ -24,73 +25,135 @@ export const QuizForm: React.FC<QuizFormProps> = ({
   progress,
   canGoBack
 }) => {
+  // キーボードナビゲーションの処理
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft' && canGoBack) {
+        onPrevious();
+      } else if (e.key === 'ArrowRight' && selectedOption !== null) {
+        onNext();
+      } else if (e.key >= '1' && e.key <= String(question.options.length)) {
+        onOptionSelect(parseInt(e.key) - 1);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [canGoBack, selectedOption, onPrevious, onNext, onOptionSelect, question.options.length]);
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="w-full max-w-2xl mx-auto p-6"
+      role="form"
+      aria-label="診断質問フォーム"
     >
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">{question.text}</h2>
-        {question.description && (
-          <p className="text-gray-600 mb-4">{question.description}</p>
-        )}
-      </div>
+      <Box sx={{ width: '100%', mb: 4 }}>
+        <LinearProgress
+          variant="determinate"
+          value={progress}
+          sx={{ height: 8, borderRadius: 4 }}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={progress}
+          aria-label="質問の進捗状況"
+        />
+        <Typography variant="body2" sx={{ mt: 1 }} aria-live="polite">
+          進捗状況: {Math.round(progress)}%
+        </Typography>
+      </Box>
 
-      <div className="space-y-4">
+      <Box sx={{ mb: 6 }} role="heading" aria-level={2}>
+        <Typography variant="h4" component="h2" gutterBottom>
+          {question.text}
+        </Typography>
+        {question.description && (
+          <Typography variant="body1" color="text.secondary">
+            {question.description}
+          </Typography>
+        )}
+      </Box>
+
+      <Stack
+        spacing={2}
+        sx={{ mb: 6 }}
+        role="radiogroup"
+        aria-label="回答オプション"
+      >
         {question.options.map((option, index) => (
-          <button
+          <ButtonBase
             key={index}
             onClick={() => onOptionSelect(index)}
-            className={`w-full p-4 text-left rounded-lg border transition-all ${
-              selectedOption === index
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 hover:border-blue-300'
-            }`}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                onOptionSelect(index);
+              }
+            }}
+            role="radio"
+            aria-checked={selectedOption === index}
+            aria-label={`選択肢 ${index + 1}: ${option.text}`}
+            tabIndex={0}
+            sx={{
+              width: '100%',
+              textAlign: 'left',
+              p: 3,
+              borderRadius: 2,
+              border: '1px solid',
+              borderColor: selectedOption === index ? 'primary.main' : 'grey.300',
+              bgcolor: selectedOption === index ? 'primary.50' : 'background.paper',
+              transition: 'all 0.2s',
+              '&:hover': {
+                borderColor: 'primary.main',
+                bgcolor: 'primary.50',
+              },
+              '&:focus-visible': {
+                outline: '2px solid',
+                outlineColor: 'primary.main',
+                outlineOffset: '2px'
+              }
+            }}
           >
-            <p className="font-medium">{option.text}</p>
-            {option.description && (
-              <p className="text-sm text-gray-600 mt-2">{option.description}</p>
-            )}
-          </button>
+            <Box>
+              <Typography variant="body1" fontWeight="medium">
+                {option.text}
+              </Typography>
+              {option.description && (
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  {option.description}
+                </Typography>
+              )}
+            </Box>
+          </ButtonBase>
         ))}
-      </div>
+      </Stack>
 
-      <div className="mt-8 flex justify-between items-center">
-        <button
+      <Stack
+        direction="row"
+        spacing={2}
+        justifyContent="space-between"
+        role="navigation"
+        aria-label="質問ナビゲーション"
+      >
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBack />}
           onClick={onPrevious}
           disabled={!canGoBack}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
-            canGoBack
-              ? 'text-blue-600 hover:bg-blue-50'
-              : 'text-gray-400 cursor-not-allowed'
-          }`}
+          aria-label="前の質問へ戻る"
         >
-          <FaChevronLeft />
-          <span>前の質問</span>
-        </button>
-
-        <div className="w-1/3 bg-gray-200 rounded-full h-2">
-          <div
-            className="bg-blue-600 h-2 rounded-full transition-all"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-
-        <button
+          前の質問
+        </Button>
+        <Button
+          variant="contained"
+          endIcon={<ArrowForward />}
           onClick={onNext}
           disabled={selectedOption === null}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
-            selectedOption !== null
-              ? 'text-blue-600 hover:bg-blue-50'
-              : 'text-gray-400 cursor-not-allowed'
-          }`}
+          aria-label={progress === 100 ? '診断結果を表示する' : '次の質問へ進む'}
         >
-          <span>次の質問</span>
-          <FaChevronRight />
-        </button>
-      </div>
+          {progress === 100 ? '結果を見る' : '次の質問'}
+        </Button>
+      </Stack>
     </motion.div>
   );
 }; 
