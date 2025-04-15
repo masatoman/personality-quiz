@@ -4,32 +4,94 @@ globs:
 alwaysApply: true
 ---
 ---
-description: dev-policy.md を事前に読み、基準に反していないか確認せよ
+description: 開発方針への準拠を確認するためのチェックルール
+globs: "**/*"
 alwaysApply: true
-globs:
-  - '**/*'
+tags:
+  - policy
+  - guidelines
+  - quality
+  - compliance
 ---
 
-# dev-policy 準拠チェックルール
+# 開発方針チェックルール #policy-check
 
-このルールはすべての作業に対して強制的に適用されます。作業を開始する前に、必ず `.cursor/dev-policy.md` を読み、以下の手順で方針に矛盾していないかを確認してください：
+## 参照すべきドキュメント #reference-docs
+- @docs/dev-policy.md - 開発方針と判断基準
+- @docs/基本設計.md - プロジェクトの基本設計と方針
+- @docs/GLOSSARY.md - 用語定義と命名規則
 
----
+## チェックリスト #check-points
 
-## ✅ チェックリスト
+### 1. 開発方針との整合性 #policy-alignment
+```markdown
+## 方針チェック #policy-verification
+- [ ] 「ギバー行動の促進」というコア価値に沿っているか
+- [ ] ユーザー体験の向上に貢献するか
+- [ ] コミュニティの価値向上につながるか
+```
 
-- [ ] dev-policy.md に記載された「開発方針」や「判断指針」と矛盾していないか？
-- [ ] MVP開発・改善フェーズの違いを正しく認識しているか？
-- [ ] スピード優先が許容される場面か、それとも品質を担保すべきフェーズか？
-- [ ] 「ギバー行動の促進」というコア価値に沿った判断か？
-- [ ] 複数の仕様が競合している場合、優先順位は dev-policy に沿って選択されたか？
+### 2. フェーズ適合性 #phase-compatibility
+```markdown
+## フェーズチェック #phase-verification
+### MVP開発フェーズ #mvp-phase
+- [ ] 必要最小限の機能に絞られているか
+- [ ] 迅速なリリースが可能か
+- [ ] フィードバックを得やすい実装か
 
----
+### 改善フェーズ #improvement-phase
+- [ ] ユーザーフィードバックに基づいているか
+- [ ] スケーラビリティを考慮しているか
+- [ ] 保守性を向上させる変更か
+```
 
-## 🧠 判断に迷うときは？
-`dev-policy.md` を必ず読み直し、それでも不明な場合は `/docs/01_プロジェクト概要/01_基本設計.md` に立ち返って、プロジェクトの目的と一致するかで判断してください。
+### 3. 優先順位の判断 #priority-assessment
+```markdown
+## 優先度チェック #priority-verification
+- [ ] 緊急度: [高/中/低]
+- [ ] 影響範囲: [広/中/狭]
+- [ ] リソース要件: [大/中/小]
+- [ ] ビジネス価値: [高/中/低]
+```
 
----
+### 4. 品質基準の確認 #quality-standards
+```typescript
+// ✅ 品質基準チェック例 #quality-check-example
+interface QualityCheck {
+  testCoverage: boolean    // テストカバレッジ基準を満たすか
+  typeChecking: boolean    // 型安全性が確保されているか
+  performance: boolean     // パフォーマンス要件を満たすか
+  accessibility: boolean   // アクセシビリティ基準を満たすか
+}
+```
 
-## 📝 実施報告（自動で記録可能な場合）
-作業の冒頭で `dev-policy.md 準拠済み` の一言をログやコメントに含めてください。
+## 判断フロー #decision-flow
+
+### 1. 事前確認 #pre-check
+- [ ] dev-policy.mdの熟読
+- [ ] 基本設計書との照合
+- [ ] 既存実装の確認
+
+### 2. 方針適合性評価 #policy-evaluation
+- [ ] コア価値との整合性確認
+- [ ] フェーズ要件の確認
+- [ ] 優先順位の評価
+
+### 3. 品質基準確認 #quality-verification
+- [ ] テスト要件の確認
+- [ ] パフォーマンス基準の確認
+- [ ] セキュリティ要件の確認
+
+### 4. 最終判断 #final-decision
+- [ ] 総合評価の実施
+- [ ] 懸念事項の文書化
+- [ ] 承認プロセスの実行
+
+## 実施報告 #implementation-report
+```markdown
+## チェック完了報告 #check-completion
+- 確認日時: [YYYY-MM-DD HH:mm]
+- 確認者: [@username]
+- 結果: [承認/条件付き承認/要修正]
+- コメント: [特記事項があれば記載]
+```

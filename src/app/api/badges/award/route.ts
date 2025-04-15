@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/server';
 import { auth, getUserAuth } from '@/lib/auth';
 import { BadgeType, BadgeRequirement } from '@/types/badges';
 import { BADGE_DEFINITIONS } from '@/data/badges';
+import { PostgrestError } from '@supabase/supabase-js';
 
 // バッジ獲得状況をチェックするAPIルート
 export async function POST(request: NextRequest) {
@@ -107,10 +108,10 @@ export async function POST(request: NextRequest) {
             badge_id: badge.id,
             acquired_at: new Date().toISOString(),
             progress: 100
-          });
+          }) as { error: PostgrestError | null };
 
         if (insertError) {
-          console.error(`バッジ ${badge.id} の追加エラー:`, insertError);
+          console.error(`バッジ ${badge.id} の追加エラー:`, insertError?.message || '不明なエラー');
         } else {
           newlyAcquiredBadges.push(badge);
           
@@ -138,9 +139,9 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('バッジ処理中の予期せぬエラー:', error);
+    console.error('Error awarding badge:', error);
     return NextResponse.json(
-      { error: 'サーバーエラーが発生しました' },
+      { error: 'Internal Server Error' },
       { status: 500 }
     );
   }

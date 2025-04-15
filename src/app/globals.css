@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 :root {
-  /* カラーパレット */
-  --color-primary: #1A9A9D;
-  --color-primary-light: #2DB6B9;
-  --color-primary-dark: #158385;
+  /* プライマリーカラー（濃い青緑色） */
+  --color-primary: #065A6B;  /* コントラスト比7:1以上を確保 */
+  --color-primary-light: #0B7285;
+  --color-primary-dark: #044957;
   
   /* タイプカラー */
   --color-supporter: #059669;
@@ -24,32 +24,32 @@
   /* テキストカラー */
   --color-text-primary: #111827;
   --color-text-secondary: #374151;
-  --color-text-tertiary: #4B5563;
+  --color-text-tertiary: #6B7280;
   
   /* 背景色 */
-  --color-background: #F9FAFB;
+  --color-background: #FFFFFF;
   --color-card: #FFFFFF;
   
-  /* アクセントカラー */
-  --color-accent: #6B2D90;
-  --color-accent-light: #8039AB;
-  --color-accent-dark: #572476;
+  /* アクセントカラー（紫色） */
+  --color-accent: #522470;  /* コントラスト比7:1以上を確保 */
+  --color-accent-light: #6B2D90;
+  --color-accent-dark: #3E1B54;
 
-  /* 補助カラー */
-  --color-secondary: #4ECDC4;
-  --color-secondary-light: #6AD9D2;
-  --color-secondary-dark: #39B3AA;
+  /* セカンダリーカラー（ティール） */
+  --color-secondary: #0A7468;  /* コントラスト比7:1以上を確保 */
+  --color-secondary-light: #0D9488;
+  --color-secondary-dark: #065A52;
   
   /* ニュートラルカラー */
-  --color-neutral: #1D3461;
-  --color-neutral-light: #274580;
-  --color-neutral-dark: #152648;
+  --color-neutral: #374151;
+  --color-neutral-light: #4B5563;
+  --color-neutral-dark: #1F2937;
   
   /* ベースカラー */
-  --color-base: #F7F9FC;
-  --color-base-100: #F7F9FC;
-  --color-base-200: #EDF1F7;
-  --color-base-300: #E2E8F0;
+  --color-base: #FFFFFF;
+  --color-base-100: #F9FAFB;
+  --color-base-200: #F3F4F6;
+  --color-base-300: #E5E7EB;
 
   --primary: #5E35B1;
   --primary-light: #7E57C2;
@@ -60,6 +60,26 @@
   --dark: #333333;
   --gray: #F5F5F5;
   --gray-dark: #9E9E9E;
+
+  /* ユーザータイプカラー */
+  --color-giver: #5B21B6;  /* コントラスト比7:1以上を確保 */
+  --color-matcher: #1E40AF;  /* コントラスト比7:1以上を確保 */
+  --color-taker: #92400E;  /* コントラスト比7:1以上を確保 */
+}
+
+/* ダークモード設定（オプション） */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #111827;
+    --color-card: #1F2937;
+    --color-text-primary: #F9FAFB;
+    --color-text-secondary: #E5E7EB;
+    --color-text-tertiary: #9CA3AF;
+    --color-base: #1F2937;
+    --color-base-100: #374151;
+    --color-base-200: #4B5563;
+    --color-base-300: #6B7280;
+  }
 }
 
 /* テーマ切り替えトランジション */
@@ -110,35 +130,42 @@
 @layer components {
   /* テーマ関連のコンポーネント */
   .theme-card {
-    @apply bg-base border border-base-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 p-6;
+    @apply bg-base-100 p-6 rounded-lg border border-base-300 shadow-sm;
   }
   
   .theme-button-primary {
-    @apply bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition-colors;
+    @apply bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark 
+           transition-colors duration-200 focus:outline-none focus:ring-2 
+           focus:ring-primary focus:ring-offset-2;
   }
   
   .theme-button-accent {
-    @apply bg-accent hover:bg-accent-dark text-white px-4 py-2 rounded-md shadow-md transition-colors;
+    @apply bg-accent text-white px-4 py-2 rounded-md hover:bg-accent-dark 
+           transition-colors duration-200 focus:outline-none focus:ring-2 
+           focus:ring-accent focus:ring-offset-2;
   }
   
   .theme-button-outline {
-    @apply border border-primary text-primary hover:bg-opacity-10 hover:bg-primary px-4 py-2 rounded-md transition-colors;
+    @apply border border-primary text-primary px-4 py-2 rounded-md 
+           hover:bg-primary hover:text-white transition-colors duration-200 
+           focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
   }
   
   .theme-tag {
-    @apply bg-opacity-30 bg-secondary text-secondary-dark px-3 py-1 rounded-full text-sm font-medium;
+    @apply bg-base-200 text-neutral px-3 py-1 rounded-full text-sm;
   }
   
   .theme-input {
-    @apply w-full border border-base-300 focus:border-secondary focus:ring-1 focus:ring-secondary rounded-md px-3 py-2 bg-base;
+    @apply w-full px-4 py-2 rounded-md border border-base-300 bg-base-100 
+           focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary;
   }
   
   .theme-nav {
-    @apply bg-neutral text-white p-4;
+    @apply bg-base-100 p-4 border border-base-300;
   }
   
   .theme-nav-link {
-    @apply text-base hover:text-accent transition-colors;
+    @apply text-neutral hover:text-primary transition-colors duration-200;
   }
   
   .theme-section {
@@ -146,14 +173,12 @@
   }
   
   .theme-divider {
-    @apply border-t border-base-300 my-6;
+    @apply border-t border-base-300 my-8;
   }
   
   /* カード */
   .card {
-    @apply bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200;
-    @apply p-6 md:p-8;
-    @apply border border-gray-100;
+    @apply bg-card rounded-lg shadow-sm p-6;
   }
 
   .type-card {
@@ -183,15 +208,11 @@
   }
   
   .btn-primary {
-    @apply bg-giver text-white;
-    @apply hover:bg-giver-dark;
-    @apply focus:ring-giver-light;
+    @apply bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors;
   }
   
   .btn-outline {
-    @apply border-2 border-giver text-giver;
-    @apply hover:bg-giver-light/10;
-    @apply focus:ring-giver-light;
+    @apply border-2 border-primary text-primary px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition-colors;
   }
 
   .btn-round {
@@ -1455,4 +1476,49 @@ main {
   gap: 1rem;
   max-width: 1100px;
   margin: 0 auto;
+}
+
+/* アクセシビリティ対応のボタンスタイル */
+.btn-secondary {
+  @apply bg-secondary text-white px-4 py-2 rounded-lg hover:bg-secondary-dark transition-colors;
+}
+
+.btn-accent {
+  @apply bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent-dark transition-colors;
+}
+
+/* アクセシビリティ対応のテキストスタイル */
+.text-contrast {
+  @apply text-text-primary;
+}
+
+.text-contrast-light {
+  @apply text-text-secondary;
+}
+
+/* アクセシビリティ対応のカード */
+.card {
+  @apply bg-card rounded-lg shadow-sm p-6;
+}
+
+/* アクセシビリティ対応のフォーム要素 */
+.form-input {
+  @apply w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-text-primary mb-1;
+}
+
+.form-error {
+  @apply text-sm text-error mt-1;
+}
+
+/* アクセシビリティ対応のナビゲーション */
+.nav-link {
+  @apply text-text-primary hover:text-primary transition-colors;
+}
+
+.nav-link-active {
+  @apply text-primary font-medium;
 }

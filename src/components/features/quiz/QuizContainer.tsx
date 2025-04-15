@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Container, Paper, Typography, Button, Box, CircularProgress } from '@mui/material';
 import { questions } from '@/data/questions';
 import { QuizForm } from './QuizForm';
 import { QuizResults } from './QuizResults';
 import { Answer, QuizQuestion, QuizResults as QuizResultsType, QuizState, PersonalityType } from './types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaSpinner } from 'react-icons/fa';
+import { PlayArrow } from '@mui/icons-material';
 
 export const QuizContainer: React.FC = () => {
   const router = useRouter();
@@ -154,9 +155,9 @@ export const QuizContainer: React.FC = () => {
 
   if (quizState === 'loading') {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <FaSpinner className="animate-spin text-4xl text-blue-600" />
-      </div>
+      <Container maxWidth="md" sx={{ py: 8, textAlign: 'center' }}>
+        <CircularProgress size={48} />
+      </Container>
     );
   }
 
@@ -166,37 +167,51 @@ export const QuizContainer: React.FC = () => {
 
   if (quizState === 'intro') {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-2xl mx-auto p-6 text-center"
-      >
-        <h1 className="text-3xl font-bold mb-6">ギバー診断</h1>
-        <p className="text-gray-600 mb-8">
-          あなたの学習スタイルと他者への貢献傾向を分析し、最適な学習方法を提案します。
-        </p>
-        <button
-          onClick={() => setQuizState('questioning')}
-          className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-        >
-          診断を開始する
-        </button>
-      </motion.div>
+      <Container maxWidth="md" sx={{ py: 8 }}>
+        <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+          <Box textAlign="center">
+            <Typography variant="h3" component="h1" gutterBottom fontWeight="bold" color="primary">
+              ギバー診断
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+              あなたの学習スタイルと他者への貢献傾向を分析し、最適な学習方法を提案します。
+            </Typography>
+            <Button
+              variant="contained"
+              size="large"
+              endIcon={<PlayArrow />}
+              onClick={() => setQuizState('questioning')}
+              sx={{
+                px: 4,
+                py: 1.5,
+                borderRadius: 2,
+                fontSize: '1.2rem'
+              }}
+            >
+              診断を開始する
+            </Button>
+          </Box>
+        </Paper>
+      </Container>
     );
   }
 
   return (
     <AnimatePresence mode="wait">
       {currentQuestion && (
-        <QuizForm
-          question={currentQuestion}
-          selectedOption={selectedOption}
-          onOptionSelect={handleOptionSelect}
-          onPrevious={handlePrevious}
-          onNext={handleNext}
-          progress={progress}
-          canGoBack={currentQuestionIndex > 0}
-        />
+        <Container maxWidth="md" sx={{ py: 8 }}>
+          <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+            <QuizForm
+              question={currentQuestion}
+              selectedOption={selectedOption}
+              onOptionSelect={handleOptionSelect}
+              onPrevious={handlePrevious}
+              onNext={handleNext}
+              progress={progress}
+              canGoBack={currentQuestionIndex > 0}
+            />
+          </Paper>
+        </Container>
       )}
     </AnimatePresence>
   );

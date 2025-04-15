@@ -143,5 +143,6 @@ const ActivitySummaryCard = ({ title, value, change }: ActivitySummaryCardProps)
 };
 
 ActivitySummaryCard.displayName = 'ActivitySummaryCard';
+ActivitySummary.displayName = 'ActivitySummary';
 
 export default ActivitySummary; 

@@ -10,10 +10,8 @@ const createJestConfig = nextJest({
 const config: Config = {
   // テストファイルのパターンを指定
   testMatch: [
-    '**/__tests__/**/*.unit.test.[jt]s?(x)',
-    '**/__tests__/**/*.integration.test.[jt]s?(x)',
-    '**/test/**/*.unit.test.[jt]s?(x)',
-    '**/test/**/*.integration.test.[jt]s?(x)',
+    '**/__tests__/**/*.test.[jt]s?(x)',
+    '**/test/**/*.test.[jt]s?(x)',
   ],
   // カバレッジの設定
   coverageProvider: 'v8',
