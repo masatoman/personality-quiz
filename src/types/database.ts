@@ -1,53 +1,144 @@
 /**
  * Supabaseデータベース型定義
- * モックテスト用の最小限の定義
  */
 export type Database = {
   public: {
     Tables: {
-      feedback: {
-        Row: {
-          id: string;
-          materialId: string;
-          userId: string;
-          rating: number;
-          comment: string;
-          createdAt: string;
-        };
-        Insert: {
-          materialId: string;
-          userId: string;
-          rating: number;
-          comment: string;
-          createdAt?: string;
-        };
-      };
       users: {
         Row: {
           id: string;
-          name: string;
           email: string;
-          role: string;
+          created_at: string;
+          personality_type: 'giver' | 'matcher' | 'taker' | null;
+          giver_score: number;
+          points: number;
+        };
+        Insert: {
+          id: string;
+          email: string;
+          created_at?: string;
+          personality_type?: 'giver' | 'matcher' | 'taker' | null;
+          giver_score?: number;
+          points?: number;
+        };
+        Update: {
+          id?: string;
+          email?: string;
+          created_at?: string;
+          personality_type?: 'giver' | 'matcher' | 'taker' | null;
+          giver_score?: number;
+          points?: number;
         };
       };
-      materials: {
+      profiles: {
+        Row: {
+          user_id: string;
+          display_name: string;
+          avatar_url: string | null;
+          bio: string | null;
+        };
+        Insert: {
+          user_id: string;
+          display_name: string;
+          avatar_url?: string | null;
+          bio?: string | null;
+        };
+        Update: {
+          user_id?: string;
+          display_name?: string;
+          avatar_url?: string | null;
+          bio?: string | null;
+        };
+      };
+      contents: {
         Row: {
           id: string;
+          user_id: string;
           title: string;
-          description: string;
           content: string;
-          difficulty: string;
-          authorId: string;
+          category: string;
+          tags: string[] | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title: string;
+          content: string;
+          category: string;
+          tags?: string[] | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          content?: string;
+          category?: string;
+          tags?: string[] | null;
+          created_at?: string;
+          updated_at?: string;
         };
       };
-      // 他のテーブル定義...
-      [key: string]: any;
+      feedback: {
+        Row: {
+          id: string;
+          content_id: string;
+          user_id: string;
+          comment: string | null;
+          rating: number | null;
+          is_helpful: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          content_id: string;
+          user_id: string;
+          comment?: string | null;
+          rating?: number | null;
+          is_helpful?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          content_id?: string;
+          user_id?: string;
+          comment?: string | null;
+          rating?: number | null;
+          is_helpful?: boolean;
+          created_at?: string;
+        };
+      };
+      activities: {
+        Row: {
+          id: string;
+          user_id: string;
+          activity_type: string;
+          reference_id: string | null;
+          points: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          activity_type: string;
+          reference_id?: string | null;
+          points: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          activity_type?: string;
+          reference_id?: string | null;
+          points?: number;
+          created_at?: string;
+        };
+      };
     };
-    Views: {
-      [key: string]: any;
-    };
-    Functions: {
-      [key: string]: any;
-    };
+    Views: Record<string, unknown>;
+    Functions: Record<string, unknown>;
   };
 }; 

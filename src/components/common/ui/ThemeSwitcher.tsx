@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useTheme, ThemeName } from '../contexts/ThemeContext';
+import { useTheme, ThemeName } from '../../../contexts/ThemeContext';
 
 const ThemeSwitcher: React.FC = () => {
   const { currentTheme, changeTheme, themeColors } = useTheme();
@@ -50,6 +50,7 @@ const ThemeSwitcher: React.FC = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-2 px-3 py-2 rounded-md bg-base-100 border border-base-300 hover:bg-base-200 transition-colors"
         aria-label="テーマ切り替え"
+        data-testid="theme-switcher-button"
       >
         <div className="flex">
           <span 
@@ -83,7 +84,10 @@ const ThemeSwitcher: React.FC = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute mt-2 right-0 w-52 bg-base-100 border border-base-300 rounded-md shadow-lg py-1 transition-all duration-200 ease-in-out transform origin-top-right">
+        <div 
+          className="absolute mt-2 right-0 w-52 bg-base-100 border border-base-300 rounded-md shadow-lg py-1 transition-all duration-200 ease-in-out transform origin-top-right"
+          data-testid="theme-switcher-dropdown"
+        >
           {Object.entries(themeDisplayNames).map(([themeName, displayName]) => (
             <button
               key={themeName}
@@ -91,6 +95,7 @@ const ThemeSwitcher: React.FC = () => {
               className={`w-full text-left px-4 py-2 text-sm hover:bg-base-200 flex items-center space-x-2 transition-colors ${
                 currentTheme === themeName ? 'bg-base-200 text-primary' : 'text-neutral'
               }`}
+              data-testid={`theme-option-${themeName}`}
             >
               <div className="flex">
                 <span 

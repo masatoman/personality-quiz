@@ -10,13 +10,13 @@ test.describe('新規ユーザー完全フロー', () => {
 
   test.beforeEach(async ({ page }) => {
     // アプリケーションのホームページを開く
-    await page.goto('/');
+    await page.goto('http://localhost:3002/');
   });
 
   test('新規ユーザーが登録から初期診断までの完全フローを実行できる', async ({ page }) => {
     // 1. ホームページから登録ページに遷移
     await page.getByRole('link', { name: '登録' }).click();
-    await expect(page).toHaveURL(/.*\/signup/);
+    await expect(page).toHaveURL('http://localhost:3002/signup');
     
     // 2. 登録フォームに情報を入力
     await page.getByLabel('メールアドレス').fill(testEmail);
@@ -31,7 +31,7 @@ test.describe('新規ユーザー完全フロー', () => {
     
     // 5. メール確認をスキップ（テスト用）
     // テスト環境では認証をバイパスする処理（実際のアプリケーションに合わせて調整）
-    await page.goto('/auth/verify-skip?email=' + encodeURIComponent(testEmail));
+    await page.goto('http://localhost:3002/auth/verify-skip?email=' + encodeURIComponent(testEmail));
     
     // 6. ウェルカム画面が表示される
     await expect(page.getByText('ShiftWithへようこそ')).toBeVisible();
@@ -64,7 +64,7 @@ test.describe('新規ユーザー完全フロー', () => {
     await page.getByRole('button', { name: 'ダッシュボードへ' }).click();
     
     // 12. ダッシュボードが表示される
-    await expect(page).toHaveURL(/.*\/dashboard/);
+    await expect(page).toHaveURL('http://localhost:3002/dashboard');
     await expect(page.getByText('今日のおすすめ')).toBeVisible();
     
     // 13. ギバースコアが表示されていることを確認
@@ -75,6 +75,6 @@ test.describe('新規ユーザー完全フロー', () => {
     await page.getByRole('menuitem', { name: 'ログアウト' }).click();
     
     // 15. ログイン画面に戻ることを確認
-    await expect(page).toHaveURL(/.*\/login/);
+    await expect(page).toHaveURL('http://localhost:3002/login');
   });
 }); 

@@ -1,39 +1,98 @@
 ---
-description: 
+description: ドキュメント作成・更新タスクに適用されるルール
 globs: 
 alwaysApply: false
 ---
 ---
-description: Apply this rule to documentation tasks
+description: ドキュメント作成・更新タスクに適用されるルール
 globs: "**/*.md"
+alwaysApply: false
+tags:
+  - documentation
+  - markdown
+  - maintenance
 ---
-# ドキュメント更新ルール
 
-## 参照すべき公式ドキュメント
-以下のドキュメントを必ず参照し、記載されたルールに従ってください：
-- docs/99_テンプレート/ - ドキュメントテンプレート集
-- docs/README.md - ドキュメント構成の概要
+# ドキュメント更新ルール #document-rules
 
-## 重要な確認ポイント
-上記ドキュメントの内容に基づき、特に以下の点に注意してください：
+## 参照すべきドキュメント #reference-docs
+- @docs/99_テンプレート/ - ドキュメントテンプレート集
+- @docs/README.md - プロジェクト概要
+- @docs/GLOSSARY.md - 用語定義と命名規則
 
-1. **ドキュメントフォーマット**
-   - 参照: docs/99_テンプレート/ の該当するテンプレート
-   - 更新するドキュメントタイプに適したテンプレートの使用
+## 重要な確認ポイント #check-points
 
-2. **ドキュメント構成の一貫性**
-   - 参照: docs/README.md の「ドキュメント構造」セクション
-   - 全体のドキュメント構造と一貫性の維持
+1. **ドキュメントフォーマット** #document-format
+   ```markdown
+   # ドキュメントタイトル #document-title
 
-3. **用語の統一**
-   - 参照: docs/GLOSSARY.md
-   - プロジェクト内で統一された用語の使用
+   ## 概要 #overview
+   このドキュメントは[目的]について説明します。
 
-4. **更新履歴の管理**
-   - 参照: 各ドキュメントの「更新履歴」セクション
-   - 変更内容と日付の適切な記録
+   ## 詳細 #details
+   ### 機能仕様 #specifications
+   - 機能A: [説明] #feature-a
+   - 機能B: [説明] #feature-b
 
-## ドキュメント更新時の注意点
-- 既存のスタイルと形式を維持してください
-- 図表やコード例は最新の実装を反映してください
-- 関連ドキュメントへの参照を適切に更新してください
+   ### 技術要件 #technical-requirements
+   - 要件1: [説明] #requirement-1
+   - 要件2: [説明] #requirement-2
+   ```
+
+2. **更新履歴管理** #version-history
+   ```markdown
+   ## 更新履歴 #changelog
+   | 日付 | バージョン | 更新者 | 内容 |
+   |:---|:---|:---|:---|
+   | 2024-03-XX | 1.0.0 | @username | 初版作成 |
+   | 2024-03-XX | 1.1.0 | @username | 機能Aの仕様追加 |
+   ```
+
+3. **コード例の記述** #code-examples
+   ```markdown
+   ### コード例 #example-code
+   ```typescript
+   // TypeScriptの例
+   interface Config {
+     apiKey: string
+     endpoint: string
+   }
+   ```
+
+   ```bash
+   # コマンドの例
+   npm install package-name
+   ```
+   ```
+
+4. **相互参照リンク** #cross-references
+   ```markdown
+   ## 関連ドキュメント #related-docs
+   - [基本設計書](@docs/基本設計.md)
+   - [APIドキュメント](@docs/api/README.md)
+   - [コンポーネント一覧](@docs/components/README.md)
+   ```
+
+## ドキュメント作成・更新手順 #documentation-steps
+
+### 1. 事前準備 #preparation
+- [ ] テンプレートの選択
+- [ ] 既存ドキュメントの確認
+- [ ] 更新範囲の特定
+
+### 2. 作成・更新作業 #writing
+- [ ] 構造化された内容の作成
+- [ ] コード例の追加
+- [ ] 相互参照リンクの設定
+
+### 3. レビュー項目 #review
+- [ ] 技術的正確性
+- [ ] 用語の一貫性
+- [ ] フォーマットの統一
+- [ ] リンクの有効性
+
+### 4. 公開前確認 #pre-publish
+- [ ] スペルチェック
+- [ ] 画像の最適化
+- [ ] 目次の更新
+- [ ] 更新履歴の記録

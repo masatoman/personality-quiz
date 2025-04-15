@@ -12,7 +12,6 @@ import {
 import { TabType, ResultsData } from '@/types/results';
 import dynamic from 'next/dynamic';
 import type { ComponentType } from 'react';
-import { PersonalityTypeInfo } from '../types/results';
 
 // チャンクサイズの定義
 const CHUNK_SIZE = 20;
@@ -20,8 +19,15 @@ const INITIAL_LOAD_SIZE = 50;
 
 // ローディング表示用コンポーネント
 const LoadingDisplay: React.FC<{ message: string }> = ({ message }) => (
-  <div className="flex items-center justify-center p-4">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mr-3"></div>
+  <div 
+    className="flex items-center justify-center p-4"
+    role="status"
+    aria-live="polite"
+  >
+    <div 
+      className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mr-3"
+      aria-hidden="true"
+    ></div>
     <span className="text-gray-600">{message}</span>
   </div>
 );
@@ -32,13 +38,15 @@ interface VirtualScrollContainerProps<T> {
   renderItem: (item: T, index: number) => React.ReactNode;
   height: number;
   itemHeight: number;
+  ariaLabel?: string;
 }
 
 function VirtualScrollContainer<T>({ 
   items, 
   renderItem, 
   height, 
-  itemHeight 
+  itemHeight,
+  ariaLabel = 'スクロール可能なコンテンツ'
 }: VirtualScrollContainerProps<T>) {
   const parentRef = React.useRef<HTMLDivElement>(null);
 
@@ -46,13 +54,30 @@ function VirtualScrollContainer<T>({
     count: items.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => itemHeight,
+    overscan: 5, // パフォーマンス最適化のためのオーバースキャン
   });
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (!virtualizer.range) return;
+    
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      virtualizer.scrollToIndex(Math.min(virtualizer.range.endIndex + 1, items.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      virtualizer.scrollToIndex(Math.max(virtualizer.range.startIndex - 1, 0));
+    }
+  }, [virtualizer, items.length]);
 
   return (
     <div
       ref={parentRef}
       className="overflow-auto"
       style={{ height }}
+      role="list"
+      aria-label={ariaLabel}
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
     >
       <div
         style={{
@@ -64,6 +89,7 @@ function VirtualScrollContainer<T>({
         {virtualizer.getVirtualItems().map((virtualItem) => (
           <div
             key={virtualItem.key}
+            role="listitem"
             style={{
               position: 'absolute',
               top: 0,

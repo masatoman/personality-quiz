@@ -1,6 +1,13 @@
 import { cache } from 'react';
 import { cookies } from 'next/headers';
 import { GiverScore } from './score';
+import { Activity, GiverDiagnosis } from '@prisma/client';
+
+export type GiverScoreResponse = {
+  score: GiverScore;
+  activities: Activity[];
+  diagnosis: GiverDiagnosis | null;
+};
 
 export const getGiverScore = cache(async () => {
   const userId = cookies().get('userId')?.value;
@@ -17,9 +24,5 @@ export const getGiverScore = cache(async () => {
     throw new Error('Failed to fetch giver score');
   }
 
-  return res.json() as Promise<{
-    score: GiverScore;
-    activities: any[];
-    diagnosis: any;
-  }>;
+  return res.json() as Promise<GiverScoreResponse>;
 }); 
