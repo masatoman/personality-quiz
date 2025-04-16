@@ -9,7 +9,7 @@ import DashboardLayout from './DashboardLayout';
 import TodoList from '@/components/features/todo/TodoList';
 import { GiverScoreDisplay } from '@/components/features/giver-score/GiverScoreDisplay';
 import { FaChartLine, FaCalendarAlt, FaExclamationTriangle } from 'react-icons/fa';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface ActivitySummaryProps {
@@ -460,11 +460,22 @@ const debounce = <T extends (...args: any[]) => any>(
 export default function DashboardClient() {
   const isMobile = useMediaQuery('(max-width: 768px)');
   const isTablet = useMediaQuery('(max-width: 1024px)');
-  const [userData, setUserData] = useState(initialUserData);
+  const [localUserData, setLocalUserData] = useState(initialUserData);
 
   const { data: userData, isLoading: isUserLoading } = useQuery({
     queryKey: ['userData'],
-    queryFn: fetchUserData
+    queryFn: async () => {
+      try {
+        const response = await fetch('/api/user');
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+        return response.json();
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        return initialUserData;
+      }
+    }
   });
 
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -534,7 +545,7 @@ export default function DashboardClient() {
     
     const { level, nextLevelScore, progressPercentage, personalityType } = calculateUserStats(giverScore);
             
-            setUserData({
+            setLocalUserData({
       id: userId,
               name: initialUserData.name,
               email: initialUserData.email,
@@ -557,7 +568,7 @@ export default function DashboardClient() {
   const updateUserDataFromLocal = (localScore: number, localActivities: ActivityData[], userId: string) => {
     const { level, nextLevelScore, progressPercentage, personalityType } = calculateUserStats(localScore);
           
-          setUserData({
+          setLocalUserData({
       id: userId,
             name: initialUserData.name,
             email: initialUserData.email,
@@ -680,7 +691,7 @@ export default function DashboardClient() {
       localStorage.setItem('userId', newUserId);
     }
     
-    setUserData(prev => ({ ...prev, id: newUserId }));
+    setLocalUserData(prev => ({ ...prev, id: newUserId }));
     void fetchUserData();
   }, [fetchUserData]);
   
