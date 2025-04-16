@@ -1,0 +1,41 @@
+commit_rules:
+  auto_commit_allowed:
+    - when: "only_auto_fixable_warnings"
+      message_prefix: "style: 自動整形"
+    
+    - when: "test_updates"
+      message_prefix: "test: テスト更新"
+    
+    - when: "dependency_updates"
+      message_prefix: "chore: 依存関係更新"
+  
+  require_manual_review:
+    - when: "has_major_lint_errors"
+      action: "notify_developer"
+    
+    - when: "security_warnings"
+      action: "create_review_task"
+
+branch_rules:
+  auto_commit_branches:
+    - pattern: "feature/*"
+    - pattern: "fix/*"
+    - pattern: "test/*"
+  
+  protected_branches:
+    - pattern: "main"
+      require_review: true
+    - pattern: "develop"
+      require_review: true
+
+notification_rules:
+  on_auto_fix:
+    - channel: "slack"
+      message: "自動修正を実行しました: ${fixes_summary}"
+  
+  on_manual_review_needed:
+    - channel: "slack"
+      message: "手動レビューが必要です: ${error_summary}"
+    - channel: "email"
+      to: "${developer_email}"
+      subject: "コードレビューが必要です" 

@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+require('@testing-library/jest-dom');
 
 // グローバルなモックの設定
 global.fetch = jest.fn();
@@ -12,6 +12,14 @@ global.console = {
   debug: jest.fn(),
   info: jest.fn(),
 };
+
+// LocalStorageのモック
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  clear: jest.fn(),
+};
+global.localStorage = localStorageMock;
 
 // テスト実行前にモックをリセット
 beforeEach(() => {

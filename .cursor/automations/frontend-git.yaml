@@ -1,0 +1,31 @@
+git_automation:
+  schedule:
+    interval: 30m
+    on_change: true
+  
+  pre_commit_checks:
+    lint:
+      tool: eslint
+      auto_fix: true
+      block_on_error: true
+      block_on_warning: false
+    
+    type_check:
+      tool: tsc
+      block_on_error: true
+    
+    test:
+      tool: jest
+      block_on_failure: false
+  
+  commit_message_template: |
+    feat(frontend): {component_name} の更新
+    
+    変更内容:
+    {change_summary}
+    
+    自動修正:
+    {auto_fixes}
+    
+    Lint警告:
+    {lint_warnings} 

@@ -1,0 +1,51 @@
+auto_fix_rules:
+  allowed_fixes:
+    - rule: "no-unused-imports"
+      action: "remove_unused"
+    - rule: "missing-semicolon"
+      action: "add_semicolon"
+    - rule: "trailing-spaces"
+      action: "remove_spaces"
+    - rule: "eol-last"
+      action: "ensure_newline"
+    - rule: "quotes"
+      action: "standardize_quotes"
+  
+  manual_review_required:
+    - rule: "max-lines-per-function"
+      reason: "複雑度の判断が必要"
+    - rule: "max-file-length"
+      reason: "ファイル分割の判断が必要"
+    - rule: "naming-convention"
+      reason: "命名の適切性の判断が必要"
+    
+  notification_rules:
+    - on: "auto_fix_applied"
+      notify: ["slack"]
+    - on: "manual_review_needed"
+      notify: ["slack", "email"]
+
+rules:
+  typescript:
+    auto_fix:
+      - "@typescript-eslint/no-unsafe-assignment"
+      - "@typescript-eslint/no-unsafe-member-access"
+      - "@typescript-eslint/no-unsafe-call"
+      - "@typescript-eslint/no-unsafe-return"
+      - "@typescript-eslint/no-explicit-any"
+      - "@typescript-eslint/explicit-module-boundary-types"
+    manual_review:
+      - "@typescript-eslint/no-floating-promises"
+      - "@typescript-eslint/await-thenable"
+      - "@typescript-eslint/require-await"
+
+notifications:
+  slack:
+    channel: "#typescript-lint"
+    auto_fix: true
+    manual_review: true
+  email:
+    recipients:
+      - dev-team@example.com
+    auto_fix: true
+    manual_review: true 

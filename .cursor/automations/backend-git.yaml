@@ -1,0 +1,32 @@
+git_automation:
+  schedule:
+    interval: 30m
+    on_api_change: true
+  
+  pre_commit_checks:
+    lint:
+      tool: eslint
+      auto_fix: true
+      block_on_error: true
+      block_on_warning: false
+    
+    security:
+      tool: snyk
+      block_on_high: true
+      block_on_medium: false
+    
+    test:
+      tool: jest
+      block_on_failure: true
+  
+  commit_message_template: |
+    feat(backend): {endpoint_name} の更新
+    
+    変更内容:
+    {change_summary}
+    
+    自動修正:
+    {auto_fixes}
+    
+    セキュリティチェック:
+    {security_summary} 

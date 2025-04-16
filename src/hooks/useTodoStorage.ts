@@ -5,6 +5,11 @@ import type { Task } from '@/types/todo';
 const STORAGE_KEY = 'todo-tasks';
 const BATCH_SIZE = 50; // 一度に処理するタスク数
 
+interface StoredTask extends Omit<Task, 'createdAt' | 'dueDate'> {
+  createdAt: string;
+  dueDate: string | null;
+}
+
 interface UseTodoStorageReturn {
   tasks: Task[];
   addTask: (taskData: Omit<Task, 'id' | 'createdAt' | 'completed'>) => void;
@@ -16,55 +21,46 @@ interface UseTodoStorageReturn {
   completedPoints: number;
 }
 
-export default function useTodoStorage(): UseTodoStorageReturn {
+export function useTodoStorage(): UseTodoStorageReturn {
   const [tasks, setTasks] = useState<Task[]>([]);
-  
-  // ローカルストレージからデータを読み込む
+
+  // ローカルストレージからタスクを読み込む
   useEffect(() => {
-    const loadTasks = async () => {
-      const storedTasks = localStorage.getItem(STORAGE_KEY);
-      if (storedTasks) {
-        try {
-          // 大量のタスクを非同期で処理
-          const parsedTasks = JSON.parse(storedTasks);
-          const processedTasks: Task[] = [];
-          
-          for (let i = 0; i < parsedTasks.length; i += BATCH_SIZE) {
-            const batch = parsedTasks.slice(i, i + BATCH_SIZE).map((task: any) => ({
-              ...task,
-              createdAt: new Date(task.createdAt),
-              dueDate: task.dueDate ? new Date(task.dueDate) : null
-            }));
-            processedTasks.push(...batch);
-            
-            // 各バッチの処理後に短い遅延を入れる
-            if (i + BATCH_SIZE < parsedTasks.length) {
-              await new Promise(resolve => setTimeout(resolve, 0));
-            }
-          }
-          
-          setTasks(processedTasks);
-        } catch (error) {
-          console.error('タスクの読み込みに失敗しました:', error);
-          setTasks([]);
-        }
+    const loadTasks = () => {
+      try {
+        const storedTasks = localStorage.getItem(STORAGE_KEY);
+        if (!storedTasks) return;
+
+        const parsedTasks = JSON.parse(storedTasks) as StoredTask[];
+        const convertedTasks: Task[] = parsedTasks.map(task => ({
+          ...task,
+          createdAt: new Date(task.createdAt),
+          dueDate: task.dueDate ? new Date(task.dueDate) : undefined
+        }));
+
+        setTasks(convertedTasks);
+      } catch (error) {
+        console.error('Failed to load tasks:', error);
       }
     };
-    
+
     loadTasks();
   }, []);
-  
-  // データが変更されたらローカルストレージに保存（デバウンス処理）
+
+  // タスクの変更を保存
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (tasks.length > 0) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-      }
-    }, 1000);
-    
-    return () => clearTimeout(timeoutId);
+    try {
+      const storedTasks: StoredTask[] = tasks.map(task => ({
+        ...task,
+        createdAt: task.createdAt.toISOString(),
+        dueDate: task.dueDate?.toISOString() ?? null
+      }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(storedTasks));
+    } catch (error) {
+      console.error('Failed to save tasks:', error);
+    }
   }, [tasks]);
-  
+
   // タスクの追加（メモ化）
   const addTask = useCallback((taskData: Omit<Task, 'id' | 'createdAt' | 'completed'>) => {
     const newTask: Task = {
@@ -102,8 +98,8 @@ export default function useTodoStorage(): UseTodoStorageReturn {
   // ポイントの計算（メモ化）
   const { totalPoints, completedPoints } = useMemo(() => {
     return {
-      totalPoints: tasks.reduce((sum, task) => sum + (task.points || 0), 0),
-      completedPoints: completedTasks.reduce((sum, task) => sum + (task.points || 0), 0)
+      totalPoints: tasks.reduce((sum, task) => sum + task.points, 0),
+      completedPoints: completedTasks.reduce((sum, task) => sum + task.points, 0)
     };
   }, [tasks, completedTasks]);
   

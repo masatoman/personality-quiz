@@ -1,9 +1,15 @@
 {
   "extends": [
     "next/core-web-vitals",
-    "plugin:@next/next/recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking"
   ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
   "plugins": [
     "@typescript-eslint"
   ],
@@ -14,7 +20,11 @@
       "varsIgnorePattern": "^_",
       "ignoreRestSiblings": true
     }],
-    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/explicit-module-boundary-types": "warn",
+    "@typescript-eslint/no-unsafe-assignment": "warn",
+    "@typescript-eslint/no-unsafe-member-access": "warn",
+    "@typescript-eslint/no-unsafe-call": "warn",
     "react-hooks/exhaustive-deps": "warn",
     "@next/next/no-img-element": "warn",
     "@next/next/google-font-display": "warn",
@@ -27,7 +37,8 @@
     "out/",
     "public/",
     "*.config.js",
-    "*.setup.js"
+    "*.setup.js",
+    "coverage/"
   ],
   "env": {
     "jest": true,

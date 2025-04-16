@@ -1,0 +1,26 @@
+git_automation:
+  schedule:
+    - interval: "1時間"
+    - on_test_completion: true  # テスト完了時
+
+  pre_commit_checks:
+    style_lint:
+      run: "stylelint --fix src/**/*.{css,scss}"
+      on_error:
+        - severity: "error"
+          action: "block_commit"
+        - severity: "warning"
+          action: "auto_fix"
+          then: "commit_with_note"
+    
+    test_status:
+      run: "npm test"
+      on_error:
+        action: "notify_only"  # テスト失敗してもコミット可能
+
+  commit_message_template: |
+    test(e2e): ${test_suite} の更新
+
+    - 変更内容: ${change_summary}
+    - テスト結果: ${test_results}
+    ${coverage_summary} 
