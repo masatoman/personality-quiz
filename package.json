@@ -144,7 +144,16 @@
   },
   "eslintConfig": {
     "extends": [
-      "plugin:storybook/recommended"
-    ]
+      "next/core-web-vitals",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "rules": {
+      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/no-unused-vars": "error",
+      "@typescript-eslint/no-explicit-any": "error"
+    }
   }
 }

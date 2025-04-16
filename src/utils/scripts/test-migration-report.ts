@@ -9,7 +9,8 @@
 
 import fs from 'fs';
 import path from 'path';
-import { glob } from 'glob';
+// @ts-ignore
+import glob from 'glob';
 import chalk from 'chalk';
 
 // 設定

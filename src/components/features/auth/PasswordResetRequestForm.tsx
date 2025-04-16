@@ -12,21 +12,17 @@ export default function PasswordResetRequestForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
     setError(null);
+    setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
-      });
-
-      if (error) {
-        throw error;
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email);
+      if (resetError) {
+        throw resetError;
       }
-
       setSuccess(true);
-    } catch (err) {
-      setError('パスワードリセットメールの送信に失敗しました。もう一度お試しください。');
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'パスワードリセットに失敗しました。');
     } finally {
       setIsLoading(false);
     }

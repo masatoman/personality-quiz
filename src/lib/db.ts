@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { PersonalityType, TypeTotals, TypeStats, Stats } from '@/types/quiz';
-import { Pool } from 'pg';
+import { Pool, PoolClient, QueryResult, QueryConfig } from 'pg';
 
 // PostgreSQLの接続プール設定
 export let pool: Pool;
@@ -37,12 +37,12 @@ export async function initPool() {
       pool = new Pool(dbConfig);
       
       // エラーイベントのハンドリング
-      pool.on('error', (err: Error & { client?: any }) => {
+      pool.on('error', (err: Error & { client?: PoolClient }) => {
         console.error('PostgreSQL接続エラー:', {
           message: err.message,
           stack: err.stack,
-          code: (err as any).code,
-          detail: (err as any).detail
+          code: (err as { code?: string }).code,
+          detail: (err as { detail?: string }).detail
         });
         // エラーが発生した接続を破棄
         if (err.client) {
@@ -89,19 +89,19 @@ export async function initPool() {
     console.error('PostgreSQLプールの初期化に失敗しました:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      code: (error as any).code,
-      detail: (error as any).detail
+      code: (error as { code?: string }).code,
+      detail: (error as { detail?: string }).detail
     });
     throw error;
   }
 }
 
 // クエリ結果のキャッシュ管理
-const queryCache = new Map<string, { data: any; timestamp: number }>();
+const queryCache = new Map<string, { data: QueryResult; timestamp: number }>();
 const CACHE_TTL = 5 * 60 * 1000; // 5分
 
 // キャッシュを使用するクエリ実行関数
-export async function cachedQuery(text: string, params?: any[], ttl: number = CACHE_TTL) {
+export async function cachedQuery(text: string, params?: unknown[], ttl: number = CACHE_TTL): Promise<QueryResult> {
   const cacheKey = `${text}-${JSON.stringify(params)}`;
   const cached = queryCache.get(cacheKey);
   
@@ -122,14 +122,14 @@ export async function cachedQuery(text: string, params?: any[], ttl: number = CA
 export async function batchQuery<T>(
   items: T[],
   batchSize: number,
-  queryFn: (batch: T[]) => Promise<any>
-): Promise<any[]> {
-  const results = [];
+  queryFn: (batch: T[]) => Promise<QueryResult>
+): Promise<QueryResult[]> {
+  const results: QueryResult[] = [];
   
   for (let i = 0; i < items.length; i += batchSize) {
     const batch = items.slice(i, i + batchSize);
     const batchResults = await queryFn(batch);
-    results.push(...batchResults);
+    results.push(batchResults);
     
     // バッチ間で短い遅延を入れる
     if (i + batchSize < items.length) {
@@ -140,49 +140,44 @@ export async function batchQuery<T>(
   return results;
 }
 
-export async function query(text: string, params?: any[]) {
+// クエリ実行関数
+export async function query(text: string, params?: unknown[]): Promise<QueryResult> {
+  if (!pool) {
+    await initPool();
+  }
+
+  // パフォーマンス計測開始
+  const startTime = Date.now();
+
+  // コネクションプールからクライアントを取得
+  const client = await pool.connect();
+  
   try {
-    // プールが未初期化の場合は初期化
-    if (!pool) {
-      await initPool();
-    }
-
-    // パフォーマンス計測開始
-    const startTime = Date.now();
-
-    // コネクションプールからクライアントを取得
-    const client = await pool.connect();
+    // クエリタイムアウトを設定（30秒）
+    await client.query('SET statement_timeout = 30000');
     
-    try {
-      // クエリタイムアウトを設定（30秒）
-      await client.query('SET statement_timeout = 30000');
-      
-      // クエリを実行
-      const result = await client.query(text, params);
-      
-      // パフォーマンス計測終了と記録
-      const executionTime = Date.now() - startTime;
-      if (executionTime > 1000) { // 1秒以上かかったクエリをログ
-        console.warn('スロークエリ検出:', {
-          query: text,
-          params,
-          executionTime,
-          timestamp: new Date().toISOString()
-        });
-      }
-      
-      return result;
-    } catch (queryError) {
-      console.error('クエリ実行エラー:', queryError);
-      console.error('実行されたクエリ:', text);
-      console.error('パラメータ:', params);
-      throw queryError;
-    } finally {
-      client.release();
+    // クエリを実行
+    const result = await client.query(text, params);
+    
+    // パフォーマンス計測終了と記録
+    const executionTime = Date.now() - startTime;
+    if (executionTime > 1000) { // 1秒以上かかったクエリをログ
+      console.warn('スロークエリ検出:', {
+        query: text,
+        params,
+        executionTime,
+        timestamp: new Date().toISOString()
+      });
     }
-  } catch (error) {
-    console.error('データベース操作エラー:', error);
-    throw error;
+    
+    return result;
+  } catch (queryError) {
+    console.error('クエリ実行エラー:', queryError);
+    console.error('実行されたクエリ:', text);
+    console.error('パラメータ:', params);
+    throw queryError;
+  } finally {
+    await client.release();
   }
 }
 
@@ -240,8 +235,8 @@ export function initDatabase() {
 }
 
 // メモリ内のモックデータ
-const mockResults: { id: number; type: PersonalityType; timestamp: string }[] = [];
-const mockStats: Stats = {
+let mockResults: { id: number; type: PersonalityType; timestamp: string }[] = [];
+let mockStats: Stats = {
   giver: { count: 10, percentage: 34 },
   matcher: { count: 7, percentage: 25 },
   taker: { count: 12, percentage: 41 },
@@ -249,7 +244,7 @@ const mockStats: Stats = {
 };
 
 // 結果の保存
-export function saveResult(type: PersonalityType): boolean {
+export async function saveResult(type: PersonalityType): Promise<boolean> {
   try {
     // データベースの初期化
     const initSuccess = initDatabase();
@@ -284,7 +279,7 @@ export function saveResult(type: PersonalityType): boolean {
       fs.writeFileSync(RESULTS_FILE, JSON.stringify(resultsData, null, 2), { encoding: 'utf8', mode: 0o666 });
       
       // 統計を更新
-      const statsSuccess = updateStats(type);
+      const statsSuccess = await updateStats(type);
       if (!statsSuccess) {
         throw new Error('統計の更新に失敗しました');
       }
@@ -325,7 +320,7 @@ export function saveResult(type: PersonalityType): boolean {
 }
 
 // 統計の更新
-function updateStats(type: PersonalityType): boolean {
+async function updateStats(type: PersonalityType): Promise<boolean> {
   try {
     console.log(`統計ファイルから読み込みを試行: ${STATS_FILE}`);
     // 統計データを読み込む
@@ -360,7 +355,7 @@ function updateStats(type: PersonalityType): boolean {
     
     console.log(`統計ファイルへの書き込みを試行: ${JSON.stringify(statsData, null, 2)}`);
     // 統計を保存
-    fs.writeFileSync(STATS_FILE, JSON.stringify(statsData, null, 2), { encoding: 'utf8', mode: 0o666 });
+    await fs.promises.writeFile(STATS_FILE, JSON.stringify(statsData, null, 2), { encoding: 'utf8', mode: 0o666 });
     return true;
   } catch (error) {
     console.error('統計の更新中にエラーが発生しました:', error);

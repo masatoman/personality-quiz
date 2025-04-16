@@ -1,6 +1,6 @@
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { createClient } from '@supabase/supabase-js';
-import { Database } from './supabase';
+import { type Database } from '@/types/supabase';
 
 // 環境変数の取得
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -10,33 +10,43 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
  * Cookieを使ったセッション付きのSupabaseクライアントを作成
  * @returns Supabaseクライアント
  */
-export const createServerClient = () => {
+export function createClient() {
   const cookieStore = cookies();
   
-  return createClient<Database>(
-    supabaseUrl,
-    supabaseAnonKey,
+  return createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         get(name: string) {
           return cookieStore.get(name)?.value;
         },
-        set(name: string, value: string, options: any) {
-          cookieStore.set(name, value, options);
+        set(name: string, value: string, options: CookieOptions) {
+          try {
+            cookieStore.set({ name, value, ...options });
+          } catch (error) {
+            // エラーをキャッチして適切に処理
+            console.error('Cookieの設定に失敗しました:', error);
+          }
         },
-        remove(name: string, options: any) {
-          cookieStore.set(name, '', { ...options, maxAge: 0 });
+        remove(name: string, options: CookieOptions) {
+          try {
+            cookieStore.set({ name, value: '', ...options });
+          } catch (error) {
+            // エラーをキャッチして適切に処理
+            console.error('Cookieの削除に失敗しました:', error);
+          }
         },
       },
     }
   );
-};
+}
 
 /**
  * 現在のセッションを取得
  */
 export const getSession = async () => {
-  const supabase = createServerClient();
+  const supabase = createClient();
   const { data: { session }, error } = await supabase.auth.getSession();
   
   if (error) {

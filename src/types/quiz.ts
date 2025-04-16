@@ -188,9 +188,9 @@ export interface PointHistoryItem {
 
 // ギバースコア履歴項目
 export interface GiverScoreHistoryItem {
-  userId: string;
+  date: string;
   score: number;
-  timestamp: Date;
+  userId: string;
 }
 
 export interface AuthUser {

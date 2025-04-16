@@ -1,6 +1,5 @@
 // テスト環境のセットアップ
 import '@testing-library/jest-dom';
-import { TextEncoder as NodeTextEncoder, TextDecoder as NodeTextDecoder } from 'util';
 
 // 型定義の追加
 type IntersectionObserverCallbackType = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => void;
@@ -75,11 +74,11 @@ jest.setTimeout(30000);
 
 // TextEncoder/TextDecoderのモック
 if (typeof global.TextEncoder === 'undefined') {
-  (global as any).TextEncoder = NodeTextEncoder;
+  global.TextEncoder = require('util').TextEncoder;
 }
 
 if (typeof global.TextDecoder === 'undefined') {
-  (global as any).TextDecoder = NodeTextDecoder;
+  global.TextDecoder = require('util').TextDecoder;
 }
 
 // エラースタックトレースをより読みやすくするための設定

@@ -77,6 +77,48 @@ export type ActivityType =
   | 'quiz_complete';
 
 /**
+ * アクティビティごとの詳細情報を表す型
+ */
+export type ActivityDetails = {
+  complete_resource: {
+    resourceId: string | number;
+    completionTime: number; // 秒単位
+    score?: number;
+  };
+  start_resource: {
+    resourceId: string | number;
+    startTime: string;
+  };
+  create_material: {
+    materialId: string | number;
+    materialType: string;
+    title: string;
+  };
+  provide_feedback: {
+    targetId: string | number;
+    targetType: 'resource' | 'material';
+    rating: number;
+    comment?: string;
+  };
+  daily_login: {
+    loginStreak: number;
+    bonusPoints?: number;
+  };
+  share_resource: {
+    resourceId: string | number;
+    platform: 'twitter' | 'facebook' | 'linkedin' | 'other';
+    shareUrl?: string;
+  };
+  quiz_complete: {
+    quizId: string | number;
+    score: number;
+    totalQuestions: number;
+    correctAnswers: number;
+    timeSpent: number; // 秒単位
+  };
+};
+
+/**
  * 学習アクティビティを表す型
  */
 export interface LearningActivity {
@@ -86,7 +128,7 @@ export interface LearningActivity {
   referenceId?: string | number; // 関連リソースID
   points: number;
   createdAt: string;
-  details?: Record<string, any>;
+  details?: ActivityDetails[keyof ActivityDetails];
 }
 
 /**

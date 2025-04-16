@@ -9,7 +9,8 @@ import DashboardLayout from './DashboardLayout';
 import TodoList from '@/components/features/todo/TodoList';
 import { GiverScoreDisplay } from '@/components/features/giver-score/GiverScoreDisplay';
 import { FaChartLine, FaCalendarAlt, FaExclamationTriangle } from 'react-icons/fa';
-import Image from 'next/image';
+import { useQuery } from 'react-query';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface ActivitySummaryProps {
   createdMaterialsCount: number;
@@ -111,6 +112,7 @@ const ActivityItem = React.memo(({ activity, style, isMobile }: {
   isMobile: boolean;
 }) => {
   const [imageError, setImageError] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -133,9 +135,25 @@ const ActivityItem = React.memo(({ activity, style, isMobile }: {
 
   const { bg, text } = getActivityColor(activity.type);
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    console.error('画像の読み込みに失敗しました:', e);
+  const handleImageError = () => {
     setImageError(true);
+  };
+
+  const handleRetryLoad = async () => {
+    setIsRetrying(true);
+    try {
+      await new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = activity.imageUrl || '';
+      });
+      setImageError(false);
+    } catch (error) {
+      console.error('画像の再読み込みに失敗しました:', error);
+    } finally {
+      setIsRetrying(false);
+    }
   };
 
   const toggleExpand = () => {
@@ -159,20 +177,42 @@ const ActivityItem = React.memo(({ activity, style, isMobile }: {
     >
       {activity.imageUrl && !imageError ? (
         <div className="relative w-12 h-12 flex-shrink-0">
-          <Image
-            src={activity.imageUrl || ''}
-            alt={activity.title}
-            width={200}
-            height={150}
-            className="rounded-lg object-cover"
+          <img
+            src={activity.imageUrl}
+            alt=""
+            className="w-full h-full object-cover rounded"
             onError={handleImageError}
+            loading="lazy"
           />
         </div>
-      ) : (
-        <div className="w-[200px] h-[150px] bg-gray-200 rounded-lg flex items-center justify-center">
-          <span className="text-gray-500">画像を読み込めませんでした</span>
+      ) : activity.imageUrl && imageError ? (
+        <div className="relative w-12 h-12 flex-shrink-0 bg-gray-100 rounded flex items-center justify-center">
+          {isRetrying ? (
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400"></div>
+          ) : (
+            <button
+              onClick={handleRetryLoad}
+              className="text-xs text-gray-500 hover:text-gray-700 focus:outline-none"
+              title="画像を再読み込み"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+            </button>
+          )}
         </div>
-      )}
+      ) : null}
       <div className="flex-grow min-w-0">
         <div
           ref={contentRef}
@@ -417,11 +457,16 @@ const debounce = <T extends (...args: any[]) => any>(
   };
 };
 
-const DashboardClient = React.memo(() => {
+export default function DashboardClient() {
   const isMobile = useMediaQuery('(max-width: 768px)');
   const isTablet = useMediaQuery('(max-width: 1024px)');
+  const [userData, setUserData] = useState(initialUserData);
 
-  const [userData, setUserData] = useState<UserData>(initialUserData);
+  const { data: userData, isLoading: isUserLoading } = useQuery({
+    queryKey: ['userData'],
+    queryFn: fetchUserData
+  });
+
   const [activities, setActivities] = useState<Activity[]>([]);
   const [activityCounts, setActivityCounts] = useState({
     CREATE_CONTENT: 0,
@@ -441,8 +486,7 @@ const DashboardClient = React.memo(() => {
     return activities.slice(start, start + ITEMS_PER_PAGE);
   }, [activities, page]);
 
-  // ユーザーデータを取得する関数
-  const fetchUserData = async (userId: string): Promise<void> => {
+  const fetchUserData = useCallback(async () => {
     try {
       setIsLoading(true);
       
@@ -461,7 +505,7 @@ const DashboardClient = React.memo(() => {
       
       // APIからデータ取得
       try {
-        const response = await fetch(`/api/activities/user/${userId}`);
+        const response = await fetch(`/api/activities/user/${userData.id}`);
         
         if (!response.ok) {
           throw new Error(`API error: ${response.status}`);
@@ -470,18 +514,18 @@ const DashboardClient = React.memo(() => {
         const data = await response.json();
         
         if (data.success) {
-          updateUserDataFromAPI(data.data, userId);
+          updateUserDataFromAPI(data.data, userData.id);
         } else {
           throw new Error(data.error || 'Unknown error');
         }
       } catch (apiError) {
         console.error('APIからのデータ取得に失敗しました:', apiError);
-        updateUserDataFromLocal(localScore, localActivities, userId);
+        updateUserDataFromLocal(localScore, localActivities, userData.id);
       }
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [userData.id]);
 
   // APIデータでユーザー情報を更新
   const updateUserDataFromAPI = (data: { giverScore: number; activities: ActivityData[] }, userId: string) => {
@@ -559,14 +603,14 @@ const DashboardClient = React.memo(() => {
     300
   );
 
-  const fetchActivities = useCallback(async (userId: string): Promise<void> => {
+  const fetchActivities = useCallback(async (userId: string) => {
     if (isLoadingMore) return;
 
     try {
       setIsLoadingMore(true);
       setError(null);
       
-      const fetchOptions: RequestInit = {
+      const fetchOptions = {
         headers: {
           'Cache-Control': 'max-age=300',
           'Save-Data': 'on',
@@ -614,12 +658,8 @@ const DashboardClient = React.memo(() => {
       // エラー時にキャッシュからデータを読み込む
       const cachedData = localStorage.getItem('cachedActivities');
       if (cachedData) {
-        try {
-          const activities = JSON.parse(cachedData);
-          setActivities(activities);
-        } catch (parseError) {
-          console.error('キャッシュデータの解析に失敗しました:', parseError);
-        }
+        const activities = JSON.parse(cachedData);
+        setActivities(activities);
       }
     } finally {
       setIsLoadingMore(false);
@@ -640,18 +680,12 @@ const DashboardClient = React.memo(() => {
       localStorage.setItem('userId', newUserId);
     }
     
-    fetchUserData(newUserId);
-    fetchActivities(newUserId);
-  }, [page, fetchActivities]);
+    setUserData(prev => ({ ...prev, id: newUserId }));
+    void fetchUserData();
+  }, [fetchUserData]);
   
-  if (isLoading) {
-    return (
-      <DashboardLayout>
-        <div className="flex justify-center items-center min-h-[50vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-        </div>
-      </DashboardLayout>
-    );
+  if (isUserLoading) {
+    return <LoadingSpinner />;
   }
 
   return (
@@ -745,8 +779,4 @@ const DashboardClient = React.memo(() => {
       </main>
     </DashboardLayout>
   );
-});
-
-DashboardClient.displayName = 'DashboardClient';
-
-export default DashboardClient; 
+} 

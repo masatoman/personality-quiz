@@ -1,4 +1,6 @@
 import '@testing-library/jest-dom';
+import { RenderResult, RenderOptions } from '@testing-library/react';
+import { ReactElement } from 'react';
 
 // テスト用のカスタム型定義
 interface CustomMatchers<R = unknown> {
@@ -41,11 +43,37 @@ declare global {
       mockRejectedValue(value: any): Mock;
       mockClear(): void;
     }
+
+    interface CustomMatchers<R = unknown> {
+      toHaveNoViolations(): R;
+    }
   }
   
   // グローバルなモック関数の型を追加
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fetch: jest.Mock;
+}
+
+declare module '@testing-library/react' {
+  interface RenderOptions {
+    wrapper?: React.ComponentType<{ children: React.ReactNode }>;
+    initialState?: Record<string, unknown>;
+    store?: unknown;
+  }
+
+  type CustomRenderOptions = Omit<RenderOptions, 'queries'>;
+
+  interface CustomRender {
+    (ui: ReactElement, options?: CustomRenderOptions): RenderResult;
+  }
+
+  interface CustomSetup {
+    (setupFn: () => Promise<void>): void;
+  }
+
+  interface CustomTeardown {
+    (teardownFn: () => Promise<void>): void;
+  }
 }
 
 export {}; 
