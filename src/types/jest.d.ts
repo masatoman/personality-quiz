@@ -6,30 +6,52 @@ declare global {
   namespace jest {
     interface Matchers<R> {
       toBeInTheDocument(): R;
-      toHaveAttribute(attr: string, value?: string): R;
+      toHaveStyle(style: Record<string, unknown>): R;
+      toHaveClass(...classNames: string[]): R;
+      toHaveAttribute(attr: string, value?: unknown): R;
       toHaveTextContent(text: string | RegExp): R;
       toBeVisible(): R;
-      toHaveClass(className: string): R;
-      toHaveProperty(keyPath: string, value?: any): R;
+      toBeDisabled(): R;
+      toBeEnabled(): R;
+      toHaveValue(value: unknown): R;
+      toBeChecked(): R;
+      toBePartiallyChecked(): R;
+      toHaveFocus(): R;
+      toBeEmpty(): R;
+      toBeEmptyDOMElement(): R;
+      toBeInvalid(): R;
+      toBeRequired(): R;
+      toBeValid(): R;
+      toContainElement(element: HTMLElement | null): R;
+      toContainHTML(html: string): R;
+      toHaveAccessibleDescription(description?: string | RegExp): R;
+      toHaveAccessibleName(name?: string | RegExp): R;
+      toHaveDescription(text?: string | RegExp): R;
+      toHaveDisplayValue(value: string | RegExp | Array<string | RegExp>): R;
+      toHaveErrorMessage(text?: string | RegExp): R;
+      toHaveFormValues(values: Record<string, unknown>): R;
+      toBeInTheDOM(): R;
+      toHaveStyle(css: Record<string, any>): R;
+      toHaveProperty(keyPath: string, value?: unknown): R;
       toHaveLength(length: number): R;
-      toHaveBeenCalledWith(...args: any[]): R;
+      toHaveBeenCalledWith(...args: unknown[]): R;
       toHaveBeenCalledTimes(count: number): R;
       toHaveBeenCalled(): R;
-      toHaveBeenLastCalledWith(...args: any[]): R;
-      toHaveBeenNthCalledWith(nthCall: number, ...args: any[]): R;
-      toBe(expected: any): R;
-      toEqual(expected: any): R;
+      toHaveBeenLastCalledWith(...args: unknown[]): R;
+      toHaveBeenNthCalledWith(nthCall: number, ...args: unknown[]): R;
+      toBe(expected: unknown): R;
+      toEqual(expected: unknown): R;
       toBeDefined(): R;
       toBeNull(): R;
       toBeUndefined(): R;
       toBeTruthy(): R;
       toBeFalsy(): R;
-      toBeInstanceOf(expected: any): R;
+      toBeInstanceOf(expected: unknown): R;
       toBeGreaterThan(expected: number): R;
       toBeGreaterThanOrEqual(expected: number): R;
       toBeLessThan(expected: number): R;
       toBeLessThanOrEqual(expected: number): R;
-      toContain(expected: any): R;
+      toContain(expected: unknown): R;
       toMatch(expected: string | RegExp): R;
       toThrow(expected?: string | Error | RegExp): R;
       toBeCloseTo(expected: number, precision?: number): R;
@@ -39,23 +61,23 @@ declare global {
       assertions(count: number): void;
     }
 
-    interface MockInstance<T = any, Y extends any[] = any[]> {
+    interface MockInstance<T = unknown, Y extends unknown[] = unknown[]> {
       mockReturnValue(value: T): this;
       mockReturnValueOnce(value: T): this;
       mockImplementation(fn: (...args: Y) => T): this;
       mockImplementationOnce(fn: (...args: Y) => T): this;
       mockResolvedValue(value: Awaited<T>): this;
       mockResolvedValueOnce(value: Awaited<T>): this;
-      mockRejectedValue(value: any): this;
-      mockRejectedValueOnce(value: any): this;
+      mockRejectedValue(value: unknown): this;
+      mockRejectedValueOnce(value: unknown): this;
       mockClear(): void;
       mockReset(): void;
       mockRestore(): void;
     }
 
     function fn(): MockInstance;
-    function fn(implementation?: (...args: any[]) => any): MockInstance;
-    function spyOn<T extends object, M extends keyof T>(object: T, method: M): MockInstance<any, any[]>;
+    function fn(implementation?: (...args: unknown[]) => unknown): MockInstance;
+    function spyOn<T extends object, M extends keyof T>(object: T, method: M): MockInstance<unknown, unknown[]>;
     function clearAllMocks(): void;
     function resetAllMocks(): void;
     function restoreAllMocks(): void;
@@ -64,12 +86,12 @@ declare global {
   }
 
   interface ExpectStatic {
-    objectContaining(expected: object): any;
-    stringContaining(expected: string): any;
-    stringMatching(expected: string | RegExp): any;
-    arrayContaining(expected: any[]): any;
-    any(constructor: any): any;
-    anything(): any;
+    objectContaining(expected: object): unknown;
+    stringContaining(expected: string): unknown;
+    stringMatching(expected: string | RegExp): unknown;
+    arrayContaining(expected: unknown[]): unknown;
+    any(constructor: unknown): unknown;
+    anything(): unknown;
     assertions(count: number): void;
   }
 
@@ -82,16 +104,16 @@ declare global {
   }
 
   interface Global {
-    fetch: jest.Mock<Promise<any>> | any;
-    TextEncoder: any;
-    TextDecoder: any;
+    fetch: jest.Mock<Promise<unknown>>;
+    TextEncoder: typeof TextEncoder;
+    TextDecoder: typeof TextDecoder;
   }
 
-  // グローバルなfetch関数の型定義を修正
-  let fetch: jest.MockInstance<Promise<any>, [input: string | URL, init?: any]>;
+  let fetch: jest.MockInstance<Promise<unknown>, [input: string | URL, init?: RequestInit]>;
 }
 
-// これにより、Jest.Mockがグローバルスコープに確実に定義されます
-interface Mock extends Function, jest.MockInstance {}
+interface Mock<T = unknown> extends jest.MockInstance<T, unknown[]> {
+  (...args: unknown[]): T;
+}
 
 export {};
