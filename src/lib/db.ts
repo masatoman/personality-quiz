@@ -240,8 +240,8 @@ export function initDatabase() {
 }
 
 // メモリ内のモックデータ
-let mockResults: { id: number; type: PersonalityType; timestamp: string }[] = [];
-let mockStats: Stats = {
+const mockResults: { id: number; type: PersonalityType; timestamp: string }[] = [];
+const mockStats: Stats = {
   giver: { count: 10, percentage: 34 },
   matcher: { count: 7, percentage: 25 },
   taker: { count: 12, percentage: 41 },

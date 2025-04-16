@@ -1,12 +1,16 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useAuth } from '@/hooks/useAuth';
+import { useRouter } from 'next/navigation';
 import { 
-  LearningType, QuizResults, TabType 
+  LearningType, 
+  QuizResults, 
+  TabType,
+  PersonalityTypeInfo 
 } from '@/types/quiz';
 
 // 分割したコンポーネントをインポート
@@ -32,13 +36,19 @@ const ResultsClient: React.FC = () => {
   const [results, setResults] = useState<QuizResults | null>(null);
   const [selectedTab, setSelectedTab] = useState<TabType>('strengths');
   
-  const { user, signIn, loading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, signInWithGoogle } = useAuth();
   const { 
     savingResults, 
     saveSuccess, 
     saveError, 
     saveResultsToDatabase 
   } = useResultsSave();
+
+  const handleResultsSave = useCallback(async (results: QuizResults, userId: string) => {
+    if (results && !savingResults && userId) {
+      await saveResultsToDatabase(results, userId);
+    }
+  }, [savingResults, saveResultsToDatabase]);
 
   useEffect(() => {
     // URLパラメータから結果を取得
@@ -54,7 +64,7 @@ const ResultsClient: React.FC = () => {
           
           // ログイン済みの場合、結果を自動保存
           if (user) {
-            saveResultsToDatabase(parsedResults, user.id);
+            handleResultsSave(parsedResults, user.id);
           }
         } else {
           // 仮のデータ（実際のアプリではAPIから取得など）
@@ -77,18 +87,18 @@ const ResultsClient: React.FC = () => {
     }
     
     setLoading(false);
-  }, [searchParams, user]);
+  }, [searchParams, user, handleResultsSave]);
 
   useEffect(() => {
-    if (results && !savingResults && user) {
-      saveResultsToDatabase(results, user.id);
+    if (results && user) {
+      handleResultsSave(results, user.id);
     }
-  }, [results, savingResults, saveResultsToDatabase, user]);
+  }, [results, user, handleResultsSave]);
 
   // ログインプロンプトの処理
-  const handleLoginPrompt = () => {
-    if (signIn) signIn('google', { callbackUrl: window.location.href });
-  };
+  const handleLoginPrompt = useCallback(() => {
+    signInWithGoogle();
+  }, [signInWithGoogle]);
 
   // ローディング中
   if (loading || authLoading) {
@@ -151,7 +161,7 @@ const ResultsClient: React.FC = () => {
         <ResultsChart results={results} />
         
         {/* 次のステップコンポーネント */}
-        <NextSteps personalityType={personalityType} />
+        <NextSteps />
         
         {/* フッターコンポーネント */}
         <ResultsFooter />

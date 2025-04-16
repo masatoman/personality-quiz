@@ -6,40 +6,41 @@ const createJestConfig = nextJest({
   dir: './',
 });
 
-// Jestに渡すカスタム設定
-const config: Config = {
-  // テストファイルのパターンを指定
+const customJestConfig: Config = {
   testMatch: [
-    '**/__tests__/**/*.test.[jt]s?(x)',
-    '**/test/**/*.test.[jt]s?(x)',
+    '<rootDir>/src/**/*.unit.test.{ts,tsx}',
+    '<rootDir>/src/**/*.integration.test.{ts,tsx}'
   ],
-  // カバレッジの設定
-  coverageProvider: 'v8',
+  collectCoverage: true,
   collectCoverageFrom: [
-    'src/**/*.{js,jsx,ts,tsx}',
+    'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
-    '!src/**/*.stories.{js,jsx,ts,tsx}',
-    '!src/**/*.test.{js,jsx,ts,tsx}',
-    '!src/**/*.e2e.test.{js,jsx,ts,tsx}',
+    '!src/**/*.stories.{ts,tsx}',
+    '!src/**/*.test.{ts,tsx}',
+    '!src/**/__tests__/**',
+    '!src/**/__mocks__/**'
   ],
-  // テスト環境の設定
-  testEnvironment: 'jsdom',
-  // セットアップファイルの指定
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
-  // モジュールの名前解決設定
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-    '\\.(css|less|sass|scss)$': 'identity-obj-proxy',
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 90,
+      lines: 90,
+      statements: 90
+    }
   },
-  // テスト実行時に無視するパス
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1'
+  },
   modulePathIgnorePatterns: [
-    '<rootDir>/.next/',
     '<rootDir>/node_modules/',
+    '<rootDir>/.next/',
+    '<rootDir>/cypress/'
   ],
-  // テストタイムアウトの設定（ミリ秒）
-  testTimeout: 30000,
   verbose: true,
+  testTimeout: 30000
 };
 
 // createJestConfigを使用して、Next.jsの設定を非同期に読み込む
-export default createJestConfig(config); 
+export default createJestConfig(customJestConfig); 

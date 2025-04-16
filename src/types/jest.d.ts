@@ -55,7 +55,7 @@ declare global {
 
     function fn(): MockInstance;
     function fn(implementation?: (...args: any[]) => any): MockInstance;
-    function spyOn<T extends {}, M extends PropertyKey>(object: T, method: M): MockInstance<any, any[]>;
+    function spyOn<T extends object, M extends keyof T>(object: T, method: M): MockInstance<any, any[]>;
     function clearAllMocks(): void;
     function resetAllMocks(): void;
     function restoreAllMocks(): void;

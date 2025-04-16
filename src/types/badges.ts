@@ -1,6 +1,6 @@
 // バッジと達成システムの型定義
 
-import { ActivityType } from './learning';
+import { ActivityType, LearningActivity } from './learning';
 
 /**
  * バッジの種類を定義する型
@@ -18,18 +18,23 @@ export type BadgeType =
   | 'giver_champion';
 
 /**
+ * バッジのメタデータを定義する型
+ */
+export interface BadgeMetadata {
+  score?: number;
+  time_limit?: number;
+  unique_categories?: boolean;
+  [key: string]: number | boolean | undefined;
+}
+
+/**
  * バッジの要件を定義する型
  */
 export interface BadgeRequirement {
   activityType: ActivityType;
   count: number;
   condition?: 'consecutive' | 'total';
-  metadata?: {
-    score?: number;
-    time_limit?: number;
-    unique_categories?: boolean;
-    [key: string]: any;
-  };
+  metadata?: BadgeMetadata;
 }
 
 /**
@@ -85,11 +90,23 @@ export interface UserAchievement {
 }
 
 /**
+ * ユーザーの統計情報を定義する型
+ */
+export interface UserStats {
+  totalActivities: number;
+  completedActivities: number;
+  averageScore: number;
+  streak: number;
+  lastActivityDate: Date;
+  [key: string]: number | Date;
+}
+
+/**
  * イベントに基づくバッジ付与ルールを定義する型
  */
 export interface BadgeRule {
   badgeType: BadgeType;
-  condition: (activity: Record<string, any>, userStats: Record<string, any>) => boolean;
+  condition: (activity: LearningActivity, userStats: UserStats) => boolean;
   priority: number;  // 優先度（高いほど先に評価）
 }
 

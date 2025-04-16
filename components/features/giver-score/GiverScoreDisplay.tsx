@@ -2,12 +2,13 @@
 
 import { motion } from 'framer-motion';
 import { GiverScore } from '@/lib/score';
+import { Activity, DiagnosisResult } from '@/types/learning';
 
 type GiverScoreDisplayProps = {
   data: {
     score: GiverScore;
-    activities: any[];
-    diagnosis: any;
+    activities: Activity[];
+    diagnosis: DiagnosisResult;
   };
 };
 

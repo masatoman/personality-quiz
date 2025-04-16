@@ -193,4 +193,25 @@ export async function getUserActivities(userId: string, limit = 10) {
     console.error('活動ログ取得中にエラーが発生しました:', error);
     return [];
   }
-} 
+}
+
+interface ActivityStat {
+  total: number;
+  change: number;
+}
+
+interface ActivitySummaryData {
+  stats: {
+    contributions: ActivityStat;
+    points: ActivityStat;
+    streak: ActivityStat;
+  };
+}
+
+export const getActivityStats = async (): Promise<ActivitySummaryData> => {
+  const response = await fetch('/api/activity-stats');
+  if (!response.ok) {
+    throw new Error('Failed to fetch activity stats');
+  }
+  return response.json();
+}; 

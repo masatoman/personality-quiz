@@ -54,6 +54,7 @@ export interface PersonalityDescription {
     tips: string[];
     tools: string[];
   };
+  scenarios?: Scenario[];
 }
 
 export type TypeStats = {
@@ -114,7 +115,7 @@ export interface ResultsData {
 }
 
 // タブの種類
-export type TabType = 'overview' | 'strengths' | 'weaknesses' | 'tips';
+export type TabType = 'overview' | 'strengths' | 'weaknesses' | 'advice' | 'tools' | 'scenarios' | 'tips';
 
 // スコア変更オブジェクト
 export interface ScoreChange {

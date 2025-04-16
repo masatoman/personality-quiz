@@ -1,13 +1,13 @@
 import { unstable_cache } from 'next/cache';
 
-type CacheData = {
-  data: any;
+type CacheData<T> = {
+  data: T;
   timestamp: number;
 };
 
 const CACHE_TTL = 60 * 60 * 1000; // 1時間
 
-export async function getCache(key: string): Promise<any | null> {
+export async function getCache<T>(key: string): Promise<T | null> {
   try {
     const cached = await unstable_cache(
       async () => {
@@ -18,7 +18,7 @@ export async function getCache(key: string): Promise<any | null> {
 
     if (!cached) return null;
 
-    const cacheData = cached as CacheData;
+    const cacheData = cached as CacheData<T>;
     if (Date.now() - cacheData.timestamp > CACHE_TTL) {
       return null;
     }
@@ -30,9 +30,9 @@ export async function getCache(key: string): Promise<any | null> {
   }
 }
 
-export async function setCache(key: string, data: any): Promise<void> {
+export async function setCache<T>(key: string, data: T): Promise<void> {
   try {
-    const cacheData: CacheData = {
+    const cacheData: CacheData<T> = {
       data,
       timestamp: Date.now(),
     };

@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import { Noto_Sans_JP, M_PLUS_Rounded_1c } from 'next/font/google'
 import Navbar from '@/components/Navbar';
 import ThemeProviderClient from '@/components/ThemeProviderClient';
+import { AuthProvider } from '@/components/auth/AuthProvider';
 import dynamic from 'next/dynamic';
 
 // ErrorBoundaryをクライアントサイドのみで動作するようにする
@@ -40,17 +41,19 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning className="bg-background text-text-primary min-h-screen font-noto">
         <ThemeProviderClient>
-          <Navbar />
-          <main>
-            <ErrorBoundary
-              onError={(error, errorInfo) => {
-                console.error('Global error caught:', error);
-                // 分析サービスや監視システムにエラーを送信する場合はここで実装
-              }}
-            >
-              {children}
-            </ErrorBoundary>
-          </main>
+          <AuthProvider>
+            <Navbar />
+            <main>
+              <ErrorBoundary
+                onError={(error, errorInfo) => {
+                  console.error('Global error caught:', error);
+                  // 分析サービスや監視システムにエラーを送信する場合はここで実装
+                }}
+              >
+                {children}
+              </ErrorBoundary>
+            </main>
+          </AuthProvider>
         </ThemeProviderClient>
       </body>
     </html>

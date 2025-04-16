@@ -1,41 +1,22 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  FaBookOpen, 
-  FaPencilAlt, 
-  FaEye, 
-  FaExclamationTriangle,
-  FaArrowUp,
-  FaArrowDown,
-  FaMinus,
-  FaChartBar
-} from 'react-icons/fa';
-import LoadingState from '@/components/common/LoadingState';
-import EmptyState from '@/components/common/EmptyState';
+import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
+import { getActivityStats } from '@/lib/api';
 
 // アクティビティ統計情報の型定義
-interface ActivityStats {
-  createdMaterials: number;
-  totalPoints: number;
-  viewedMaterials: number;
-  // 前回との比較用
-  createdMaterialsChange: number;
-  totalPointsChange: number;
-  viewedMaterialsChange: number;
-}
-
 interface ActivityStat {
-  id: string;
-  title: string;
-  value: number;
-  change?: number;
+  total: number;
+  change: number;
 }
 
 interface ActivitySummaryData {
-  stats: ActivityStat[];
+  stats: {
+    contributions: ActivityStat;
+    points: ActivityStat;
+    streak: ActivityStat;
+  };
 }
 
 // コンポーネントのプロパティ
@@ -51,59 +32,46 @@ interface ActivitySummaryCardProps {
 }
 
 // 活動サマリーコンポーネント
-export const ActivitySummary: React.FC<ActivitySummaryProps> = ({ userId }) => {
+export const ActivitySummary: React.FC = () => {
   const { data, isLoading, error } = useQuery<ActivitySummaryData>({
-    queryKey: ['activitySummary', userId],
-    queryFn: async () => {
-      const response = await fetch(`/api/activity/summary/${userId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch activity summary');
-      }
-      const data: ActivitySummaryData = await response.json();
-      return data;
-    },
-    staleTime: 5 * 60 * 1000, // 5分
-    gcTime: 30 * 60 * 1000, // 30分
+    queryKey: ['activityStats'],
+    queryFn: getActivityStats
   });
 
-  const renderChange = useMemo(() => (value: number) => {
-    const isPositive = value > 0;
-    return (
-      <motion.span
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className={`text-sm ${isPositive ? 'text-green-500' : 'text-red-500'}`}
-      >
-        {isPositive ? '+' : ''}{value}%
-      </motion.span>
-    );
-  }, []);
+  const stats = useMemo(() => {
+    if (!data) return null;
+    return [
+      {
+        title: '投稿数',
+        value: data.stats.contributions.total,
+        change: data.stats.contributions.change
+      },
+      {
+        title: 'ポイント',
+        value: data.stats.points.total,
+        change: data.stats.points.change
+      },
+      {
+        title: '連続日数',
+        value: data.stats.streak.total,
+        change: data.stats.streak.change
+      }
+    ];
+  }, [data]);
 
   if (isLoading) {
-    return (
-      <div className="animate-pulse">
-        <div className="h-32 bg-gray-200 rounded-lg"></div>
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
   if (error) {
-    return (
-      <div className="text-red-500">
-        {error instanceof Error ? error.message : '活動サマリーの取得に失敗しました'}
-      </div>
-    );
-  }
-
-  if (!data) {
-    return null;
+    return <div>Error loading activity summary</div>;
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {data.stats.map((stat: ActivityStat) => (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {stats?.map((stat) => (
         <ActivitySummaryCard
-          key={stat.id}
+          key={stat.title}
           title={stat.title}
           value={stat.value}
           change={stat.change}
@@ -113,36 +81,20 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({ userId }) => {
   );
 };
 
-const ActivitySummaryCard = ({ title, value, change }: ActivitySummaryCardProps) => {
-  // renderChangeをコンポーネント内で定義
-  const renderChange = (value: number) => {
-    const isPositive = value > 0;
-    return (
-      <motion.span
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className={`text-sm ${isPositive ? 'text-green-500' : 'text-red-500'}`}
-      >
-        {isPositive ? '+' : ''}{value}%
-      </motion.span>
-    );
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
-      className="p-4 bg-white rounded-lg shadow-sm"
-    >
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <div className="mt-2 text-2xl font-bold">{value}</div>
-      {change !== undefined && renderChange(change)}
-    </motion.div>
-  );
-};
+const ActivitySummaryCard: React.FC<ActivitySummaryCardProps> = ({ title, value, change }) => (
+  <div className="bg-white p-4 rounded-lg shadow">
+    <h3 className="text-sm font-medium text-gray-500">{title}</h3>
+    <div className="mt-2 flex items-baseline">
+      <p className="text-2xl font-semibold text-gray-900">{value}</p>
+      {change && (
+        <p className={`ml-2 text-sm ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+          {change >= 0 ? '+' : ''}{change}%
+        </p>
+      )}
+    </div>
+  </div>
+);
 
 ActivitySummaryCard.displayName = 'ActivitySummaryCard';
-ActivitySummary.displayName = 'ActivitySummary';
 
 export default ActivitySummary; 

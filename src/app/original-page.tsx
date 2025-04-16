@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PersonalityType } from '@/types/quiz';
-import html2canvas from 'html2canvas';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -126,10 +125,6 @@ const questions = [
 type StatType = {
   count: number;
   percentage: number;
-};
-
-type TypeTotals = {
-  [key in PersonalityType]: StatType;
 };
 
 type PersonalityDescription = {

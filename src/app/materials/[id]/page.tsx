@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import { FaStar, FaRegStar, FaUser, FaClock, FaBook, FaThumbsUp, FaComment, FaArrowLeft, FaChevronRight } from 'react-icons/fa';
-import { FaRegThumbsUp, FaBookmark, FaRegBookmark } from 'react-icons/fa';
+import { FaStar, FaRegStar, FaUser, FaClock, FaArrowLeft, FaChevronRight } from 'react-icons/fa';
+import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
 
 // 教材データの型定義
 type Material = {
@@ -52,8 +53,8 @@ type RelatedMaterial = {
 
 const MaterialDetailPage = () => {
   const params = useParams();
-  const router = useRouter();
   const materialId = params.id as string;
+  const router = useRouter();
 
   const [material, setMaterial] = useState<Material | null>(null);
   const [loading, setLoading] = useState(true);
@@ -361,11 +362,13 @@ const MaterialDetailPage = () => {
                   <div className="font-medium">{material.author.name}</div>
                   <div className="text-sm text-gray-500">{material.author.type}タイプ</div>
                 </div>
-                <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
-                  <img 
+                <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden relative">
+                  <Image 
                     src={material.author.avatar || '/avatars/default.png'} 
                     alt={material.author.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="48px"
+                    className="object-cover"
                   />
                 </div>
               </div>
@@ -464,11 +467,13 @@ const MaterialDetailPage = () => {
               {feedbacks.map((feedback) => (
                 <div key={feedback.id} className="border-b border-gray-200 pb-6 last:border-b-0">
                   <div className="flex items-start">
-                    <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden mr-4">
-                      <img 
+                    <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden relative mr-4">
+                      <Image 
                         src={feedback.user_avatar || '/avatars/default.png'}
                         alt={feedback.user_name}
-                        className="w-full h-full object-cover"
+                        fill
+                        sizes="40px"
+                        className="object-cover"
                       />
                     </div>
                     <div className="flex-1">

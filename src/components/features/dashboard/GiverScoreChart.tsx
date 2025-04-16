@@ -89,7 +89,7 @@ const GiverScoreChart: React.FC<GiverScoreChartProps> = ({ userId }) => {
     const data: GiverScoreHistoryItem[] = [];
     const now = new Date();
     const startDate = getDateBefore(span);
-    let currentDate = new Date(startDate);
+    const currentDate = new Date();
     
     // 基準となるスコア値
     let baseScore = 65;

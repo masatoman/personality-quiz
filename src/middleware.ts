@@ -27,12 +27,11 @@ export function middleware(request: NextRequest) {
     const authToken = request.cookies.get('auth-token');
 
     // 認証情報が不足している場合
-    if (!session && !authToken) {
+    if (!session || !authToken) {
       console.log(`🔒 未認証アクセスを検出: ${path}`);
       
-      const url = request.nextUrl.clone();
-      url.pathname = '/login';
-      url.search = `?redirect=${encodeURIComponent(path)}`;
+      const url = new URL('/login', request.url);
+      url.searchParams.set('redirect', path);
       
       // リダイレクトレスポンスにセキュリティヘッダーを追加
       const response = NextResponse.redirect(url);

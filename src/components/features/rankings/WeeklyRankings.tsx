@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useState, useTransition } from 'react';
-import { FixedSizeList as List } from 'react-window';
+import { FixedSizeList as List, ListOnScrollProps } from 'react-window';
 import { twMerge } from 'tailwind-merge';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -16,6 +16,10 @@ interface WeeklyRankingsProps {
 const ITEM_SIZE = 72; // 各ランキングアイテムの高さ
 const WINDOW_HEIGHT = 600; // リストの表示高さ
 
+interface ScrollTimeoutId {
+  timeoutId?: number;
+}
+
 function WeeklyRankingsBase({
   rankings,
   isLoading = false,
@@ -23,17 +27,26 @@ function WeeklyRankingsBase({
 }: WeeklyRankingsProps) {
   const [isScrolling, setIsScrolling] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const scrollTimeoutRef = React.useRef<ScrollTimeoutId>({});
 
-  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+  const handleScroll = useCallback((props: ListOnScrollProps) => {
     if (!isScrolling) {
       setIsScrolling(true);
     }
     // スクロール停止後200msでisScrollingをfalseに戻す
-    clearTimeout((handleScroll as any).timeoutId);
-    (handleScroll as any).timeoutId = setTimeout(() => {
+    clearTimeout(scrollTimeoutRef.current.timeoutId);
+    scrollTimeoutRef.current.timeoutId = window.setTimeout(() => {
       setIsScrolling(false);
     }, 200);
   }, [isScrolling]);
+
+  React.useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current.timeoutId) {
+        clearTimeout(scrollTimeoutRef.current.timeoutId);
+      }
+    };
+  }, []);
 
   if (isLoading) {
     return (

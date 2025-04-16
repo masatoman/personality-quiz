@@ -1,12 +1,23 @@
 'use client';
 
 import React from 'react';
-import { TabType } from '@/types/quiz';
+import { TabType, PersonalityDescription } from '@/types/quiz';
 
 // タブコンテンツのプロパティ型定義
 interface ResultsTabContentProps {
   selectedTab: TabType;
-  personalityType: any; // 後でより詳細な型定義にする
+  personalityType: PersonalityDescription;
+}
+
+interface Tool {
+  name: string;
+  description: string;
+}
+
+interface Scenario {
+  scenario: string;
+  approach: string;
+  effectiveness_rate: number;
 }
 
 // 結果タブコンテンツコンポーネント
@@ -37,7 +48,7 @@ const ResultsTabContent: React.FC<ResultsTabContentProps> = ({ selectedTab, pers
       
       {selectedTab === 'advice' && (
         <ul className="space-y-2">
-          {personalityType.learning_advice.tips.map((tip: string, index: number) => (
+          {personalityType.learningAdvice.tips.map((tip: string, index: number) => (
             <li key={index} className="flex items-start">
               <span className="text-blue-500 mr-2">•</span>
               <span>{tip}</span>
@@ -48,10 +59,9 @@ const ResultsTabContent: React.FC<ResultsTabContentProps> = ({ selectedTab, pers
       
       {selectedTab === 'tools' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {personalityType.learning_advice.tools.map((tool: any, index: number) => (
+          {personalityType.learningAdvice.tools.map((tool: string, index: number) => (
             <div key={index} className="border rounded-lg p-4">
-              <h3 className="font-bold mb-1">{tool.name}</h3>
-              <p className="text-sm text-gray-600">{tool.description}</p>
+              <h3 className="font-bold mb-1">{tool}</h3>
             </div>
           ))}
         </div>
@@ -59,7 +69,7 @@ const ResultsTabContent: React.FC<ResultsTabContentProps> = ({ selectedTab, pers
       
       {selectedTab === 'scenarios' && (
         <div className="space-y-6">
-          {personalityType.scenarios.map((scenario: any, index: number) => (
+          {personalityType.scenarios?.map((scenario: Scenario, index: number) => (
             <div key={index} className="border-l-4 border-blue-500 pl-4 py-2">
               <h3 className="font-bold text-blue-800 mb-2">{scenario.scenario}</h3>
               <p className="mb-2">{scenario.approach}</p>

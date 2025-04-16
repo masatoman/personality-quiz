@@ -1,3 +1,14 @@
+import { ActivityType } from './learning';
+
+export interface ActivityDetails {
+  resourceId?: string;
+  resourceTitle?: string;
+  score?: number;
+  progress?: number;
+  feedback?: string;
+  [key: string]: string | number | undefined;
+}
+
 export interface DashboardData {
   summary: {
     createdMaterials: number;
@@ -9,13 +20,13 @@ export interface DashboardData {
     score: number;
   }>;
   activityDistribution: Array<{
-    type: string;
+    type: ActivityType;
     percentage: number;
   }>;
   activities: {
     id: string;
-    type: string;
+    type: ActivityType;
     timestamp: string;
-    details: Record<string, any>;
+    details: ActivityDetails;
   }[];
 } 

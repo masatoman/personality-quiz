@@ -1,18 +1,28 @@
 -- auth スキーマの作成（Supabase Auth 用）
--- すでにSupabaseに存在するため、コメントアウト
--- CREATE SCHEMA IF NOT EXISTS auth;
--- COMMENT ON SCHEMA auth IS 'スキーマに含まれるのは認証関連の情報です';
+CREATE SCHEMA IF NOT EXISTS auth;
+COMMENT ON SCHEMA auth IS 'スキーマに含まれるのは認証関連の情報です';
+
+-- auth.uid()関数の作成
+CREATE OR REPLACE FUNCTION auth.uid() RETURNS UUID AS $$
+BEGIN
+  RETURN COALESCE(
+    current_setting('request.jwt.claim.sub', true),
+    current_setting('request.jwt.claims', true)::json->>'sub'
+  )::UUID;
+EXCEPTION
+  WHEN OTHERS THEN
+    RETURN NULL::UUID;
+END;
+$$ LANGUAGE plpgsql STABLE;
 
 -- storage スキーマの作成（Supabase Storage 用）
--- すでにSupabaseに存在するため、コメントアウト
--- CREATE SCHEMA IF NOT EXISTS storage;
--- COMMENT ON SCHEMA storage IS 'スキーマに含まれるのはファイルストレージ関連のオブジェクトです';
+CREATE SCHEMA IF NOT EXISTS storage;
+COMMENT ON SCHEMA storage IS 'スキーマに含まれるのはファイルストレージ関連のオブジェクトです';
 
 -- RLSポリシーを適用するための役割
--- すでにSupabaseに存在するため、コメントアウト
--- CREATE ROLE anon;
--- CREATE ROLE authenticated;
--- CREATE ROLE service_role;
+CREATE ROLE anon;
+CREATE ROLE authenticated;
+CREATE ROLE service_role;
 
 -- テーブル定義開始
 

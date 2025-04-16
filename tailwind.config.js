@@ -77,18 +77,10 @@ module.exports = {
           DEFAULT: '#D97706',
           dark: '#B45309',
         },
-        'success': '#10B981',
-        'warning': '#F97316',
-        'error': '#EF4444',
-        'surface': {
-          light: '#F9FAFB',
-          DEFAULT: '#F3F4F6',
-          dark: '#E5E7EB',
-        },
         primary: {
-          DEFAULT: 'var(--color-primary)',
-          light: 'var(--color-primary-light)',
-          dark: 'var(--color-primary-dark)',
+          DEFAULT: '#0056b3',
+          light: '#007bff',
+          dark: '#004085',
         },
         supporter: {
           DEFAULT: 'var(--color-supporter)',
@@ -118,9 +110,9 @@ module.exports = {
           dark: 'var(--color-accent-dark)',
         },
         secondary: {
-          DEFAULT: 'var(--color-secondary)',
-          light: 'var(--color-secondary-light)',
-          dark: 'var(--color-secondary-dark)',
+          DEFAULT: '#6c757d',
+          light: '#868e96',
+          dark: '#343a40',
         },
         neutral: {
           DEFAULT: 'var(--color-neutral)',
@@ -132,6 +124,16 @@ module.exports = {
           100: 'var(--color-base-100)',
           200: 'var(--color-base-200)',
           300: 'var(--color-base-300)',
+        },
+        success: {
+          DEFAULT: '#28a745',
+          light: '#34ce57',
+          dark: '#1e7e34',
+        },
+        error: {
+          DEFAULT: '#dc3545',
+          light: '#e4606d',
+          dark: '#bd2130',
         },
       },
       fontFamily: {
