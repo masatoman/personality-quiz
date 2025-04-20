@@ -1,10 +1,10 @@
 import { query } from './db';
 import { ActivityType, ACTIVITY_POINTS, GIVER_IMPACT, Activity } from '@/types/activity';
-
-// ローカルモードで動作する場合のファイルパスを設定
+import { FileSystemError } from '@/types/errors';
 import fs from 'fs';
 import path from 'path';
 
+// ローカルモードで動作する場合のファイルパスを設定
 const ACTIVITIES_FILE = path.join(process.cwd(), 'data', 'activities.json');
 const GIVER_SCORES_FILE = path.join(process.cwd(), 'data', 'giver_scores.json');
 
@@ -17,15 +17,19 @@ export async function logActivity(
   try {
     const points = ACTIVITY_POINTS[activityType];
     const giverImpact = GIVER_IMPACT[activityType];
+
+    if (points === undefined || giverImpact === undefined) {
+      console.error('アクティビティタイプに対応するポイントまたはギバーインパクトが未定義です');
+      return false;
+    }
+
     const giverScoreChange = Math.round(points * giverImpact);
 
-    // データベースへの記録を試みる
     try {
       // 1. アクティビティログの記録
       await query(
         `INSERT INTO activities (user_id, activity_type, reference_id, points)
-         VALUES ($1, $2, $3, $4)
-         RETURNING id`,
+         VALUES ($1, $2, $3, $4)`,
         [userId, activityType, referenceId || null, points]
       );
 
@@ -49,15 +53,14 @@ export async function logActivity(
       );
 
       return true;
-    } catch (dbError) {
-      console.error('データベースへの記録に失敗しました:', dbError);
+    } catch (error: unknown) {
+      console.error('データベースへの記録に失敗しました:', error instanceof Error ? error.message : '不明なエラー');
       console.log('ローカルファイルに保存します');
       
-      // ローカルファイルに保存
       return saveActivityLocally(userId, activityType, points, giverScoreChange, referenceId);
     }
-  } catch (error) {
-    console.error('アクティビティログの記録中にエラーが発生しました:', error);
+  } catch (error: unknown) {
+    console.error('アクティビティログの記録中にエラーが発生しました:', error instanceof Error ? error.message : '不明なエラー');
     return false;
   }
 }
@@ -82,10 +85,10 @@ function saveActivityLocally(
     try {
       if (fs.existsSync(ACTIVITIES_FILE)) {
         const data = fs.readFileSync(ACTIVITIES_FILE, 'utf-8');
-        activities = JSON.parse(data);
+        activities = JSON.parse(data) as Activity[];
       }
-    } catch (readError) {
-      console.error('アクティビティファイルの読み込みに失敗しました:', readError);
+    } catch (error: unknown) {
+      console.error('アクティビティファイルの読み込みに失敗しました:', error instanceof Error ? error.message : '不明なエラー');
       activities = [];
     }
 
@@ -106,10 +109,10 @@ function saveActivityLocally(
     try {
       if (fs.existsSync(GIVER_SCORES_FILE)) {
         const data = fs.readFileSync(GIVER_SCORES_FILE, 'utf-8');
-        giverScores = JSON.parse(data);
+        giverScores = JSON.parse(data) as Record<string, number>;
       }
-    } catch (readError) {
-      console.error('ギバースコアファイルの読み込みに失敗しました:', readError);
+    } catch (error: unknown) {
+      console.error('ギバースコアファイルの読み込みに失敗しました:', error instanceof Error ? error.message : '不明なエラー');
       giverScores = {};
     }
 
@@ -117,8 +120,12 @@ function saveActivityLocally(
     fs.writeFileSync(GIVER_SCORES_FILE, JSON.stringify(giverScores, null, 2));
 
     return true;
-  } catch (error) {
-    console.error('ローカルファイルへの保存に失敗しました:', error);
+  } catch (error: unknown) {
+    if (error instanceof FileSystemError) {
+      console.error('ファイルシステムエラー:', error.message);
+    } else {
+      console.error('ローカルファイルへの保存に失敗しました:', error instanceof Error ? error.message : '不明なエラー');
+    }
     return false;
   }
 }
@@ -126,37 +133,30 @@ function saveActivityLocally(
 // ユーザーのギバースコアを取得
 export async function getGiverScore(userId: string): Promise<number> {
   try {
-    // データベースからのスコア取得を試みる
     try {
-      const result = await query(
+      const result = await query<{ score: number }>(
         `SELECT score FROM giver_scores WHERE user_id = $1`,
         [userId]
       );
       
-      if (result.rows.length > 0) {
-        return result.rows[0].score;
-      }
+      return result.rows[0]?.score ?? 0;
+    } catch (error: unknown) {
+      console.error('データベースからのスコア取得に失敗しました:', error instanceof Error ? error.message : '不明なエラー');
       
-      // レコードが見つからない場合は0を返す
-      return 0;
-    } catch (dbError) {
-      console.error('データベースからのスコア取得に失敗しました:', dbError);
-      
-      // ローカルファイルからの取得を試みる
       try {
         if (fs.existsSync(GIVER_SCORES_FILE)) {
           const data = fs.readFileSync(GIVER_SCORES_FILE, 'utf-8');
-          const giverScores: Record<string, number> = JSON.parse(data);
-          return giverScores[userId] || 0;
+          const giverScores = JSON.parse(data) as Record<string, number>;
+          return giverScores[userId] ?? 0;
         }
-      } catch (readError) {
-        console.error('ギバースコアファイルの読み込みに失敗しました:', readError);
+      } catch (error: unknown) {
+        console.error('ギバースコアファイルの読み込みに失敗しました:', error instanceof Error ? error.message : '不明なエラー');
       }
       
       return 0;
     }
-  } catch (error) {
-    console.error('ギバースコアの取得中にエラーが発生しました:', error);
+  } catch (error: unknown) {
+    console.error('ギバースコアの取得中にエラーが発生しました:', error instanceof Error ? error.message : '不明なエラー');
     return 0;
   }
 }
@@ -164,9 +164,8 @@ export async function getGiverScore(userId: string): Promise<number> {
 // ユーザーのアクティビティ履歴を取得
 export async function getUserActivities(userId: string, limit = 10): Promise<Activity[]> {
   try {
-    // データベースからのアクティビティ取得を試みる
     try {
-      const result = await query(
+      const result = await query<Activity>(
         `SELECT * FROM activities 
          WHERE user_id = $1
          ORDER BY created_at DESC
@@ -175,28 +174,27 @@ export async function getUserActivities(userId: string, limit = 10): Promise<Act
       );
       
       return result.rows;
-    } catch (dbError) {
-      console.error('データベースからのアクティビティ取得に失敗しました:', dbError);
+    } catch (error: unknown) {
+      console.error('データベースからのアクティビティ取得に失敗しました:', error instanceof Error ? error.message : '不明なエラー');
       
-      // ローカルファイルからの取得を試みる
       try {
         if (fs.existsSync(ACTIVITIES_FILE)) {
           const data = fs.readFileSync(ACTIVITIES_FILE, 'utf-8');
-          const activities: Activity[] = JSON.parse(data);
+          const activities = JSON.parse(data) as Activity[];
           return activities
-            .filter((activity: Activity) => activity.userId === userId)
-            .sort((a: Activity, b: Activity) => 
+            .filter(activity => activity.userId === userId)
+            .sort((a, b) => 
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             .slice(0, limit);
         }
-      } catch (readError) {
-        console.error('アクティビティファイルの読み込みに失敗しました:', readError);
+      } catch (error: unknown) {
+        console.error('アクティビティファイルの読み込みに失敗しました:', error instanceof Error ? error.message : '不明なエラー');
       }
       
       return [];
     }
-  } catch (error) {
-    console.error('アクティビティの取得中にエラーが発生しました:', error);
+  } catch (error: unknown) {
+    console.error('アクティビティの取得中にエラーが発生しました:', error instanceof Error ? error.message : '不明なエラー');
     return [];
   }
 } 

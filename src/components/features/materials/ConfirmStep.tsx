@@ -11,11 +11,33 @@ interface BasicInfo {
   coverImage?: string;
 }
 
+// コンテンツの型定義
+interface TextContent {
+  text: string;
+}
+
+interface ImageContent {
+  url: string;
+  caption?: string;
+}
+
+interface VideoContent {
+  url: string;
+  caption?: string;
+}
+
+interface QuizContent {
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  explanation?: string;
+}
+
 // コンテンツセクションの型定義
 interface ContentSection {
   id: string;
   type: 'text' | 'image' | 'video' | 'quiz';
-  content: any;
+  content: TextContent | ImageContent | VideoContent | QuizContent;
 }
 
 // 設定情報の型定義

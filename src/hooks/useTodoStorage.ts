@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import type { Task } from '@/types/todo';
 
 const STORAGE_KEY = 'todo-tasks';
-const BATCH_SIZE = 50; // 一度に処理するタスク数
 
 interface StoredTask extends Omit<Task, 'createdAt' | 'dueDate'> {
   createdAt: string;
@@ -21,6 +20,27 @@ interface UseTodoStorageReturn {
   completedPoints: number;
 }
 
+// StoredTaskの配列かどうかを型チェック
+function isStoredTaskArray(data: unknown): data is StoredTask[] {
+  if (!Array.isArray(data)) return false;
+  
+  return data.every(item => {
+    if (typeof item !== 'object' || item === null) return false;
+    
+    const task = item as StoredTask;
+    return (
+      typeof task.id === 'string' &&
+      typeof task.title === 'string' &&
+      typeof task.description === 'string' &&
+      typeof task.points === 'number' &&
+      (task.type === 'custom' || task.type === 'suggested') &&
+      typeof task.createdAt === 'string' &&
+      (task.dueDate === null || typeof task.dueDate === 'string') &&
+      typeof task.completed === 'boolean'
+    );
+  });
+}
+
 export function useTodoStorage(): UseTodoStorageReturn {
   const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -31,16 +51,25 @@ export function useTodoStorage(): UseTodoStorageReturn {
         const storedTasks = localStorage.getItem(STORAGE_KEY);
         if (!storedTasks) return;
 
-        const parsedTasks = JSON.parse(storedTasks) as StoredTask[];
-        const convertedTasks: Task[] = parsedTasks.map(task => ({
+        const parsedData = JSON.parse(storedTasks);
+        if (!isStoredTaskArray(parsedData)) {
+          console.error('Invalid data format in localStorage');
+          return;
+        }
+
+        const convertedTasks: Task[] = parsedData.map(task => ({
           ...task,
           createdAt: new Date(task.createdAt),
           dueDate: task.dueDate ? new Date(task.dueDate) : undefined
         }));
 
         setTasks(convertedTasks);
-      } catch (error) {
-        console.error('Failed to load tasks:', error);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error('Failed to load tasks:', error.message);
+        } else {
+          console.error('Failed to load tasks: Unknown error');
+        }
       }
     };
 
@@ -56,8 +85,12 @@ export function useTodoStorage(): UseTodoStorageReturn {
         dueDate: task.dueDate?.toISOString() ?? null
       }));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(storedTasks));
-    } catch (error) {
-      console.error('Failed to save tasks:', error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Failed to save tasks:', error.message);
+      } else {
+        console.error('Failed to save tasks: Unknown error');
+      }
     }
   }, [tasks]);
 

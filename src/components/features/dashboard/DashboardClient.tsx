@@ -11,6 +11,7 @@ import { GiverScoreDisplay } from '@/components/features/giver-score/GiverScoreD
 import { FaChartLine, FaCalendarAlt, FaExclamationTriangle } from 'react-icons/fa';
 import { useQuery } from '@tanstack/react-query';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import type { User } from '@/types/user';
 
 interface ActivitySummaryProps {
   createdMaterialsCount: number;
@@ -62,6 +63,12 @@ const initialUserData: UserData = {
   progressPercentage: 0,
   personalityType: 'matcher',
 };
+
+interface UserResponse {
+  data: User;
+  success: boolean;
+  error?: string;
+}
 
 const ActivitySummaryComponent = React.memo<ActivitySummaryProps>(({
   createdMaterialsCount,
@@ -457,37 +464,48 @@ const debounce = <T extends (...args: any[]) => any>(
   };
 };
 
+const fetchUserData = async (): Promise<User> => {
+  const response = await fetch('/api/user');
+  if (!response.ok) {
+    throw new Error('Failed to fetch user data');
+  }
+  const data: UserResponse = await response.json();
+  return data.data;
+};
+
 export default function DashboardClient() {
   const isMobile = useMediaQuery('(max-width: 768px)');
   const isTablet = useMediaQuery('(max-width: 1024px)');
-  const [localUserData, setLocalUserData] = useState(initialUserData);
 
-  const { data: userData, isLoading: isUserLoading } = useQuery({
-    queryKey: ['userData'],
-    queryFn: async () => {
-      try {
-        const response = await fetch('/api/user');
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-        return response.json();
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        return initialUserData;
-      }
+  const [error, setError] = useState<Error | null>(null);
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchUserData = async (): Promise<User> => {
+    const response = await fetch('/api/user');
+    if (!response.ok) {
+      throw new Error('Failed to fetch user data');
     }
+    const data: UserResponse = await response.json();
+    return data.data;
+  };
+
+  const {
+    data: userData,
+    error: userError,
+    isLoading: isUserLoading
+  } = useQuery<User, Error>({
+    queryKey: ['userData'],
+    queryFn: fetchUserData
   });
 
-  const [activities, setActivities] = useState<Activity[]>([]);
   const [activityCounts, setActivityCounts] = useState({
     CREATE_CONTENT: 0,
     PROVIDE_FEEDBACK: 0,
     CONSUME_CONTENT: 0,
     COMPLETE_QUIZ: 0
   });
-  const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [error, setError] = useState<ErrorState | null>(null);
   const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 20;
 
@@ -497,46 +515,28 @@ export default function DashboardClient() {
     return activities.slice(start, start + ITEMS_PER_PAGE);
   }, [activities, page]);
 
-  const fetchUserData = useCallback(async () => {
+  const fetchActivities = async (userId: string) => {
+    setIsLoading(true);
+    setError(null);
     try {
-      setIsLoading(true);
-      
-      // ローカルストレージからデータを取得
-      const localScore = parseInt(localStorage.getItem('giverScore') || '0', 10);
-      const localActivitiesStr = localStorage.getItem('activities');
-      
-      let localActivities: ActivityData[] = [];
-      if (localActivitiesStr) {
-        try {
-          localActivities = JSON.parse(localActivitiesStr);
-        } catch (error) {
-          console.error('ローカルストレージからの活動データの解析に失敗しました:', error);
-        }
+      const response = await fetch(`/api/activities/user/${userId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch activities');
       }
-      
-      // APIからデータ取得
-      try {
-        const response = await fetch(`/api/activities/user/${userData.id}`);
-        
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.success) {
-          updateUserDataFromAPI(data.data, userData.id);
-        } else {
-          throw new Error(data.error || 'Unknown error');
-        }
-      } catch (apiError) {
-        console.error('APIからのデータ取得に失敗しました:', apiError);
-        updateUserDataFromLocal(localScore, localActivities, userData.id);
-      }
+      const data = await response.json();
+      setActivities(data.activities);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Unknown error occurred'));
     } finally {
       setIsLoading(false);
     }
-  }, [userData.id]);
+  };
+
+  useEffect(() => {
+    if (userData?.id) {
+      fetchActivities(userData.id);
+    }
+  }, [userData?.id]);
 
   // APIデータでユーザー情報を更新
   const updateUserDataFromAPI = (data: { giverScore: number; activities: ActivityData[] }, userId: string) => {
@@ -609,74 +609,6 @@ export default function DashboardClient() {
           setActivityCounts(counts);
   };
 
-  const [debouncedFetch] = useDebounce(
-    (userId: string) => fetchActivities(userId),
-    300
-  );
-
-  const fetchActivities = useCallback(async (userId: string) => {
-    if (isLoadingMore) return;
-
-    try {
-      setIsLoadingMore(true);
-      setError(null);
-      
-      const fetchOptions = {
-        headers: {
-          'Cache-Control': 'max-age=300',
-          'Save-Data': 'on',
-          'Accept-Encoding': 'gzip, deflate'
-        }
-      };
-      
-      const response = await fetch(
-        `/api/activities/user/${userId}?page=${page}&limit=${ITEMS_PER_PAGE}`,
-        fetchOptions
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'データの取得に失敗しました');
-      }
-      
-      const data = await response.json();
-      if (data.success) {
-        setActivities(prevActivities => {
-          const newActivities = [...prevActivities, ...data.activities];
-          // 重複を除去し、最新のデータを保持
-          const uniqueActivities = Array.from(
-            new Map(newActivities.map(item => [item.id, item])).values()
-          );
-          // メモリ使用量を制限（最新500件のみ保持）
-          return uniqueActivities.slice(-500);
-        });
-
-        // キャッシュの更新
-        if (page === 1) {
-          localStorage.setItem('cachedActivities', JSON.stringify(data.activities.slice(0, 20)));
-          localStorage.setItem('activitiesLastUpdated', new Date().toISOString());
-        }
-      } else {
-        throw new Error(data.error || 'Unknown error');
-      }
-    } catch (error) {
-      console.error('アクティビティの取得に失敗しました:', error);
-      setError({
-        message: error instanceof Error ? error.message : 'データの取得に失敗しました',
-        code: 'FETCH_ACTIVITIES_ERROR'
-      });
-
-      // エラー時にキャッシュからデータを読み込む
-      const cachedData = localStorage.getItem('cachedActivities');
-      if (cachedData) {
-        const activities = JSON.parse(cachedData);
-        setActivities(activities);
-      }
-    } finally {
-      setIsLoadingMore(false);
-    }
-  }, [page, isLoadingMore]);
-
   const loadMoreActivities = useCallback(() => {
     if (!isLoadingMore && !error) {
       setPage(prev => prev + 1);
@@ -695,7 +627,7 @@ export default function DashboardClient() {
     void fetchUserData();
   }, [fetchUserData]);
   
-  if (isUserLoading) {
+  if (isUserLoading || !userData) {
     return <LoadingSpinner />;
   }
 

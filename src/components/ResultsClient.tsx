@@ -181,7 +181,7 @@ const getSecondaryType = (
   matcherScore: number, 
   dominantType: LearningType
 ): LearningType => {
-  let scores = [
+  const scores = [
     { type: 'giver' as LearningType, score: giverScore },
     { type: 'taker' as LearningType, score: takerScore },
     { type: 'matcher' as LearningType, score: matcherScore }

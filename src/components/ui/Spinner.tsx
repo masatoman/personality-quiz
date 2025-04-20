@@ -14,6 +14,7 @@ export function Spinner({ className }: SpinnerProps) {
       )}
       role="status"
       aria-label="読み込み中"
+      data-testid="spinner"
     />
   );
 } 

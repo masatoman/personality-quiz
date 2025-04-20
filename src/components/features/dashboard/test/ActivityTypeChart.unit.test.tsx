@@ -84,7 +84,11 @@ describe('ActivityTypeChart Component', () => {
         'CONSUME_CONTENT': 45,
         'RECEIVE_FEEDBACK': 18,
         'SHARE_RESOURCE': 7,
-        'ASK_QUESTION': 15
+        'ASK_QUESTION': 15,
+        'COMPLETE_RESOURCE': 8,
+        'START_RESOURCE': 5,
+        'QUIZ_COMPLETE': 10,
+        'DAILY_LOGIN': 3
       }
     };
     
@@ -110,9 +114,10 @@ describe('ActivityTypeChart Component', () => {
     expect(screen.getByText(/コンテンツ作成/)).toBeInTheDocument();
     expect(screen.getByText(/フィードバック提供/)).toBeInTheDocument();
     expect(screen.getByText(/コンテンツ利用/)).toBeInTheDocument();
+    expect(screen.getByText(/リソース完了/)).toBeInTheDocument();
     
     // 総活動数が表示されていることを確認
-    const totalActivities = 12 + 23 + 45 + 18 + 7 + 15; // 120
+    const totalActivities = Object.values(mockData.activityCounts).reduce((sum, count) => sum + count, 0);
     expect(screen.getByText(`総活動数: ${totalActivities}回`)).toBeInTheDocument();
   });
 

@@ -60,7 +60,7 @@ const ProfileClient: React.FC = () => {
         setLoading(true);
         
         // リクエストが失敗した場合に備えてローカルストレージから取得
-        let localScore = parseInt(localStorage.getItem('giverScore') || '0', 10);
+        const localScore = parseInt(localStorage.getItem('giverScore') || '0', 10);
         let localActivities: Activity[] = [];
         
         try {

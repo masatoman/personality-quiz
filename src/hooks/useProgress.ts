@@ -3,7 +3,16 @@ import { UserProgress, Badge, ActivityType, Level, BadgeType } from '@/types/qui
 import { BADGE_DEFINITIONS } from '@/data/badges';
 import { LEVELS } from '@/data/levels';
 
-export const useProgress = (userId: number) => {
+interface ProgressUpdateResult {
+  newBadges: Badge[];
+  levelUp: boolean;
+}
+
+export const useProgress = (userId: number): {
+  progress: UserProgress;
+  updateProgress: (activityType: ActivityType, scoreChange: number) => Promise<ProgressUpdateResult>;
+  fetchProgress: () => Promise<void>;
+} => {
   const [userProgress, setUserProgress] = useState<UserProgress>({
     userId,
     level: 1,
@@ -14,7 +23,7 @@ export const useProgress = (userId: number) => {
   });
 
   // 進捗データの取得
-  const fetchProgress = useCallback(async () => {
+  const fetchProgress = useCallback(async (): Promise<void> => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
       const response = await fetch(`${apiUrl}/get_progress.php?userId=${userId}`);
@@ -23,7 +32,7 @@ export const useProgress = (userId: number) => {
         throw new Error('進捗データの取得に失敗しました');
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as UserProgress;
       setUserProgress(data);
     } catch (error) {
       console.error('進捗データの取得中にエラーが発生しました:', error);
@@ -35,27 +44,34 @@ export const useProgress = (userId: number) => {
   const checkBadgeProgress = useCallback((activityType: ActivityType): Badge[] => {
     const newBadges: Badge[] = [];
     
-    (Object.entries(BADGE_DEFINITIONS) as [BadgeType, Omit<Badge, 'acquiredAt' | 'progress'>][]).forEach(([_, badgeDef]) => {
-      const existingBadge = userProgress.badges.find(b => b.type === badgeDef.type);
+    Object.entries(BADGE_DEFINITIONS).forEach(([type, badgeDef]) => {
+      const existingBadge = userProgress.badges.find((b: Badge) => b.type === type as BadgeType);
       if (existingBadge) return;
 
       const relevantRequirements = badgeDef.requirements.filter(
-        (req: { activityType: ActivityType; count: number }) => req.activityType === activityType
+        req => req.activityType === activityType
       );
 
       if (relevantRequirements.length === 0) return;
 
-      // 進捗の計算（仮実装）
+      // 進捗の計算
       const progress = Math.min(
-        relevantRequirements.reduce((acc: number, req: { count: number }) => acc + (req.count * 10), 0),
+        relevantRequirements.reduce((acc: number, req) => acc + (req.count * 10), 0),
         100
       );
 
       if (progress >= 100) {
         const newBadge: Badge = {
-          ...badgeDef,
+          id: `${type}_${Date.now()}`,
+          type: type as BadgeType,
+          name: badgeDef.name,
+          description: badgeDef.description,
+          iconUrl: badgeDef.iconUrl,
+          level: badgeDef.level,
+          requirements: badgeDef.requirements,
+          progress: 100,
           acquiredAt: new Date(),
-          progress: 100
+          isSecret: badgeDef.isSecret
         };
         newBadges.push(newBadge);
       }
@@ -83,7 +99,7 @@ export const useProgress = (userId: number) => {
   const updateProgress = useCallback(async (
     activityType: ActivityType,
     scoreChange: number
-  ) => {
+  ): Promise<ProgressUpdateResult> => {
     try {
       const newBadges = checkBadgeProgress(activityType);
       const newTotalScore = userProgress.totalScore + scoreChange;
@@ -120,7 +136,7 @@ export const useProgress = (userId: number) => {
 
   // 初期データの取得
   useEffect(() => {
-    fetchProgress();
+    void fetchProgress();
   }, [fetchProgress]);
 
   return {

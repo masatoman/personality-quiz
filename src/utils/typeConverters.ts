@@ -2,32 +2,60 @@
  * データベース型とフロントエンドの型変換ユーティリティ
  */
 
-type SnakeToCamelCase<S extends string> = S extends `${infer T}_${infer U}`
-  ? `${T}${Capitalize<SnakeToCamelCase<U>>}`
-  : S;
+import { ActivityType } from '../types/activity';
 
-type CamelToSnakeCase<S extends string> = S extends `${infer T}${infer U}`
-  ? T extends Lowercase<T>
-    ? `${T}${CamelToSnakeCase<U>}`
-    : `_${Lowercase<T>}${CamelToSnakeCase<U>}`
-  : S;
+// 共通の型定義
+type JsonPrimitive = string | number | boolean | null;
+type JsonValue = JsonPrimitive | JsonObject | JsonArray;
+type JsonObject = { [key: string]: JsonValue };
+type JsonArray = JsonValue[];
 
 /**
- * スネークケースのオブジェクトをキャメルケースに変換
+ * 文字列を大文字のスネークケースに変換
  */
-export function snakeToCamel<T extends Record<string, any>>(obj: T): { [K in keyof T as SnakeToCamelCase<string & K>]: T[K] } {
-  return Object.entries(obj).reduce((acc, [key, value]) => {
-    const camelKey = key.replace(/_([a-z])/g, (_, p1) => p1.toUpperCase()) as SnakeToCamelCase<string & keyof T>;
-    return { ...acc, [camelKey]: value };
-  }, {} as { [K in keyof T as SnakeToCamelCase<string & K>]: T[K] });
+export function convertToUpperSnakeCase(str: string): string {
+  return str
+    .split(/(?=[A-Z])/)
+    .join('_')
+    .toUpperCase();
 }
 
 /**
- * キャメルケースのオブジェクトをスネークケースに変換
+ * ActivityTypeを文字列に変換
  */
-export function camelToSnake<T extends Record<string, any>>(obj: T): { [K in keyof T as CamelToSnakeCase<string & K>]: T[K] } {
-  return Object.entries(obj).reduce((acc, [key, value]) => {
-    const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`) as CamelToSnakeCase<string & keyof T>;
-    return { ...acc, [snakeKey]: value };
-  }, {} as { [K in keyof T as CamelToSnakeCase<string & K>]: T[K] });
+export function convertActivityType(type: ActivityType): string {
+  return convertToUpperSnakeCase(type as string);
+}
+
+/**
+ * 文字列をローワーキャメルケースに変換
+ */
+export function convertToLowerCamelCase(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+}
+
+/**
+ * スネークケースのオブジェクトをキャメルケースに変換します
+ */
+export function snakeToCamel<T extends JsonObject>(obj: T): T {
+  const newObj = {} as T;
+  Object.entries(obj).forEach(([key, value]) => {
+    const newKey = convertToLowerCamelCase(key);
+    newObj[newKey as keyof T] = value;
+  });
+  return newObj;
+}
+
+/**
+ * キャメルケースのオブジェクトをスネークケースに変換します
+ */
+export function camelToSnake<T extends JsonObject>(obj: T): T {
+  const newObj = {} as T;
+  Object.entries(obj).forEach(([key, value]) => {
+    const newKey = key.replace(/[A-Z]/g, (g) => `_${g.toLowerCase()}`);
+    newObj[newKey as keyof T] = value;
+  });
+  return newObj;
 } 

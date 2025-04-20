@@ -1,4 +1,5 @@
 import React from 'react';
+import { ActivityType } from './learning';
 
 export type LearningType = 'giver' | 'taker' | 'matcher';
 
@@ -123,15 +124,6 @@ export interface ScoreChange {
   taker: number;
   matcher: number;
 }
-
-// 活動タイプ
-export type ActivityType = 
-  | 'CREATE_CONTENT'
-  | 'PROVIDE_FEEDBACK'
-  | 'CONSUME_CONTENT'
-  | 'RECEIVE_FEEDBACK'
-  | 'SHARE_RESOURCE'
-  | 'ASK_QUESTION';
 
 // 教材タイプ
 export type MaterialType = 
@@ -265,4 +257,55 @@ export interface LoginPromptProps {
 export interface SaveNotificationProps {
   success: boolean;
   error: string | null;
+}
+
+// バッジの種類
+export type BadgeType = 
+  | 'first_completion'
+  | 'learning_streak'
+  | 'multi_completion'
+  | 'perfect_score'
+  | 'fast_learner'
+  | 'content_creator'
+  | 'feedback_provider'
+  | 'community_contributor'
+  | 'diverse_learner'
+  | 'giver_champion';
+
+// バッジの要件
+export interface BadgeRequirement {
+  activityType: ActivityType;
+  count: number;
+}
+
+// バッジの定義
+export interface BadgeDefinition {
+  type: BadgeType;
+  name: string;
+  description: string;
+  requirements: BadgeRequirement[];
+}
+
+// バッジ
+export interface Badge extends BadgeDefinition {
+  acquiredAt: Date;
+  progress: number;
+}
+
+// レベル
+export interface Level {
+  number: number;
+  name: string;
+  requiredScore: number;
+  description: string;
+}
+
+// ユーザーの進捗
+export interface UserProgress {
+  userId: number;
+  level: number;
+  totalScore: number;
+  badges: Badge[];
+  streakDays: number;
+  lastActivityDate: Date;
 }

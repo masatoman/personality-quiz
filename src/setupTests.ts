@@ -1,60 +1,7 @@
-// テスト環境のセットアップ
 import '@testing-library/jest-dom';
-
-// 型定義の追加
-type IntersectionObserverCallbackType = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => void;
-type ResizeObserverCallbackType = (entries: ResizeObserverEntry[], observer: ResizeObserver) => void;
+import { jest } from '@jest/globals';
 
 // グローバルなモックの設定
-global.fetch = jest.fn() as jest.MockedFunction<typeof fetch>;
-
-// 環境変数設定
-process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.supabase.co';
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
-// process.env.NODE_ENV = 'test'; // 読み取り専用プロパティのため設定不可
-
-// コンソールエラーをモックに置き換え（テスト中のエラー表示を抑制）
-jest.spyOn(console, 'error').mockImplementation(() => {});
-
-// 現在時刻をモック（テスト中の日時依存を排除）
-jest.useFakeTimers().setSystemTime(new Date('2023-01-01'));
-
-// MutationObserverのモック
-class MockMutationObserver {
-  observe = jest.fn();
-  disconnect = jest.fn();
-  takeRecords = jest.fn();
-}
-
-global.MutationObserver = MockMutationObserver as unknown as typeof MutationObserver;
-
-// IntersectionObserverのモック
-class MockIntersectionObserver {
-  constructor(callback: IntersectionObserverCallbackType) {
-    this.callback = callback;
-  }
-  callback: IntersectionObserverCallbackType;
-  observe = jest.fn();
-  unobserve = jest.fn();
-  disconnect = jest.fn();
-}
-
-global.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
-
-// ResizeObserverのモック
-class MockResizeObserver {
-  constructor(callback: ResizeObserverCallbackType) {
-    this.callback = callback;
-  }
-  callback: ResizeObserverCallbackType;
-  observe = jest.fn();
-  unobserve = jest.fn();
-  disconnect = jest.fn();
-}
-
-global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
-
-// matchMediaのモック
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation(query => ({
@@ -69,22 +16,44 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-// Jestのタイムアウト設定
-jest.setTimeout(30000);
+// fetchのモック
+const mockFetch = (_input: RequestInfo | URL, _init?: RequestInit): Promise<Response> => {
+  return Promise.resolve(new Response(JSON.stringify({}), {
+    status: 200,
+    statusText: 'OK',
+    headers: new Headers({
+      'Content-Type': 'application/json'
+    })
+  }));
+};
 
-// TextEncoder/TextDecoderのモック
-if (typeof global.TextEncoder === 'undefined') {
-  global.TextEncoder = require('util').TextEncoder;
-}
+global.fetch = jest.fn(mockFetch);
 
-if (typeof global.TextDecoder === 'undefined') {
-  global.TextDecoder = require('util').TextDecoder;
-}
+// localStorageのモック
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  clear: jest.fn(),
+  removeItem: jest.fn(),
+  length: 0,
+  key: jest.fn(),
+};
+Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
-// エラースタックトレースをより読みやすくするための設定
-Error.stackTraceLimit = 100;
+// ReactDOMのレンダリング警告を抑制
+const originalError = console.error;
+beforeAll(() => {
+  console.error = (...args: string[]) => {
+    if (/Warning.*not wrapped in act/.test(args[0])) {
+      return;
+    }
+    originalError.call(console, ...args);
+  };
+});
 
-// テスト後のクリーンアップ
-afterEach(() => {
-  jest.clearAllMocks();
-}); 
+afterAll(() => {
+  console.error = originalError;
+});
+
+// テストタイムアウトの設定
+jest.setTimeout(10000);

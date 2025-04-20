@@ -31,13 +31,14 @@ describe('useTodoStorage', () => {
       result.current.addTask(mockTask);
     });
 
+    const addedTask = result.current.tasks[0];
     expect(result.current.tasks).toHaveLength(1);
-    expect(result.current.tasks[0]).toMatchObject({
+    expect(addedTask).toMatchObject({
       ...mockTask,
       completed: false,
     });
-    expect(typeof result.current.tasks[0].id).toBe('string');
-    expect(result.current.tasks[0].createdAt).toBeInstanceOf(Date);
+    expect(typeof addedTask.id).toBe('string');
+    expect(addedTask.createdAt).toBeInstanceOf(Date);
   });
 
   it('タスクを削除できること', () => {
@@ -71,8 +72,8 @@ describe('useTodoStorage', () => {
 
     expect(result.current.completedTasks).toHaveLength(1);
     expect(result.current.incompleteTasks).toHaveLength(0);
-    expect(result.current.totalPoints).toBe(5);
-    expect(result.current.completedPoints).toBe(5);
+    expect(result.current.totalPoints).toBe(mockTask.points);
+    expect(result.current.completedPoints).toBe(mockTask.points);
 
     act(() => {
       result.current.toggleTaskCompletion(taskId);
@@ -80,7 +81,7 @@ describe('useTodoStorage', () => {
 
     expect(result.current.completedTasks).toHaveLength(0);
     expect(result.current.incompleteTasks).toHaveLength(1);
-    expect(result.current.totalPoints).toBe(5);
+    expect(result.current.totalPoints).toBe(mockTask.points);
     expect(result.current.completedPoints).toBe(0);
   });
 
@@ -92,11 +93,13 @@ describe('useTodoStorage', () => {
       completed: false,
     };
 
-    localStorage.setItem('todo-tasks', JSON.stringify([{
+    const storedTaskData = {
       ...storedTask,
       createdAt: storedTask.createdAt.toISOString(),
       dueDate: null,
-    }]));
+    };
+
+    localStorage.setItem('todo-tasks', JSON.stringify([storedTaskData]));
 
     const { result } = renderHook(() => useTodoStorage());
 
@@ -114,7 +117,17 @@ describe('useTodoStorage', () => {
     const storedData = localStorage.getItem('todo-tasks');
     expect(storedData).toBeTruthy();
 
-    const parsedData = JSON.parse(storedData!);
+    const parsedData = JSON.parse(storedData!) as Array<{
+      id: string;
+      title: string;
+      description: string;
+      points: number;
+      type: 'custom' | 'suggested';
+      completed: boolean;
+      createdAt: string;
+      dueDate: string | null;
+    }>;
+
     expect(parsedData).toHaveLength(1);
     expect(parsedData[0]).toMatchObject({
       ...mockTask,
@@ -128,5 +141,9 @@ describe('useTodoStorage', () => {
     const { result } = renderHook(() => useTodoStorage());
     
     expect(result.current.tasks).toEqual([]);
+
+    const consoleErrorSpy = jest.spyOn(console, 'error');
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 }); 

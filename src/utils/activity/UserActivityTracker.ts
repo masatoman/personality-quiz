@@ -1,14 +1,99 @@
-import { ActivityType } from '@/types/learning';
+import { SupabaseClient } from '@supabase/supabase-js';
 import supabase from '@/lib/supabase';
+import { ActivityType } from '@/types/learning';
+
+// 有効なアクティビティタイプの配列
+const VALID_ACTIVITY_TYPES: ActivityType[] = [
+  'COMPLETE_RESOURCE',
+  'START_RESOURCE',
+  'CREATE_CONTENT',
+  'PROVIDE_FEEDBACK',
+  'RECEIVE_FEEDBACK',
+  'DAILY_LOGIN',
+  'SHARE_RESOURCE',
+  'QUIZ_COMPLETE',
+  'ASK_QUESTION',
+  'CONSUME_CONTENT'
+];
+
+/**
+ * 活動タイプの列挙型
+ */
+export type ActivityType = ActivityType;
+
+/**
+ * 活動の詳細情報の基本インターフェース
+ */
+export interface BaseActivityDetails {
+  timestamp: string;
+  duration?: number;
+  success?: boolean;
+  errorMessage?: string;
+}
+
+/**
+ * コンテンツ閲覧活動の詳細
+ */
+export interface ViewContentDetails extends BaseActivityDetails {
+  contentId: string;
+  contentType: 'lesson' | 'quiz' | 'article';
+  progress?: number;
+}
+
+/**
+ * クイズ活動の詳細
+ */
+export interface QuizActivityDetails extends BaseActivityDetails {
+  quizId: string;
+  score?: number;
+  totalQuestions: number;
+  completedQuestions: number;
+}
+
+/**
+ * レッスン活動の詳細
+ */
+export interface LessonActivityDetails extends BaseActivityDetails {
+  lessonId: string;
+  progress: number;
+  completed: boolean;
+}
+
+/**
+ * 活動の詳細情報の型定義
+ */
+export type ActivityDetails = ViewContentDetails | QuizActivityDetails | LessonActivityDetails;
 
 /**
  * ユーザー活動を表すインターフェイス
  */
-export interface UserActivity {
+export interface UserActivity<T extends ActivityDetails = ActivityDetails> {
   userId: string;
   activityType: ActivityType;
   timestamp: Date;
-  details?: Record<string, any>;
+  details?: T;
+}
+
+/**
+ * データベースの活動レコードの型定義
+ */
+interface ActivityRecord<T extends ActivityDetails = ActivityDetails> {
+  user_id: string;
+  activity_type: ActivityType;
+  timestamp: string;
+  details: T;
+}
+
+/**
+ * 活動サマリーの型定義
+ */
+export interface ActivitySummary {
+  counts: Record<ActivityType, number>;
+  totalActivities: number;
+  lastActivity?: {
+    type: ActivityType;
+    timestamp: Date;
+  };
 }
 
 /**
@@ -16,29 +101,47 @@ export interface UserActivity {
  * ユーザーの行動を追跡し、そのデータを保存・分析するための機能を提供
  */
 export class UserActivityTracker {
+  private static readonly supabase: SupabaseClient = supabase;
+
   /**
    * 新しい活動を記録する
-   * @param userId ユーザーID
-   * @param activityType 活動タイプ
-   * @param details 活動の詳細情報（任意）
+   * @param userId - ユーザーID
+   * @param activityType - 記録する活動の種類
+   * @param details - 活動の詳細情報（オプション）
    * @returns 記録された活動オブジェクト
+   * @throws {Error} データベース操作に失敗した場合
+   * @example
+   * ```typescript
+   * const activity = await UserActivityTracker.trackActivity(
+   *   'user123',
+   *   ActivityType.VIEW_CONTENT,
+   *   { contentId: 'lesson1', contentType: 'lesson', progress: 0.5 }
+   * );
+   * ```
    */
-  static async trackActivity(
+  static async trackActivity<T extends ActivityDetails>(
     userId: string, 
     activityType: ActivityType, 
-    details?: Record<string, any>
-  ): Promise<UserActivity> {
+    details?: T
+  ): Promise<UserActivity<T>> {
+    if (!userId.trim()) {
+      throw new Error('ユーザーIDは必須です');
+    }
+
+    if (!VALID_ACTIVITY_TYPES.includes(activityType)) {
+      throw new Error(`無効な活動タイプです: ${activityType}`);
+    }
+
     try {
       const timestamp = new Date();
-      const activity: UserActivity = {
+      const activity: UserActivity<T> = {
         userId,
         activityType,
         timestamp,
         details
       };
       
-      // 活動をデータベースに保存
-      const { data, error } = await supabase
+      const { error } = await this.supabase
         .from('user_activities')
         .insert({
           user_id: userId,
@@ -48,38 +151,52 @@ export class UserActivityTracker {
         });
       
       if (error) {
-        console.error('活動追跡エラー:', error);
         throw new Error(`活動の記録に失敗しました: ${error.message}`);
       }
       
       return activity;
     } catch (error) {
-      console.error('活動追跡中に例外が発生しました:', error);
-      throw error;
+      console.error('活動追跡中にエラーが発生:', error);
+      throw error instanceof Error ? error : new Error('不明なエラーが発生しました');
     }
   }
   
   /**
    * ユーザーの活動履歴を取得する
-   * @param userId ユーザーID
-   * @param fromDate 開始日（任意）
-   * @param toDate 終了日（任意）
+   * @param userId - ユーザーID
+   * @param fromDate - 取得開始日（オプション）
+   * @param toDate - 取得終了日（オプション）
    * @returns 活動のリスト
+   * @throws {Error} データベース操作に失敗した場合
+   * @example
+   * ```typescript
+   * const activities = await UserActivityTracker.getUserActivities(
+   *   'user123',
+   *   new Date('2024-01-01'),
+   *   new Date()
+   * );
+   * ```
    */
-  static async getUserActivities(
+  static async getUserActivities<T extends ActivityDetails>(
     userId: string, 
     fromDate?: Date, 
     toDate?: Date
-  ): Promise<UserActivity[]> {
+  ): Promise<UserActivity<T>[]> {
+    if (!userId.trim()) {
+      throw new Error('ユーザーIDは必須です');
+    }
+
+    if (fromDate && toDate && fromDate > toDate) {
+      throw new Error('開始日は終了日より前である必要があります');
+    }
+
     try {
-      // 基本クエリを構築
-      let query = supabase
+      let query = this.supabase
         .from('user_activities')
         .select('*')
         .eq('user_id', userId)
         .order('timestamp', { ascending: false });
       
-      // 日付範囲フィルターを追加（指定されている場合）
       if (fromDate) {
         query = query.gte('timestamp', fromDate.toISOString());
       }
@@ -88,56 +205,70 @@ export class UserActivityTracker {
         query = query.lte('timestamp', toDate.toISOString());
       }
       
-      // クエリを実行
       const { data, error } = await query;
       
       if (error) {
-        console.error('活動取得エラー:', error);
         throw new Error(`活動履歴の取得に失敗しました: ${error.message}`);
       }
+
+      if (!data) {
+        return [];
+      }
       
-      // データベースの結果をUserActivity形式に変換
-      return (data || []).map(item => ({
+      return (data as ActivityRecord<T>[]).map(item => ({
         userId: item.user_id,
-        activityType: item.activity_type as ActivityType,
+        activityType: item.activity_type,
         timestamp: new Date(item.timestamp),
         details: item.details
       }));
     } catch (error) {
+      console.error('活動履歴取得中にエラーが発生:', error);
       console.error('活動履歴取得中に例外が発生しました:', error);
-      throw error;
+      throw error instanceof Error ? error : new Error('不明なエラーが発生しました');
     }
   }
   
   /**
    * ユーザーの最新活動を取得する
-   * @param userId ユーザーID
-   * @param activityType 特定の活動タイプ（任意）
+   * @param userId - ユーザーID
+   * @param activityType - フィルタリングする活動タイプ（オプション）
    * @returns 最新の活動、または見つからない場合はnull
+   * @throws {Error} データベース操作に失敗した場合
+   * @example
+   * ```typescript
+   * const latestActivity = await UserActivityTracker.getLatestActivity(
+   *   'user123',
+   *   ActivityType.COMPLETE_LESSON
+   * );
+   * ```
    */
-  static async getLatestActivity(
+  static async getLatestActivity<T extends ActivityDetails>(
     userId: string, 
     activityType?: ActivityType
-  ): Promise<UserActivity | null> {
+  ): Promise<UserActivity<T> | null> {
+    if (!userId.trim()) {
+      throw new Error('ユーザーIDは必須です');
+    }
+
+    if (activityType && !VALID_ACTIVITY_TYPES.includes(activityType)) {
+      throw new Error(`無効な活動タイプです: ${activityType}`);
+    }
+
     try {
-      // 基本クエリを構築
-      let query = supabase
+      let query = this.supabase
         .from('user_activities')
         .select('*')
         .eq('user_id', userId)
         .order('timestamp', { ascending: false })
         .limit(1);
       
-      // アクティビティタイプのフィルターを追加（指定されている場合）
       if (activityType) {
         query = query.eq('activity_type', activityType);
       }
       
-      // クエリを実行
       const { data, error } = await query;
       
       if (error) {
-        console.error('最新活動取得エラー:', error);
         throw new Error(`最新活動の取得に失敗しました: ${error.message}`);
       }
       
@@ -145,27 +276,36 @@ export class UserActivityTracker {
         return null;
       }
       
-      // データベースの結果をUserActivity形式に変換
-      const item = data[0];
+      const item = data[0] as ActivityRecord<T>;
       return {
         userId: item.user_id,
-        activityType: item.activity_type as ActivityType,
+        activityType: item.activity_type,
         timestamp: new Date(item.timestamp),
         details: item.details
       };
     } catch (error) {
-      console.error('最新活動取得中に例外が発生しました:', error);
-      throw error;
+      console.error('最新活動取得中にエラーが発生:', error);
+      throw error instanceof Error ? error : new Error('不明なエラーが発生しました');
     }
   }
   
   /**
    * 特定タイプの活動の回数をカウントする
-   * @param userId ユーザーID
-   * @param activityType 活動タイプ
-   * @param fromDate 開始日（任意）
-   * @param toDate 終了日（任意）
+   * @param userId - ユーザーID
+   * @param activityType - カウントする活動タイプ
+   * @param fromDate - 開始日（オプション）
+   * @param toDate - 終了日（オプション）
    * @returns 活動回数
+   * @throws {Error} データベース操作に失敗した場合
+   * @example
+   * ```typescript
+   * const count = await UserActivityTracker.getActivityCount(
+   *   'user123',
+   *   ActivityType.COMPLETE_LESSON,
+   *   new Date('2024-01-01'),
+   *   new Date()
+   * );
+   * ```
    */
   static async getActivityCount(
     userId: string, 
@@ -173,15 +313,25 @@ export class UserActivityTracker {
     fromDate?: Date,
     toDate?: Date
   ): Promise<number> {
+    if (!userId.trim()) {
+      throw new Error('ユーザーIDは必須です');
+    }
+
+    if (!VALID_ACTIVITY_TYPES.includes(activityType)) {
+      throw new Error(`無効な活動タイプです: ${activityType}`);
+    }
+
+    if (fromDate && toDate && fromDate > toDate) {
+      throw new Error('開始日は終了日より前である必要があります');
+    }
+
     try {
-      // 基本クエリを構築
-      let query = supabase
+      let query = this.supabase
         .from('user_activities')
         .select('id', { count: 'exact' })
         .eq('user_id', userId)
         .eq('activity_type', activityType);
       
-      // 日付範囲フィルターを追加（指定されている場合）
       if (fromDate) {
         query = query.gte('timestamp', fromDate.toISOString());
       }
@@ -190,93 +340,175 @@ export class UserActivityTracker {
         query = query.lte('timestamp', toDate.toISOString());
       }
       
-      // クエリを実行
       const { count, error } = await query;
       
       if (error) {
-        console.error('活動カウントエラー:', error);
         throw new Error(`活動回数の取得に失敗しました: ${error.message}`);
       }
       
       return count || 0;
     } catch (error) {
-      console.error('活動カウント取得中に例外が発生しました:', error);
-      throw error;
+      console.error('活動カウント中にエラーが発生:', error);
+      throw error instanceof Error ? error : new Error('不明なエラーが発生しました');
     }
   }
   
   /**
-   * ユーザーの総活動量を集計する
-   * @param userId ユーザーID
-   * @returns 活動タイプ別の集計結果
+   * ユーザーの活動サマリーを取得する
+   * @param userId - ユーザーID
+   * @returns 活動タイプごとの集計情報
+   * @throws {Error} データベース操作に失敗した場合
+   * @example
+   * ```typescript
+   * const summary = await UserActivityTracker.getActivitySummary('user123');
+   * console.log(`総活動数: ${summary.totalActivities}`);
+   * console.log(`レッスン完了数: ${summary.counts[ActivityType.COMPLETE_LESSON]}`);
+   * ```
    */
-  static async getActivitySummary(userId: string): Promise<Record<string, any>> {
+  static async getActivitySummary(userId: string): Promise<ActivitySummary> {
+    if (!userId.trim()) {
+      throw new Error('ユーザーIDは必須です');
+    }
+
     try {
-      // 各アクティビティタイプの集計を取得
-      const activityTypes: ActivityType[] = [
-        'complete_resource',
-        'start_resource',
-        'create_material',
-        'provide_feedback',
-        'daily_login',
-        'share_resource',
-        'quiz_complete'
-      ];
-      
-      const summary: Record<string, any> = {};
-      
-      // 各アクティビティタイプのカウントを取得
-      for (const type of activityTypes) {
-        const count = await this.getActivityCount(userId, type);
-        summary[`${type}_count`] = count;
-      }
-      
-      // ストリーク（連続ログイン）の計算
-      const { data, error } = await supabase
-        .from('user_streaks')
-        .select('current_streak, max_streak')
+      const { data, error } = await this.supabase
+        .from('user_activities')
+        .select('activity_type, timestamp')
         .eq('user_id', userId)
-        .single();
-      
-      if (!error && data) {
-        summary.current_streak = data.current_streak;
-        summary.max_streak = data.max_streak;
-      } else {
-        summary.current_streak = 0;
-        summary.max_streak = 0;
+        .order('timestamp', { ascending: false });
+
+      if (error) {
+        throw new Error(`活動サマリーの取得に失敗しました: ${error.message}`);
       }
-      
-      // その他の統計情報を追加
-      // ユニークカテゴリ数
-      const { data: resourceData, error: resourceError } = await supabase
-        .from('user_resources')
-        .select('category')
-        .eq('user_id', userId)
-        .eq('completed', true);
-      
-      if (!resourceError && resourceData) {
-        const uniqueCategories = new Set(resourceData.map(item => item.category));
-        summary.unique_categories_count = uniqueCategories.size;
-      } else {
-        summary.unique_categories_count = 0;
+
+      if (!data || !Array.isArray(data)) {
+        throw new Error('予期しないデータ形式を受信しました');
       }
-      
-      // 最後のクイズスコア
-      const { data: quizData, error: quizError } = await supabase
-        .from('quiz_results')
-        .select('score')
-        .eq('user_id', userId)
-        .order('completed_at', { ascending: false })
-        .limit(1);
-      
-      if (!quizError && quizData && quizData.length > 0) {
-        summary.last_score = quizData[0].score;
-      }
-      
+
+      const summary: ActivitySummary = {
+        counts: VALID_ACTIVITY_TYPES.reduce((acc, type) => {
+          acc[type] = 0;
+          return acc;
+        }, {} as Record<ActivityType, number>),
+        totalActivities: 0
+      };
+
+      data.forEach((item: { activity_type: ActivityType; timestamp: string }) => {
+        if (VALID_ACTIVITY_TYPES.includes(item.activity_type)) {
+          summary.counts[item.activity_type] += 1;
+          summary.totalActivities += 1;
+
+          if (!summary.lastActivity || new Date(item.timestamp) > new Date(summary.lastActivity.timestamp)) {
+            summary.lastActivity = {
+              type: item.activity_type,
+              timestamp: new Date(item.timestamp)
+            };
+          }
+        } else {
+          console.warn(`不明な活動タイプを検出: ${item.activity_type}`);
+        }
+      });
+
       return summary;
     } catch (error) {
-      console.error('活動サマリー取得中に例外が発生しました:', error);
-      throw error;
+      console.error('活動サマリー取得中にエラーが発生:', error);
+      throw error instanceof Error ? error : new Error('不明なエラーが発生しました');
+    }
+  }
+
+  /**
+   * 特定期間の活動統計を取得する
+   * @param userId - ユーザーID
+   * @param fromDate - 開始日
+   * @param toDate - 終了日
+   * @returns 期間中の活動統計情報
+   * @throws {Error} データベース操作に失敗した場合
+   * @example
+   * ```typescript
+   * const stats = await UserActivityTracker.getActivityStats(
+   *   'user123',
+   *   new Date('2024-01-01'),
+   *   new Date()
+   * );
+   * console.log(`日別アクティビティ: ${JSON.stringify(stats.dailyCount)}`);
+   * console.log(`最も活動的な日: ${stats.mostActiveDay?.date}`);
+   * ```
+   */
+  static async getActivityStats(
+    userId: string,
+    fromDate: Date,
+    toDate: Date
+  ): Promise<{
+    /** 日付ごとの活動回数 */
+    dailyCount: Record<string, number>;
+    /** 期間中の総活動回数 */
+    totalCount: number;
+    /** 1日あたりの平均活動回数 */
+    averagePerDay: number;
+    /** 最も活動的だった日の情報 */
+    mostActiveDay?: {
+      /** 日付（YYYY-MM-DD形式） */
+      date: string;
+      /** その日の活動回数 */
+      count: number;
+    };
+  }> {
+    if (!userId.trim()) {
+      throw new Error('ユーザーIDは必須です');
+    }
+
+    if (!(fromDate instanceof Date) || isNaN(fromDate.getTime())) {
+      throw new Error('開始日が無効です');
+    }
+
+    if (!(toDate instanceof Date) || isNaN(toDate.getTime())) {
+      throw new Error('終了日が無効です');
+    }
+
+    if (fromDate > toDate) {
+      throw new Error('開始日は終了日より前である必要があります');
+    }
+
+    try {
+      const { data, error } = await this.supabase
+        .from('user_activities')
+        .select('timestamp')
+        .eq('user_id', userId)
+        .gte('timestamp', fromDate.toISOString())
+        .lte('timestamp', toDate.toISOString());
+
+      if (error) {
+        throw new Error(`活動統計の取得に失敗しました: ${error.message}`);
+      }
+
+      if (!data || !Array.isArray(data)) {
+        throw new Error('予期しないデータ形式を受信しました');
+      }
+
+      const dailyCount: Record<string, number> = {};
+      let mostActiveDay: { date: string; count: number } | undefined;
+
+      data.forEach((item: { timestamp: string }) => {
+        const date = item.timestamp.split('T')[0];
+        dailyCount[date] = (dailyCount[date] || 0) + 1;
+
+        if (!mostActiveDay || dailyCount[date] > mostActiveDay.count) {
+          mostActiveDay = { date, count: dailyCount[date] };
+        }
+      });
+
+      const totalCount = Object.values(dailyCount).reduce((sum, count) => sum + count, 0);
+      const dayCount = Object.keys(dailyCount).length || 1;
+
+      return {
+        dailyCount,
+        totalCount,
+        averagePerDay: totalCount / dayCount,
+        mostActiveDay
+      };
+    } catch (error) {
+      console.error('活動統計取得中にエラーが発生:', error);
+      throw error instanceof Error ? error : new Error('不明なエラーが発生しました');
     }
   }
 }

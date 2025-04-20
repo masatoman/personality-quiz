@@ -1,9 +1,16 @@
-import { consumePoints, fetchPointsBalance, PURCHASABLE_ITEMS } from '../../utils/points';
-import { ACTIVITY_POINTS } from '../../lib/api';
-import { ActivityType } from '../../types/activity';
+import { consumePoints } from '../PointsSystem';
+import { fetchPointsBalance } from '../points';
+import { ACTIVITY_POINTS } from '../../../constants/points';
+import { ActivityType } from '../../../types/learning';
+import { PurchasableItem } from '../../../types/store';
 
 // APIをモック
-global.fetch = jest.fn();
+const mockFetch = jest.fn().mockImplementation(() => 
+  Promise.resolve({
+    json: () => Promise.resolve({ success: true })
+  })
+) as jest.MockedFunction<typeof fetch>;
+global.fetch = mockFetch;
 
 // テスト用にポイント計算機能を単純化した実装
 const calculatePointsForActivity = (activityType: ActivityType): number => {
@@ -23,7 +30,45 @@ const simulatePointsUsage = (
 
 describe('ポイントシステム', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
+  });
+  
+  describe('ポイント計算', () => {
+    it('各アクティビティタイプのポイントが正しく定義されている', () => {
+      expect(ACTIVITY_POINTS['CREATE_CONTENT']).toBe(10);
+      expect(ACTIVITY_POINTS['PROVIDE_FEEDBACK']).toBe(5);
+      expect(ACTIVITY_POINTS['CONSUME_CONTENT']).toBe(1);
+      expect(ACTIVITY_POINTS['SHARE_RESOURCE']).toBe(3);
+      expect(ACTIVITY_POINTS['ASK_QUESTION']).toBe(2);
+      expect(ACTIVITY_POINTS['QUIZ_COMPLETE']).toBe(5);
+      expect(ACTIVITY_POINTS['COMPLETE_RESOURCE']).toBe(3);
+      expect(ACTIVITY_POINTS['START_RESOURCE']).toBe(1);
+      expect(ACTIVITY_POINTS['RECEIVE_FEEDBACK']).toBe(2);
+      expect(ACTIVITY_POINTS['DAILY_LOGIN']).toBe(1);
+    });
+
+    it('複数のアクティビティによる累積ポイントが正しく計算される', () => {
+      const activityTypes: ActivityType[] = [
+        'CREATE_CONTENT',
+        'PROVIDE_FEEDBACK',
+        'CONSUME_CONTENT',
+        'ASK_QUESTION',
+        'COMPLETE_RESOURCE'
+      ];
+
+      const totalPoints = activityTypes.reduce((sum, type) => {
+        return sum + (ACTIVITY_POINTS[type] || 0);
+      }, 0);
+
+      // 手動計算: 10 + 5 + 1 + 2 + 3 = 21
+      expect(totalPoints).toBe(21);
+    });
+
+    it('未定義のアクティビティでは0ポイント獲得となる', () => {
+      // @ts-expect-error 意図的に不正な値をテスト
+      const points = ACTIVITY_POINTS['INVALID_ACTIVITY'];
+      expect(points).toBeUndefined();
+    });
   });
   
   describe('ポイント消費関数', () => {
@@ -172,51 +217,6 @@ describe('ポイントシステム', () => {
     });
   });
 
-  // PointSystem.test.tsから統合
-  describe('ポイント獲得機能', () => {
-    it('教材作成では10ポイント獲得できる', () => {
-      const points = calculatePointsForActivity('CREATE_CONTENT');
-      expect(points).toBe(10);
-    });
-
-    it('フィードバック提供では3ポイント獲得できる', () => {
-      const points = calculatePointsForActivity('PROVIDE_FEEDBACK');
-      expect(points).toBe(3);
-    });
-
-    it('コンテンツ消費では1ポイント獲得できる', () => {
-      const points = calculatePointsForActivity('CONSUME_CONTENT');
-      expect(points).toBe(1);
-    });
-
-    it('質問投稿では1ポイント獲得できる', () => {
-      const points = calculatePointsForActivity('ASK_QUESTION');
-      expect(points).toBe(1);
-    });
-
-    it('複数のアクティビティによる累積ポイントが正しく計算される', () => {
-      const activityTypes: ActivityType[] = [
-        'CREATE_CONTENT',
-        'PROVIDE_FEEDBACK',
-        'CONSUME_CONTENT',
-        'ASK_QUESTION'
-      ];
-      
-      const totalPoints = activityTypes.reduce((sum, type) => {
-        return sum + calculatePointsForActivity(type);
-      }, 0);
-      
-      // 手動計算: 10 + 3 + 1 + 1 = 15
-      expect(totalPoints).toBe(15);
-    });
-
-    it('未定義のアクティビティでは0ポイント獲得となる', () => {
-      // @ts-ignore - テスト用に意図的に不正な値を使用
-      const points = calculatePointsForActivity('INVALID_ACTIVITY');
-      expect(points).toBe(0);
-    });
-  });
-
   describe('ポイント使用機能', () => {
     it('十分なポイントがある場合は使用に成功する', () => {
       const availablePoints = 100;
@@ -268,6 +268,23 @@ describe('ポイントシステム', () => {
       expect(thirdUsage.success).toBe(false);
       currentPoints = thirdUsage.remainingPoints;
       expect(currentPoints).toBe(20); // 変化なし
+    });
+
+    it('アイテム購入時に正しくポイントが消費される', async () => {
+      const item: PurchasableItem = {
+        id: 'test-item',
+        name: 'テストアイテム',
+        points: 100
+      };
+
+      await consumePoints(item);
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining('/api/points/consume'),
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({ itemId: item.id, points: item.points })
+        })
+      );
     });
   });
 }); 

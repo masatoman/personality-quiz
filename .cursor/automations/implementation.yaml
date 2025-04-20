@@ -1,0 +1,61 @@
+git_automation:
+  schedule:
+    interval: 15m
+    on_implementation_update: true
+  
+  pre_commit_checks:
+    code_quality:
+      - run_eslint
+      - run_typescript_check
+      - check_test_status
+    
+    performance:
+      - run_bundle_size_check
+      - check_performance_metrics
+  
+  commit_message_template: |
+    feat(${feature}): ${implementation_type} の実装
+    
+    実装内容:
+    ${implementation_description}
+    
+    テスト状況:
+    ${test_status}
+    
+    パフォーマンス:
+    ${performance_metrics}
+
+rules:
+  implementation:
+    code_structure:
+      - 単一責任の原則
+      - インターフェースの明確化
+      - 依存性の最小化
+    
+    naming_convention:
+      components: "Pascal Case"
+      functions: "camel Case"
+      constants: "UPPER_SNAKE_CASE"
+      files: "{feature}.{type}.{ts,tsx}"
+    
+    code_quality:
+      complexity_threshold: 10
+      max_file_lines: 300
+      min_test_coverage: 80%
+    
+    performance_requirements:
+      bundle_size_limit: "500KB"
+      initial_load_time: "2s"
+      api_response_time: "300ms"
+    
+    documentation:
+      required_comments:
+        - 複雑なロジックの説明
+        - パブリックAPI
+        - 重要な副作用
+      
+    review_checklist:
+      - テストの全パス
+      - パフォーマンス要件の充足
+      - コード品質基準の遵守
+      - ドキュメントの更新 

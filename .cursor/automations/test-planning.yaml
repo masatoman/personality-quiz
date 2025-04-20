@@ -1,0 +1,63 @@
+git_automation:
+  schedule:
+    interval: 15m
+    on_test_update: true
+  
+  pre_commit_checks:
+    test_validation:
+      - check_test_structure
+      - validate_test_coverage
+      - verify_test_descriptions
+    
+    documentation:
+      - update_test_docs
+      - generate_coverage_report
+  
+  commit_message_template: |
+    test(${feature}): ${test_type} テストケースの追加・更新
+    
+    テスト概要:
+    ${test_description}
+    
+    カバレッジ:
+    ${coverage_summary}
+    
+    関連テスト:
+    ${related_tests}
+
+rules:
+  test_planning:
+    required_docs:
+      - test-plan.md
+      - test-cases.md
+    
+    test_structure:
+      - describe: 機能単位
+      - context: シナリオ単位
+      - it: 具体的なテストケース
+    
+    naming_convention:
+      - files: "{feature}.test.{ts,tsx}"
+      - describe: "機能名"
+      - context: "シナリオ説明"
+      - it: "期待される動作"
+    
+    coverage_requirements:
+      unit_tests: 90%
+      integration_tests: 80%
+      e2e_tests: 70%
+    
+    documentation:
+      required_sections:
+        - テスト目的
+        - 前提条件
+        - テストケース
+        - 期待結果
+        - エッジケース
+    
+    review_checklist:
+      - テストケースの網羅性
+      - エッジケースの考慮
+      - テストの独立性
+      - テストの可読性
+      - ドキュメントの完全性 

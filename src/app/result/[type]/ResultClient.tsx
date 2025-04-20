@@ -1,85 +1,55 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import { PersonalityType } from '@/types/quiz';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { PersonalityType, TypeStats, Stats } from '@/types/quiz';
 import html2canvas from 'html2canvas';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { TwitterIcon, LineIcon, InstagramIcon, FacebookIcon } from '@/components/Icons';
 import { getPersonalityDescription } from '@/lib/personalities';
-import type { TypeStats, Stats } from '@/types/quiz';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import Link from 'next/link';
-import { FaTwitter, FaInstagram, FaFacebook } from 'react-icons/fa';
+import { FaTwitter, FaInstagram, FaFacebook, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import { SiLine } from 'react-icons/si';
-import { 
-  FaChartPie, FaLightbulb, FaBook, FaTools, 
-  FaUser, FaUsers, FaCheckCircle, FaExclamationTriangle 
-} from 'react-icons/fa';
+import { FaLightbulb, FaBook, FaTools } from 'react-icons/fa';
 
-function ResultContent({
-  personalityType
-}: {
-  personalityType: PersonalityType
-}) {
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const resultRef = useRef<HTMLDivElement>(null);
+type ResultContentProps = {
+  type: PersonalityType;
+};
+
+type StatsResponse = {
+  stats: Stats;
+  message: string;
+};
+
+export const ResultContent = ({ type }: ResultContentProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
-  // グローバルエラーハンドリングを設定
-  useErrorHandler();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
+  const { handleError } = useErrorHandler();
+
+  const fetchStats = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/stats/${type}`);
+      if (!response.ok) {
+        throw new Error('統計データの取得に失敗しました');
+      }
+      const data: StatsResponse = await response.json();
+      setStats(data.stats);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('不明なエラーが発生しました'));
+      handleError(err instanceof Error ? err : new Error('不明なエラーが発生しました'));
+    } finally {
+      setLoading(false);
+    }
+  }, [type, handleError]);
 
   useEffect(() => {
-    if (!['giver', 'taker', 'matcher'].includes(personalityType)) {
-      router.push('/');
-      return;
-    }
-
-    let isMounted = true;
-    
-    // クエリパラメータからデータを取得
-    const dataParam = searchParams?.get('data');
-    if (dataParam) {
-      try {
-        const parsedData = JSON.parse(decodeURIComponent(dataParam));
-        if (isMounted) {
-          setStats(parsedData);
-        }
-        return;
-      } catch (error) {
-        console.error('データの解析中にエラーが発生しました:', error);
-      }
-    }
-    
-    // データがなければAPIから取得
-    const fetchStats = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/stats');
-        if (!response.ok) {
-          throw new Error('統計情報の取得に失敗しました');
-        }
-        const data = await response.json();
-        if (isMounted) {
-          setStats(data);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : '統計情報の取得中にエラーが発生しました');
-        console.error('統計情報の取得エラー:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchStats();
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [personalityType, router, searchParams]);
+  }, [fetchStats]);
 
   const handleInstagramShare = async () => {
     if (!resultRef.current) return;
@@ -96,7 +66,7 @@ function ResultContent({
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `英語学習タイプ診断_${personalityType}.png`;
+        a.download = `英語学習タイプ診断_${type}.png`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -111,7 +81,7 @@ function ResultContent({
   };
 
   const shareResult = (platform: 'twitter' | 'line' | 'instagram' | 'facebook') => {
-    const text = `私の英語学習タイプは「${getPersonalityDescription(personalityType).title}」でした！\n\n診断してみる👉`;
+    const text = `私の英語学習タイプは「${getPersonalityDescription(type as PersonalityType).title}」でした！\n\n診断してみる👉`;
     const url = new URL(window.location.origin + '/quiz');
     const shareUrl = url.toString();
 
@@ -131,19 +101,12 @@ function ResultContent({
     }
   };
 
-  const description = getPersonalityDescription(personalityType);
+  const description = getPersonalityDescription(type as PersonalityType);
   const title = description.title;
   const strengths = description.strengths;
   const weaknesses = description.weaknesses;
   const learningMethods = description.learningAdvice.tips;
   const tools = description.learningAdvice.tools;
-
-  // 現在のタイプの割合
-  const currentTypePercentage = stats 
-    ? (typeof stats[personalityType as keyof typeof stats] === 'object' 
-       ? (stats[personalityType as keyof typeof stats] as TypeStats).percentage 
-       : 0)
-    : 0;
 
   return (
     <main className="min-h-screen bg-mesh py-8 px-4">
@@ -163,7 +126,7 @@ function ResultContent({
           {loading ? (
             <p className="text-center py-4">統計情報を読み込み中...</p>
           ) : error ? (
-            <p className="text-center text-red-600 py-4">{error}</p>
+            <p className="text-center text-red-600 py-4">{error.message}</p>
           ) : stats && (
             <div className="mb-8 p-6 bg-surface-light rounded-lg">
               <h3 className="text-lg font-semibold mb-4 text-center">あなたの傾向分析</h3>
@@ -277,7 +240,7 @@ function ResultContent({
       </div>
     </main>
   );
-}
+};
 
 export default function ResultClient({
   personalityType
@@ -285,8 +248,21 @@ export default function ResultClient({
   personalityType: PersonalityType
 }) {
   return (
-    <ErrorBoundary>
-      <ResultContent personalityType={personalityType} />
+    <ErrorBoundary
+      fallback={({ error, reset }) => (
+        <div className="text-center py-8">
+          <h2 className="text-xl font-bold text-red-600 mb-4">エラーが発生しました</h2>
+          <p className="text-gray-600 mb-4">{error.message}</p>
+          <button
+            onClick={reset}
+            className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark"
+          >
+            再試行
+          </button>
+        </div>
+      )}
+    >
+      <ResultContent type={personalityType} />
     </ErrorBoundary>
   );
 } 

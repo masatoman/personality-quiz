@@ -1,9 +1,9 @@
 ---
 description: 
-globs: 
+globs: **/*.test.ts,**/*.test.tsx,**/*.test.js
 alwaysApply: false
 ---
-----
+---
 description: Apply this rule to test-related tasks
 globs: "**/*.test.{ts,tsx,js,jsx}"
 ---

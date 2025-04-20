@@ -30,6 +30,10 @@ export interface ActivitySummary {
   // その他の統計情報
   unique_categories_count: number;
   last_score?: number;
+
+  // リソース関連の統計
+  total_resources: number;
+  completed_resources: number;
 }
 
 /**

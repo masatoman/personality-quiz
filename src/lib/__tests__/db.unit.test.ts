@@ -1,6 +1,16 @@
 import { saveResult, getStats, initDatabase, query } from '../db';
 import fs from 'fs';
-import { Pool } from 'pg';
+import { Pool, PoolClient } from 'pg';
+
+interface MockClient extends PoolClient {
+  query: jest.Mock;
+  release: jest.Mock;
+}
+
+interface MockPool extends Pool {
+  connect: jest.Mock<Promise<MockClient>>;
+  on: jest.Mock;
+}
 
 // fsをモック
 jest.mock('fs', () => ({
@@ -12,15 +22,15 @@ jest.mock('fs', () => ({
 
 // pgをモック
 jest.mock('pg', () => {
-  const mockClient = {
+  const mockClient: MockClient = {
     query: jest.fn(),
     release: jest.fn()
-  };
+  } as unknown as MockClient;
   
-  const mockPool = {
+  const mockPool: MockPool = {
     connect: jest.fn().mockResolvedValue(mockClient),
     on: jest.fn()
-  };
+  } as unknown as MockPool;
   
   return {
     Pool: jest.fn(() => mockPool)
@@ -186,7 +196,7 @@ describe('Database Utilities', () => {
     it('PostgreSQLクエリを実行する', async () => {
       // モッククライアントのクエリ関数に戻り値を設定
       const mockResult = { rows: [{ id: 1, name: 'Test' }] };
-      const mockClient = (new Pool() as any).connect();
+      const mockClient = (await (new Pool() as MockPool).connect());
       mockClient.query.mockResolvedValue(mockResult);
       
       // テストクエリとパラメータ

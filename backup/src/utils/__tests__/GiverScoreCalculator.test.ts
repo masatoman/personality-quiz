@@ -103,9 +103,9 @@ describe('GiverScoreCalculator', () => {
       const summary = await UserActivityTracker.getActivitySummary(userId);
 
       // 活動カウントからスコアを推定
-      let giverScore = summary.create_material_count * 5 + summary.provide_feedback_count * 3;
-      let takerScore = summary.complete_resource_count * 2;
-      let matcherScore = summary.create_material_count * 2 + summary.provide_feedback_count + summary.complete_resource_count;
+      const giverScore = summary.create_material_count * 5 + summary.provide_feedback_count * 3;
+      const takerScore = summary.complete_resource_count * 2;
+      const matcherScore = summary.create_material_count * 2 + summary.provide_feedback_count + summary.complete_resource_count;
 
       // 推定されたスコアに基づいてパーソナリティタイプを決定
       const personalityType = determinePersonalityType(giverScore, takerScore, matcherScore);

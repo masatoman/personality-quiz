@@ -4,6 +4,7 @@ import { auth, getUserAuth } from '@/lib/auth';
 import { BadgeType, BadgeRequirement } from '@/types/badges';
 import { BADGE_DEFINITIONS } from '@/data/badges';
 import { PostgrestError } from '@supabase/supabase-js';
+import { ActivitySummary } from '@/types/activitySummary';
 
 // バッジ獲得状況をチェックするAPIルート
 export async function POST(request: NextRequest) {
@@ -150,7 +151,7 @@ export async function POST(request: NextRequest) {
 // バッジ要件を満たしているかチェックする関数
 function checkRequirement(
   requirement: BadgeRequirement,
-  activitySummary: any,
+  activitySummary: ActivitySummary | null,
   currentActivityType: string
 ): boolean {
   if (!activitySummary) return false;

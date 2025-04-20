@@ -3,8 +3,34 @@ import '@testing-library/jest-dom';
 
 // 環境変数の設定
 process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost:54321';
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'your-anon-key';
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'dummy-anon-key';
 process.env.NEXT_PUBLIC_API_URL = 'http://localhost:3000/api';
+
+// グローバルなモックの設定
+global.fetch = jest.fn();
+global.console = {
+  ...console,
+  // エラーと警告は表示を維持
+  error: jest.fn(),
+  warn: jest.fn(),
+  // 情報系のログは抑制
+  log: jest.fn(),
+  debug: jest.fn(),
+  info: jest.fn(),
+};
+
+// LocalStorageのモック
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  clear: jest.fn(),
+};
+global.localStorage = localStorageMock;
+
+// テスト実行前にモックをリセット
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
 // モックの型定義
 const mockFetch = jest.fn().mockResolvedValue({

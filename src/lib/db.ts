@@ -1,115 +1,169 @@
 import fs from 'fs';
 import path from 'path';
-import { PersonalityType, TypeTotals, TypeStats, Stats } from '@/types/quiz';
-import { Pool, PoolClient, QueryResult, QueryConfig } from 'pg';
+import { Pool, PoolClient, QueryResult as PgQueryResult } from 'pg';
+import { DatabaseError, FileSystemError } from '@/types/errors';
 
 // PostgreSQLの接続プール設定
-export let pool: Pool;
+export let pool: Pool | null = null;
+
+// 拡張されたクエリ結果の型定義
+export interface QueryResult<T> extends Omit<PgQueryResult, 'rows'> {
+  rows: T[];
+}
+
+// PostgreSQLエラーの型定義
+interface PostgresError extends Error {
+  code: string;
+  detail?: string;
+  position?: string;
+  schema?: string;
+  table?: string;
+  column?: string;
+  dataType?: string;
+  constraint?: string;
+}
+
+// データベース設定の型定義
+interface DbConfig {
+  host: string | undefined;
+  user: string | undefined;
+  password: string | undefined;
+  database: string | undefined;
+  ssl: boolean | { rejectUnauthorized: boolean };
+  connectionTimeoutMillis: number;
+  idleTimeoutMillis: number;
+  max: number;
+  min: number;
+  maxUses: number;
+}
 
 // 接続設定
-const dbConfig = {
+const dbConfig: DbConfig = {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
   ssl: process.env.NODE_ENV === 'production' 
-    ? {
-        rejectUnauthorized: false
-      }
+    ? { rejectUnauthorized: false }
     : false,
-  // 接続タイムアウトを15秒に設定（短縮）
   connectionTimeoutMillis: 15000,
-  // アイドル接続のタイムアウトを5秒に設定（短縮）
   idleTimeoutMillis: 5000,
-  // 最大接続数を10に設定（調整）
   max: 10,
-  // 最小プールサイズを2に設定（追加）
   min: 2,
-  // アイドル状態の最大接続数を5に設定（追加）
   maxUses: 5
 };
 
-// プールの初期化関数
-export async function initPool() {
+/**
+ * エラーがPostgreSQLエラーかどうかを判定する型ガード関数
+ */
+function isPostgresError(error: unknown): error is PostgresError {
+  return error instanceof Error && 'code' in error && typeof (error as PostgresError).code === 'string';
+}
+
+/**
+ * データベースプールを初期化する
+ * @returns 初期化されたプール
+ * @throws {DatabaseError} プールの初期化に失敗した場合
+ */
+export async function initPool(): Promise<Pool> {
   try {
     if (!pool) {
       console.log('データベースプールを初期化します...');
       pool = new Pool(dbConfig);
       
-      // エラーイベントのハンドリング
-      pool.on('error', (err: Error & { client?: PoolClient }) => {
-        console.error('PostgreSQL接続エラー:', {
-          message: err.message,
-          stack: err.stack,
-          code: (err as { code?: string }).code,
-          detail: (err as { detail?: string }).detail
-        });
-        // エラーが発生した接続を破棄
-        if (err.client) {
-          console.log('問題のある接続を破棄します');
-          err.client.release(true);
+      pool.on('error', (err: Error, client: PoolClient) => {
+        if (isPostgresError(err)) {
+          console.error('PostgreSQL接続エラー:', {
+            message: err.message,
+            stack: err.stack,
+            code: err.code,
+            detail: err.detail,
+            position: err.position,
+            schema: err.schema,
+            table: err.table
+          });
+        } else {
+          console.error('不明なデータベースエラー:', err);
+        }
+        if (client) {
+          client.release(true);
         }
       });
 
-      // プール状態の監視
       pool.on('connect', () => {
         console.log('新しい接続が確立されました');
       });
 
-      pool.on('acquire', () => {
-        console.log('接続がプールから取得されました');
-      });
-
-      pool.on('remove', () => {
-        console.log('接続がプールから削除されました');
-      });
-
-      // 接続テスト
-      console.log('接続テストを実行します...');
       const client = await pool.connect();
       try {
-        const result = await client.query('SELECT NOW()');
-        console.log('データベース接続テスト成功:', result.rows[0]);
+        const result = await client.query<{ now: Date }>('SELECT NOW()');
+        console.log('データベース接続テスト成功:', result.rows[0].now);
         
-        // 接続プールの状態を確認
-        const poolStatus = await client.query(`
-          SELECT count(*) as connection_count 
-          FROM pg_stat_activity 
-          WHERE datname = $1
-        `, [process.env.DB_NAME]);
+        const poolStatus = await client.query<{ connection_count: number }>(
+          `SELECT count(*) as connection_count 
+           FROM pg_stat_activity 
+           WHERE datname = $1`,
+          [process.env.DB_NAME]
+        );
         console.log('アクティブな接続数:', poolStatus.rows[0].connection_count);
       } finally {
         client.release();
       }
-    } else {
-      console.log('既存のデータベースプールを再利用します');
     }
+    
+    if (!pool) {
+      throw new DatabaseError('プールの初期化に失敗しました');
+    }
+    
     return pool;
-  } catch (error) {
-    console.error('PostgreSQLプールの初期化に失敗しました:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      code: (error as { code?: string }).code,
-      detail: (error as { detail?: string }).detail
-    });
-    throw error;
+  } catch (error: unknown) {
+    if (isPostgresError(error)) {
+      console.error('PostgreSQLプールの初期化に失敗しました:', {
+        message: error.message,
+        stack: error.stack,
+        code: error.code,
+        detail: error.detail
+      });
+    } else {
+      console.error('不明なデータベースエラー:', error);
+    }
+    throw new DatabaseError(
+      `データベース接続エラー: ${error instanceof Error ? error.message : '不明なエラー'}`
+    );
   }
 }
 
+// キャッシュエントリの型定義
+interface CacheEntry<T> {
+  data: QueryResult<T>;
+  timestamp: number;
+}
+
 // クエリ結果のキャッシュ管理
-const queryCache = new Map<string, { data: QueryResult; timestamp: number }>();
+const queryCache = new Map<string, CacheEntry<unknown>>();
 const CACHE_TTL = 5 * 60 * 1000; // 5分
 
-// キャッシュを使用するクエリ実行関数
-export async function cachedQuery(text: string, params?: unknown[], ttl: number = CACHE_TTL): Promise<QueryResult> {
+/**
+ * キャッシュを使用してクエリを実行する
+ * @param text - SQLクエリ文
+ * @param params - クエリパラメータ
+ * @param ttl - キャッシュの有効期限（ミリ秒）
+ * @returns クエリ結果
+ * @throws {DatabaseError} クエリの実行に失敗した場合
+ */
+export async function cachedQuery<T>(
+  text: string,
+  params?: unknown[],
+  ttl: number = CACHE_TTL
+): Promise<QueryResult<T>> {
   const cacheKey = `${text}-${JSON.stringify(params)}`;
-  const cached = queryCache.get(cacheKey);
+  const cached = queryCache.get(cacheKey) as CacheEntry<T> | undefined;
   
   if (cached && Date.now() - cached.timestamp < ttl) {
     return cached.data;
   }
   
-  const result = await query(text, params);
+  const result = await query<T>(text, params);
   queryCache.set(cacheKey, {
     data: result,
     timestamp: Date.now()
@@ -118,20 +172,25 @@ export async function cachedQuery(text: string, params?: unknown[], ttl: number 
   return result;
 }
 
-// バッチ処理用のクエリ実行関数
-export async function batchQuery<T>(
+/**
+ * バッチ処理でクエリを実行する
+ * @param items - 処理するアイテムの配列
+ * @param batchSize - バッチサイズ
+ * @param queryFn - バッチ処理を行う関数
+ * @returns クエリ結果の配列
+ */
+export async function batchQuery<T, R>(
   items: T[],
   batchSize: number,
-  queryFn: (batch: T[]) => Promise<QueryResult>
-): Promise<QueryResult[]> {
-  const results: QueryResult[] = [];
+  queryFn: (batch: T[]) => Promise<QueryResult<R>>
+): Promise<QueryResult<R>[]> {
+  const results: QueryResult<R>[] = [];
   
   for (let i = 0; i < items.length; i += batchSize) {
     const batch = items.slice(i, i + batchSize);
     const batchResults = await queryFn(batch);
     results.push(batchResults);
     
-    // バッチ間で短い遅延を入れる
     if (i + batchSize < items.length) {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
@@ -140,261 +199,101 @@ export async function batchQuery<T>(
   return results;
 }
 
-// クエリ実行関数
-export async function query(text: string, params?: unknown[]): Promise<QueryResult> {
+/**
+ * クエリを実行する
+ * @param text - SQLクエリ文
+ * @param params - クエリパラメータ
+ * @returns クエリ結果
+ * @throws {DatabaseError} クエリの実行に失敗した場合
+ */
+export async function query<T>(
+  text: string,
+  params?: unknown[]
+): Promise<QueryResult<T>> {
+  if (!pool) {
+    await initPool();
+  }
+  
+  if (!pool) {
+    throw new DatabaseError('データベースプールが初期化されていません');
+  }
+
+  try {
+    const result = await pool.query(text, params);
+    return result as QueryResult<T>;
+  } catch (error: unknown) {
+    if (isPostgresError(error)) {
+      throw new DatabaseError(
+        `クエリ実行エラー: ${error.message} (コード: ${error.code}, 詳細: ${error.detail})`
+      );
+    }
+    throw new DatabaseError(
+      `クエリ実行エラー: ${error instanceof Error ? error.message : '不明なエラー'}`
+    );
+  }
+}
+
+/**
+ * トランザクションを実行する
+ * @param callback - トランザクション内で実行する処理
+ * @returns トランザクションの実行結果
+ * @throws {DatabaseError} トランザクションの実行に失敗した場合
+ */
+export async function transaction<T>(
+  callback: (client: PoolClient) => Promise<T>
+): Promise<T> {
   if (!pool) {
     await initPool();
   }
 
-  // パフォーマンス計測開始
-  const startTime = Date.now();
+  if (!pool) {
+    throw new DatabaseError('データベースプールが初期化されていません');
+  }
 
-  // コネクションプールからクライアントを取得
   const client = await pool.connect();
   
   try {
-    // クエリタイムアウトを設定（30秒）
-    await client.query('SET statement_timeout = 30000');
-    
-    // クエリを実行
-    const result = await client.query(text, params);
-    
-    // パフォーマンス計測終了と記録
-    const executionTime = Date.now() - startTime;
-    if (executionTime > 1000) { // 1秒以上かかったクエリをログ
-      console.warn('スロークエリ検出:', {
-        query: text,
-        params,
-        executionTime,
-        timestamp: new Date().toISOString()
-      });
-    }
-    
+    await client.query('BEGIN');
+    const result = await callback(client);
+    await client.query('COMMIT');
     return result;
-  } catch (queryError) {
-    console.error('クエリ実行エラー:', queryError);
-    console.error('実行されたクエリ:', text);
-    console.error('パラメータ:', params);
-    throw queryError;
+  } catch (error: unknown) {
+    await client.query('ROLLBACK');
+    if (isPostgresError(error)) {
+      throw new DatabaseError(
+        `トランザクションエラー: ${error.message} (コード: ${error.code}, 詳細: ${error.detail})`
+      );
+    }
+    throw new DatabaseError(
+      `トランザクションエラー: ${error instanceof Error ? error.message : '不明なエラー'}`
+    );
   } finally {
-    await client.release();
+    client.release();
   }
 }
 
-// データベースファイルのパス
-const DB_DIR = path.join(process.cwd(), 'data');
-const RESULTS_FILE = path.join(DB_DIR, 'results.json');
-const STATS_FILE = path.join(DB_DIR, 'stats.json');
-
-// データベースの初期化
-export function initDatabase() {
+/**
+ * データベースを初期化する
+ * @param sqlFilePath - SQLファイルのパス
+ * @throws {DatabaseError} データベースの初期化に失敗した場合
+ * @throws {FileSystemError} SQLファイルの読み込みに失敗した場合
+ */
+export async function initDatabase(sqlFilePath: string): Promise<void> {
   try {
-    console.log(`データディレクトリパス: ${DB_DIR}`);
-    console.log(`結果ファイルパス: ${RESULTS_FILE}`);
-    console.log(`統計ファイルパス: ${STATS_FILE}`);
-    
-    // データディレクトリの作成
-    if (!fs.existsSync(DB_DIR)) {
-      console.log('データディレクトリが存在しないため、作成します');
-      try {
-        fs.mkdirSync(DB_DIR, { recursive: true });
-      } catch (dirError) {
-        console.error('データディレクトリの作成に失敗しました:', dirError);
-        console.log('代わりにメモリ内のモックデータを使用します');
-        return true; // ファイルシステムにアクセスできなくても処理を続行
-      }
+    const sql = fs.readFileSync(sqlFilePath, 'utf8');
+    await query(sql);
+    console.log('データベースを初期化しました');
+  } catch (error: unknown) {
+    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+      throw new FileSystemError(`SQLファイルが見つかりません: ${sqlFilePath}`);
     }
-
-    // 結果ファイルの作成・確認
-    if (!fs.existsSync(RESULTS_FILE)) {
-      console.log('結果ファイルが存在しないため、作成します');
-      fs.writeFileSync(RESULTS_FILE, JSON.stringify([]), { encoding: 'utf8', mode: 0o666 });
+    if (isPostgresError(error)) {
+      throw new DatabaseError(
+        `データベース初期化エラー: ${error.message} (コード: ${error.code}, 詳細: ${error.detail})`
+      );
     }
-
-    // 統計ファイルの作成・確認
-    if (!fs.existsSync(STATS_FILE)) {
-      console.log('統計ファイルが存在しないため、作成します');
-      const initialStats: Stats = {
-        giver: { count: 0, percentage: 0 },
-        matcher: { count: 0, percentage: 0 },
-        taker: { count: 0, percentage: 0 },
-        total: 0
-      };
-      fs.writeFileSync(STATS_FILE, JSON.stringify(initialStats), { encoding: 'utf8', mode: 0o666 });
-    }
-    
-    return true;
-  } catch (error) {
-    console.error('データベースの初期化中にエラーが発生しました:', error);
-    if (error instanceof Error) {
-      console.error('エラーメッセージ:', error.message);
-      console.error('スタックトレース:', error.stack);
-    }
-    return false;
-  }
-}
-
-// メモリ内のモックデータ
-let mockResults: { id: number; type: PersonalityType; timestamp: string }[] = [];
-let mockStats: Stats = {
-  giver: { count: 10, percentage: 34 },
-  matcher: { count: 7, percentage: 25 },
-  taker: { count: 12, percentage: 41 },
-  total: 29
-};
-
-// 結果の保存
-export async function saveResult(type: PersonalityType): Promise<boolean> {
-  try {
-    // データベースの初期化
-    const initSuccess = initDatabase();
-    if (!initSuccess) {
-      console.log('データベース初期化に失敗しました。メモリ内のモックデータを使用します');
-    }
-
-    // ファイルへの保存を試みる
-    try {
-      console.log(`結果ファイルから読み込みを試行: ${RESULTS_FILE}`);
-      // 現在の結果を読み込む
-      let resultsData = [];
-      try {
-        const fileContent = fs.readFileSync(RESULTS_FILE, 'utf-8');
-        console.log(`読み込まれたファイル内容: ${fileContent}`);
-        resultsData = JSON.parse(fileContent);
-      } catch (readError) {
-        console.error('結果ファイルの読み込みに失敗しました。新しいファイルを作成します:', readError);
-        resultsData = [];
-      }
-      
-      // 新しい結果を追加
-      const newResult = {
-        id: Date.now(),
-        type,
-        timestamp: new Date().toISOString()
-      };
-      resultsData.push(newResult);
-      
-      console.log(`結果ファイルへの書き込みを試行: ${JSON.stringify(resultsData, null, 2)}`);
-      // 結果を保存
-      fs.writeFileSync(RESULTS_FILE, JSON.stringify(resultsData, null, 2), { encoding: 'utf8', mode: 0o666 });
-      
-      // 統計を更新
-      const statsSuccess = await updateStats(type);
-      if (!statsSuccess) {
-        throw new Error('統計の更新に失敗しました');
-      }
-    } catch (fileError) {
-      console.error('ファイルへの保存に失敗しました。メモリ内モックデータを更新します:', fileError);
-      
-      // メモリ内のモックデータを更新
-      const newResult = {
-        id: Date.now(),
-        type,
-        timestamp: new Date().toISOString()
-      };
-      mockResults.push(newResult);
-      
-      // モックの統計を更新
-      mockStats[type].count += 1;
-      mockStats.total += 1;
-      
-      // パーセンテージを再計算
-      Object.keys(mockStats).forEach((key) => {
-        if (key !== 'total') {
-          const personalityType = key as PersonalityType;
-          mockStats[personalityType].percentage = 
-            Math.round((mockStats[personalityType].count / mockStats.total) * 100);
-        }
-      });
-    }
-    
-    return true;
-  } catch (error) {
-    console.error('結果の保存中にエラーが発生しました:', error);
-    if (error instanceof Error) {
-      console.error('エラーメッセージ:', error.message);
-      console.error('スタックトレース:', error.stack);
-    }
-    return false;
-  }
-}
-
-// 統計の更新
-async function updateStats(type: PersonalityType): Promise<boolean> {
-  try {
-    console.log(`統計ファイルから読み込みを試行: ${STATS_FILE}`);
-    // 統計データを読み込む
-    let statsData: Stats;
-    try {
-      const fileContent = fs.readFileSync(STATS_FILE, 'utf-8');
-      console.log(`読み込まれた統計ファイル内容: ${fileContent}`);
-      statsData = JSON.parse(fileContent);
-    } catch (readError) {
-      console.error('統計ファイルの読み込みに失敗しました。新しい統計を作成します:', readError);
-      statsData = {
-        giver: { count: 0, percentage: 0 },
-        matcher: { count: 0, percentage: 0 },
-        taker: { count: 0, percentage: 0 },
-        total: 0
-      };
-    }
-    
-    // カウントを増やす
-    statsData[type].count += 1;
-    statsData.total += 1;
-    
-    // パーセンテージを再計算
-    const total = statsData.total;
-    Object.keys(statsData).forEach((key) => {
-      if (key !== 'total') {
-        const personalityType = key as PersonalityType;
-        statsData[personalityType].percentage = 
-          Math.round((statsData[personalityType].count / total) * 100);
-      }
-    });
-    
-    console.log(`統計ファイルへの書き込みを試行: ${JSON.stringify(statsData, null, 2)}`);
-    // 統計を保存
-    await fs.promises.writeFile(STATS_FILE, JSON.stringify(statsData, null, 2), { encoding: 'utf8', mode: 0o666 });
-    return true;
-  } catch (error) {
-    console.error('統計の更新中にエラーが発生しました:', error);
-    if (error instanceof Error) {
-      console.error('エラーメッセージ:', error.message);
-      console.error('スタックトレース:', error.stack);
-    }
-    return false;
-  }
-}
-
-// 統計の取得
-export function getStats(): Stats {
-  try {
-    // データベースの初期化
-    const initSuccess = initDatabase();
-    if (!initSuccess) {
-      console.log('データベース初期化に失敗しました。メモリ内のモックデータを使用します');
-      return mockStats;
-    }
-    
-    // ファイルからの読み込みを試みる
-    try {
-      console.log(`統計ファイルから読み込みを試行: ${STATS_FILE}`);
-      const fileContent = fs.readFileSync(STATS_FILE, 'utf-8');
-      console.log(`読み込まれた統計ファイル内容: ${fileContent}`);
-      return JSON.parse(fileContent);
-    } catch (readError) {
-      console.error('統計ファイルの読み込みに失敗しました。メモリ内モックデータを返します:', readError);
-      return mockStats;
-    }
-  } catch (error) {
-    console.error('統計の取得中にエラーが発生しました:', error);
-    if (error instanceof Error) {
-      console.error('エラーメッセージ:', error.message);
-      console.error('スタックトレース:', error.stack);
-    }
-    
-    // エラー時はモックデータを返す
-    return mockStats;
+    throw new DatabaseError(
+      `データベース初期化エラー: ${error instanceof Error ? error.message : '不明なエラー'}`
+    );
   }
 } 

@@ -1,5 +1,6 @@
 import { auth, isAdmin, canAccessUserData, getUserAuth } from '../auth';
 import { createClient } from '@/utils/supabase/server';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 // モックの設定
 jest.mock('@/utils/supabase/server');
@@ -27,12 +28,12 @@ describe('Auth Utilities', () => {
   const mockAdminUser = {
     id: 'admin-456',
     email: 'admin@example.com',
-    role: 'admin'
+    role: 'admin' as const
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (createClient as jest.Mock).mockReturnValue({
+    (createClient as jest.Mock<SupabaseClient>).mockReturnValue({
       auth: {
         getSession: jest.fn().mockResolvedValue({
           data: { session: mockSession },
@@ -43,7 +44,7 @@ describe('Auth Utilities', () => {
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             single: jest.fn().mockResolvedValue({
-              data: { role: 'user' },
+              data: { role: 'user' as const },
               error: null
             })
           })

@@ -31,22 +31,31 @@ export interface TextSection extends Section {
 export interface ImageSection extends Section {
   type: 'image';
   imageUrl: string;
+  caption?: string;
   altText?: string;
   description?: string;
 }
 
 // クイズの質問の型定義
+export interface QuizOption {
+  id: string;
+  text: string;
+}
+
 export interface Question {
   id: string;
   question: string;
-  options: string[];
-  correctAnswer: number;
+  options: QuizOption[];
+  correctAnswer: string;
   explanation?: string;
+  points?: number;
 }
 
 // クイズセクションの型定義
 export interface QuizSection extends Section {
   type: 'quiz';
+  description?: string;
+  timeLimit?: number;
   questions: Question[];
 }
 
@@ -59,7 +68,7 @@ export interface Review {
   rating: number;
   comment: string;
   createdAt: string;
-  helpful?: number; // 「役に立った」の数
+  helpful?: number;
 }
 
 // 関連教材の型定義
@@ -68,8 +77,8 @@ export interface RelatedMaterial {
   title: string;
   difficulty: Difficulty;
   estimatedTime: number;
-  rating: number;
-  reviewCount: number;
+  rating?: number;
+  reviewCount?: number;
   thumbnailUrl?: string;
 }
 
@@ -87,15 +96,18 @@ export interface Material {
   id: string;
   title: string;
   description: string;
-  category: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  sections: MaterialSection[];
-}
-
-export interface MaterialSection {
-  id: string;
-  title: string;
-  content: string;
+  difficulty: Difficulty;
+  estimatedTime: number;
+  createdAt: string;
+  updatedAt: string;
+  author: Author;
+  targetAudience: TargetAudience[];
+  language: string;
+  version: string;
+  sections: Section[];
+  reviews: Review[];
+  relatedMaterials: RelatedMaterial[];
+  tags: string[];
 }
 
 // クイズ結果の型定義
@@ -104,6 +116,6 @@ export interface QuizResult {
   total: number;
   submitted: boolean;
   completedAt?: string;
-  timeSpent?: number; // 所要時間（秒）
-  correctAnswers?: string[]; // 正解した問題のID
+  timeSpent?: number;
+  correctAnswers?: string[];
 } 

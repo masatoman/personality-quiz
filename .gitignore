@@ -40,3 +40,7 @@ next-env.d.ts
 .vscode/
 
 *storybook.log
+
+# Large files
+Docker.dmg
+*.dmg
