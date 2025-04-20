@@ -1,19 +1,18 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { PersonalityType, TypeStats, Stats } from '@/types/quiz';
+import { PersonalityType, Stats } from '@/types/quiz';
 import html2canvas from 'html2canvas';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { getPersonalityDescription } from '@/lib/personalities';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import Link from 'next/link';
-import { FaTwitter, FaInstagram, FaFacebook, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { FaTwitter, FaInstagram, FaFacebook, FaCheckCircle, FaExclamationTriangle, FaLightbulb, FaBook, FaTools } from 'react-icons/fa';
 import { SiLine } from 'react-icons/si';
-import { FaLightbulb, FaBook, FaTools } from 'react-icons/fa';
 
 type ResultContentProps = {
-  type: PersonalityType;
+  type: string;
 };
 
 type StatsResponse = {
@@ -22,8 +21,6 @@ type StatsResponse = {
 };
 
 export const ResultContent = ({ type }: ResultContentProps) => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -40,16 +37,17 @@ export const ResultContent = ({ type }: ResultContentProps) => {
       const data: StatsResponse = await response.json();
       setStats(data.stats);
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('不明なエラーが発生しました'));
-      handleError(err instanceof Error ? err : new Error('不明なエラーが発生しました'));
+      const error = err instanceof Error ? err : new Error('不明なエラーが発生しました');
+      setError(error);
+      handleError(error);
     } finally {
       setLoading(false);
     }
   }, [type, handleError]);
 
   useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
+    void fetchStats();
+  }, [type]);
 
   const handleInstagramShare = async () => {
     if (!resultRef.current) return;
@@ -72,11 +70,11 @@ export const ResultContent = ({ type }: ResultContentProps) => {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
-        alert('画像を保存しました。\nこの画像をインスタグラムでシェアしてください。');
+        void alert('画像を保存しました。\nこの画像をインスタグラムでシェアしてください。');
       }, 'image/png');
     } catch (error) {
       console.error('スクリーンショットの作成に失敗しました:', error);
-      alert('スクリーンショットの作成に失敗しました。');
+      void alert('スクリーンショットの作成に失敗しました。');
     }
   };
 
@@ -87,16 +85,16 @@ export const ResultContent = ({ type }: ResultContentProps) => {
 
     switch (platform) {
       case 'twitter':
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+        void window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
         break;
       case 'line':
-        window.open(`https://line.me/R/msg/text/?${encodeURIComponent(text + shareUrl)}`, '_blank');
+        void window.open(`https://line.me/R/msg/text/?${encodeURIComponent(text + shareUrl)}`, '_blank');
         break;
       case 'instagram':
-        handleInstagramShare();
+        void handleInstagramShare();
         break;
       case 'facebook':
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+        void window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
         break;
     }
   };
