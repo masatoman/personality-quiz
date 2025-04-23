@@ -27,63 +27,10 @@ declare global {
       toContainHTML(html: string): R;
       toHaveAccessibleDescription(description?: string | RegExp): R;
       toHaveAccessibleName(name?: string | RegExp): R;
-      toHaveAttribute(attr: string, value?: unknown): R;
-      toHaveClass(...classNames: string[]): R;
-      toHaveFocus(): R;
-      toHaveFormValues(values: Record<string, unknown>): R;
-      toHaveStyle(css: Record<string, unknown>): R;
-      toHaveTextContent(text: string | RegExp, options?: { normalizeWhitespace: boolean }): R;
-      toHaveValue(value?: string | string[] | number): R;
-      toBeInTheDocument(): R;
-      toBeVisible(): R;
-      toHaveValidationError(field: string, message: string): R;
-      toHaveValidationErrors(errors: Record<string, string>): R;
-      toBeValidationError(message: string): R;
-      toBeFile(): R;
-      toBeValidDate(): R;
-      toBeValidEmail(): R;
-      toBeValidUrl(): R;
-      toBeValidUuid(): R;
-      toBeValidPhoneNumber(): R;
-      toBeValidPostalCode(): R;
-      toBeValidCreditCard(): R;
-      toBeValidIpAddress(): R;
-      toBeValidMacAddress(): R;
-      toBeValidLatitude(): R;
-      toBeValidLongitude(): R;
-      toBeValidPort(): R;
-      toBeValidHostname(): R;
-      toBeValidPath(): R;
-      toBeEmpty(): R;
-      toBeEmptyDOMElement(): R;
-      toBeDisabled(): R;
-      toBeEnabled(): R;
-      toHaveTextContent(text: string | RegExp, options?: { normalizeWhitespace: boolean }): R;
-      toHaveValue(value?: string | string[] | number): R;
-      toBeChecked(): R;
-      toBePartiallyChecked(): R;
-      toHaveFocus(): R;
-      toBeEmpty(): R;
-      toBeEmptyDOMElement(): R;
-      toBeInvalid(): R;
-      toBeRequired(): R;
-      toBeValid(): R;
-      toContainElement(element: HTMLElement | null): R;
-      toContainHTML(html: string): R;
-      toHaveAccessibleDescription(description?: string | RegExp): R;
-      toHaveAccessibleName(name?: string | RegExp): R;
-      toHaveDescription(description: string | RegExp): R;
-      toHaveDisplayValue(value: string | RegExp | (string | RegExp)[]): R;
-      toHaveErrorMessage(message?: string | RegExp): R;
-      toHaveFormValues(values: Record<string, unknown>): R;
-      toBeInTheDOM(): R;
-      toHaveProperty(keyPath: string, value?: unknown): R;
+      toHaveProperty(path: string, value?: unknown): R;
       toHaveLength(length: number): R;
       toHaveBeenCalledWith(...args: unknown[]): R;
-      toHaveBeenCalledTimes(count: number): R;
       toHaveBeenCalled(): R;
-      toHaveBeenLastCalledWith(...args: unknown[]): R;
-      toHaveBeenNthCalledWith(nthCall: number, ...args: unknown[]): R;
       toBe(expected: unknown): R;
       toEqual(expected: unknown): R;
       toBeDefined(): R;
@@ -91,7 +38,7 @@ declare global {
       toBeUndefined(): R;
       toBeTruthy(): R;
       toBeFalsy(): R;
-      toBeInstanceOf(expected: Function): R;
+      toBeInstanceOf(expected: Constructor): R;
       toBeGreaterThan(expected: number): R;
       toBeGreaterThanOrEqual(expected: number): R;
       toBeLessThan(expected: number): R;
@@ -100,25 +47,27 @@ declare global {
       toMatch(expected: string | RegExp): R;
       toThrow(expected?: string | Error | RegExp): R;
       toBeCloseTo(expected: number, precision?: number): R;
+      toMatchObject(object: Record<string, unknown>): R;
+      toContainEqual(item: unknown): R;
     }
 
     interface Expect {
       assertions(count: number): void;
     }
 
-    interface MockInstance<T = unknown, Y extends unknown[] = unknown[]> {
-      mockReturnValue(value: T): this;
-      mockReturnValueOnce(value: T): this;
-      mockImplementation(fn: (...args: Y) => T): this;
-      mockImplementationOnce(fn: (...args: Y) => T): this;
-      mockResolvedValue(value: Awaited<T>): this;
-      mockResolvedValueOnce(value: Awaited<T>): this;
-      mockRejectedValue(value: unknown): this;
-      mockRejectedValueOnce(value: unknown): this;
+    type Constructor = new (...args: unknown[]) => unknown;
+
+    type MockInstance<T = unknown, Y extends unknown[] = unknown[]> = {
+      (...args: Y): T;
+      mock: MockContext<T, Y>;
       mockClear(): void;
       mockReset(): void;
       mockRestore(): void;
-    }
+      mockImplementation(fn: (...args: Y) => T): MockInstance<T, Y>;
+      mockImplementationOnce(fn: (...args: Y) => T): MockInstance<T, Y>;
+      mockName(name: string): MockInstance<T, Y>;
+      getMockName(): string;
+    };
 
     function fn(): MockInstance;
     function fn<T = unknown, Y extends unknown[] = unknown[]>(
@@ -136,12 +85,10 @@ declare global {
   }
 
   interface ExpectStatic {
-    objectContaining(expected: Record<string, unknown>): unknown;
-    stringContaining(expected: string): unknown;
-    stringMatching(expected: string | RegExp): unknown;
-    arrayContaining(expected: unknown[]): unknown;
-    any(constructor: Function): unknown;
-    anything(): unknown;
+    arrayContaining(arr: unknown[]): unknown[];
+    objectContaining(obj: Record<string, unknown>): Record<string, unknown>;
+    stringContaining(str: string): string;
+    stringMatching(str: string | RegExp): string;
     assertions(count: number): void;
   }
 
@@ -159,11 +106,7 @@ declare global {
     TextDecoder: typeof TextDecoder;
   }
 
-  // グローバルなfetch関数の型定義を修正
   let fetch: jest.MockInstance<Promise<Response>, [input: RequestInfo | URL, init?: RequestInit]>;
 }
-
-// これにより、Jest.Mockがグローバルスコープに確実に定義されます
-interface Mock<T = unknown, Y extends unknown[] = unknown[]> extends Function, jest.MockInstance<T, Y> {}
 
 export {};

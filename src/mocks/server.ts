@@ -1,5 +1,6 @@
 import { setupServer } from 'msw/node';
 import { http } from 'msw';
+import { handlers } from './handlers';
 
 export const handlers = [
   http.post('*/auth/v1/reset-password-for-email', () => {
@@ -10,6 +11,7 @@ export const handlers = [
   }),
 ];
 
+// MSWサーバーのセットアップ
 export const server = setupServer(...handlers);
 
 // MSWのセットアップ

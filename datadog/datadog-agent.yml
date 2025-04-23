@@ -1,0 +1,116 @@
+# Datadogエージェント基本設定
+api_key: ${DD_API_KEY}
+site: datadoghq.com
+hostname: giver-english-app
+
+# ログ収集設定
+logs_enabled: true
+logs_config:
+  container_collect_all: true
+  processing_rules:
+    - type: mask_sequences
+      name: mask_sensitive_data
+      pattern: '(?:password|token|key|secret)": "[^"]*'
+      replacement: '\\1": "[MASKED]'
+
+# APM設定
+apm_config:
+  enabled: true
+  env: ${NODE_ENV}
+  log_file: /var/log/datadog/trace-agent.log
+  max_traces_per_second: 100
+  max_memory: 500000000
+  max_cpu_percent: 50
+
+# メトリクス収集設定
+process_config:
+  enabled: true
+  intervals:
+    process_realtime: 10
+    process: 30
+
+# カスタムメトリクス
+custom_checks:
+  - name: api_health
+    command: ["curl", "-f", "http://localhost:3000/api/health"]
+    interval: 60
+  - name: giver_score_check
+    command: ["curl", "-f", "http://localhost:3000/api/metrics/giver-scores"]
+    interval: 300
+  - name: active_users
+    command: ["curl", "-f", "http://localhost:3000/api/metrics/active-users"]
+    interval: 120
+  - name: system_performance
+    command: ["curl", "-f", "http://localhost:3000/api/metrics/performance"]
+    interval: 30
+
+# インテグレーション設定
+config_providers:
+  - name: docker
+    polling: true
+    poll_interval: 30
+
+integrations:
+  # PostgreSQL監視
+  postgres:
+    init_config:
+    instances:
+      - host: postgres
+        port: 5432
+        username: datadog
+        password: ${DD_POSTGRES_PASS}
+        dbname: giver_english_db
+        tags:
+          - "service:database"
+          - "env:${NODE_ENV}"
+        custom_queries:
+          - query: "SELECT count(*) as active_sessions FROM sessions WHERE last_activity > NOW() - INTERVAL '30 minutes'"
+            metrics:
+              active_sessions: "gauge"
+            tags:
+              - "metric_type:session"
+          - query: "SELECT avg(score) as avg_giver_score FROM users WHERE last_login > NOW() - INTERVAL '7 days'"
+            metrics:
+              avg_giver_score: "gauge"
+            tags:
+              - "metric_type:engagement"
+
+  # Node.js監視
+  node:
+    init_config:
+    instances:
+      - process_name:
+          - node
+        tags:
+          - "service:nextjs"
+          - "env:${NODE_ENV}"
+        checks:
+          - type: memory_heap
+            warning: 70
+            critical: 85
+          - type: event_loop_lag
+            warning: 100
+            critical: 200
+
+  # Docker監視
+  docker:
+    init_config:
+    instances:
+      - url: "unix://var/run/docker.sock"
+        collect_container_size: true
+        collect_container_count: true
+        collect_volume_count: true
+        collect_images_stats: true
+        tags:
+          - "env:${NODE_ENV}"
+
+# タグ設定
+tags:
+  - "project:giver-english"
+  - "env:${NODE_ENV}"
+  - "region:ap-northeast-1"
+
+# リソース制限
+resources:
+  cpu: 200m
+  memory: 256Mi 

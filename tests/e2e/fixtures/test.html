@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>テストページ</title>
+    <style>
+        .hidden { display: none; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- テスト用フォーム -->
+        <form id="testForm">
+            <input type="email" id="email" required>
+            <input type="checkbox" id="checkbox">
+            <button type="submit" id="submitButton">送信</button>
+            <button type="button" id="testButton" disabled>テストボタン</button>
+        </form>
+
+        <!-- テスト用の非表示要素 -->
+        <div id="hiddenElement" class="hidden">非表示コンテンツ</div>
+
+        <!-- スタイル確認用要素 -->
+        <div id="styledElement" style="color: red;">スタイル確認用</div>
+
+        <!-- イベントテスト用要素 -->
+        <button id="eventButton">イベントテスト</button>
+
+        <!-- バリデーション確認用フォーム -->
+        <form id="validationForm">
+            <input type="text" id="requiredField" required>
+            <span id="validationMessage" class="error"></span>
+        </form>
+    </div>
+
+    <script>
+        // イベントリスナーの設定
+        document.getElementById('eventButton').addEventListener('click', () => {
+            const event = new CustomEvent('testEvent', { detail: 'テストデータ' });
+            window.dispatchEvent(event);
+        });
+
+        // フォームバリデーション
+        document.getElementById('validationForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const field = document.getElementById('requiredField');
+            if (!field.value) {
+                document.getElementById('validationMessage').textContent = '入力が必要です';
+            }
+        });
+    </script>
+</body>
+</html> 

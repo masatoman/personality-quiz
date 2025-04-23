@@ -1,132 +1,148 @@
 services:
   # PostgreSQL データベース
-  postgres:
-    image: postgres:15
-    container_name: giver-english-postgres
-    restart: always
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-      - ./docker/init-scripts:/docker-entrypoint-initdb.d
-    environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_DB: giver_english_db
+  supabase-db:
+    platform: linux/amd64
+    image: supabase/postgres:14.1.0
     ports:
-      - "${DATABASE_PORT}:5432"
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      # パフォーマンス最適化設定（M1 Mac 8GB向け）
+      POSTGRES_MAX_CONNECTIONS: 50
+      POSTGRES_SHARED_BUFFERS: 128MB
+      POSTGRES_WORK_MEM: 8MB
+      POSTGRES_MAINTENANCE_WORK_MEM: 64MB
+      POSTGRES_EFFECTIVE_CACHE_SIZE: 512MB
+    volumes:
+      - supabase-db-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
 
   # Supabase認証サービス
   supabase-auth:
-    image: supabase/gotrue:v2.127.0
-    container_name: giver-english-auth
+    platform: linux/amd64
+    image: supabase/gotrue:v2.132.3
     depends_on:
-      postgres:
-        condition: service_healthy
-    restart: always
+      - supabase-db
     environment:
+      GOTRUE_JWT_SECRET: ${SUPABASE_JWT_SECRET}
+      GOTRUE_JWT_EXP: ${GOTRUE_JWT_EXP}
       GOTRUE_DB_DRIVER: postgres
-      GOTRUE_DB_HOST: postgres
+      GOTRUE_DB_HOST: supabase-db
       GOTRUE_DB_PORT: 5432
-      GOTRUE_DB_USER: postgres
-      GOTRUE_DB_PASSWORD: postgres
-      GOTRUE_DB_NAME: giver_english_db
+      GOTRUE_DB_USER: ${POSTGRES_USER}
+      GOTRUE_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      GOTRUE_DB_NAME: ${POSTGRES_DB}
       GOTRUE_API_HOST: 0.0.0.0
-      GOTRUE_SITE_URL: http://localhost:${PORT}
-      GOTRUE_JWT_SECRET: super-secret-jwt-token-with-at-least-32-characters-long
-      GOTRUE_JWT_EXP: 3600
-      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
-      GOTRUE_DISABLE_SIGNUP: "false"
-      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
-      GOTRUE_MAILER_AUTOCONFIRM: "true"
-      PORT: 9999
-      GOTRUE_EXTERNAL_GOOGLE_ENABLED: "false"
-      GOTRUE_EXTERNAL_APPLE_ENABLED: "false"
+      GOTRUE_SITE_URL: ${GOTRUE_SITE_URL}
+      GOTRUE_MAILER_AUTOCONFIRM: ${GOTRUE_MAILER_AUTOCONFIRM}
+      # コネクションプール設定（軽量化）
+      GOTRUE_DB_MAX_CONNS: 20
+      GOTRUE_DB_IDLE_CONNS: 5
     ports:
       - "${SUPABASE_AUTH_PORT}:9999"
-
-  # Supabase ストレージサービス
-  supabase-storage:
-    image: supabase/storage-api:v0.43.11
-    container_name: giver-english-storage
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: always
-    environment:
-      ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.ZopqoUt20nEV9cklpv9jtLgXMv3cJYAYfdv-q2I9t0c
-      SERVICE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIn0.M2d2z4SFn5C7HlJlaSLfrzuYim9nbY_XI40uWFN3hEE
-      POSTGREST_URL: http://supabase-rest:3000
-      POSTGRES_CONNECTION: postgres://postgres:postgres@postgres:5432/giver_english_db
-      REGION: us-east-1
-      STORAGE_BACKEND: file
-      FILE_STORAGE_BACKEND_PATH: /var/lib/storage
-      TENANT_ID: stub
-      GLOBAL_S3_BUCKET: stub
-      ENABLE_IMAGE_TRANSFORMATION: "true"
-      IMGPROXY_URL: http://imgproxy:5001
-    volumes:
-      - storage-data:/var/lib/storage
-    ports:
-      - "${SUPABASE_STORAGE_PORT}:9000"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9999/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
 
   # Supabase REST API
   supabase-rest:
-    image: postgrest/postgrest:v11.2.2
-    container_name: giver-english-rest
+    platform: linux/amd64
+    image: postgrest/postgrest:v11.2.0
     depends_on:
-      postgres:
+      supabase-db:
         condition: service_healthy
     restart: always
     environment:
-      PGRST_DB_URI: postgres://postgres:postgres@postgres:5432/giver_english_db
-      PGRST_DB_SCHEMA: public,storage
+      PGRST_DB_URI: postgres://postgres:postgres@supabase-db:5432/postgres
+      PGRST_DB_SCHEMA: public,auth
       PGRST_DB_ANON_ROLE: anon
-      PGRST_JWT_SECRET: super-secret-jwt-token-with-at-least-32-characters-long
+      PGRST_JWT_SECRET: "your-super-secret-jwt-token-with-at-least-32-characters"
+      PGRST_DB_USE_LEGACY_GUCS: "false"
     ports:
-      - "${SUPABASE_API_PORT}:3000"
+      - "3001:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
 
-  # イメージ処理サービス(imgproxy)
-  imgproxy:
-    image: darthsim/imgproxy:v3.22
-    container_name: giver-english-imgproxy
-    restart: always
-    environment:
-      IMGPROXY_BIND: ":5001"
-      IMGPROXY_LOCAL_FILESYSTEM_ROOT: /var/lib/storage
-    volumes:
-      - storage-data:/var/lib/storage
-    ports:
-      - "5001:5001"
-
-  # Next.js アプリ開発サーバー (オプション)
-  nextjs:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile.dev
-    container_name: giver-english-nextjs
-    restart: always
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/.next
-    environment:
-      - NODE_ENV=development
-      - NEXT_PUBLIC_SUPABASE_URL=http://localhost:${SUPABASE_API_PORT}
-      - NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.ZopqoUt20nEV9cklpv9jtLgXMv3cJYAYfdv-q2I9t0c
-      - NEXT_PUBLIC_AUTH_URL=http://localhost:${SUPABASE_AUTH_PORT}
-      - NEXT_PUBLIC_STORAGE_URL=http://localhost:${SUPABASE_STORAGE_PORT}
-    ports:
-      - "${PORT}:3000"
+  # Supabase Realtime
+  supabase-realtime:
+    platform: linux/amd64
+    image: supabase/realtime:v2.25.8
     depends_on:
-      - postgres
-      - supabase-auth
-      - supabase-rest
-      - supabase-storage
+      - supabase-db
+    environment:
+      DB_HOST: supabase-db
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+      PORT: ${SUPABASE_REALTIME_PORT}
+      JWT_SECRET: ${SUPABASE_JWT_SECRET}
+      # パフォーマンス設定（軽量化）
+      SUBSCRIPTION_MAX_TIMEOUT: 30000
+      SUBSCRIPTION_MAX_COUNT: 50
+    ports:
+      - "${SUPABASE_REALTIME_PORT}:4000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
 
 volumes:
-  postgres-data:
-  storage-data: 
+  supabase-db-data:
+    driver: local
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.24.0.0/16 

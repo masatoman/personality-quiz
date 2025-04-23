@@ -9,7 +9,9 @@ import {
   Tooltip, 
   Legend 
 } from 'recharts';
-import { ActivityType } from '@/types/quiz';
+import { ActivityType, activityTypeMap } from '@/types/activity';
+import { useQuery } from '@tanstack/react-query';
+import { getActivityStats } from '@/lib/api';
 
 // 活動タイプ情報の型定義
 interface ActivityTypeInfo {
@@ -26,101 +28,53 @@ interface ActivityTypeChartProps {
 
 // 活動種類別円グラフコンポーネント
 const ActivityTypeChart: React.FC<ActivityTypeChartProps> = ({ userId }) => {
-  const [activityData, setActivityData] = useState<ActivityTypeInfo[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: activityData,
+    isLoading: loading,
+    error,
+    refetch
+  } = useQuery<ActivityTypeInfo[]>({
+    queryKey: ['activityStats', userId],
+    queryFn: () => getActivityStats(userId),
+    staleTime: 5 * 60 * 1000, // 5分間はキャッシュを使用
+    retry: 2
+  });
 
-  // 活動タイプの表示名とカラーマップ
-  const activityTypeMap: Record<ActivityType, { label: string; color: string }> = {
-    'CREATE_CONTENT': { label: 'コンテンツ作成', color: '#6246EA' },
-    'PROVIDE_FEEDBACK': { label: 'フィードバック提供', color: '#36B9CC' },
-    'CONSUME_CONTENT': { label: 'コンテンツ利用', color: '#4CAF50' },
-    'RECEIVE_FEEDBACK': { label: 'フィードバック受領', color: '#FFC107' },
-    'SHARE_RESOURCE': { label: 'リソース共有', color: '#FF5722' },
-    'ASK_QUESTION': { label: '質問', color: '#9C27B0' }
-  };
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
-  // データ取得
-  useEffect(() => {
-    const fetchActivityData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        const response = await fetch(`/api/user/activity-stats?userId=${userId}`);
-        
-        if (!response.ok) {
-          throw new Error(`データの取得に失敗しました: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        // データの形式を整える
-        const formattedData = Object.entries(data.activityCounts).map(([type, count]) => ({
-          type: type as ActivityType,
-          count: count as number,
-          label: activityTypeMap[type as ActivityType]?.label || type,
-          color: activityTypeMap[type as ActivityType]?.color || '#999999'
-        }));
-        
-        setActivityData(formattedData);
-      } catch (error) {
-        console.error('活動データの取得に失敗しました:', error);
-        setError('活動データの取得中にエラーが発生しました。');
-        
-        // 開発用のモックデータ
-        setActivityData(generateMockData());
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchActivityData();
-  }, [userId]);
+  if (error) {
+    return (
+      <div className="bg-red-50 border-l-4 border-red-500 p-4">
+        <div className="flex">
+          <div className="ml-3">
+            <p className="text-sm text-red-700">
+              活動データの取得中にエラーが発生しました
+            </p>
+            <button
+              onClick={() => refetch()}
+              className="mt-2 text-sm text-red-700 underline hover:text-red-800"
+            >
+              再試行
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  // モックデータ生成関数（開発用）
-  const generateMockData = (): ActivityTypeInfo[] => {
-    const mockData: ActivityTypeInfo[] = [
-      {
-        type: 'CONSUME_CONTENT',
-        count: 45,
-        label: activityTypeMap['CONSUME_CONTENT'].label,
-        color: activityTypeMap['CONSUME_CONTENT'].color
-      },
-      {
-        type: 'CREATE_CONTENT',
-        count: 12,
-        label: activityTypeMap['CREATE_CONTENT'].label,
-        color: activityTypeMap['CREATE_CONTENT'].color
-      },
-      {
-        type: 'PROVIDE_FEEDBACK',
-        count: 23,
-        label: activityTypeMap['PROVIDE_FEEDBACK'].label,
-        color: activityTypeMap['PROVIDE_FEEDBACK'].color
-      },
-      {
-        type: 'RECEIVE_FEEDBACK',
-        count: 18,
-        label: activityTypeMap['RECEIVE_FEEDBACK'].label,
-        color: activityTypeMap['RECEIVE_FEEDBACK'].color
-      },
-      {
-        type: 'SHARE_RESOURCE',
-        count: 7,
-        label: activityTypeMap['SHARE_RESOURCE'].label,
-        color: activityTypeMap['SHARE_RESOURCE'].color
-      },
-      {
-        type: 'ASK_QUESTION',
-        count: 15,
-        label: activityTypeMap['ASK_QUESTION'].label,
-        color: activityTypeMap['ASK_QUESTION'].color
-      }
-    ];
-    
-    return mockData;
-  };
+  if (!activityData || activityData.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        活動データがありません
+      </div>
+    );
+  }
 
   // 合計活動数を計算
   const totalActivities = activityData.reduce((sum, item) => sum + item.count, 0);
@@ -143,43 +97,29 @@ const ActivityTypeChart: React.FC<ActivityTypeChartProps> = ({ userId }) => {
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-xl font-bold mb-4">活動種類の割合</h2>
       
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
-      ) : error ? (
-        <div className="flex justify-center items-center h-64 text-red-500">
-          <p>{error}</p>
-        </div>
-      ) : activityData.length === 0 ? (
-        <div className="flex justify-center items-center h-64 text-gray-500">
-          <p>まだ活動データがありません。</p>
-        </div>
-      ) : (
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={activityData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="count"
-                nameKey="label"
-                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-              >
-                {activityData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      )}
+      <div className="h-64">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={activityData}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              outerRadius={80}
+              fill="#8884d8"
+              dataKey="count"
+              nameKey="label"
+              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+            >
+              {activityData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
       
       <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2">
         {activityData.map((activity) => (

@@ -1,0 +1,84 @@
+{
+  "monitors": [
+    {
+      "name": "高エラー率検知",
+      "type": "metric alert",
+      "query": "sum(last_5m):sum:trace.http.request.errors{service:nextjs} / sum:trace.http.request.hits{service:nextjs} * 100 > 5",
+      "message": "@slack-alerts\nエラー率が5%を超えています。\n\n{{#is_alert}}\n現在のエラー率: {{value}}%\n{{/is_alert}}\n\n{{#is_recovery}}\n復旧しました\n{{/is_recovery}}",
+      "tags": ["service:nextjs", "env:production"],
+      "options": {
+        "notify_no_data": true,
+        "no_data_timeframe": 10,
+        "thresholds": {
+          "critical": 5,
+          "warning": 3
+        },
+        "include_tags": true
+      }
+    },
+    {
+      "name": "高レイテンシー検知",
+      "type": "metric alert",
+      "query": "avg(last_5m):avg:trace.http.request.duration{service:nextjs} > 2000",
+      "message": "@slack-alerts\nAPIレスポンスタイムが2秒を超えています。\n\n{{#is_alert}}\n現在の平均レスポンスタイム: {{value}}ms\n{{/is_alert}}\n\n{{#is_recovery}}\n復旧しました\n{{/is_recovery}}",
+      "tags": ["service:nextjs", "env:production"],
+      "options": {
+        "notify_no_data": true,
+        "no_data_timeframe": 10,
+        "thresholds": {
+          "critical": 2000,
+          "warning": 1000
+        },
+        "include_tags": true
+      }
+    },
+    {
+      "name": "高メモリ使用率検知",
+      "type": "metric alert",
+      "query": "avg(last_5m):avg:docker.mem.in_use{service:nextjs} / avg:docker.mem.limit{service:nextjs} * 100 > 85",
+      "message": "@slack-alerts\nメモリ使用率が85%を超えています。\n\n{{#is_alert}}\n現在のメモリ使用率: {{value}}%\n{{/is_alert}}\n\n{{#is_recovery}}\n復旧しました\n{{/is_recovery}}",
+      "tags": ["service:nextjs", "env:production"],
+      "options": {
+        "notify_no_data": true,
+        "no_data_timeframe": 10,
+        "thresholds": {
+          "critical": 85,
+          "warning": 75
+        },
+        "include_tags": true
+      }
+    },
+    {
+      "name": "データベース接続数警告",
+      "type": "metric alert",
+      "query": "avg(last_5m):avg:postgresql.connections{service:database} > 80",
+      "message": "@slack-alerts\nデータベース接続数が80を超えています。\n\n{{#is_alert}}\n現在の接続数: {{value}}\n{{/is_alert}}\n\n{{#is_recovery}}\n復旧しました\n{{/is_recovery}}",
+      "tags": ["service:database", "env:production"],
+      "options": {
+        "notify_no_data": true,
+        "no_data_timeframe": 10,
+        "thresholds": {
+          "critical": 80,
+          "warning": 60
+        },
+        "include_tags": true
+      }
+    },
+    {
+      "name": "ディスク使用率警告",
+      "type": "metric alert",
+      "query": "avg(last_5m):avg:system.disk.in_use{*} * 100 > 85",
+      "message": "@slack-alerts\nディスク使用率が85%を超えています。\n\n{{#is_alert}}\n現在のディスク使用率: {{value}}%\nデバイス: {{device}}\n{{/is_alert}}\n\n{{#is_recovery}}\n復旧しました\n{{/is_recovery}}",
+      "tags": ["env:production"],
+      "options": {
+        "notify_no_data": true,
+        "no_data_timeframe": 10,
+        "thresholds": {
+          "critical": 85,
+          "warning": 75
+        },
+        "include_tags": true
+      }
+    }
+  ]
+} 

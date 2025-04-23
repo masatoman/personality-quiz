@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { User, AuthState, AuthContextType } from '@/types/auth';
 
@@ -7,167 +7,103 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export const AuthContext = createContext<AuthContextType>({
-  user: null,
-  loading: true,
-  error: null,
-  signIn: async () => {},
-  signInWithGoogle: async () => {},
-  signInWithGithub: async () => {},
-  signUp: async () => {},
-  signOut: async () => {}
-});
+interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<void>;
+}
 
-export const useAuth = () => {
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  async function checkUser() {
+    try {
+      const response = await fetch('/api/auth/me');
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+      }
+    } catch (error) {
+      console.error('Failed to fetch user:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function login(email: string, password: string) {
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message);
+      }
+
+      const userData = await response.json();
+      setUser(userData);
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
+    }
+  }
+
+  async function logout() {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      setUser(null);
+    } catch (error) {
+      console.error('Logout failed:', error);
+      throw error;
+    }
+  }
+
+  async function register(email: string, password: string, name: string) {
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, name }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message);
+      }
+
+      const userData = await response.json();
+      setUser(userData);
+    } catch (error) {
+      console.error('Registration failed:', error);
+      throw error;
+    }
+  }
+
+  return (
+    <AuthContext.Provider value={{ user, loading, login, logout, register }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
-
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    loading: true,
-    error: null,
-  });
-
-  useEffect(() => {
-    // セッションの初期化
-    const initSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        
-        if (session?.user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .single();
-
-          setState({
-            user: {
-              ...session.user,
-              profile,
-            },
-            loading: false,
-            error: null,
-          });
-        } else {
-          setState({ user: null, loading: false, error: null });
-        }
-      } catch (error) {
-        setState({ user: null, loading: false, error: error as Error });
-      }
-    };
-
-    initSession();
-
-    // 認証状態の変更を監視
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session?.user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .single();
-
-          setState({
-            user: {
-              ...session.user,
-              profile,
-            },
-            loading: false,
-            error: null,
-          });
-        } else {
-          setState({ user: null, loading: false, error: null });
-        }
-      }
-    );
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const signIn = async (email: string, password: string): Promise<void> => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      if (error) throw error;
-    } catch (error) {
-      setState(prev => ({ ...prev, error: error as Error }));
-    }
-  };
-
-  const signInWithGoogle = async (): Promise<void> => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`
-        }
-      });
-      if (error) throw error;
-    } catch (error) {
-      setState(prev => ({ ...prev, error: error as Error }));
-    }
-  };
-
-  const signInWithGithub = async (): Promise<void> => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'github',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`
-        }
-      });
-      if (error) throw error;
-    } catch (error) {
-      setState(prev => ({ ...prev, error: error as Error }));
-    }
-  };
-
-  const signUp = async (email: string, password: string, options?: { username?: string }): Promise<void> => {
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { username: options?.username }
-        }
-      });
-      if (error) throw error;
-    } catch (error) {
-      setState(prev => ({ ...prev, error: error as Error }));
-    }
-  };
-
-  const signOut = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-    } catch (error) {
-      setState(prev => ({ ...prev, error: error as Error }));
-    }
-  };
-
-  const value = {
-    ...state,
-    signIn,
-    signInWithGoogle,
-    signInWithGithub,
-    signUp,
-    signOut,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
+}
 
 export default AuthContext; 

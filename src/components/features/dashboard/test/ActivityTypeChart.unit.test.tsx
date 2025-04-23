@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ActivityTypeChart from '../ActivityTypeChart';
+import { ActivityTypeChart } from '../ActivityTypeChart';
+import { mockActivityData } from '@/mocks/activityData';
 
 // ActivityTypeChartコンポーネントの依存関係をモック
 jest.mock('next/navigation', () => ({
@@ -43,11 +44,37 @@ jest.mock('recharts', () => {
 // @ts-ignore - fetch型の不一致を無視
 global.fetch = jest.fn();
 
-describe('ActivityTypeChart Component', () => {
+describe('ActivityTypeChart', () => {
   const mockUserId = 'test-user-123';
   
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  it('正しくチャートをレンダリングする', async () => {
+    render(<ActivityTypeChart data={mockActivityData} />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('img', { name: /活動タイプチャート/i })).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('活動タイプ別の割合')).toBeInTheDocument();
+    expect(screen.getByLabelText('チャート凡例')).toBeInTheDocument();
+  });
+
+  it('データがない場合は適切なメッセージを表示する', () => {
+    render(<ActivityTypeChart data={[]} />);
+    
+    expect(screen.getByText('データがありません')).toBeInTheDocument();
+  });
+
+  it('エラーが発生した場合は適切なメッセージを表示する', async () => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    render(<ActivityTypeChart data={null} />);
+
+    expect(screen.getByText('チャートの読み込みに失敗しました')).toBeInTheDocument();
+    
+    consoleError.mockRestore();
   });
 
   it('ローディング状態が正しく表示されること', async () => {

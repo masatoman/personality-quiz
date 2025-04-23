@@ -1,0 +1,121 @@
+{
+  "title": "EngType メインダッシュボード",
+  "description": "アプリケーション全体のパフォーマンスと健全性の監視",
+  "widgets": [
+    {
+      "title": "システム概要",
+      "type": "group",
+      "widgets": [
+        {
+          "title": "サービス稼働状態",
+          "type": "check_status",
+          "check": "api_health",
+          "grouping": "cluster",
+          "tags": ["env:${NODE_ENV}"]
+        },
+        {
+          "title": "エラー率",
+          "type": "timeseries",
+          "query": "sum:trace.http.request.errors{service:nextjs} / sum:trace.http.request.hits{service:nextjs} * 100",
+          "style": {
+            "palette": "warm",
+            "line_type": "solid",
+            "line_width": "normal"
+          }
+        }
+      ]
+    },
+    {
+      "title": "パフォーマンス指標",
+      "type": "group",
+      "widgets": [
+        {
+          "title": "APIレスポンスタイム",
+          "type": "timeseries",
+          "query": "avg:trace.http.request.duration{service:nextjs}",
+          "style": {
+            "palette": "cool",
+            "line_type": "solid",
+            "line_width": "normal"
+          }
+        },
+        {
+          "title": "メモリ使用率",
+          "type": "timeseries",
+          "query": "avg:docker.mem.in_use{service:nextjs} / avg:docker.mem.limit{service:nextjs} * 100",
+          "style": {
+            "palette": "purple",
+            "line_type": "solid",
+            "line_width": "normal"
+          }
+        }
+      ]
+    },
+    {
+      "title": "データベース状態",
+      "type": "group",
+      "widgets": [
+        {
+          "title": "アクティブコネクション数",
+          "type": "timeseries",
+          "query": "avg:postgresql.connections{service:database}",
+          "style": {
+            "palette": "green",
+            "line_type": "solid",
+            "line_width": "normal"
+          }
+        },
+        {
+          "title": "クエリレイテンシー",
+          "type": "timeseries",
+          "query": "avg:postgresql.query_duration{service:database}",
+          "style": {
+            "palette": "orange",
+            "line_type": "solid",
+            "line_width": "normal"
+          }
+        }
+      ]
+    },
+    {
+      "title": "インフラストラクチャ",
+      "type": "group",
+      "widgets": [
+        {
+          "title": "コンテナ状態",
+          "type": "toplist",
+          "query": "avg:docker.container.running{*} by {container_name}",
+          "style": {
+            "palette": "blue"
+          }
+        },
+        {
+          "title": "ディスク使用率",
+          "type": "timeseries",
+          "query": "avg:system.disk.in_use{*} by {device} * 100",
+          "style": {
+            "palette": "red",
+            "line_type": "solid",
+            "line_width": "normal"
+          }
+        }
+      ]
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "env",
+      "prefix": "env",
+      "default": "production"
+    },
+    {
+      "name": "service",
+      "prefix": "service",
+      "default": "*"
+    }
+  ],
+  "layout_type": "ordered",
+  "notify_list": [],
+  "reflow_type": "fixed",
+  "tags": ["project:giver-english"]
+} 

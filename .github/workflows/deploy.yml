@@ -1,0 +1,162 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main, staging ]
+  workflow_run:
+    workflows: ["Build Pipeline", "E2E Tests"]
+    types:
+      - completed
+    branches: [ main, staging ]
+
+env:
+  NODE_VERSION: '18.x'
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ steps.check.outputs.should_deploy }}
+      previous_deployment: ${{ steps.previous.outputs.url }}
+    steps:
+      - id: check
+        run: |
+          if [[ "${{ github.event_name }}" == "push" ]] || \
+             [[ "${{ github.event_name }}" == "workflow_run" && "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then
+            echo "should_deploy=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_deploy=false" >> $GITHUB_OUTPUT
+          fi
+
+      - id: previous
+        if: steps.check.outputs.should_deploy == 'true'
+        run: |
+          PREV_URL=$(curl -s -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            "https://api.vercel.com/v6/deployments?projectId=${{ env.VERCEL_PROJECT_ID }}&state=READY&limit=1" \
+            | jq -r '.deployments[0].url')
+          echo "url=$PREV_URL" >> $GITHUB_OUTPUT
+
+  deploy:
+    needs: prepare
+    if: needs.prepare.outputs.should_deploy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: .next
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Staging
+        if: github.ref == 'refs/heads/staging'
+        run: |
+          vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} > deployment-url.txt
+          echo "DEPLOYMENT_URL=$(cat deployment-url.txt)" >> $GITHUB_ENV
+        env:
+          NODE_ENV: staging
+
+      - name: Deploy to Production
+        if: github.ref == 'refs/heads/main'
+        run: |
+          vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} > deployment-url.txt
+          echo "DEPLOYMENT_URL=$(cat deployment-url.txt)" >> $GITHUB_ENV
+        env:
+          NODE_ENV: production
+
+      - name: Comprehensive Health Check
+        id: health_check
+        run: |
+          echo "Starting health checks for ${{ env.DEPLOYMENT_URL }}"
+          
+          # 初期待機
+          echo "Waiting for deployment to stabilize..."
+          sleep 30
+          
+          # 基本的なヘルスチェック
+          echo "Performing basic health check..."
+          curl -f ${{ env.DEPLOYMENT_URL }}/api/health || exit 1
+          
+          # ステータスコードチェック
+          echo "Checking HTTP status..."
+          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" ${{ env.DEPLOYMENT_URL }})
+          if [ "$STATUS_CODE" != "200" ]; then
+            echo "❌ Unexpected status code: $STATUS_CODE"
+            exit 1
+          fi
+          
+          # レスポンスタイムチェック
+          echo "Checking response time..."
+          RESPONSE_TIME=$(curl -s -w "%{time_total}\n" -o /dev/null ${{ env.DEPLOYMENT_URL }})
+          if (( $(echo "$RESPONSE_TIME > 2.0" | bc -l) )); then
+            echo "❌ Response time too high: ${RESPONSE_TIME}s"
+            exit 1
+          fi
+          
+          echo "✅ All health checks passed!"
+        timeout-minutes: 5
+
+      - name: Rollback on Failure
+        if: failure() && steps.health_check.outcome == 'failure'
+        run: |
+          echo "🔄 Initiating rollback to previous deployment..."
+          if [ -n "${{ needs.prepare.outputs.previous_deployment }}" ]; then
+            vercel rollback --token=${{ secrets.VERCEL_TOKEN }}
+            echo "✅ Rolled back to previous deployment"
+          else
+            echo "❌ No previous deployment found to rollback to"
+            exit 1
+          fi
+
+      - name: Create Deployment Status
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { status, conclusion } = context.payload.workflow_run || { status: 'completed', conclusion: '${{ job.status }}' };
+            const state = conclusion === 'success' ? 'success' : 'failure';
+            const deploymentEnvironment = context.ref === 'refs/heads/main' ? 'Production' : 'Staging';
+            
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: context.payload.deployment.id,
+              state,
+              environment: deploymentEnvironment,
+              environment_url: process.env.DEPLOYMENT_URL,
+              log_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              description: `Deployment ${state === 'success' ? 'succeeded' : 'failed'}`
+            });
+
+  notify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Notify Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          text: |
+            ${{ job.status == 'success' && '✅ デプロイが成功しました' || '❌ デプロイが失敗しました' }}
+            環境: ${{ github.ref == 'refs/heads/main' && '本番環境' || 'ステージング環境' }}
+            URL: ${{ needs.deploy.outputs.deployment_url }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 

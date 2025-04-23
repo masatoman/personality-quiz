@@ -1,0 +1,164 @@
+name: Build Pipeline
+
+on:
+  push:
+    branches: [ main, staging, develop ]
+  pull_request:
+    branches: [ main, staging, develop ]
+
+env:
+  NODE_VERSION: '18.x'
+  NEXT_PUBLIC_APP_NAME: 'EngType'
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Cache Dependencies
+        id: cache-deps
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            ${{ github.workspace }}/.next/cache
+            node_modules
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-nextjs-
+
+      - name: Install Dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: npm ci
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  validate:
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Validate Environment Variables
+        run: |
+          cp .env.example .env
+          npm run validate-env
+        env:
+          NODE_ENV: development
+          IS_LOCAL_MODE: true
+
+      - name: Lint Check
+        run: npm run lint
+
+      - name: Type Check
+        run: npm run type-check
+
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Run Tests
+        run: npm run test:ci
+        env:
+          NODE_ENV: test
+
+      - name: Upload Test Coverage
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 14
+
+  build:
+    needs: [validate, test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Build Application
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Cache Build
+        uses: actions/cache@v3
+        with:
+          path: .next
+          key: ${{ runner.os }}-nextjs-build-${{ github.sha }}
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: .next
+          retention-days: 1
+
+      - name: Report Build Time
+        if: always()
+        run: |
+          echo "Build completed in ${{ job.duration }}s"
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "✅ Build successful"
+          else
+            echo "❌ Build failed"
+          fi 

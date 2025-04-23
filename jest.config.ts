@@ -1,15 +1,19 @@
-import type { Config } from '@jest/types';
+import type { Config } from 'jest';
+import nextJest from 'next/jest';
 
-const config: Config.InitialOptions = {
-  preset: 'ts-jest',
-  testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+const createJestConfig = nextJest({
+  dir: './',
+});
+
+const config: Config = {
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  testEnvironment: 'jest-environment-jsdom',
+  transform: {
+    '^.+\\.(ts|tsx)$': ['babel-jest', { configFile: './config/test/babel.config.js' }]
+  },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
-  },
-  transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
@@ -37,4 +41,4 @@ const config: Config.InitialOptions = {
   ],
 };
 
-export default config; 
+export default createJestConfig(config); 

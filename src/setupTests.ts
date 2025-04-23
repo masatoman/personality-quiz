@@ -1,5 +1,7 @@
 import '@testing-library/jest-dom';
 import { jest } from '@jest/globals';
+import { server } from './mocks/server';
+import { testDataStore } from './mocks/handlers';
 
 // グローバルなモックの設定
 Object.defineProperty(window, 'matchMedia', {
@@ -49,10 +51,18 @@ beforeAll(() => {
     }
     originalError.call(console, ...args);
   };
+  server.listen();
 });
 
 afterAll(() => {
   console.error = originalError;
+  server.close();
+});
+
+// 各テスト後にリクエストハンドラーとテストデータをリセット
+afterEach(() => {
+  server.resetHandlers();
+  testDataStore.clear();
 });
 
 // テストタイムアウトの設定

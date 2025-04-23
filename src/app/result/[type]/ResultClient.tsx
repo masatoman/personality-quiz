@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { PersonalityType, Stats } from '@/types/quiz';
+import { PersonalityType } from '@/types/quiz';
 import html2canvas from 'html2canvas';
 import { useRouter } from 'next/navigation';
 import { getPersonalityDescription } from '@/lib/personalities';
@@ -11,19 +11,22 @@ import Link from 'next/link';
 import { FaTwitter, FaInstagram, FaFacebook, FaCheckCircle, FaExclamationTriangle, FaLightbulb, FaBook, FaTools } from 'react-icons/fa';
 import { SiLine } from 'react-icons/si';
 
-type ResultContentProps = {
-  type: string;
-};
-
 type StatsResponse = {
-  stats: Stats;
+  stats: {
+    totalUsers: number;
+    typeDistribution: Record<PersonalityType, number>;
+  };
   message: string;
 };
 
-export const ResultContent = ({ type }: ResultContentProps) => {
+interface ResultContentProps {
+  type: PersonalityType;
+}
+
+const ResultContent: React.FC<ResultContentProps> = ({ type }) => {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [stats, setStats] = useState<Stats | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState<StatsResponse['stats'] | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const { handleError } = useErrorHandler();
 
@@ -37,9 +40,8 @@ export const ResultContent = ({ type }: ResultContentProps) => {
       const data: StatsResponse = await response.json();
       setStats(data.stats);
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('不明なエラーが発生しました');
-      setError(error);
-      handleError(error);
+      handleError(err);
+      setError('統計データの取得中にエラーが発生しました');
     } finally {
       setLoading(false);
     }
@@ -79,7 +81,7 @@ export const ResultContent = ({ type }: ResultContentProps) => {
   };
 
   const shareResult = (platform: 'twitter' | 'line' | 'instagram' | 'facebook') => {
-    const text = `私の英語学習タイプは「${getPersonalityDescription(type as PersonalityType).title}」でした！\n\n診断してみる👉`;
+    const text = `私の英語学習タイプは「${getPersonalityDescription(type).title}」でした！\n\n診断してみる👇`;
     const url = new URL(window.location.origin + '/quiz');
     const shareUrl = url.toString();
 
@@ -99,7 +101,7 @@ export const ResultContent = ({ type }: ResultContentProps) => {
     }
   };
 
-  const description = getPersonalityDescription(type as PersonalityType);
+  const description = getPersonalityDescription(type);
   const title = description.title;
   const strengths = description.strengths;
   const weaknesses = description.weaknesses;
@@ -124,7 +126,7 @@ export const ResultContent = ({ type }: ResultContentProps) => {
           {loading ? (
             <p className="text-center py-4">統計情報を読み込み中...</p>
           ) : error ? (
-            <p className="text-center text-red-600 py-4">{error.message}</p>
+            <p className="text-center text-red-600 py-4">{error}</p>
           ) : stats && (
             <div className="mb-8 p-6 bg-surface-light rounded-lg">
               <h3 className="text-lg font-semibold mb-4 text-center">あなたの傾向分析</h3>
@@ -188,9 +190,6 @@ export const ResultContent = ({ type }: ResultContentProps) => {
               </h3>
               {tools && tools.map((tool, index) => (
                 <div key={index} className="tool-item">
-                  <div className="tool-icon">
-                    <FaBook className="text-primary" />
-                  </div>
                   <div className="tool-info">
                     <h4>{tool}</h4>
                   </div>

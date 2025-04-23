@@ -1,69 +1,120 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { getAuthCookie, validateSession } from '@/lib/auth';
+import { securityMiddleware } from './middleware/security';
 
 // 認証が必要なパス
-const authRequiredPaths = ['/dashboard', '/create', '/settings'];
-
-// 認証をバイパスするパス（API、静的ファイルなど）
-const publicPaths = [
-  '/api/auth',  // 認証API
-  '/login',     // ログインページ
-  '/',          // トップページ
-  '/quiz',      // ギバー診断
+const authRequiredPaths = [
+  '/dashboard',
+  '/create',
+  '/settings',
+  '/profile',
+  '/my-materials'
 ];
 
-export function middleware(request: NextRequest) {
-  const path = request.nextUrl.pathname;
+// 認証をバイパスするパス（API、静的ファイル、公開ページなど）
+const publicPaths = [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/api/auth/login',
+  '/api/auth/register',
+  '/api/auth/logout',
+  '/',
+  '/about',
+  '/explore',
+  '/welcome',
+  '/terms',
+  '/privacy',
+  '/test-ui'
+];
+
+export async function middleware(request: NextRequest) {
+  // セキュリティミドルウェアの適用
+  const securityResponse = await securityMiddleware(request);
+  if (securityResponse.status !== 200) {
+    return securityResponse;
+  }
+
+  const { pathname } = request.nextUrl;
 
   // 公開パスの場合はスキップ
-  if (publicPaths.some(publicPath => path.startsWith(publicPath))) {
+  if (publicPaths.some(path => pathname.startsWith(path))) {
     return NextResponse.next();
   }
 
-  // 認証が必要なパスかチェック
-  if (authRequiredPaths.some(authPath => path.startsWith(authPath))) {
-    // セッショントークンの確認
-    const session = request.cookies.get('session');
-    const authToken = request.cookies.get('auth-token');
+  // APIルートの場合
+  if (pathname.startsWith('/api/')) {
+    return handleApiRoute(request);
+  }
 
-    // 認証情報が不足している場合
-    if (!session || !authToken) {
-      console.log(`🔒 未認証アクセスを検出: ${path}`);
-      
-      const url = new URL('/login', request.url);
-      url.searchParams.set('redirect', path);
-      
-      // リダイレクトレスポンスにセキュリティヘッダーを追加
-      const response = NextResponse.redirect(url);
-      response.headers.set('X-Content-Type-Options', 'nosniff');
-      response.headers.set('X-Frame-Options', 'DENY');
-      response.headers.set('X-XSS-Protection', '1; mode=block');
-      
-      return response;
+  // 認証が必要なパスの場合
+  if (authRequiredPaths.some(path => pathname.startsWith(path))) {
+    const token = request.cookies.get('auth-token')?.value;
+    
+    if (!token) {
+      return redirectToLogin(request);
     }
 
-    // 認証情報があれば次のミドルウェアへ
-    const response = NextResponse.next();
-    
-    // セキュリティヘッダーの追加
-    response.headers.set('X-Content-Type-Options', 'nosniff');
-    response.headers.set('X-Frame-Options', 'DENY');
-    response.headers.set('X-XSS-Protection', '1; mode=block');
-    
-    return response;
+    try {
+      const isValid = await validateSession(token);
+      if (!isValid) {
+        return redirectToLogin(request);
+      }
+    } catch (error) {
+      console.error('Session validation error:', error);
+      return redirectToLogin(request);
+    }
   }
 
   return NextResponse.next();
 }
 
+async function handleApiRoute(request: NextRequest) {
+  const token = request.cookies.get('auth-token')?.value;
+  
+  if (!token) {
+    return NextResponse.json(
+      { message: '認証されていません' },
+      { status: 401 }
+    );
+  }
+
+  try {
+    const isValid = await validateSession(token);
+    if (!isValid) {
+      return NextResponse.json(
+        { message: 'セッションが無効です' },
+        { status: 401 }
+      );
+    }
+  } catch (error) {
+    return NextResponse.json(
+      { message: '認証エラーが発生しました' },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.next();
+}
+
+function redirectToLogin(request: NextRequest) {
+  const url = request.nextUrl.clone();
+  url.pathname = '/login';
+  url.searchParams.set('redirectTo', request.nextUrl.pathname);
+  return NextResponse.redirect(url);
+}
+
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    // APIルートに適用
+    '/api/:path*',
+    // 認証が必要なページに適用
+    '/dashboard/:path*',
+    '/profile/:path*',
+    '/settings/:path*',
+    '/my-materials/:path*',
+    '/create/:path*'
   ],
 }; 

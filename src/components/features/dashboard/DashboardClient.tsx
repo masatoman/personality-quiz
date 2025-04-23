@@ -12,6 +12,10 @@ import { FaChartLine, FaCalendarAlt, FaExclamationTriangle } from 'react-icons/f
 import { useQuery } from '@tanstack/react-query';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import type { User } from '@/types/user';
+import { useRouter } from 'next/router';
+import { ActivityTypeChart } from './ActivityTypeChart';
+import { LoadingState } from '@/components/common/LoadingState';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 
 interface ActivitySummaryProps {
   createdMaterialsCount: number;
@@ -473,253 +477,17 @@ const fetchUserData = async (): Promise<User> => {
   return data.data;
 };
 
-export default function DashboardClient() {
-  const isMobile = useMediaQuery('(max-width: 768px)');
-  const isTablet = useMediaQuery('(max-width: 1024px)');
-
-  const [error, setError] = useState<Error | null>(null);
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const fetchUserData = async (): Promise<User> => {
-    const response = await fetch('/api/user');
-    if (!response.ok) {
-      throw new Error('Failed to fetch user data');
-    }
-    const data: UserResponse = await response.json();
-    return data.data;
-  };
-
-  const {
-    data: userData,
-    error: userError,
-    isLoading: isUserLoading
-  } = useQuery<User, Error>({
-    queryKey: ['userData'],
-    queryFn: fetchUserData
-  });
-
-  const [activityCounts, setActivityCounts] = useState({
-    CREATE_CONTENT: 0,
-    PROVIDE_FEEDBACK: 0,
-    CONSUME_CONTENT: 0,
-    COMPLETE_QUIZ: 0
-  });
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [page, setPage] = useState(1);
-  const ITEMS_PER_PAGE = 20;
-
-  // アクティビティデータをメモ化
-  const paginatedActivities = useMemo(() => {
-    const start = (page - 1) * ITEMS_PER_PAGE;
-    return activities.slice(start, start + ITEMS_PER_PAGE);
-  }, [activities, page]);
-
-  const fetchActivities = async (userId: string) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(`/api/activities/user/${userId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch activities');
-      }
-      const data = await response.json();
-      setActivities(data.activities);
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Unknown error occurred'));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (userData?.id) {
-      fetchActivities(userData.id);
-    }
-  }, [userData?.id]);
-
-  // APIデータでユーザー情報を更新
-  const updateUserDataFromAPI = (data: { giverScore: number; activities: ActivityData[] }, userId: string) => {
-    const giverScore = data.giverScore || 0;
-    const activities = data.activities || [];
-    
-    const { level, nextLevelScore, progressPercentage, personalityType } = calculateUserStats(giverScore);
-            
-            setLocalUserData({
-      id: userId,
-              name: initialUserData.name,
-              email: initialUserData.email,
-              score: giverScore,
-              activities: activities.length,
-              level,
-              nextLevelScore,
-              progressPercentage,
-      personalityType,
-    });
-    
-    updateActivityCounts(activities);
-    
-    // キャッシュの更新
-            localStorage.setItem('activities', JSON.stringify(activities));
-            localStorage.setItem('giverScore', giverScore.toString());
-  };
-
-  // ローカルデータでユーザー情報を更新
-  const updateUserDataFromLocal = (localScore: number, localActivities: ActivityData[], userId: string) => {
-    const { level, nextLevelScore, progressPercentage, personalityType } = calculateUserStats(localScore);
-          
-          setLocalUserData({
-      id: userId,
-            name: initialUserData.name,
-            email: initialUserData.email,
-            score: localScore,
-            activities: localActivities.length,
-            level,
-            nextLevelScore,
-            progressPercentage,
-      personalityType,
-    });
-    
-    updateActivityCounts(localActivities);
-  };
-
-  // ユーザー統計を計算
-  const calculateUserStats = (score: number) => {
-    const level = Math.min(10, Math.floor(score / 10) + 1);
-    const nextLevelScore = level * 10;
-    const progressPercentage = Math.min(100, ((score % 10) / 10) * 100);
-    const personalityType = score >= 67 ? 'giver' : (score >= 34 ? 'matcher' : 'taker');
-    
-    return {
-      level,
-      nextLevelScore,
-      progressPercentage,
-      personalityType: personalityType as 'giver' | 'taker' | 'matcher'
-    };
-  };
-
-  // アクティビティカウントを更新
-  const updateActivityCounts = (activities: ActivityData[]) => {
-          const counts = {
-      CREATE_CONTENT: activities.filter(a => a.activityType === 'CREATE_CONTENT').length,
-      PROVIDE_FEEDBACK: activities.filter(a => a.activityType === 'PROVIDE_FEEDBACK').length,
-      CONSUME_CONTENT: activities.filter(a => a.activityType === 'CONSUME_CONTENT').length,
-      COMPLETE_QUIZ: activities.filter(a => a.activityType === 'COMPLETE_QUIZ').length
-          };
-          setActivityCounts(counts);
-  };
-
-  const loadMoreActivities = useCallback(() => {
-    if (!isLoadingMore && !error) {
-      setPage(prev => prev + 1);
-    }
-  }, [isLoadingMore, error]);
-
-  useEffect(() => {
-    const storedUserId = localStorage.getItem('userId');
-    const newUserId = storedUserId || 'user_' + uuidv4();
-    
-    if (!storedUserId) {
-      localStorage.setItem('userId', newUserId);
-    }
-    
-    setLocalUserData(prev => ({ ...prev, id: newUserId }));
-    void fetchUserData();
-  }, [fetchUserData]);
-  
-  if (isUserLoading || !userData) {
-    return <LoadingSpinner />;
-  }
-
+export const DashboardClient: React.FC = () => {
   return (
-    <DashboardLayout>
-      <main className={`container mx-auto px-4 ${isMobile ? 'max-w-full' : 'max-w-screen-xl'}`}>
-        <div className={`grid grid-cols-1 ${
-          isMobile 
-            ? 'gap-4' 
-            : isTablet 
-              ? 'lg:grid-cols-2 gap-4' 
-              : 'lg:grid-cols-3 gap-6'
-        } mb-4 lg:mb-6`}>
-          <div className={`${
-            isMobile 
-              ? 'order-2' 
-              : isTablet 
-                ? 'lg:col-span-1 order-2 lg:order-1' 
-                : 'lg:col-span-2 order-2 lg:order-1'
-          }`}>
-            <ActivitySummaryComponent
-            createdMaterialsCount={activityCounts.CREATE_CONTENT}
-              completedActivitiesCount={activityCounts.COMPLETE_QUIZ}
-              helpedUsersCount={activityCounts.PROVIDE_FEEDBACK}
-            />
+    <ErrorBoundary>
+      <div className="dashboard-container p-4">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-2xl font-bold mb-6">ダッシュボード</h1>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ActivityTypeChart userId="test-user" />
           </div>
-          <div className="order-1 lg:order-2">
-            <GiverScoreDisplay
-              score={{
-                level: Math.min(Math.floor(userData.score / 10) + 1, 10),
-                points: userData.score,
-                progress: ((userData.score % 10) / 10) * 100,
-                pointsToNextLevel: (Math.floor(userData.score / 10) + 1) * 10 - userData.score,
-                personalityType: userData.personalityType
-              }}
-          />
         </div>
       </div>
-      
-        <div className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-2 gap-4 lg:gap-6'}`}>
-          <section aria-labelledby="recent-activities-title">
-            <div className="bg-white rounded-lg shadow-md p-4 lg:p-6">
-              <h2 id="recent-activities-title" className="text-xl font-bold mb-4 flex items-center">
-                <FaChartLine className="mr-2 text-blue-500" aria-hidden="true" />
-              最近の活動
-            </h2>
-              {activities.length > 0 ? (
-                <VirtualizedActivityList 
-                  activities={paginatedActivities}
-                  onLoadMore={loadMoreActivities}
-                  isLoading={isLoadingMore}
-                  hasError={!!error}
-                  errorMessage={error?.message}
-                />
-              ) : error ? (
-                <div className="text-center py-6" role="alert">
-                  <div className="bg-red-50 text-red-700 p-4 rounded-lg">
-                    <FaExclamationTriangle className="inline-block mr-2" />
-                    <p className="inline-block">{error.message}</p>
-                    <button 
-                      onClick={() => fetchActivities(userData.id)}
-                      className="mt-2 w-full px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
-                    >
-                      再読み込み
-                    </button>
-                  </div>
-                    </div>
-            ) : (
-                <div className="text-center py-6 text-gray-500" role="status">
-                  <p className="text-lg">まだ活動がありません</p>
-                <p className="text-sm mt-1">活動を開始してポイントを獲得しましょう</p>
-              </div>
-            )}
-          </div>
-          </section>
-        
-        <div>
-            <TodoList />
-            
-            <section aria-labelledby="next-event-title" className="bg-white rounded-lg shadow-md p-4 lg:p-6 mt-4 lg:mt-6">
-              <h2 id="next-event-title" className="text-xl font-bold mb-4 flex items-center">
-                <FaCalendarAlt className="mr-2 text-blue-500" aria-hidden="true" />
-              次のイベント
-            </h2>
-            <div className="p-3 bg-yellow-50 rounded border border-yellow-100">
-              <p className="font-medium">ギバーコミュニティミーティング</p>
-              <p className="text-sm text-gray-600 mt-1">5月10日 19:00 - オンライン</p>
-            </div>
-            </section>
-          </div>
-        </div>
-      </main>
-    </DashboardLayout>
+    </ErrorBoundary>
   );
-} 
+}; 

@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from 'path';
+import { PlaywrightTestConfig } from '@playwright/test';
 
-export default defineConfig({
+const config: PlaywrightTestConfig = {
   testDir: './tests/e2e',
   timeout: 30000,
   fullyParallel: true,
@@ -10,10 +12,12 @@ export default defineConfig({
   reporter: 'html',
   
   use: {
-    baseURL: 'http://localhost:3002',
+    baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
-    screenshot: 'off',
-    video: 'off',
+    video: 'on-first-retry',
+    contextOptions: {
+      acceptDownloads: true,
+    },
   },
 
   projects: [
@@ -22,4 +26,13 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-});
+
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
+    timeout: 120 * 1000,
+    reuseExistingServer: !process.env.CI,
+  },
+};
+
+export default config;

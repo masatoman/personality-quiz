@@ -13,6 +13,10 @@ import { ActivityType } from '@/types/quiz';
 import LoadingState from '@/components/common/LoadingState';
 import EmptyState from '@/components/common/EmptyState';
 import { FaChartPie } from 'react-icons/fa';
+import { Chart } from 'react-chartjs-2';
+import { ChartData, ChartOptions } from 'chart.js';
+import { ErrorMessage } from '@/components/ui/ErrorMessage';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 // 活動タイプ情報の型定義
 interface ActivityTypeInfo {
@@ -25,13 +29,15 @@ interface ActivityTypeInfo {
 // 円グラフコンポーネントのプロパティ
 interface ActivityTypeChartProps {
   userId: string;
+  className?: string;
 }
 
 // 活動種類別円グラフコンポーネント
-const ActivityTypeChart: React.FC<ActivityTypeChartProps> = ({ userId }) => {
+const ActivityTypeChart: React.FC<ActivityTypeChartProps> = ({ userId, className }) => {
   const [activityData, setActivityData] = useState<ActivityTypeInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<ChartData<'pie'> | null>(null);
 
   // 活動タイプの表示名とカラーマップをuseMemoでラップ
   const activityTypeMap = useMemo(() => ({
@@ -120,7 +126,7 @@ const ActivityTypeChart: React.FC<ActivityTypeChartProps> = ({ userId }) => {
   }, [userId, activityTypeMap, generateMockData]);
 
   useEffect(() => {
-    fetchActivityData();
+    void fetchActivityData();
   }, [fetchActivityData]);
 
   // 合計活動数を計算
@@ -140,99 +146,102 @@ const ActivityTypeChart: React.FC<ActivityTypeChartProps> = ({ userId }) => {
     return null;
   };
 
+  const fetchData = async () => {
+    try {
+      const response = await fetch('/api/activity-types');
+      if (!response.ok) {
+        throw new Error('データの取得に失敗しました');
+      }
+      const result = await response.json();
+      setData(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'エラーが発生しました');
+    }
+  };
+
+  useEffect(() => {
+    void fetchData();
+  }, []);
+
+  const options: ChartOptions<'pie'> = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          generateLabels: (chart) => {
+            const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+            return labels.map(label => ({
+              ...label,
+              text: label.text,
+              fillStyle: label.fillStyle,
+              strokeStyle: label.strokeStyle,
+              lineWidth: label.lineWidth,
+              hidden: label.hidden,
+            }));
+          }
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const label = context.label || '';
+            const value = context.formattedValue;
+            return `${label}: ${value}`;
+          }
+        }
+      }
+    }
+  };
+
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-bold mb-4">活動種類の割合</h2>
-        <LoadingState
-          variant="spinner"
-          text="活動データを読み込み中..."
-          size="md"
-        />
+      <div 
+        className={className}
+        role="status"
+        aria-label="アクティビティタイプチャートの読み込み中"
+      >
+        <LoadingSpinner />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-bold mb-4">活動種類の割合</h2>
-        <EmptyState
-          title="エラーが発生しました"
-          message={error}
-          icon={FaChartPie}
-          variant="card"
-          action={{
-            label: "再試行",
-            onClick: () => {
-              setError(null);
-              setLoading(true);
-              fetchActivityData();
-            }
-          }}
-        />
+      <div 
+        className={className}
+        role="alert"
+        aria-live="polite"
+      >
+        <ErrorMessage message={error} />
       </div>
     );
   }
 
   if (!activityData || activityData.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-bold mb-4">活動種類の割合</h2>
-        <EmptyState
-          title="活動データがありません"
-          message="活動を開始して、データを記録しましょう。"
-          icon={FaChartPie}
-          variant="card"
-        />
+      <div 
+        className={className}
+        role="status"
+        aria-label="データがありません"
+      >
+        データが見つかりませんでした
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold mb-4">活動種類の割合</h2>
-      
-      <div className="h-64">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={activityData}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="count"
-              nameKey="label"
-              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-            >
-              {activityData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
-            <Tooltip content={<CustomTooltip />} />
-            <Legend />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-      
-      <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2">
-        {activityData.map((activity) => (
-          <div key={activity.type} className="flex items-center">
-            <div 
-              className="w-3 h-3 rounded-full mr-2" 
-              style={{ backgroundColor: activity.color }} 
-            />
-            <span className="text-sm">{activity.label}: {activity.count}回</span>
-          </div>
-        ))}
-      </div>
-      
-      <div className="mt-4 text-sm text-gray-500">
-        <p>総活動数: {totalActivities}回</p>
-        <p>※ ギバースコアの向上には、特に「コンテンツ作成」と「フィードバック提供」が効果的です。</p>
-      </div>
+    <div 
+      className={className}
+      role="region"
+      aria-label="アクティビティタイプの分布"
+    >
+      <Chart 
+        type="pie"
+        data={data}
+        options={options}
+        aria-label="アクティビティタイプの円グラフ"
+      />
     </div>
   );
 };
