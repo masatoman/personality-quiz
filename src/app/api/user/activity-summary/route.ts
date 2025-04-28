@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import supabase from '@/lib/supabase';
+import supabase from '@/services/supabaseClient';
 
 /**
  * ユーザー活動サマリー情報を取得するAPIエンドポイント

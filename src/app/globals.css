@@ -65,6 +65,9 @@
   --color-giver: #5B21B6;  /* コントラスト比7:1以上を確保 */
   --color-matcher: #1E40AF;  /* コントラスト比7:1以上を確保 */
   --color-taker: #92400E;  /* コントラスト比7:1以上を確保 */
+
+  --font-noto: 'Noto Sans JP', sans-serif;
+  --font-rounded: 'M PLUS Rounded 1c', sans-serif;
 }
 
 /* ダークモード設定（オプション） */

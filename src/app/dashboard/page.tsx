@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import ActivitySummary from '@/components/dashboard/ActivitySummary';
 import GiverScoreChart from '@/components/dashboard/GiverScoreChart';
 import ActivityPieChart from '@/components/dashboard/ActivityPieChart';
-import LoadingSpinner from '@/components/common/LoadingSpinner';
+import LoadingSpinner from '@/components/common/atoms/LoadingSpinner';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import type { ErrorInfo } from 'react';
 

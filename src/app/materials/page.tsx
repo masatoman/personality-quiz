@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { Metadata } from 'next';
 import MaterialsList from './_components/MaterialsList';
-import LoadingSpinner from '@/components/common/LoadingSpinner';
+import LoadingSpinner from '@/components/common/atoms/LoadingSpinner';
 import MaterialsFilter from '@/components/features/materials/MaterialsFilter';
 import MaterialsSearch from '@/components/features/materials/MaterialsSearch';
 

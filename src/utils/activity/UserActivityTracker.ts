@@ -1,5 +1,5 @@
 import { ActivityType } from '@/types/learning';
-import supabase from '@/lib/supabase';
+import supabase from '@/services/supabaseClient';
 
 /**
  * ユーザー活動を表すインターフェイス

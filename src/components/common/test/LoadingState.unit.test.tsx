@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, jest } from '@jest/globals';
 import type { JestMatchers } from '@jest/expect';
-import LoadingState from '../LoadingState';
+import LoadingState from '../molecules/LoadingState';
 import userEvent from '@testing-library/user-event';
 
 declare global {

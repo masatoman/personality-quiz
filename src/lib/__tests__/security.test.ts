@@ -1,5 +1,5 @@
 import { auth, isAdmin, canAccessUserData } from '../auth';
-import supabase from '@/lib/supabase';
+import supabase from '@/services/supabaseClient';
 
 jest.mock('@/lib/supabase', () => ({
   auth: {

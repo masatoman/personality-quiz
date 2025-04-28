@@ -10,8 +10,8 @@ import {
   Legend 
 } from 'recharts';
 import { ActivityType } from '@/types/quiz';
-import LoadingState from '@/components/common/LoadingState';
-import EmptyState from '@/components/common/EmptyState';
+import LoadingState from '@/components/common/molecules/LoadingState';
+import EmptyState from '@/components/common/molecules/EmptyState';
 import { FaChartPie } from 'react-icons/fa';
 
 // 活動タイプ情報の型定義

@@ -1,5 +1,5 @@
 import { isAuthenticated } from '../session';
-import supabase from '@/lib/supabase';
+import supabase from '@/services/supabaseClient';
 
 jest.mock('@/lib/supabase', () => ({
   auth: {

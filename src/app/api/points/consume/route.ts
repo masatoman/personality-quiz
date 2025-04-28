@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import supabase from '@/lib/supabase';
+import supabase from '@/services/supabaseClient';
 import { getSession } from '@/lib/session';
 
 /**

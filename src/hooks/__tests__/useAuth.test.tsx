@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import { useAuth } from '../useAuth';
-import supabase from '@/lib/supabase';
+import supabase from '@/services/supabaseClient';
 
 // Supabaseクライアントのモック
 jest.mock('@/lib/supabase', () => ({

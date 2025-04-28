@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './useAuth';
-import { getProfile, upsertProfile, UserProfile } from '@/lib/api';
+import { getProfile, upsertProfile, UserProfile } from '@/services/apiService';
 import { PersonalityType } from '@/types/quiz';
 
 interface UpdateProfileData {
