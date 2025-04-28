@@ -1,25 +1,19 @@
-import React from 'react';
-import './globals.css'
-import type { Metadata } from 'next'
+import { Metadata } from 'next'
 import { Noto_Sans_JP, M_PLUS_Rounded_1c } from 'next/font/google'
-import Navbar from '@/components/Navbar';
-import ThemeProviderClient from '@/components/ThemeProviderClient';
-import dynamic from 'next/dynamic';
-
-// ErrorBoundaryをクライアントサイドのみで動作するようにする
-const ErrorBoundary = dynamic(
-  () => import('@/components/ErrorBoundary'),
-  { ssr: false }
-);
+import ClientLayout from './ClientLayout'
+import './globals.css'
 
 const noto = Noto_Sans_JP({ 
   subsets: ['latin'],
+  weight: ['400', '700'],
+  display: 'swap',
   variable: '--font-noto',
 })
 
 const rounded = M_PLUS_Rounded_1c({
   weight: ['400', '700'],
   subsets: ['latin'],
+  display: 'swap',
   variable: '--font-rounded',
 })
 
@@ -37,21 +31,10 @@ export default function RootLayout({
     <html lang="ja" className={`${noto.variable} ${rounded.variable}`}>
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body suppressHydrationWarning className="bg-background text-text-primary min-h-screen font-noto">
-        <ThemeProviderClient>
-          <Navbar />
-          <main>
-            <ErrorBoundary
-              onError={(error, errorInfo) => {
-                console.error('Global error caught:', error);
-                // 分析サービスや監視システムにエラーを送信する場合はここで実装
-              }}
-            >
-              {children}
-            </ErrorBoundary>
-          </main>
-        </ThemeProviderClient>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   )

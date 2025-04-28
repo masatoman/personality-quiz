@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useProfile } from './useProfile';
 import { useAuth } from './useAuth';
-import { getProfile, upsertProfile } from '@/lib/api';
+import { getProfile, upsertProfile } from '@/services/apiService';
 import { PersonalityType } from '@/types/quiz';
 
 jest.mock('./useAuth', () => ({

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { FiAlertCircle } from 'react-icons/fi';
-import EmptyState from '../EmptyState';
+import EmptyState from '../molecules/EmptyState';
 
 describe('EmptyState', () => {
   it('デフォルトのプロパティで正しくレンダリングされる', () => {

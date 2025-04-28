@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 interface Props {
   children: ReactNode;
-  fallback: (props: { error: Error; reset: () => void }) => JSX.Element;
+  fallback: (props: { error: Error; reset: () => void }) => ReactNode;
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
 }
 

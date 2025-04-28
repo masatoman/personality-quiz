@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import FormInput from '../FormInput';
+import FormInput from '../atoms/FormInput';
 
 describe('FormInput', () => {
   const defaultProps = {

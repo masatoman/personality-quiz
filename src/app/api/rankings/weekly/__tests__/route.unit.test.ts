@@ -2,7 +2,7 @@ import { GET } from '../route';
 import { pool, initPool } from '@/lib/db';
 import { NextResponse } from 'next/server';
 import { unstable_cache } from 'next/cache';
-import { getCache, setCache } from '@/lib/cache';
+import { getCache, setCache } from '@/services/cacheService';
 
 // キャッシュのモック
 jest.mock('@/lib/cache', () => ({

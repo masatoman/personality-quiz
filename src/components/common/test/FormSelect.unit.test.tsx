@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import FormSelect from '../FormSelect';
+import FormSelect from '../atoms/FormSelect';
 
 describe('FormSelect', () => {
   const defaultOptions = [

@@ -11,8 +11,8 @@ import {
   FaMinus,
   FaChartBar
 } from 'react-icons/fa';
-import LoadingState from '@/components/common/LoadingState';
-import EmptyState from '@/components/common/EmptyState';
+import LoadingState from '@/components/common/molecules/LoadingState';
+import EmptyState from '@/components/common/molecules/EmptyState';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 
