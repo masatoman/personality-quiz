@@ -3,14 +3,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { PersonalityType } from '@/types/quiz';
 import html2canvas from 'html2canvas';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { FaUsers, FaBalanceScale, FaBook } from 'react-icons/fa';
-
-// basePath の設定をインポート
-const basePath = process.env.NODE_ENV === 'production' ? '/quiz' : '';
 
 interface IconProps {
   className?: string;
@@ -190,10 +184,8 @@ export default function HomePage() {
   const [showResult, setShowResult] = useState(false);
   const [personalityType, setPersonalityType] = useState<PersonalityType | null>(null);
   const [stats, setStats] = useState<TypeTotals | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -224,7 +216,6 @@ export default function HomePage() {
     if (currentQuestionIndex + 1 < questions.length) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      setIsLoading(true);
       const counts: { [key in PersonalityType]: number } = {
         giver: 0,
         taker: 0,
@@ -236,16 +227,14 @@ export default function HomePage() {
       });
 
       const maxCount = Math.max(...Object.values(counts));
-      const result = (Object.entries(counts) as [PersonalityType, number][])
-        .find(([_, count]) => count === maxCount)?.[0] || 'matcher';
+      const result = (Object.entries(counts) as [PersonalityType, number][]) 
+        .find(([, count]) => count === maxCount)?.[0] || 'matcher';
 
       setPersonalityType(result);
       await saveResult(result);
       await getStats();
       setShowResult(true);
-      setIsLoading(false);
 
-      // 結果が表示されたら、その位置までスムーズスクロール
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
@@ -276,7 +265,6 @@ export default function HomePage() {
           text: '私の英語学習タイプが判定されました！',
         });
       } else {
-        // シェア機能が利用できない場合は画像をダウンロード
         const url = canvas.toDataURL();
         const a = document.createElement('a');
         a.href = url;

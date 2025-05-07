@@ -1,101 +1,15 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import Image from 'next/image';
-import { Section, Question, ImageSection, TextSection, QuizSection as QuizSectionType } from '../../types/material';
+import { Section, Question, ImageSection, TextSection } from '../../types/material';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import type { QuizSection as QuizSectionType } from '../../types/material';
 
 interface MaterialViewerProps {
   sections: Section[];
   onComplete?: () => void;
-  onQuizSubmit?: (quizId: string, answers: Record<string, string>, score: number) => void;
+  onQuizSubmit?: (quizId: string, answers: Record<string, number>, score: number) => void;
 }
-
-interface QuizSectionProps {
-  section: QuizSectionType;
-  onAnswerSubmit?: (questionId: string, isCorrect: boolean) => void;
-}
-
-const QuizSection: React.FC<QuizSectionProps> = ({ section, onAnswerSubmit }) => {
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
-  const [submittedQuestions, setSubmittedQuestions] = useState<Record<string, boolean>>({});
-
-  const handleAnswerSelect = useCallback((questionId: string, answerIndex: number) => {
-    setSelectedAnswers(prev => ({
-      ...prev,
-      [questionId]: answerIndex
-    }));
-  }, []);
-
-  const handleSubmit = useCallback((question: Question) => {
-    const selectedAnswer = selectedAnswers[question.id];
-    const isCorrect = selectedAnswer === question.correctAnswer;
-    
-    setSubmittedQuestions(prev => ({
-      ...prev,
-      [question.id]: true
-    }));
-
-    if (onAnswerSubmit) {
-      onAnswerSubmit(question.id, isCorrect);
-    }
-  }, [selectedAnswers, onAnswerSubmit]);
-
-  return (
-    <div className="quiz-section">
-      <h3>{section.title}</h3>
-      {section.questions.map((question) => (
-        <div key={question.id} className="question-container">
-          <h4>{question.question}</h4>
-          <div className="options-container">
-            {question.options.map((option, index) => (
-              <button
-                key={index}
-                onClick={() => handleAnswerSelect(question.id, index)}
-                className={`option-button ${
-                  selectedAnswers[question.id] === index ? 'selected' : ''
-                } ${
-                  submittedQuestions[question.id]
-                    ? index === question.correctAnswer
-                      ? 'correct'
-                      : selectedAnswers[question.id] === index
-                      ? 'incorrect'
-                      : ''
-                    : ''
-                }`}
-                disabled={submittedQuestions[question.id]}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-          {!submittedQuestions[question.id] ? (
-            <button
-              onClick={() => handleSubmit(question)}
-              disabled={selectedAnswers[question.id] === undefined}
-              className="submit-button"
-            >
-              回答を送信
-            </button>
-          ) : (
-            <div className="result-feedback">
-              {selectedAnswers[question.id] === question.correctAnswer ? (
-                <p className="correct-feedback">正解です！</p>
-              ) : (
-                <p className="incorrect-feedback">
-                  不正解です。正解は: {question.options[question.correctAnswer]}
-                </p>
-              )}
-              {question.explanation && (
-                <p className="explanation">{question.explanation}</p>
-              )}
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-};
 
 const MaterialViewer: React.FC<MaterialViewerProps> = ({ 
   sections, 
@@ -107,7 +21,6 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
   const [quizResults, setQuizResults] = useState<Record<string, { score: number; submitted: boolean }>>({});
   const [activeTab, setActiveTab] = useState('content'); // content または outline
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
-  const [showResults, setShowResults] = useState(false);
 
   const currentSection = sections[currentSectionIndex];
   
@@ -137,7 +50,7 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
   };
   
   // クイズの回答を更新
-  const handleQuizAnswerChange = (quizId: string, questionId: string, answerId: string) => {
+  const handleQuizAnswerChange = (quizId: string, questionId: string, answerId: number) => {
     setQuizAnswers(prev => ({
       ...prev,
       [quizId]: {
@@ -244,20 +157,20 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
         
         {section.questions.map((question, index) => (
           <div key={question.id} className="bg-white p-6 rounded-lg border border-gray-200">
-            <p className="font-medium text-lg mb-4">問題 {index + 1}: {question.text}</p>
+            <p className="font-medium text-lg mb-4">問題 {index + 1}: {question.question}</p>
             <div className="space-y-3">
-              {question.answers.map(answer => (
-                <label key={answer.id} className="flex items-center space-x-3">
+              {question.options.map((option, optIdx) => (
+                <label key={optIdx} className="flex items-center space-x-3">
                   <input
                     type="radio"
                     name={`question-${question.id}`}
-                    value={answer.id}
-                    checked={answers[question.id] === answer.id}
-                    onChange={() => handleQuizAnswerChange(section.id, question.id, answer.id)}
+                    value={optIdx}
+                    checked={answers[question.id] === optIdx}
+                    onChange={() => handleQuizAnswerChange(section.id, question.id, optIdx)}
                     disabled={isSubmitted}
                     className="h-4 w-4 text-blue-600"
                   />
-                  <span className="text-gray-700">{answer.text}</span>
+                  <span className="text-gray-700">{option}</span>
                 </label>
               ))}
             </div>

@@ -1,0 +1,33 @@
+---
+description: 
+globs: src/**
+alwaysApply: false
+---
+---
+description: "プロジェクト構造と命名規則"
+globs: ["src/**"]
+alwaysApply: false
+---
+
+# プロジェクト構造と命名規則
+
+## ディレクトリ構成
+- src/
+  - components/ - Atomic Designに基づくUIコンポーネント
+    - atoms/ - 基本UIパーツ (Button, Input, etc)
+    - molecules/ - 複数アトムの組み合わせ (Form, Card, etc)
+    - organisms/ - 複雑な機能ブロック (Header, MaterialList, etc)
+    - templates/ - ページレイアウト
+  - features/ - 機能モジュール (auth, materials, giver-score, etc)
+  - hooks/ - カスタムReactフック
+  - services/ - API通信層
+  - utils/ - ユーティリティ関数
+  - contexts/ - グローバル状態管理
+  - types/ - TypeScript型定義
+
+## 命名規則
+- コンポーネント: PascalCase (UserCard.tsx)
+- フック: useCamelCase (useGiverScore.ts)
+- ユーティリティ関数: camelCase (calculatePoints.ts)
+- 定数: UPPER_SNAKE_CASE
+- テストファイル: 対象ファイル名.test.ts(x)

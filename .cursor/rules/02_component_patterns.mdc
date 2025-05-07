@@ -1,0 +1,78 @@
+---
+description: 
+globs: src/components/**/*.tsx,src/features/**/*.tsx
+alwaysApply: false
+---
+---
+description: "コンポーネント実装パターン"
+globs: ["src/components/**/*.tsx", "src/features/**/*.tsx"]
+alwaysApply: false
+---
+
+# コンポーネント実装パターン
+
+## 基本構造
+```tsx
+// インポート順序: Reactコア > 外部ライブラリ > 内部モジュール > 型定義
+import { useState, useEffect } from 'react';
+import { useGiverScore } from '@/hooks/useGiverScore';
+import { Button } from '@/components/atoms/Button';
+import type { GiverScoreProps } from '@/types';
+
+// Props型定義
+interface ComponentProps {
+  // 必須プロパティ
+  requiredProp: string;
+  // オプショナルプロパティ
+  optionalProp?: number;
+  // 関数型
+  onAction?: (id: string) => void;
+}
+
+// JSDoc形式のコメント
+/**
+ * コンポーネントの説明
+ * @param props コンポーネントのプロパティ
+ */
+export const ComponentName: React.FC<ComponentProps> = ({
+  requiredProp,
+  optionalProp = 0, // デフォルト値の設定
+  onAction,
+}) => {
+  // 状態定義
+  const [state, setState] = useState<string>('');
+
+  // 効果
+  useEffect(() => {
+    // 処理
+  }, [dependencies]);
+
+  // イベントハンドラ
+  const handleClick = () => {
+    if (onAction) {
+      onAction(requiredProp);
+    }
+  };
+
+  // 条件付きレンダリング
+  if (!requiredProp) {
+    return <div>必須データがありません</div>;
+  }
+
+  // JSX
+  return (
+    <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+      <h2 className="text-xl font-semibold text-gray-800">{requiredProp}</h2>
+      {optionalProp > 0 && (
+        <p className="mt-2 text-gray-600">{optionalProp}</p>
+      )}
+      <Button 
+        onClick={handleClick}
+        variant="primary" 
+        className="mt-4"
+      >
+        アクション
+      </Button>
+    </div>
+  );
+};

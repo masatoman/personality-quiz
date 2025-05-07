@@ -1,8 +1,8 @@
 import React from 'react';
 import { Metadata } from 'next'
 import { Container, Stack, Typography, Button, Box, Paper } from '@mui/material'
-import { motion } from 'framer-motion';
-import { ArrowForward, School, Psychology, EmojiEvents } from '@mui/icons-material'
+import { WelcomeMotion } from '@/components/features/welcome/WelcomeMotion';
+import { School, Psychology, EmojiEvents } from '@mui/icons-material'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -13,13 +13,7 @@ export const metadata: Metadata = {
 export default function WelcomePage() {
   return (
     <Container maxWidth="md" sx={{ py: 8 }}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        role="main"
-        aria-label="ウェルカムページ"
-      >
+      <WelcomeMotion>
         <Stack spacing={6}>
           <Box textAlign="center" role="banner">
             <Typography
@@ -104,7 +98,7 @@ export default function WelcomePage() {
             </Button>
           </Box>
         </Stack>
-      </motion.div>
+      </WelcomeMotion>
     </Container>
   )
 } 

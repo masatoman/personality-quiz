@@ -3,11 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Activity } from '@/types/activity';
-import GiverScoreDisplay from './GiverScoreDisplay';
+import { GiverScoreDisplay } from '@/components/features/giver-score/GiverScoreDisplay';
 import { FaHistory, FaTrophy, FaUser, FaPlus } from 'react-icons/fa';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
-import TodoList from './TodoList';
+import TodoList from '@/components/features/todo/TodoList';
+import type { GiverScore } from '@/types/giver-score';
 
 // モックユーザー情報（認証システム実装後に修正）
 const initialUserData = {
@@ -150,27 +151,19 @@ const ProfileClient: React.FC = () => {
     }
   };
 
-  // モックのユーザーデータを生成
-  const getUserData = () => {
-    // ギバースコアに基づくレベル計算（例: 10点ごとに1レベル、最大レベル10）
+  // GiverScore型のデータを生成
+  const getGiverScore = (): GiverScore => {
     const level = Math.min(10, Math.floor(giverScore / 10) + 1);
-    // 次のレベルまでのスコア（例: レベル2なら20点）
-    const nextLevelScore = level * 10;
-    // 現在のレベル内での進捗率
-    const progressPercentage = Math.min(100, ((giverScore % 10) / 10) * 100);
-    // ギバータイプの判定
+    const points = giverScore;
+    const progress = Math.min(100, ((giverScore % 10) / 10) * 100);
+    const pointsToNextLevel = (level * 10) - giverScore;
     const personalityType: 'giver' | 'matcher' | 'taker' = 
       giverScore >= 67 ? 'giver' : (giverScore >= 34 ? 'matcher' : 'taker');
-
     return {
-      id: userId,
-      name: initialUserData.name,
-      email: initialUserData.email,
-      score: giverScore,
-      activities: activities.length,
       level,
-      nextLevelScore,
-      progressPercentage,
+      points,
+      progress,
+      pointsToNextLevel,
       personalityType,
     };
   };
@@ -345,19 +338,9 @@ const ProfileClient: React.FC = () => {
         </div>
         
         <div className="sidebar">
-          <GiverScoreDisplay userData={getUserData()} />
+          <GiverScoreDisplay score={getGiverScore()} />
           
-          <TodoList 
-            giverScore={giverScore} 
-            giverType={giverScore >= 67 ? 'giver' : (giverScore >= 34 ? 'matcher' : 'taker')}
-            className="mt-6"
-            activityCounts={{
-              CREATE_CONTENT: activities.filter(a => a.activityType === 'CREATE_CONTENT').length,
-              PROVIDE_FEEDBACK: activities.filter(a => a.activityType === 'PROVIDE_FEEDBACK').length,
-              CONSUME_CONTENT: activities.filter(a => a.activityType === 'CONSUME_CONTENT').length,
-              COMPLETE_QUIZ: activities.filter(a => a.activityType === 'COMPLETE_QUIZ').length
-            }}
-          />
+          <TodoList />
           
           <div className="tips bg-white rounded-lg shadow-md p-5 mt-6">
             <h3 className="font-bold text-lg mb-3">スコアを伸ばすには？</h3>

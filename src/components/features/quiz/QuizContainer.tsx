@@ -1,23 +1,20 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { Container, Paper, Typography, Button, Box, CircularProgress } from '@mui/material';
 import { questions } from '@/data/questions';
 import { QuizForm } from './QuizForm';
 import { QuizResults } from './QuizResults';
 import { Answer, QuizQuestion, QuizResults as QuizResultsType, QuizState, PersonalityType } from './types';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { PlayArrow } from '@mui/icons-material';
 
 export const QuizContainer: React.FC = () => {
-  const router = useRouter();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [quizState, setQuizState] = useState<QuizState>('intro');
   const [results, setResults] = useState<QuizResultsType | null>(null);
-  const [direction, setDirection] = useState(0);
 
   // 質問データをチェック
   const questionsData = Array.isArray(questions) ? (questions as unknown as QuizQuestion[]) : [];
@@ -45,7 +42,6 @@ export const QuizContainer: React.FC = () => {
   // 前の質問に戻る
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
-      setDirection(-1);
       setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
   };
@@ -71,7 +67,6 @@ export const QuizContainer: React.FC = () => {
 
     // 次の質問へ進むか、最後なら結果計算
     if (currentQuestionIndex < questionsData.length - 1) {
-      setDirection(1);
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
       calculateResults(newAnswers);

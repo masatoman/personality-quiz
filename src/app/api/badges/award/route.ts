@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-import { auth, getUserAuth } from '@/lib/auth';
+import { auth } from '@/lib/auth';
 import { BadgeType, BadgeRequirement } from '@/types/badges';
 import { BADGE_DEFINITIONS } from '@/data/badges';
 import { PostgrestError } from '@supabase/supabase-js';
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
 
       // すべての要件を満たしているかどうかをチェック
       const allRequirementsMet = badge.requirements.every(req => {
-        return checkRequirement(req, activitySummary, activityType);
+        return checkRequirement(req, activitySummary);
       });
 
       // すべての要件を満たしていれば、バッジを獲得
@@ -150,8 +150,7 @@ export async function POST(request: NextRequest) {
 // バッジ要件を満たしているかチェックする関数
 function checkRequirement(
   requirement: BadgeRequirement,
-  activitySummary: any,
-  currentActivityType: string
+  activitySummary: any
 ): boolean {
   if (!activitySummary) return false;
 

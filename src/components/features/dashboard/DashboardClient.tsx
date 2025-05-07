@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ActivitySummary from './ActivitySummary';
 import DashboardLayout from './DashboardLayout';
 import TodoList from '@/components/features/todo/TodoList';
-import GiverScoreDisplay from '@/components/features/giver-score/GiverScoreDisplay';
+import { GiverScoreDisplay } from '@/components/features/giver-score/GiverScoreDisplay';
 import { FaChartLine, FaCalendarAlt } from 'react-icons/fa';
 
 // モックデータ
@@ -22,7 +22,6 @@ const initialUserData = {
 };
 
 const DashboardClient: React.FC = () => {
-  const [userId, setUserId] = useState<string>('');
   const [userData, setUserData] = useState(initialUserData);
   const [activityCounts, setActivityCounts] = useState({
     CREATE_CONTENT: 0,
@@ -41,8 +40,6 @@ const DashboardClient: React.FC = () => {
     if (!storedUserId) {
       localStorage.setItem('userId', newUserId);
     }
-    
-    setUserId(newUserId);
     
     // ユーザーデータの初期化（実際の実装ではAPI等から取得）
     const fetchUserData = async () => {
@@ -165,14 +162,16 @@ const DashboardClient: React.FC = () => {
     <DashboardLayout>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         <div className="lg:col-span-2">
-          <ActivitySummary
-            createdMaterialsCount={activityCounts.CREATE_CONTENT}
-            earnedPoints={userData.score}
-            viewedMaterialsCount={activityCounts.CONSUME_CONTENT}
-          />
+          <ActivitySummary userId={userData.id} />
         </div>
         <div>
-          <GiverScoreDisplay userData={userData} />
+          <GiverScoreDisplay score={{
+            level: userData.level,
+            points: userData.score,
+            progress: userData.progressPercentage,
+            pointsToNextLevel: userData.nextLevelScore - userData.score,
+            personalityType: userData.personalityType
+          }} />
         </div>
       </div>
       
@@ -226,11 +225,7 @@ const DashboardClient: React.FC = () => {
         </div>
         
         <div>
-          <TodoList 
-            giverScore={userData.score}
-            giverType={userData.personalityType}
-            activityCounts={activityCounts}
-          />
+          <TodoList />
           
           <div className="bg-white rounded-lg shadow-md p-6 mt-6">
             <h2 className="text-xl font-bold mb-4 flex items-center">

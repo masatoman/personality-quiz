@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { StarIcon, AdjustmentsHorizontalIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { StarIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 // APIからの教材データ取得（サーバーコンポーネント）
 async function getMaterials() {

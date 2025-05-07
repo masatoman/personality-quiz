@@ -103,9 +103,9 @@ export default function useTodoStorage(): UseTodoStorageReturn {
   const { totalPoints, completedPoints } = useMemo(() => {
     return {
       totalPoints: tasks.reduce((sum, task) => sum + (task.points || 0), 0),
-      completedPoints: completedTasks.reduce((sum, task) => sum + (task.points || 0), 0)
+      completedPoints: tasks.filter(task => task.completed).reduce((sum, task) => sum + (task.points || 0), 0)
     };
-  }, [tasks, completedTasks]);
+  }, [tasks]);
   
   return {
     tasks,

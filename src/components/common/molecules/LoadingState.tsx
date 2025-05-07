@@ -33,7 +33,6 @@ const LoadingState: React.FC<LoadingStateProps> = ({
   textClassName = '',
   progress,
   showProgress = false,
-  phase,
   error,
   retryButton = false,
   onRetry

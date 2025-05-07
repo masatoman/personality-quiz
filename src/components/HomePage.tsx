@@ -1,26 +1,19 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { 
   FaUsers, FaBalanceScale, FaBook, FaChartLine, 
   FaLightbulb, FaRocket, FaClock, FaChevronRight,
   FaUserCircle, FaTrophy, FaCalendarAlt, FaPlusCircle,
-  FaSearch, FaEdit, FaBriefcase, FaGraduationCap
+  FaEdit, FaBriefcase, FaGraduationCap
 } from 'react-icons/fa';
 
 // メインコンポーネント
 const HomePage: React.FC = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const router = useRouter();
-  
   // スクロール検知
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      setIsScrolled(scrollPosition > 50);
     };
 
     window.addEventListener('scroll', handleScroll);

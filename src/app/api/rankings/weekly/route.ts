@@ -1,17 +1,6 @@
 import { NextResponse } from 'next/server';
 import { pool, initPool } from '@/lib/db';
-import { QueryResult } from 'pg';
 import { unstable_cache } from 'next/cache';
-import { headers } from 'next/headers';
-
-type RankingUser = {
-  id: string;
-  username: string;
-  score: number;
-  rank: number;
-  activityCount: number;
-  lastActive: string;
-};
 
 type RankingRow = {
   user_id: string;
@@ -45,9 +34,6 @@ async function initializeAndTestConnection() {
       )
     ]);
 
-    // データベース接続テスト
-    const testResult = await pool.query('SELECT NOW()');
-    
     // テーブル存在確認とインデックス最適化
     await Promise.all([
       verifyTableExists(),
@@ -184,7 +170,6 @@ const getWeeklyRankings = unstable_cache(
 export async function GET() {
   const startTime = Date.now();
   try {
-    const headersList = headers();
     const rankings = await getWeeklyRankings();
     const responseTime = Date.now() - startTime;
     

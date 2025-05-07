@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { createClient, User as SupabaseUser, Session } from '@supabase/supabase-js';
+import { createClient, User as SupabaseUser } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,7 +22,7 @@ export type UseAuthReturn = {
   user: User | null;
   isLoading: boolean;
   error: Error | null;
-  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signInWithGithub: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -60,7 +60,7 @@ export const useAuth = (): UseAuthReturn => {
     };
   }, []);
 
-  const signIn = async (email: string, password: string, rememberMe = false) => {
+  const signIn = async (email: string, password: string) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,

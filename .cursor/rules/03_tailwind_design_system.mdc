@@ -1,0 +1,89 @@
+---
+description: 
+globs: src/**/*.tsx
+alwaysApply: false
+---
+---
+description: "Tailwind CSSデザインシステム"
+globs: ["src/**/*.tsx"]
+alwaysApply: false
+---
+
+# Tailwind CSSデザインシステム
+
+## カラーパレット
+- メインカラー: `text-blue-600 bg-blue-100`
+- アクセントカラー: `text-green-600 bg-green-100`
+- ニュートラル: `text-gray-700 bg-gray-50`
+- 警告: `text-red-600 bg-red-100`
+
+## タイポグラフィ
+- 見出し: `text-2xl font-bold text-gray-900`
+- サブ見出し: `text-xl font-medium text-gray-800`
+- 本文: `text-base text-gray-700`
+- 小テキスト: `text-sm text-gray-500`
+
+## コンポーネント
+- カード: `rounded-lg shadow-md bg-white p-4`
+- ボタン:
+  - プライマリ: `bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700`
+  - セカンダリ: `bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300`
+  - アウトライン: `border border-blue-600 text-blue-600 py-2 px-4 rounded-md hover:bg-blue-50`
+
+## レスポンシブ
+- モバイル優先: デフォルトスタイル
+- タブレット: `md:` (768px〜)
+- デスクトップ: `lg:` (1024px〜)
+## Tailwind設定カスタマイズ
+```js
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        // ShiftWithのブランドカラー
+        primary: {
+          50: '#E6F0FF',
+          100: '#CCE0FF',
+          200: '#99C1FF',
+          300: '#66A3FF',
+          400: '#3384FF',
+          500: '#0066FF', // メインカラー
+          600: '#0052CC',
+          700: '#003D99',
+          800: '#002966',
+          900: '#001433',
+        },
+        accent: {
+          50: '#E6F9F1',
+          100: '#CCF3E2',
+          200: '#99E7C5',
+          300: '#66DBA9',
+          400: '#33CF8C',
+          500: '#00C370', // アクセントカラー
+          600: '#009C5A',
+          700: '#007543',
+          800: '#004D2D',
+          900: '#002616',
+        },
+      },
+      borderRadius: {
+        'sm': '0.25rem',
+        'md': '0.375rem',
+        'lg': '0.5rem',
+        'xl': '0.75rem',
+        '2xl': '1rem',
+      },
+      boxShadow: {
+        'sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+        'md': '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        'lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+        'xl': '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+  ],
+}

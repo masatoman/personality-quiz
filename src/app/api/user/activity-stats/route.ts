@@ -24,16 +24,6 @@ export async function GET(request: Request) {
 
     // 認証チェックは削除（元々コメントアウト）
 
-    // 活動タイプの定義
-    const activityTypes: ActivityType[] = [
-      'CREATE_CONTENT',
-      'PROVIDE_FEEDBACK',
-      'CONSUME_CONTENT',
-      'RECEIVE_FEEDBACK',
-      'SHARE_RESOURCE',
-      'ASK_QUESTION'
-    ];
-
     // 各活動タイプごとのデータを取得
     const activityCounts: Record<ActivityType, number> = {} as Record<ActivityType, number>;
 

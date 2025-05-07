@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { FaStar, FaRegStar, FaUser, FaClock, FaBook, FaThumbsUp, FaComment, FaArrowLeft, FaChevronRight } from 'react-icons/fa';
-import { FaRegThumbsUp, FaBookmark, FaRegBookmark } from 'react-icons/fa';
+import { FaStar, FaRegStar, FaUser, FaClock, FaArrowLeft, FaChevronRight, FaBookmark, FaRegBookmark } from 'react-icons/fa';
+import Image from 'next/image';
 
 // 教材データの型定義
 type Material = {
@@ -362,9 +362,11 @@ const MaterialDetailPage = () => {
                   <div className="text-sm text-gray-500">{material.author.type}タイプ</div>
                 </div>
                 <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
-                  <img 
+                  <Image 
                     src={material.author.avatar || '/avatars/default.png'} 
                     alt={material.author.name}
+                    width={48}
+                    height={48}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -465,9 +467,11 @@ const MaterialDetailPage = () => {
                 <div key={feedback.id} className="border-b border-gray-200 pb-6 last:border-b-0">
                   <div className="flex items-start">
                     <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden mr-4">
-                      <img 
+                      <Image 
                         src={feedback.user_avatar || '/avatars/default.png'}
                         alt={feedback.user_name}
+                        width={40}
+                        height={40}
                         className="w-full h-full object-cover"
                       />
                     </div>

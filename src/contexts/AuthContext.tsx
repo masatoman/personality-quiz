@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { User, AuthState, AuthContextType } from '@/types/auth';
+import { AuthState, AuthContextType } from '@/types/auth';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,

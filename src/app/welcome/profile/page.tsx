@@ -1,18 +1,12 @@
 import React from 'react';
 import { Container, Typography, Button, Box, Stack, Paper, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { motion } from 'framer-motion';
+import { WelcomeMotion } from '@/components/features/welcome/WelcomeMotion';
 import { Save } from '@mui/icons-material';
 
 export default function InitialProfilePage() {
   return (
     <Container maxWidth="md" sx={{ py: 8 }}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        role="main"
-        aria-label="プロフィール初期設定"
-      >
+      <WelcomeMotion>
         <Stack spacing={6}>
           <Box textAlign="center" role="banner">
             <Typography
@@ -154,7 +148,7 @@ export default function InitialProfilePage() {
             </form>
           </Paper>
         </Stack>
-      </motion.div>
+      </WelcomeMotion>
     </Container>
   );
 } 

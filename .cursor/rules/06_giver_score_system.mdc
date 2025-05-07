@@ -1,0 +1,66 @@
+---
+description: 
+globs: src/features/giver-score/**,src/features/points/**
+alwaysApply: false
+---
+---
+description: "ギバースコアシステム設計"
+globs: ["src/features/giver-score/**", "src/features/points/**"]
+alwaysApply: false
+---
+
+# ギバースコアシステム設計
+
+## ポイント獲得ルール
+- 教材作成: 50ポイント
+- 教材学習完了: 5ポイント
+- フィードバック提供: 10ポイント
+- 連続ログイン: 3ポイント/日
+- ギバー診断完了: 20ポイント (初回のみ)
+
+## ギバースコア計算
+```typescript
+// src/utils/calculateGiverScore.ts
+import { GiverActivity } from '@/types';
+
+/**
+ * ギバー活動からスコアを計算
+ * @param activities ギバー活動リスト
+ * @returns 計算されたギバースコア (0-100)
+ */
+export function calculateGiverScore(activities: GiverActivity[]): number {
+  if (!activities || activities.length === 0) return 0;
+
+  // 活動タイプごとの重み付け
+  const typeWeights = {
+    'MATERIAL_CREATION': 2.0,  // 教材作成（最も重視）
+    'FEEDBACK': 1.5,           // フィードバック提供
+    'STUDY_COMPLETE': 0.8,     // 学習完了
+    'LOGIN': 0.5               // ログイン（最も軽い）
+  };
+
+  // 時間減衰係数（古い活動の影響を減らす）
+  const getTimeDecay = (timestamp: string): number => {
+    const activityDate = new Date(timestamp);
+    const now = new Date();
+    const daysDiff = (now.getTime() - activityDate.getTime()) / (1000 * 3600 * 24);
+    
+    // 1年以上前の活動は影響半減、3ヶ月以内は100%維持
+    if (daysDiff > 365) return 0.5;
+    if (daysDiff > 180) return 0.75;
+    if (daysDiff > 90) return 0.9;
+    return 1.0;
+  };
+
+  // 各活動のスコア計算と合計
+  let totalScore = activities.reduce((sum, activity) => {
+    const weight = typeWeights[activity.type as keyof typeof typeWeights] || 1.0;
+    const decay = getTimeDecay(activity.timestamp);
+    return sum + (activity.points * weight * decay);
+  }, 0);
+
+  // 最大値を100に正規化
+  const normalizedScore = Math.min(100, totalScore / 10);
+  
+  return Math.round(normalizedScore);
+}

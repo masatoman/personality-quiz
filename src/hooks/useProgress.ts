@@ -1,7 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
-import { UserProgress, Badge, ActivityType, Level, BadgeType } from '@/types/quiz';
-import { BADGE_DEFINITIONS } from '@/data/badges';
+import { Badge } from '@/types/badges';
+import { ActivityType } from '@/types/learning';
 import { LEVELS } from '@/data/levels';
+import { Level, UserProgress } from '@/types/quiz';
+import { BADGE_DEFINITIONS } from '@/data/badges';
 
 export const useProgress = (userId: number) => {
   const [userProgress, setUserProgress] = useState<UserProgress>({
@@ -35,19 +37,19 @@ export const useProgress = (userId: number) => {
   const checkBadgeProgress = useCallback((activityType: ActivityType): Badge[] => {
     const newBadges: Badge[] = [];
     
-    (Object.entries(BADGE_DEFINITIONS) as [BadgeType, Omit<Badge, 'acquiredAt' | 'progress'>][]).forEach(([_, badgeDef]) => {
-      const existingBadge = userProgress.badges.find(b => b.type === badgeDef.type);
+    Object.values(BADGE_DEFINITIONS).forEach((badgeDef) => {
+      const existingBadge = userProgress.badges.find((b: Badge) => b.type === badgeDef.type);
       if (existingBadge) return;
 
       const relevantRequirements = badgeDef.requirements.filter(
-        (req: { activityType: ActivityType; count: number }) => req.activityType === activityType
+        (req) => req.activityType === activityType
       );
 
       if (relevantRequirements.length === 0) return;
 
       // 進捗の計算（仮実装）
       const progress = Math.min(
-        relevantRequirements.reduce((acc: number, req: { count: number }) => acc + (req.count * 10), 0),
+        relevantRequirements.reduce((acc, req) => acc + (req.count * 10), 0),
         100
       );
 
