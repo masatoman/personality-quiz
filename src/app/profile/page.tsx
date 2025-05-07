@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import ProfileClient from '@/components/ProfileClient';
+import ProfileClient from '@/components/features/profile/ProfileClient';
 
 export const metadata: Metadata = {
   title: 'プロフィール | ギバースコアと活動履歴',

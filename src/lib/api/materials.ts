@@ -1,7 +1,7 @@
-import { Material, Section, QuizQuestion, Difficulty } from '@/types/material';
+import { Material, Difficulty } from '@/types/material';
 
 // 教材データを取得する関数
-export const getMaterial = async (id: string): Promise<Material> => {
+export const getMaterial = async (_id: string): Promise<Material> => {
   return {
     id: "1",
     title: "TypeScriptの基礎",
@@ -87,7 +87,7 @@ export const getMaterial = async (id: string): Promise<Material> => {
 };
 
 // 教材の一覧を取得する関数
-export async function getMaterials(options?: {
+export async function getMaterials(_options?: {
   category?: string;
   difficulty?: Difficulty;
   sort?: string;

@@ -1,5 +1,6 @@
+"use client";
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter, useParams } from 'next/navigation';
 import BasicInfoStep from './BasicInfoStep';
 import ContentStep from './ContentStep';
 import SettingsStep from './SettingsStep';
@@ -36,7 +37,8 @@ interface SettingsData {
 // 標準教材作成コンポーネント
 const StandardCreator: React.FC = () => {
   const router = useRouter();
-  const { step } = router.query;
+  const params = useParams();
+  const step = params?.step as string;
   
   // 各ステップのデータを管理
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({

@@ -1,31 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  FaBookOpen, 
-  FaPencilAlt, 
-  FaEye, 
-  FaExclamationTriangle,
-  FaArrowUp,
-  FaArrowDown,
-  FaMinus,
-  FaChartBar
-} from 'react-icons/fa';
-import LoadingState from '@/components/common/molecules/LoadingState';
-import EmptyState from '@/components/common/molecules/EmptyState';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-
-// アクティビティ統計情報の型定義
-interface ActivityStats {
-  createdMaterials: number;
-  totalPoints: number;
-  viewedMaterials: number;
-  // 前回との比較用
-  createdMaterialsChange: number;
-  totalPointsChange: number;
-  viewedMaterialsChange: number;
-}
 
 interface ActivityStat {
   id: string;
@@ -38,9 +15,10 @@ interface ActivitySummaryData {
   stats: ActivityStat[];
 }
 
-// コンポーネントのプロパティ
-interface ActivitySummaryProps {
+// ActivitySummaryProps型にuserId: stringを追加
+export interface ActivitySummaryProps {
   userId: string;
+  // 他のpropsがあればここに追加
 }
 
 // ActivitySummaryCardの型定義を追加
@@ -51,7 +29,7 @@ interface ActivitySummaryCardProps {
 }
 
 // 活動サマリーコンポーネント
-export const ActivitySummary: React.FC<ActivitySummaryProps> = ({ userId }) => {
+const ActivitySummary: React.FC<ActivitySummaryProps> = ({ userId }) => {
   const { data, isLoading, error } = useQuery<ActivitySummaryData>({
     queryKey: ['activitySummary', userId],
     queryFn: async () => {
@@ -65,19 +43,6 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({ userId }) => {
     staleTime: 5 * 60 * 1000, // 5分
     gcTime: 30 * 60 * 1000, // 30分
   });
-
-  const renderChange = useMemo(() => (value: number) => {
-    const isPositive = value > 0;
-    return (
-      <motion.span
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className={`text-sm ${isPositive ? 'text-green-500' : 'text-red-500'}`}
-      >
-        {isPositive ? '+' : ''}{value}%
-      </motion.span>
-    );
-  }, []);
 
   if (isLoading) {
     return (

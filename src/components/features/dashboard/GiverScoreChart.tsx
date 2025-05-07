@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   LineChart, 
   Line, 
@@ -17,8 +17,9 @@ import { GiverScoreHistoryItem } from '@/types/quiz';
 type TimeSpan = '1週間' | '1ヶ月' | '3ヶ月' | '6ヶ月' | '1年';
 
 // コンポーネントのプロパティ
-interface GiverScoreChartProps {
+export interface GiverScoreChartProps {
   userId: string;
+  // 他のpropsがあればここに追加
 }
 
 // ギバースコア推移グラフコンポーネント
@@ -29,7 +30,7 @@ const GiverScoreChart: React.FC<GiverScoreChartProps> = ({ userId }) => {
   const [error, setError] = useState<string | null>(null);
 
   // 現在の日付から指定された期間分の過去の日付を取得
-  const getDateBefore = (span: TimeSpan): Date => {
+  const getDateBefore = useCallback((span: TimeSpan): Date => {
     const now = new Date();
     switch (span) {
       case '1週間':
@@ -45,7 +46,32 @@ const GiverScoreChart: React.FC<GiverScoreChartProps> = ({ userId }) => {
       default:
         return new Date(now.setMonth(now.getMonth() - 1));
     }
-  };
+  }, []);
+
+  // モックデータ生成関数
+  const generateMockData = useCallback((span: TimeSpan): GiverScoreHistoryItem[] => {
+    const data: GiverScoreHistoryItem[] = [];
+    const now = new Date();
+    const startDate = getDateBefore(span);
+    let currentDate = new Date(startDate);
+    let baseScore = 65;
+    let interval = 1;
+    if (span === '3ヶ月' || span === '6ヶ月') interval = 3;
+    else if (span === '1年') interval = 7;
+    while (currentDate <= now) {
+      const randomChange = Math.floor(Math.random() * 9) - 3;
+      const daysPassed = Math.floor((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      const trendIncrease = daysPassed * 0.05;
+      baseScore = Math.min(100, Math.max(0, baseScore + randomChange + trendIncrease));
+      data.push({
+        userId,
+        score: Math.round(baseScore),
+        date: new Date(currentDate).toISOString()
+      });
+      currentDate.setDate(currentDate.getDate() + interval);
+    }
+    return data;
+  }, [getDateBefore, userId]);
 
   // データ取得
   useEffect(() => {
@@ -66,7 +92,7 @@ const GiverScoreChart: React.FC<GiverScoreChartProps> = ({ userId }) => {
         
         // データの形式を整える（日付でソート）
         const sortedData = data.history.sort((a: GiverScoreHistoryItem, b: GiverScoreHistoryItem) => {
-          return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+          return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
         
         setScoreHistory(sortedData);
@@ -82,55 +108,12 @@ const GiverScoreChart: React.FC<GiverScoreChartProps> = ({ userId }) => {
     };
     
     fetchScoreHistory();
-  }, [userId, timeSpan]);
-
-  // モックデータ生成関数（開発用）
-  const generateMockData = (span: TimeSpan): GiverScoreHistoryItem[] => {
-    const data: GiverScoreHistoryItem[] = [];
-    const now = new Date();
-    const startDate = getDateBefore(span);
-    let currentDate = new Date(startDate);
-    
-    // 基準となるスコア値
-    let baseScore = 65;
-    
-    // 日付の間隔を決定
-    let interval = 1; // デフォルトは1日ごと
-    if (span === '3ヶ月' || span === '6ヶ月') {
-      interval = 3; // 3日ごと
-    } else if (span === '1年') {
-      interval = 7; // 1週間ごと
-    }
-    
-    // データ生成
-    while (currentDate <= now) {
-      // ランダムな変動を加える（-3〜+5の範囲）
-      const randomChange = Math.floor(Math.random() * 9) - 3;
-      
-      // 全体的に右肩上がりになるように調整
-      const daysPassed = Math.floor((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-      const trendIncrease = daysPassed * 0.05; // 日数が経つほどわずかに上昇
-      
-      // 最終スコアを計算（0〜100の範囲内に収める）
-      baseScore = Math.min(100, Math.max(0, baseScore + randomChange + trendIncrease));
-      
-      data.push({
-        userId,
-        score: Math.round(baseScore),
-        timestamp: new Date(currentDate)
-      });
-      
-      // 次の日付に進む
-      currentDate.setDate(currentDate.getDate() + interval);
-    }
-    
-    return data;
-  };
+  }, [userId, timeSpan, generateMockData]);
 
   // グラフ用にデータをフォーマット
   const formatDataForChart = () => {
     return scoreHistory.map(item => ({
-      date: new Date(item.timestamp).toLocaleDateString('ja-JP', {
+      date: new Date(item.date).toLocaleDateString('ja-JP', {
         month: 'short',
         day: 'numeric'
       }),

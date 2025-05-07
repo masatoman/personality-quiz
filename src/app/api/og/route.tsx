@@ -1,7 +1,8 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
+import { readFile } from 'fs/promises';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -13,13 +14,9 @@ export async function GET(request: NextRequest) {
   const personalityType = searchParams.get('personality') || '';
   
   // フォントデータの取得
-  const interBold = await fetch(
-    new URL('../../../assets/Inter-Bold.ttf', import.meta.url)
-  ).then((res) => res.arrayBuffer());
+  const interBold = await readFile(process.cwd() + '/public/assets/Inter-Bold.ttf');
   
-  const interRegular = await fetch(
-    new URL('../../../assets/Inter-Regular.ttf', import.meta.url)
-  ).then((res) => res.arrayBuffer());
+  const interRegular = await readFile(process.cwd() + '/public/assets/Inter-Regular.ttf');
   
   // タイプに基づいたコンテンツとスタイルの設定
   let title = 'あなたの英語学習タイプを診断';

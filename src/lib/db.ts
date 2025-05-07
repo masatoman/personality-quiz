@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { PersonalityType, TypeTotals, TypeStats, Stats } from '@/types/quiz';
+import { PersonalityType, Stats } from '@/types/quiz';
 import { Pool } from 'pg';
 
 // PostgreSQLの接続プール設定

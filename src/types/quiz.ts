@@ -265,3 +265,19 @@ export interface SaveNotificationProps {
   success: boolean;
   error: string | null;
 }
+
+export interface UserProgress {
+  userId: number;
+  level: number;
+  totalScore: number;
+  badges: import('./badges').Badge[];
+  streakDays: number;
+  lastActivityDate: Date;
+}
+
+export interface Level {
+  number: number;
+  title: string;
+  requiredScore: number;
+  benefits: string[];
+}

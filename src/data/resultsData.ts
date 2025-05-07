@@ -1,9 +1,8 @@
-import React, { ReactNode } from 'react';
-import { FaUsers, FaBalanceScale, FaBook, FaGift, FaHandHolding, FaExchangeAlt } from 'react-icons/fa';
-import { ResultsData, LearningType } from '@/types/quiz';
+import React from 'react';
+import { FaGift, FaHandHolding, FaExchangeAlt } from 'react-icons/fa';
 
 // 詳細な診断データ
-export const resultsData: ResultsData = {
+export const resultsData = {
   personality_types: {
     giver: {
       title: "思いやりのある学習者",

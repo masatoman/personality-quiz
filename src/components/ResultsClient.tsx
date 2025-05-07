@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useEffect, useState, useMemo, useCallback, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft } from 'react-icons/fa';
-import { useAuth } from '@/hooks/useAuth';
-import { useVirtualizer } from '@tanstack/react-virtual';
 import { 
   LearningType, QuizResults
 } from '@/types/quiz';
@@ -15,7 +12,6 @@ import type { ComponentType } from 'react';
 
 // チャンクサイズの定義
 const CHUNK_SIZE = 20;
-const INITIAL_LOAD_SIZE = 50;
 
 // ローディング表示用コンポーネント
 const LoadingDisplay: React.FC<{ message: string }> = ({ message }) => (
@@ -31,81 +27,6 @@ const LoadingDisplay: React.FC<{ message: string }> = ({ message }) => (
     <span className="text-gray-600">{message}</span>
   </div>
 );
-
-// 仮想スクロールコンテナコンポーネント
-interface VirtualScrollContainerProps<T> {
-  items: T[];
-  renderItem: (item: T, index: number) => React.ReactNode;
-  height: number;
-  itemHeight: number;
-  ariaLabel?: string;
-}
-
-function VirtualScrollContainer<T>({ 
-  items, 
-  renderItem, 
-  height, 
-  itemHeight,
-  ariaLabel = 'スクロール可能なコンテンツ'
-}: VirtualScrollContainerProps<T>) {
-  const parentRef = React.useRef<HTMLDivElement>(null);
-
-  const virtualizer = useVirtualizer({
-    count: items.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => itemHeight,
-    overscan: 5, // パフォーマンス最適化のためのオーバースキャン
-  });
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (!virtualizer.range) return;
-    
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      virtualizer.scrollToIndex(Math.min(virtualizer.range.endIndex + 1, items.length - 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      virtualizer.scrollToIndex(Math.max(virtualizer.range.startIndex - 1, 0));
-    }
-  }, [virtualizer, items.length]);
-
-  return (
-    <div
-      ref={parentRef}
-      className="overflow-auto"
-      style={{ height }}
-      role="list"
-      aria-label={ariaLabel}
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-    >
-      <div
-        style={{
-          height: `${virtualizer.getTotalSize()}px`,
-          width: '100%',
-          position: 'relative',
-        }}
-      >
-        {virtualizer.getVirtualItems().map((virtualItem) => (
-          <div
-            key={virtualItem.key}
-            role="listitem"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: `${virtualItem.size}px`,
-              transform: `translateY(${virtualItem.start}px)`,
-            }}
-          >
-            {renderItem(items[virtualItem.index], virtualItem.index)}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 // コンポーネントのProps型定義
 interface ResultsHeaderProps {
@@ -171,9 +92,6 @@ const SaveNotification = dynamic(() => import('./results/SaveNotification'), {
   ssr: false
 }) as unknown as ComponentType<SaveNotificationProps>;
 
-// 詳細な診断データ
-import { resultsData } from '@/data/resultsData';
-
 // ユーティリティ関数（メモ化）
 const getSecondaryType = (
   giverScore: number, 
@@ -191,27 +109,10 @@ const getSecondaryType = (
   return scores[0].type;
 };
 
-const getCombinationType = (
-  primaryType: LearningType, 
-  secondaryType: LearningType
-): string => {
-  if ((primaryType === 'giver' && secondaryType === 'taker') || 
-      (primaryType === 'taker' && secondaryType === 'giver')) {
-    return 'giver_taker';
-  } else if ((primaryType === 'giver' && secondaryType === 'matcher') || 
-             (primaryType === 'matcher' && secondaryType === 'giver')) {
-    return 'giver_matcher';
-  } else {
-    return 'taker_matcher';
-  }
-};
-
 export function ResultsClient() {
-  const searchParams = useSearchParams();
-  const { user } = useAuth();
   const [selectedTab, setSelectedTab] = useState<TabType>('overview');
   const [isMobile, setIsMobile] = useState(false);
-  const [resultsData, setResultsData] = useState<ResultsData>({
+  const [resultsData] = useState<ResultsData>({
     answers: [],
     recommendations: [],
     timestamp: new Date().toISOString(),
@@ -280,7 +181,7 @@ export function ResultsClient() {
       matcher: 0
     }
   });
-  const [saveNotification, setSaveNotification] = useState<{
+  const [saveNotification] = useState<{
     message: string;
     success: boolean;
     error?: string;
@@ -346,38 +247,6 @@ export function ResultsClient() {
   const handleTabChange = useCallback((tab: TabType) => {
     setSelectedTab(tab);
   }, []);
-  
-  // 結果保存ハンドラ（メモ化）
-  const handleSave = useCallback(async () => {
-    if (!user || !quizResults) return;
-    
-    try {
-      const response = await fetch('/api/quiz/results', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user.id,
-          results: quizResults
-        })
-      });
-      
-      if (response.ok) {
-        setSaveNotification({
-          message: '結果が正常に保存されました',
-          success: true
-        });
-      } else {
-        throw new Error('保存に失敗しました');
-      }
-    } catch (error) {
-      console.error('結果の保存に失敗:', error);
-      setSaveNotification({
-        message: '結果の保存に失敗しました',
-        success: false,
-        error: error instanceof Error ? error.message : '保存中にエラーが発生しました'
-      });
-    }
-  }, [user, quizResults]);
   
   // データのチャンク処理用のstate
   const [currentChunk, setCurrentChunk] = useState(1);

@@ -87,9 +87,9 @@ export interface Material {
   id: string;
   title: string;
   description: string;
-  category: string;
+  category?: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
-  sections: MaterialSection[];
+  sections: Section[];
 }
 
 export interface MaterialSection {

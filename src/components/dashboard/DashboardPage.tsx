@@ -9,13 +9,6 @@ import ActivitySummary from './ActivitySummary';
 import GiverScoreChart from './GiverScoreChart';
 import ActivityTypeChart from './ActivityTypeChart';
 
-// ユーザー型を定義
-interface User {
-  id: string;
-  name?: string;
-  email: string;
-}
-
 // ダッシュボードページコンポーネント
 const DashboardPage: React.FC = () => {
   const { user, loading: authLoading } = useAuth();

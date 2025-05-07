@@ -1,8 +1,12 @@
+import React from 'react'
 import { Metadata } from 'next'
 import { Noto_Sans_JP, M_PLUS_Rounded_1c } from 'next/font/google'
 import ClientLayout from './ClientLayout'
 import './globals.css'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import ErrorFallback from '@/components/ErrorFallback'
 
+// eslint-disable-next-line @next/next/no-page-custom-font
 const noto = Noto_Sans_JP({ 
   subsets: ['latin'],
   weight: ['400', '700'],
@@ -30,11 +34,15 @@ export default function RootLayout({
   return (
     <html lang="ja" className={`${noto.variable} ${rounded.variable}`}>
       <head>
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=optional" rel="stylesheet" />
       </head>
       <body suppressHydrationWarning className="bg-background text-text-primary min-h-screen font-noto">
-        <ClientLayout>{children}</ClientLayout>
+        <ErrorBoundary
+          fallback={<ErrorFallback />}
+        >
+          <ClientLayout>{children}</ClientLayout>
+        </ErrorBoundary>
       </body>
     </html>
   )

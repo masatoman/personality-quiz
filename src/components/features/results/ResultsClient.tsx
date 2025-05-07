@@ -8,6 +8,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { 
   LearningType, QuizResults, TabType 
 } from '@/types/quiz';
+import { useSession } from 'next-auth/react';
+import { saveResults } from '@/lib/api/quiz';
+import { motion } from 'framer-motion';
+import LoadingIndicator from '@/components/ui/LoadingIndicator';
 
 // 分割したコンポーネントをインポート
 import ResultsTabs from './ResultsTabs';
@@ -18,27 +22,53 @@ import ResultsHeader from './ResultsHeader';
 import SaveNotification from './SaveNotification';
 import LoginPrompt from './LoginPrompt';
 import ResultsFooter from './ResultsFooter';
+import ResultsExplanation from './ResultsExplanation';
+import ResultsShare from './ResultsShare';
+import ResultsActions from './ResultsActions';
 
 // 詳細な診断データ
 import { resultsData } from '@/data/resultsData';
 
 // 分割したユーティリティとフック
-import { getSecondaryType, getCombinationType } from './utils/typeUtils';
+import { getSecondaryType } from './utils/typeUtils';
 import { useResultsSave } from './hooks/useResultsSave';
 
-const ResultsClient: React.FC = () => {
-  const searchParams = useSearchParams();
-  const [loading, setLoading] = useState(true);
+interface ResultsClientProps {
+  predefinedType?: LearningType;
+  predefinedResults?: QuizResults;
+}
+
+const ResultsClient: React.FC<ResultsClientProps> = ({ 
+  predefinedType, 
+  predefinedResults 
+}) => {
   const [results, setResults] = useState<QuizResults | null>(null);
+  const [dominantType, setDominantType] = useState<LearningType | null>(null);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const { data: session } = useSession();
+  const user = session?.user;
+  const searchParams = useSearchParams();
   const [selectedTab, setSelectedTab] = useState<TabType>('strengths');
   
-  const { user, signIn, loading: authLoading } = useAuth();
+  const { signIn, loading: authLoading } = useAuth();
   const { 
     savingResults, 
-    saveSuccess, 
-    saveError, 
-    saveResultsToDatabase 
+    saveSuccess
   } = useResultsSave();
+
+  // データベースに結果を保存する関数
+  const saveResultsToDatabase = async (results: QuizResults, userId: string) => {
+    try {
+      setSaveStatus('saving');
+      await saveResults(results, userId);
+      setSaveStatus('success');
+    } catch (error) {
+      console.error('結果の保存に失敗しました:', error);
+      setSaveStatus('error');
+      setSaveError('結果の保存中にエラーが発生しました。後でもう一度お試しください。');
+    }
+  };
 
   useEffect(() => {
     // URLパラメータから結果を取得
@@ -61,23 +91,24 @@ const ResultsClient: React.FC = () => {
           const mockResults: QuizResults = {
             giver: typeParam === 'giver' ? 70 : 30,
             taker: typeParam === 'taker' ? 70 : 30,
-            matcher: typeParam === 'matcher' ? 70 : 40,
-            dominantType: typeParam,
-            percentage: {
-              giver: typeParam === 'giver' ? 50 : 25,
-              taker: typeParam === 'taker' ? 50 : 25,
-              matcher: typeParam === 'matcher' ? 50 : 25
-            }
+            matcher: typeParam === 'matcher' ? 70 : 30,
+            timestamp: new Date().toISOString()
           };
           setResults(mockResults);
         }
-      } catch (error) {
-        console.error('結果の解析中にエラーが発生しました:', error);
+        
+        // 支配的なタイプを設定
+        setDominantType(typeParam);
+        
+      } catch (e) {
+        console.error('結果の取得中にエラーが発生しました:', e);
       }
+    } else if (predefinedType && predefinedResults) {
+      // 事前定義された結果がある場合はそれを使用
+      setResults(predefinedResults);
+      setDominantType(predefinedType);
     }
-    
-    setLoading(false);
-  }, [searchParams, user]);
+  }, [searchParams, predefinedType, predefinedResults, user, saveResultsToDatabase]);
 
   useEffect(() => {
     if (results && !savingResults && user) {
@@ -91,7 +122,7 @@ const ResultsClient: React.FC = () => {
   };
 
   // ローディング中
-  if (loading || authLoading) {
+  if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
@@ -112,51 +143,80 @@ const ResultsClient: React.FC = () => {
     );
   }
 
-  const { dominantType } = results;
-  const personalityType = resultsData.personality_types[dominantType];
-  const secondaryType = getSecondaryType(results.giver, results.taker, results.matcher, dominantType);
-  const combinationType = getCombinationType(dominantType, secondaryType);
+  // dominantTypeプロパティを取得
+  const dominantTypeFromResults = results.dominantType;
+  const personalityType = resultsData.personality_types[dominantTypeFromResults];
+  const secondaryType = getSecondaryType(results.giver, results.taker, results.matcher, dominantTypeFromResults);
+
+  // 優勢タイプに基づくスタイル設定
+  const getTypeColor = () => {
+    switch (dominantTypeFromResults) {
+      case 'giver':
+        return 'text-green-600 border-green-600 bg-green-50';
+      case 'taker':
+        return 'text-blue-600 border-blue-600 bg-blue-50';
+      case 'matcher':
+        return 'text-purple-600 border-purple-600 bg-purple-50';
+      default:
+        return 'text-gray-600 border-gray-600 bg-gray-50';
+    }
+  };
+
+  // ページのアニメーション設定
+  const pageVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+    exit: { opacity: 0, y: -20, transition: { duration: 0.3 } }
+  };
+
+  // 優勢タイプに基づくタイトル
+  const typeTitle = {
+    giver: 'ギバータイプ',
+    taker: 'テイカータイプ',
+    matcher: 'マッチャータイプ'
+  }[dominantTypeFromResults];
 
   return (
-    <div className="results-page bg-gray-50 min-h-screen pb-12">
-      <ResultsHeader user={user} onLogin={handleLoginPrompt} />
-      
-      <main className="container mx-auto px-4 mt-8">
-        {/* 未ログイン時の結果保存プロンプト */}
-        {!user && results && (
-          <LoginPrompt onLogin={handleLoginPrompt} />
-        )}
+    <motion.div 
+      className="container mx-auto px-4 py-8 max-w-4xl"
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={pageVariants}
+    >
+      <div className="text-center mb-8">
+        <p className="text-lg text-gray-600 mb-2">あなたの学習タイプは</p>
+        <h1 className={`text-4xl font-bold mb-4 inline-block px-4 py-2 border-b-4 rounded ${getTypeColor()}`}>
+          {typeTitle}
+        </h1>
+        <p className="text-gray-700">
+          このタイプの特徴と最適な学習方法を見てみましょう
+        </p>
+      </div>
 
-        {/* 保存状態通知 */}
-        <SaveNotification 
-          success={saveSuccess} 
-          error={saveError} 
-        />
-        
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <div className="text-center mb-6">
-            {personalityType.icon}
-            <h2 className="text-2xl md:text-3xl font-bold mb-2">{personalityType.title}</h2>
-            <p className="text-lg text-gray-600">{personalityType.description}</p>
-          </div>
-          
-          {/* タブコンポーネント */}
-          <ResultsTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
-          
-          {/* タブコンテンツコンポーネント */}
-          <ResultsTabContent selectedTab={selectedTab} personalityType={personalityType} />
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <ResultsChart results={results} dominantType={dominantTypeFromResults} />
+      </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <ResultsExplanation type={dominantTypeFromResults} />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <ResultsShare results={results} dominantType={dominantTypeFromResults} />
         </div>
-        
-        {/* チャートコンポーネント */}
-        <ResultsChart results={results} />
-        
-        {/* 次のステップコンポーネント */}
-        <NextSteps personalityType={personalityType} />
-        
-        {/* フッターコンポーネント */}
-        <ResultsFooter />
-      </main>
-    </div>
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <ResultsActions 
+            dominantType={dominantTypeFromResults} 
+            onSave={() => user && saveResultsToDatabase(results, user.id)}
+            saveStatus={saveStatus}
+            saveError={saveError}
+            isLoggedIn={!!user}
+          />
+        </div>
+      </div>
+    </motion.div>
   );
 };
 

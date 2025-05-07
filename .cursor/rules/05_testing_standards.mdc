@@ -1,0 +1,41 @@
+---
+description: 
+globs: **/*.test.ts,**/*.test.tsx
+alwaysApply: false
+---
+---
+description: "テスト基準とパターン"
+globs: ["**/*.test.{ts,tsx}"]
+alwaysApply: false
+---
+
+# テスト基準とパターン
+
+## 単体テストパターン
+```tsx
+// component.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import { ComponentName } from './ComponentName';
+
+describe('ComponentName', () => {
+  // 基本レンダリングテスト
+  it('renders correctly', () => {
+    render(<ComponentName requiredProp="test" />);
+    expect(screen.getByText('test')).toBeInTheDocument();
+  });
+
+  // イベントテスト
+  it('calls onAction when clicked', () => {
+    const handleAction = jest.fn();
+    render(<ComponentName requiredProp="test" onAction={handleAction} />);
+    
+    fireEvent.click(screen.getByRole('button'));
+    expect(handleAction).toHaveBeenCalledWith('test');
+  });
+
+  // 条件付きレンダリングテスト
+  it('renders optional content when prop is provided', () => {
+    render(<ComponentName requiredProp="test" optionalProp={5} />);
+    expect(screen.getByText('5')).toBeInTheDocument();
+  });
+});

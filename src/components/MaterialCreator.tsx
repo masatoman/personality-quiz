@@ -1,6 +1,5 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import Image from 'next/image';
 
 // 教材作成選択画面コンポーネント
 const MaterialCreator: React.FC = () => {

@@ -1,12 +1,10 @@
 'use client';
 
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { FaExclamationTriangle, FaArrowLeft, FaHome } from 'react-icons/fa';
-import Link from 'next/link';
+import { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
-  fallback: (props: { error: Error; reset: () => void }) => ReactNode;
+  fallback: ReactNode | ((props: { error: Error; reset: () => void }) => ReactNode);
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
 }
 
@@ -70,10 +68,13 @@ export default class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError && this.state.error) {
       // エラーが存在する場合のみfallbackを表示
-      return this.props.fallback({
-        error: this.state.error,
-        reset: this.handleReset
-      });
+      if (typeof this.props.fallback === 'function') {
+        return this.props.fallback({
+          error: this.state.error,
+          reset: this.handleReset
+        });
+      }
+      return this.props.fallback;
     }
 
     return this.props.children;

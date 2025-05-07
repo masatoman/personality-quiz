@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-import { auth, getUserAuth } from '@/lib/auth';
+import { getUserAuth } from '@/lib/auth';
 import { Badge } from '@/types/badges';
 import { BADGE_DEFINITIONS } from '@/data/badges';
 
@@ -29,7 +29,6 @@ export async function GET(request: NextRequest) {
 
     // 認証チェック - 自分のデータまたは管理者のみがアクセス可能
     const user = await getUserAuth();
-    const session = await auth();
     if (!user || (user.id !== userId && user.role !== 'admin')) {
       return NextResponse.json(
         { error: 'このデータにアクセスする権限がありません' },
@@ -72,12 +71,12 @@ export async function GET(request: NextRequest) {
     }).filter(Boolean) as Badge[];
 
     // 未獲得のバッジ情報も含める（進捗情報付き）
-    const { data: userProgress, error: progressError } = await supabase
+    const { data: userProgress } = await supabase
       .from('user_activities_summary')
       .select('*')
       .eq('user_id', userId)
       .single();
-      
+
     // 全てのバッジ定義をループして、未獲得のバッジの進捗状況を計算
     const allBadges: Badge[] = [...completeBadges];
     

@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     }
     
     // 現在の進捗を確認
-    const { data: currentProgress, error: progressError } = await supabase
+    const { data: currentProgress } = await supabase
       .from('user_learning_progress')
       .select('completion_percentage')
       .eq('user_id', userId)
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     const isCompletedNow = completionPercentage === 100;
     
     // 進捗データの更新または挿入
-    const { data: updatedProgress, error: updateError } = await supabase
+    const { error: updateError } = await supabase
       .from('user_learning_progress')
       .upsert({
         user_id: userId,

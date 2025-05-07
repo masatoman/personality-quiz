@@ -1,0 +1,52 @@
+---
+description: 
+globs: src/**
+alwaysApply: false
+---
+---
+description: "プロジェクト構造と命名規則"
+globs: ["src/**"]
+alwaysApply: false
+---
+
+# プロジェクト構造と命名規則
+
+## ディレクトリ構成
+- src/
+  - components/ - Atomic Designに基づくUIコンポーネント
+    - atoms/ - 基本UIパーツ (Button, Input, Icon)
+    - molecules/ - 複数アトムの組み合わせ (Form, Card, SearchBar)
+    - organisms/ - 複雑な機能ブロック (Header, MaterialList, GiverScoreDashboard)
+    - templates/ - ページレイアウト (DefaultLayout, AuthLayout)
+  - features/ - 機能モジュール（UIとロジックのバンドル）
+    - auth/ - 認証関連
+      - components/ - 認証UI
+      - hooks/ - 認証ロジック
+      - types/ - 認証型定義
+    - materials/ - 教材関連
+    - giver-score/ - ギバースコア関連
+    - points/ - ポイントシステム関連
+  - hooks/ - 汎用カスタムReactフック
+  - services/ - API通信層（Supabase連携など）
+  - utils/ - ユーティリティ関数
+  - contexts/ - グローバル状態管理
+  - types/ - TypeScript共通型定義
+  - styles/ - グローバルスタイル
+
+## 責任分離の原則
+- **components/**: UIのみを担当。ビジネスロジックは含まない
+- **features/**: 特定機能のUI + ロジックをカプセル化
+  - components/: 機能固有UI（atoms〜organismsを組み合わせたもの）
+  - hooks/: 機能固有ロジック
+  - api/: 機能固有API連携
+- **hooks/**: 複数機能で共有できる再利用可能なロジック
+- **services/**: Supabaseなど外部サービスとの通信レイヤー
+
+## 命名規則
+- コンポーネント: PascalCase (UserCard.tsx)
+- フック: useCamelCase (useGiverScore.ts)
+- ユーティリティ関数: camelCase (calculatePoints.ts)
+- 定数: UPPER_SNAKE_CASE
+- テストファイル: 対象ファイル名.test.ts(x)
+- ディレクトリ: kebab-case (giver-score/)
+

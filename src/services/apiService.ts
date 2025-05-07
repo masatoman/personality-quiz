@@ -1,5 +1,6 @@
-import supabase, { Database } from './supabase';
-import { PersonalityType, TypeTotals, Stats } from '@/types/quiz';
+// import supabase, { Database } from './supabase';
+import supabase, { Database } from './supabaseClient';
+import { PersonalityType } from '@/types/quiz';
 
 // APIエンドポイントのベースパス
 export const API_BASE = '/api';

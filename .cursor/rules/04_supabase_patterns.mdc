@@ -1,0 +1,58 @@
+---
+description: 
+globs: src/services/**/*.ts,src/hooks/**/*.ts
+alwaysApply: false
+---
+---
+description: "Supabase連携パターン"
+globs: ["src/services/**/*.ts", "src/hooks/**/*.ts"]
+alwaysApply: false
+---
+
+# Supabase連携パターン
+
+## 認証処理
+```tsx
+// src/hooks/useAuth.ts
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
+import type { User } from '@supabase/supabase-js';
+
+export const useAuth = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // 現在のセッション取得
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_, session) => {
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // ログイン
+  const signIn = async (email: string, password: string) => {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
+    return { error };
+  };
+
+  // ログアウト
+  const signOut = async () => {
+    await supabase.auth.signOut();
+  };
+
+  return {
+    user,
+    loading,
+    signIn,
+    signOut,
+  };
+};

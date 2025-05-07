@@ -5,12 +5,6 @@ import { query } from '@/lib/db';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic'; // 常に動的に実行
 
-// モックデータ
-const mockSetupData = {
-  message: 'データベースのセットアップが完了しました（モックデータを使用）',
-  success: true
-};
-
 export async function GET(request: NextRequest) {
   try {
     // 認証キーの確認（本番環境では適切な認証方法に変更）

@@ -1,9 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
 import { PersonalityType } from '@/types/quiz';
 
 // 質問データ
@@ -160,7 +158,6 @@ export default function QuizClient() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showQuiz, setShowQuiz] = useState(false);
-  const router = useRouter();
   const mainRef = useRef<HTMLDivElement>(null);
 
   // 診断を開始
@@ -188,9 +185,8 @@ export default function QuizClient() {
         setSelectedOptionIndex(answers[currentQuestionIndex + 1]);
       } else {
         // 結果を計算して結果ページへ遷移
-        const result = calculatePersonalityType(answers);
+        calculatePersonalityType(answers);
         setIsLoading(true);
-        router.push(`/result/${result.type}?data=${encodeURIComponent(JSON.stringify(result.totals))}`);
       }
     } catch (err) {
       setError('予期せぬエラーが発生しました。もう一度お試しください。');

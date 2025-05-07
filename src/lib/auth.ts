@@ -1,5 +1,4 @@
 import { createClient } from '@/utils/supabase/server';
-import { cookies } from 'next/headers';
 
 /**
  * セッション情報を取得する
@@ -7,7 +6,6 @@ import { cookies } from 'next/headers';
  * @returns セッション情報、またはnull（未認証の場合）
  */
 export async function auth() {
-  const cookieStore = cookies();
   const supabase = createClient();
   
   const { data: { session }, error } = await supabase.auth.getSession();

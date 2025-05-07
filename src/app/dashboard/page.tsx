@@ -1,4 +1,4 @@
-import React, { Suspense, ReactElement, ReactNode } from 'react';
+import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 import ActivitySummary from '@/components/dashboard/ActivitySummary';
 import GiverScoreChart from '@/components/dashboard/GiverScoreChart';

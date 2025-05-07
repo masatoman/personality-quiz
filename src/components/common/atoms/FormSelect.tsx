@@ -71,8 +71,8 @@ const FormSelect: React.FC<FormSelectProps> = ({
   };
   
   // 選択変更時の処理
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newValue = e.target.value;
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newValue = event.target.value;
     setValue(newValue);
     
     // onChange時にバリデーションを実行
@@ -92,7 +92,7 @@ const FormSelect: React.FC<FormSelectProps> = ({
   };
   
   // フォーカスを失った時の処理
-  const handleBlur = (e: React.FocusEvent<HTMLSelectElement>) => {
+  const handleBlur = () => {
     setIsTouched(true);
     
     // onBlur時にバリデーションを実行

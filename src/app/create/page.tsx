@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 export default function CreateMaterialPage() {

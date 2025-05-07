@@ -23,6 +23,15 @@ const mockMatchMedia = jest.fn().mockReturnValue({
 }) as unknown as typeof window.matchMedia;
 global.window.matchMedia = mockMatchMedia;
 
+// IntersectionObserverの型が未定義の場合の型定義追加
+
+type IntersectionObserverCallback = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => void;
+type IntersectionObserverInit = {
+  root?: Element | null;
+  rootMargin?: string;
+  threshold?: number | number[];
+};
+
 // IntersectionObserverのモック
 class MockIntersectionObserver implements IntersectionObserver {
   readonly root: Element | null = null;
@@ -34,20 +43,22 @@ class MockIntersectionObserver implements IntersectionObserver {
     this.callback = callback;
   }
 
-  observe(target: Element): void {
+  observe(): void {
+    // ダミーのDOMRectを生成
+    const dummyRect = new DOMRect(0, 0, 0, 0);
     const entry: IntersectionObserverEntry = {
-      boundingClientRect: target.getBoundingClientRect(),
+      boundingClientRect: dummyRect,
       intersectionRatio: 1,
-      intersectionRect: target.getBoundingClientRect(),
+      intersectionRect: dummyRect,
       isIntersecting: true,
       rootBounds: null,
-      target,
+      target: this.root || document.createElement('div'),
       time: Date.now(),
     };
     this.callback([entry], this);
   }
 
-  unobserve(target: Element): void {}
+  unobserve(): void {}
 
   disconnect(): void {}
 

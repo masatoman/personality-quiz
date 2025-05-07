@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   PieChart, 
   Pie, 
@@ -22,9 +22,10 @@ interface ActivityTypeInfo {
   color: string;
 }
 
-// 円グラフコンポーネントのプロパティ
-interface ActivityTypeChartProps {
+// ActivityTypeChartProps型にuserId: stringを追加
+export interface ActivityTypeChartProps {
   userId: string;
+  // 他のpropsがあればここに追加
 }
 
 // 活動種類別円グラフコンポーネント
@@ -33,48 +34,15 @@ const ActivityTypeChart: React.FC<ActivityTypeChartProps> = ({ userId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 活動タイプの表示名とカラーマップ
-  const activityTypeMap: Record<ActivityType, { label: string; color: string }> = {
+  // activityTypeMapをuseMemoでラップ
+  const activityTypeMap = useMemo(() => ({
     'CREATE_CONTENT': { label: 'コンテンツ作成', color: '#6246EA' },
     'PROVIDE_FEEDBACK': { label: 'フィードバック提供', color: '#36B9CC' },
     'CONSUME_CONTENT': { label: 'コンテンツ利用', color: '#4CAF50' },
     'RECEIVE_FEEDBACK': { label: 'フィードバック受領', color: '#FFC107' },
     'SHARE_RESOURCE': { label: 'リソース共有', color: '#FF5722' },
     'ASK_QUESTION': { label: '質問', color: '#9C27B0' }
-  };
-
-  const fetchActivityData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const response = await fetch(`/api/user/activity-stats?userId=${userId}`);
-      
-      if (!response.ok) {
-        throw new Error(`データの取得に失敗しました: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      // データの形式を整える
-      const formattedData = Object.entries(data.activityCounts).map(([type, count]) => ({
-        type: type as ActivityType,
-        count: count as number,
-        label: activityTypeMap[type as ActivityType]?.label || type,
-        color: activityTypeMap[type as ActivityType]?.color || '#999999'
-      }));
-      
-      setActivityData(formattedData);
-    } catch (error) {
-      console.error('活動データの取得に失敗しました:', error);
-      setError('活動データの取得中にエラーが発生しました。');
-      
-      // 開発用のモックデータ
-      setActivityData(generateMockData());
-    } finally {
-      setLoading(false);
-    }
-  };
+  }), []);
 
   // モックデータ生成関数（開発用）をuseCallbackでラップ
   const generateMockData = useCallback((): ActivityTypeInfo[] => {
@@ -116,13 +84,40 @@ const ActivityTypeChart: React.FC<ActivityTypeChartProps> = ({ userId }) => {
         color: activityTypeMap['ASK_QUESTION'].color
       }
     ];
-    
     return mockData;
   }, [activityTypeMap]);
 
+  // fetchActivityDataをuseCallbackでラップ
+  const fetchActivityData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch(`/api/user/activity-stats?userId=${userId}`);
+      if (!response.ok) {
+        throw new Error(`データの取得に失敗しました: ${response.status}`);
+      }
+      const data = await response.json();
+      // データの形式を整える
+      const formattedData = Object.entries(data.activityCounts).map(([type, count]) => ({
+        type: type as ActivityType,
+        count: count as number,
+        label: activityTypeMap[type as ActivityType]?.label || type,
+        color: activityTypeMap[type as ActivityType]?.color || '#999999'
+      }));
+      setActivityData(formattedData);
+    } catch (error) {
+      console.error('活動データの取得に失敗しました:', error);
+      setError('活動データの取得中にエラーが発生しました。');
+      // 開発用のモックデータ
+      setActivityData(generateMockData());
+    } finally {
+      setLoading(false);
+    }
+  }, [userId, activityTypeMap, generateMockData]);
+
   useEffect(() => {
     fetchActivityData();
-  }, [userId, fetchActivityData]);
+  }, [fetchActivityData]);
 
   useEffect(() => {
     generateMockData();

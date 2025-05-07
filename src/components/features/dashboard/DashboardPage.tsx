@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { FaUserCircle, FaBell, FaSearch, FaChartLine, FaBookOpen, FaAward } from 'react-icons/fa';
+import { FaUserCircle, FaBell, FaAward, FaChartLine, FaBookOpen, FaSearch } from 'react-icons/fa';
 import { useAuth } from '@/hooks/useAuth';
 
 // サブコンポーネントをインポート
@@ -9,16 +9,9 @@ import ActivitySummary from './ActivitySummary';
 import GiverScoreChart from './GiverScoreChart';
 import ActivityTypeChart from './ActivityTypeChart';
 
-// ユーザー型を定義
-interface User {
-  id: string;
-  name?: string;
-  email: string;
-}
-
 // ダッシュボードページコンポーネント
 const DashboardPage: React.FC = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [userName, setUserName] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'overview' | 'materials' | 'progress'>('overview');
   
