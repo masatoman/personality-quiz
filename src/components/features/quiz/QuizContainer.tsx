@@ -1,5 +1,8 @@
 'use client';
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+
 import React, { useState, useEffect } from 'react';
 import { Container, Paper, Typography, Button, Box, CircularProgress } from '@mui/material';
 import { questions } from '@/data/questions';

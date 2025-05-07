@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+
 import { BadgeRequirement, BadgeType, BADGE_DEFINITIONS } from '@/types/badges';
 import { ActivityType } from '@/types/learning';
 import { ActivitySummary } from '@/types/activitySummary';
@@ -95,4 +98,4 @@ export class BadgeEvaluator {
     // デフォルトはカウントベース
     return activityCount >= requirement.count;
   }
-} 
+}

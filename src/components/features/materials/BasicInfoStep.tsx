@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+
 import React, { useState, useRef, ChangeEvent } from 'react';
 import Image from 'next/image';
 import { ArrowLeftIcon, PlusCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';

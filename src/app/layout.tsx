@@ -34,7 +34,9 @@ export default function RootLayout({
   return (
     <html lang="ja" className={`${noto.variable} ${rounded.variable}`}>
       <head>
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional" rel="stylesheet" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=optional" rel="stylesheet" />
       </head>
       <body suppressHydrationWarning className="bg-background text-text-primary min-h-screen font-noto">

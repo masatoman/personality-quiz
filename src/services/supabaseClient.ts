@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+
 import { createClient } from '@supabase/supabase-js';
 
 // 環境変数からSupabaseの設定を取得

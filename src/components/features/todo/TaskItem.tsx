@@ -5,13 +5,13 @@ import { FaTrashAlt, FaCheckCircle, FaRegCircle } from 'react-icons/fa';
 interface TaskItemProps {
   task: Task;
   onToggleComplete: (id: string) => void;
-  onDeleteTask: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
 /**
  * 個別のタスク項目を表示するコンポーネント
  */
-export default function TaskItem({ task, onToggleComplete, onDeleteTask }: TaskItemProps) {
+export default function TaskItem({ task, onToggleComplete, onDelete }: TaskItemProps) {
   return (
     <div className="bg-white p-4 rounded-lg shadow mb-3 transition-all">
       <div className="flex items-start">
@@ -54,7 +54,7 @@ export default function TaskItem({ task, onToggleComplete, onDeleteTask }: TaskI
         </div>
         
         <button
-          onClick={() => onDeleteTask(task.id)}
+          onClick={() => onDelete(task.id)}
           className="ml-3 text-red-500 hover:text-red-600 focus:outline-none"
           aria-label="タスクを削除"
         >
@@ -63,4 +63,4 @@ export default function TaskItem({ task, onToggleComplete, onDeleteTask }: TaskI
       </div>
     </div>
   );
-} 
+}
