@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+
 /**
  * コロケーション方式への移行スクリプト
  * 

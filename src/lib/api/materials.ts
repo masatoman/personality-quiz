@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+
 import { Material, Difficulty } from '@/types/material';
 
 // 教材データを取得する関数

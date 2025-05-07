@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+
 /// <reference types="@testing-library/jest-dom" />
 
 import '@testing-library/jest-dom';

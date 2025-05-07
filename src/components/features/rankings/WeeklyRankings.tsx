@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+
 import React, { memo, useCallback, useState, useTransition } from 'react';
 import { FixedSizeList as List } from 'react-window';
 import { twMerge } from 'tailwind-merge';

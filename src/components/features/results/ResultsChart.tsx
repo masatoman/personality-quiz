@@ -18,9 +18,6 @@ const ResultsChart: React.FC<ResultsChartProps> = ({ results }) => {
     { name: 'バランス型', value: results.percentage.matcher }
   ];
 
-  // チャートの色
-  const COLORS = ['#6246EA', '#36B9CC', '#4CAF50'];
-
   return (
     <div className="mx-auto max-w-xs md:max-w-sm bg-white rounded-lg shadow-md p-6 mb-8">
       <h2 className="text-xl font-bold mb-4">あなたの学習タイプ分布</h2>

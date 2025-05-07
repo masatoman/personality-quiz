@@ -38,7 +38,7 @@ export class UserActivityTracker {
       };
       
       // 活動をデータベースに保存
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('user_activities')
         .insert({
           user_id: userId,

@@ -108,7 +108,7 @@ const GiverScoreChart: React.FC<GiverScoreChartProps> = ({ userId }) => {
     };
     
     fetchScoreHistory();
-  }, [userId, timeSpan, generateMockData]);
+  }, [userId, timeSpan, generateMockData, getDateBefore]);
 
   // グラフ用にデータをフォーマット
   const formatDataForChart = () => {
