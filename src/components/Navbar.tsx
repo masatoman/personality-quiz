@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { FaHome, FaSearch, FaEdit, FaUser, FaBell, FaBars, FaSignOutAlt, FaCog, FaUserCircle } from 'react-icons/fa';
+import { FaHome, FaSearch, FaEdit, FaUser, FaBell, FaBars, FaSignOutAlt, FaCog, FaUserCircle, FaSun, FaMoon } from 'react-icons/fa';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +13,7 @@ const Navbar: React.FC = () => {
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const router = useRouter();
+  const { isDarkMode, toggleDarkMode } = useTheme();
 
   // クライアントサイドでログイン状態を確認（実際はSupabaseなどの認証状態を確認）
   useEffect(() => {
@@ -86,6 +88,15 @@ const Navbar: React.FC = () => {
               </Link>
             ))}
 
+            {/* ダークモード切り替えボタン */}
+            <button
+              onClick={toggleDarkMode}
+              className="rounded-full p-2 bg-white/20 hover:bg-white/30 focus:outline-none transition-colors"
+              aria-label={isDarkMode ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
+            >
+              {isDarkMode ? <FaSun className="text-yellow-300" /> : <FaMoon className="text-slate-300" />}
+            </button>
+
             {/* ログイン/新規登録ボタン または プロフィールメニュー */}
             {!isLoggedIn ? (
               <div className="flex space-x-3">
@@ -145,12 +156,23 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* モバイル向けハンバーガーメニュー */}
-          <button
-            className="md:hidden text-white focus:outline-none"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <FaBars size={24} />
-          </button>
+          <div className="md:hidden flex items-center space-x-3">
+            {/* ダークモード切り替えボタン（モバイル用） */}
+            <button
+              onClick={toggleDarkMode}
+              className="rounded-full p-2 bg-white/20 hover:bg-white/30 focus:outline-none transition-colors"
+              aria-label={isDarkMode ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
+            >
+              {isDarkMode ? <FaSun className="text-yellow-300" /> : <FaMoon className="text-slate-300" />}
+            </button>
+            
+            <button
+              className="text-white focus:outline-none"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              <FaBars size={24} />
+            </button>
+          </div>
         </div>
 
         {/* モバイル向けドロップダウンメニュー */}

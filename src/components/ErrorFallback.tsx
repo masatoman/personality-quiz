@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-const ErrorFallback = () => {
+export const ErrorFallback = () => {
   return (
     <div className="p-6 max-w-md mx-auto bg-white rounded-lg shadow-md text-center">
       <h2 className="text-xl font-bold text-red-600 mb-4">エラーが発生しました</h2>
