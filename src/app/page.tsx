@@ -1,475 +1,340 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { PersonalityType } from '@/types/quiz';
-import html2canvas from 'html2canvas';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaUsers, FaBalanceScale, FaBook } from 'react-icons/fa';
+import Image from 'next/image';
+import Link from 'next/link';
+import { FaArrowRight, FaCheck, FaUsers, FaLightbulb, FaGraduationCap } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
-interface IconProps {
-  className?: string;
-}
+export default function LandingPage() {
+  const router = useRouter();
+  const [isHovered, setIsHovered] = useState(false);
 
-const TwitterIcon: React.FC<IconProps> = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-  </svg>
-);
-
-const LineIcon: React.FC<IconProps> = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-12S17.52 2 12 2zm5.5 13.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm-11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm5.5 2c-2.33 0-4.31-1.46-5.11-3.5h10.22c-.8 2.04-2.78 3.5-5.11 3.5z"/>
-  </svg>
-);
-
-const InstagramIcon: React.FC<IconProps> = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465.66.254 1.216.598 1.772 1.153a4.908 4.908 0 0 1 1.153 1.772c.247.637.415 1.363.465 2.428.047 1.066.06 1.405.06 4.122 0 2.717-.01 3.056-.06 4.122-.05 1.065-.218 1.79-.465 2.428a4.883 4.883 0 0 1-1.153 1.772 4.915 4.915 0 0 1-1.772 1.153c-.637.247-1.363.415-2.428.465-1.066.047-1.405.06-4.122.06-2.717 0-3.056-.01-4.122-.06-1.065-.05-1.79-.218-2.428-.465a4.89 4.89 0 0 1-1.772-1.153 4.904 4.904 0 0 1-1.153-1.772c-.248-.637-.415-1.363-.465-2.428C2.013 15.056 2 14.717 2 12c0-2.717.01-3.056.06-4.122.05-1.066.217-1.79.465-2.428a4.88 4.88 0 0 1 1.153-1.772A4.897 4.897 0 0 1 5.45 2.525c.638-.248 1.362-.415 2.428-.465C8.944 2.013 9.283 2 12 2zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm6.5-.25a1.25 1.25 0 1 0-2.5 0 1.25 1.25 0 0 0 2.5 0zM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/>
-  </svg>
-);
-
-const FacebookIcon: React.FC<IconProps> = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-  </svg>
-);
-
-const questions = [
-  {
-    text: '英語の勉強会で、あなたはどのように参加しますか？',
-    options: [
-      { text: '他の参加者の学習をサポートしながら自分も学ぶ', type: 'giver' as PersonalityType },
-      { text: '自分の学習に集中して、効率よく進める', type: 'taker' as PersonalityType },
-      { text: 'お互いに教え合いながら進める', type: 'matcher' as PersonalityType },
-    ],
-  },
-  // ... 他の質問も同様に
-];
-
-type StatType = {
-  count: number;
-  percentage: number;
-};
-
-type TypeTotals = {
-  [key in PersonalityType]: StatType;
-};
-
-type PersonalityDescription = {
-  title: string;
-  description: string;
-  strengths: string[];
-  weaknesses: string[];
-  learningAdvice: {
-    title: string;
-    tips: string[];
-    tools: string[];
-  }
-};
-
-const saveResult = async (type: PersonalityType): Promise<boolean> => {
-  try {
-    const response = await fetch('/api/save-result/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ type }),
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: '結果の保存に失敗しました' }));
-      throw new Error(errorData.error || '結果の保存に失敗しました');
-    }
-    
-    const data = await response.json();
-    return data.success === true;
-  } catch (error) {
-    console.error('結果の保存中にエラーが発生しました:', error);
-    return false;
-  }
-};
-
-const getPersonalityDescription = (type: PersonalityType | null): PersonalityDescription => {
-  const descriptions: {[key in PersonalityType]: PersonalityDescription} = {
-    giver: {
-      title: '体系的学習者',
-      description: '計画的で着実な学習を好む傾向があります。文法や語彙を体系的に学ぶことで、確実な進歩を実感できる時にやる気が出ます。',
-      strengths: [
-        '計画通りに学習を進められる',
-        '基礎からしっかり積み上げていける',
-        '学習の進捗を可視化できる'
-      ],
-      weaknesses: [
-        '柔軟性に欠けることがある',
-        '予定外の変更に弱い',
-        '完璧主義になりすぎる傾向'
-      ],
-      learningAdvice: {
-        title: 'おすすめの学習方法',
-        tips: [
-          '文法書を最初から順番に学ぶ',
-          '単語帳で計画的に語彙を増やす',
-          '定期的に復習時間を設ける'
-        ],
-        tools: [
-          '文法学習アプリ',
-          '単語帳アプリ',
-          '学習管理ツール'
-        ]
-      }
-    },
-    taker: {
-      title: '実践的学習者',
-      description: '実践を通じて学ぶことを好む傾向があります。実際のコミュニケーションを通じて、生きた英語を学ぶことに意欲を感じます。',
-      strengths: [
-        '実践的なスキルが身につく',
-        '自然な英語が身につく',
-        'コミュニケーション力が向上'
-      ],
-      weaknesses: [
-        '基礎固めが疎かになりがち',
-        '体系的な学習が苦手',
-        '文法の正確性に欠けることも'
-      ],
-      learningAdvice: {
-        title: 'おすすめの学習方法',
-        tips: [
-          '英会話アプリで実践的に学ぶ',
-          '英語の動画や音楽を活用',
-          'ネイティブとの会話機会を作る'
-        ],
-        tools: [
-          '英会話アプリ',
-          '動画ストリーミング',
-          'SNSでの英語コミュニケーション'
-        ]
-      }
-    },
-    matcher: {
-      title: 'バランス型学習者',
-      description: '理論と実践のバランスを取りながら学ぶことを好む傾向があります。基礎と応用をバランスよく学習することで、着実な成長を実感できます。',
-      strengths: [
-        'バランスの取れた学習が可能',
-        '理論と実践を結びつけやすい',
-        '柔軟な学習アプローチ'
-      ],
-      weaknesses: [
-        '特定分野での突出が難しい',
-        '目標設定が曖昧になりがち',
-        '学習の優先順位付けに迷う'
-      ],
-      learningAdvice: {
-        title: 'おすすめの学習方法',
-        tips: [
-          '文法学習と会話練習を組み合わせる',
-          '定期的に学習方法を見直す',
-          '多様な教材を活用する'
-        ],
-        tools: [
-          '総合的な英語学習アプリ',
-          'オンライン英会話',
-          '学習進捗管理ツール'
-        ]
-      }
-    }
+  const startQuiz = () => {
+    router.push('/quiz');
   };
-
-  return type ? descriptions[type] : descriptions.matcher; // デフォルトとしてmatcherを返す
-};
-
-export default function HomePage() {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<PersonalityType[]>([]);
-  const [showResult, setShowResult] = useState(false);
-  const [personalityType, setPersonalityType] = useState<PersonalityType | null>(null);
-  const [stats, setStats] = useState<TypeTotals | null>(null);
-  const [showStats, setShowStats] = useState(false);
-  const resultRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (showResult && window.scrollY > 100) {
-        setShowStats(true);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [showResult]);
-
-  const getStats = async () => {
-    try {
-      const response = await fetch('/api/personality-stats');
-      if (!response.ok) throw new Error('統計データの取得に失敗しました');
-      const data = await response.json();
-      setStats(data);
-    } catch (error) {
-      console.error('統計の取得中にエラーが発生しました:', error);
-    }
-  };
-
-  const handleAnswer = async (type: PersonalityType) => {
-    const newAnswers = [...answers, type];
-    setAnswers(newAnswers);
-
-    if (currentQuestionIndex + 1 < questions.length) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      const counts: { [key in PersonalityType]: number } = {
-        giver: 0,
-        taker: 0,
-        matcher: 0
-      };
-
-      newAnswers.forEach(answer => {
-        counts[answer]++;
-      });
-
-      const maxCount = Math.max(...Object.values(counts));
-      const result = (Object.entries(counts) as [PersonalityType, number][]) 
-        .find(([, count]) => count === maxCount)?.[0] || 'matcher';
-
-      setPersonalityType(result);
-      await saveResult(result);
-      await getStats();
-      setShowResult(true);
-
-      setTimeout(() => {
-        resultRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    }
-  };
-
-  const handleShare = async () => {
-    if (!resultRef.current) return;
-
-    try {
-      const canvas = await html2canvas(resultRef.current, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-      });
-
-      const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((blob) => {
-          if (blob) resolve(blob);
-        }, 'image/png');
-      });
-
-      if (navigator.share && blob) {
-        const file = new File([blob], 'personality-result.png', { type: 'image/png' });
-        await navigator.share({
-          files: [file],
-          title: '英語学習タイプ診断結果',
-          text: '私の英語学習タイプが判定されました！',
-        });
-      } else {
-        const url = canvas.toDataURL();
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'personality-result.png';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      }
-    } catch (error) {
-      console.error('結果の共有中にエラーが発生しました:', error);
-      alert('結果の共有に失敗しました。');
-    }
-  };
-
-  const personalityData = personalityType ? getPersonalityDescription(personalityType) : null;
 
   return (
-    <main className="min-h-screen bg-base text-neutral">
-      <div className="container mx-auto px-4 py-8">
-        {!showResult ? (
-          <div className="max-w-2xl mx-auto">
-            <h1 className="text-3xl font-bold text-primary mb-8 text-center">
-              あなたの英語学習タイプ診断
-            </h1>
-            <div className="bg-base-100 rounded-lg shadow-lg p-6 mb-8">
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-semibold">質問 {currentQuestionIndex + 1}/{questions.length}</h2>
-                  <div className="text-sm text-neutral-light">
-                    進捗: {Math.round((currentQuestionIndex / questions.length) * 100)}%
+    <div className="bg-color-background text-color-text-primary">
+      {/* ヒーローセクション */}
+      <motion.section 
+        className="relative overflow-hidden py-16 md:py-24 px-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <motion.div
+              initial={{ x: -50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+            >
+              <span className="text-primary px-3 py-1 rounded-full bg-primary/10 inline-block mb-4 font-medium">
+                無料診断テスト
+              </span>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+                あなたに最適な<br />
+                <span className="text-gradient">英語学習方法</span>を発見
+              </h1>
+              <p className="text-color-text-secondary text-lg mb-8">
+                たった5分の診断で、あなたの学習タイプを分析。<br />
+                あなたの強みを活かした効率的な英語学習法がわかります。
+              </p>
+              
+              <motion.button
+                onClick={startQuiz}
+                className="btn-primary rounded-lg text-lg font-semibold px-8 py-4 flex items-center"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                診断を始める
+                <motion.span
+                  className="ml-2"
+                  animate={{ x: isHovered ? 5 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <FaArrowRight />
+                </motion.span>
+              </motion.button>
+              
+              <div className="mt-6 flex items-center text-color-text-secondary text-sm">
+                <div className="flex -space-x-2 mr-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-white text-xs">AB</div>
+                  <div className="w-8 h-8 rounded-full bg-green-500 border-2 border-white flex items-center justify-center text-white text-xs">CD</div>
+                  <div className="w-8 h-8 rounded-full bg-purple-500 border-2 border-white flex items-center justify-center text-white text-xs">EF</div>
+                </div>
+                <span>今週1,234人が診断を完了</span>
+              </div>
+            </motion.div>
+            
+            <motion.div
+              className="relative"
+              initial={{ x: 50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            >
+              <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-xl">
+                <div className="bg-gradient-to-br from-blue-500 to-purple-600 absolute inset-0 opacity-80"></div>
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-8 text-center">
+                  <h3 className="text-2xl font-bold mb-4">あなたの英語学習タイプは？</h3>
+                  <p className="mb-6">10の質問に答えるだけで、あなたに最適な学習方法が見つかります</p>
+                  <div className="grid grid-cols-3 gap-4 w-full max-w-md">
+                    <div className="bg-white/20 p-3 rounded-lg">
+                      <p className="text-sm font-medium">体系的学習者</p>
+                    </div>
+                    <div className="bg-white/20 p-3 rounded-lg">
+                      <p className="text-sm font-medium">実践的学習者</p>
+                    </div>
+                    <div className="bg-white/20 p-3 rounded-lg">
+                      <p className="text-sm font-medium">バランス型</p>
+                    </div>
                   </div>
-                </div>
-                <div className="w-full bg-base-200 rounded-full h-2 mb-6">
-                  <div
-                    className="bg-primary rounded-full h-2 transition-all duration-300"
-                    style={{ width: `${(currentQuestionIndex / questions.length) * 100}%` }}
-                  />
-                </div>
-                <p className="text-lg mb-6">{questions[currentQuestionIndex].text}</p>
-                <div className="space-y-4">
-                  {questions[currentQuestionIndex].options.map((option, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleAnswer(option.type)}
-                      className="w-full p-4 text-left rounded-lg border border-base-300 hover:bg-primary hover:text-white transition-colors duration-200"
-                    >
-                      {option.text}
-                    </button>
-                  ))}
                 </div>
               </div>
+            </motion.div>
+          </div>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent"></div>
+      </motion.section>
+      
+      {/* 特徴セクション */}
+      <section className="py-16 md:py-24 px-4 bg-base-100 dark:bg-neutral-900">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">効率的な学習のために知っておくべきこと</h2>
+            <p className="text-color-text-secondary max-w-2xl mx-auto">
+              あなたの学習タイプを理解することで、時間を無駄にせず、効率的に英語力を伸ばすことができます。
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <motion.div 
+              className="bg-card dark:bg-neutral-800 p-6 rounded-xl shadow-sm"
+              whileHover={{ y: -5, boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="w-12 h-12 bg-primary/10 text-primary rounded-lg flex items-center justify-center mb-4">
+                <FaUsers className="text-xl" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">学習タイプの違い</h3>
+              <p className="text-color-text-secondary">
+                人それぞれ最適な学習法は異なります。自分に合った方法で学ぶことで、効率が大幅に向上します。
+              </p>
+              <ul className="mt-4 space-y-2">
+                <li className="flex items-start">
+                  <FaCheck className="text-primary mt-1 mr-2 flex-shrink-0" />
+                  <span className="text-sm">自分の学習タイプを知ることで学習効率が2倍に</span>
+                </li>
+                <li className="flex items-start">
+                  <FaCheck className="text-primary mt-1 mr-2 flex-shrink-0" />
+                  <span className="text-sm">あなたの強みを活かした学習法を発見</span>
+                </li>
+              </ul>
+            </motion.div>
+            
+            <motion.div 
+              className="bg-card dark:bg-neutral-800 p-6 rounded-xl shadow-sm"
+              whileHover={{ y: -5, boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="w-12 h-12 bg-primary/10 text-primary rounded-lg flex items-center justify-center mb-4">
+                <FaLightbulb className="text-xl" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">カスタマイズされた学習法</h3>
+              <p className="text-color-text-secondary">
+                診断結果に基づいて、あなたに最適な教材、ツール、学習スケジュールをご提案します。
+              </p>
+              <ul className="mt-4 space-y-2">
+                <li className="flex items-start">
+                  <FaCheck className="text-primary mt-1 mr-2 flex-shrink-0" />
+                  <span className="text-sm">あなたの学習スタイルに合わせたツールの紹介</span>
+                </li>
+                <li className="flex items-start">
+                  <FaCheck className="text-primary mt-1 mr-2 flex-shrink-0" />
+                  <span className="text-sm">効率的な学習スケジュールの提案</span>
+                </li>
+              </ul>
+            </motion.div>
+            
+            <motion.div 
+              className="bg-card dark:bg-neutral-800 p-6 rounded-xl shadow-sm"
+              whileHover={{ y: -5, boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="w-12 h-12 bg-primary/10 text-primary rounded-lg flex items-center justify-center mb-4">
+                <FaGraduationCap className="text-xl" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">継続的な成長サポート</h3>
+              <p className="text-color-text-secondary">
+                学習を続けやすくするためのコツや、モチベーションを維持する方法もアドバイスします。
+              </p>
+              <ul className="mt-4 space-y-2">
+                <li className="flex items-start">
+                  <FaCheck className="text-primary mt-1 mr-2 flex-shrink-0" />
+                  <span className="text-sm">効果的な学習習慣の作り方</span>
+                </li>
+                <li className="flex items-start">
+                  <FaCheck className="text-primary mt-1 mr-2 flex-shrink-0" />
+                  <span className="text-sm">モチベーションを維持するための具体的な方法</span>
+                </li>
+              </ul>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+      
+      {/* 学習タイプ紹介セクション */}
+      <section className="py-16 md:py-24 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">3つの英語学習タイプ</h2>
+            <p className="text-color-text-secondary max-w-2xl mx-auto">
+              あなたはどのタイプ？診断テストであなたの強みを活かした学習方法を見つけましょう。
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <motion.div 
+              className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-6 rounded-xl border border-blue-100 dark:border-blue-800"
+              whileHover={{ scale: 1.03 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="w-16 h-16 bg-blue-500 text-white rounded-full flex items-center justify-center mb-6 mx-auto">
+                <span className="text-2xl font-bold">体</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2 text-center">体系的学習者</h3>
+              <p className="text-color-text-secondary text-center mb-4">
+                計画的で着実な学習を好む
+              </p>
+              <ul className="space-y-2">
+                <li className="flex items-start">
+                  <FaCheck className="text-blue-500 mt-1 mr-2 flex-shrink-0" />
+                  <span>文法や語彙を体系的に学ぶ</span>
+                </li>
+                <li className="flex items-start">
+                  <FaCheck className="text-blue-500 mt-1 mr-2 flex-shrink-0" />
+                  <span>計画通りに進めることでやる気が出る</span>
+                </li>
+                <li className="flex items-start">
+                  <FaCheck className="text-blue-500 mt-1 mr-2 flex-shrink-0" />
+                  <span>基礎からしっかり積み上げる</span>
+                </li>
+              </ul>
+            </motion.div>
+            
+            <motion.div 
+              className="bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 p-6 rounded-xl border border-green-100 dark:border-green-800"
+              whileHover={{ scale: 1.03 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center mb-6 mx-auto">
+                <span className="text-2xl font-bold">実</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2 text-center">実践的学習者</h3>
+              <p className="text-color-text-secondary text-center mb-4">
+                実践を通じて学ぶことを好む
+              </p>
+              <ul className="space-y-2">
+                <li className="flex items-start">
+                  <FaCheck className="text-green-500 mt-1 mr-2 flex-shrink-0" />
+                  <span>実際のコミュニケーションを通じて学ぶ</span>
+                </li>
+                <li className="flex items-start">
+                  <FaCheck className="text-green-500 mt-1 mr-2 flex-shrink-0" />
+                  <span>生きた英語を使いながら上達</span>
+                </li>
+                <li className="flex items-start">
+                  <FaCheck className="text-green-500 mt-1 mr-2 flex-shrink-0" />
+                  <span>実践的なスキルが身につく</span>
+                </li>
+              </ul>
+            </motion.div>
+            
+            <motion.div 
+              className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-6 rounded-xl border border-purple-100 dark:border-purple-800"
+              whileHover={{ scale: 1.03 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="w-16 h-16 bg-purple-500 text-white rounded-full flex items-center justify-center mb-6 mx-auto">
+                <span className="text-2xl font-bold">バ</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2 text-center">バランス型学習者</h3>
+              <p className="text-color-text-secondary text-center mb-4">
+                理論と実践のバランスを取る
+              </p>
+              <ul className="space-y-2">
+                <li className="flex items-start">
+                  <FaCheck className="text-purple-500 mt-1 mr-2 flex-shrink-0" />
+                  <span>基礎と応用をバランスよく学習</span>
+                </li>
+                <li className="flex items-start">
+                  <FaCheck className="text-purple-500 mt-1 mr-2 flex-shrink-0" />
+                  <span>理論と実践を結びつける</span>
+                </li>
+                <li className="flex items-start">
+                  <FaCheck className="text-purple-500 mt-1 mr-2 flex-shrink-0" />
+                  <span>柔軟な学習アプローチが得意</span>
+                </li>
+              </ul>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+      
+      {/* CTAセクション */}
+      <section className="py-16 md:py-24 px-4 bg-gradient-to-r from-primary to-accent text-white">
+        <div className="container mx-auto max-w-4xl text-center">
+          <motion.h2 
+            className="text-3xl md:text-4xl font-bold mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            今すぐあなたの英語学習タイプを診断
+          </motion.h2>
+          <motion.p 
+            className="text-lg mb-8 opacity-90 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
+            たった5分でわかる診断テスト。あなたに最適な英語学習法を見つけて、効率的に上達しましょう！
+          </motion.p>
+          <motion.button
+            onClick={startQuiz}
+            className="bg-white text-primary hover:bg-white/90 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg flex items-center mx-auto"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
+          >
+            無料で診断テストを受ける
+            <FaArrowRight className="ml-2" />
+          </motion.button>
+        </div>
+      </section>
+      
+      {/* フッター */}
+      <footer className="py-8 bg-neutral text-white">
+        <div className="container mx-auto max-w-6xl px-4">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="mb-4 md:mb-0">
+              <Link href="/" className="text-xl font-bold">英語学習タイプ診断</Link>
+            </div>
+            <div className="text-sm opacity-70">
+              © 2023 英語学習タイプ診断. All rights reserved.
             </div>
           </div>
-        ) : (
-          <div className="max-w-4xl mx-auto" ref={resultRef}>
-            <div className="bg-base-100 rounded-lg shadow-lg p-8 mb-8">
-              <h2 className="text-3xl font-bold text-primary mb-6 text-center">
-                あなたの英語学習タイプは...
-              </h2>
-              {personalityData && (
-                <div className="space-y-8">
-                  <div className="text-center">
-                    <h3 className="text-2xl font-bold text-accent mb-4">{personalityData.title}</h3>
-                    <p className="text-lg">{personalityData.description}</p>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-8">
-                    <div className="bg-base-200 p-6 rounded-lg">
-                      <h4 className="text-xl font-semibold mb-4 flex items-center">
-                        <FaUsers className="mr-2 text-primary" />
-                        強み
-                      </h4>
-                      <ul className="space-y-2">
-                        {personalityData.strengths.map((strength, index) => (
-                          <li key={index} className="flex items-start">
-                            <span className="text-primary mr-2">•</span>
-                            {strength}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="bg-base-200 p-6 rounded-lg">
-                      <h4 className="text-xl font-semibold mb-4 flex items-center">
-                        <FaBalanceScale className="mr-2 text-accent" />
-                        改善点
-                      </h4>
-                      <ul className="space-y-2">
-                        {personalityData.weaknesses.map((weakness, index) => (
-                          <li key={index} className="flex items-start">
-                            <span className="text-accent mr-2">•</span>
-                            {weakness}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div className="bg-base-200 p-6 rounded-lg">
-                    <h4 className="text-xl font-semibold mb-4 flex items-center">
-                      <FaBook className="mr-2 text-secondary" />
-                      {personalityData.learningAdvice.title}
-                    </h4>
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <h5 className="font-semibold mb-2">おすすめの学習方法</h5>
-                        <ul className="space-y-2">
-                          {personalityData.learningAdvice.tips.map((tip, index) => (
-                            <li key={index} className="flex items-start">
-                              <span className="text-secondary mr-2">•</span>
-                              {tip}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h5 className="font-semibold mb-2">おすすめのツール</h5>
-                        <ul className="space-y-2">
-                          {personalityData.learningAdvice.tools.map((tool, index) => (
-                            <li key={index} className="flex items-start">
-                              <span className="text-secondary mr-2">•</span>
-                              {tool}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-                  {showStats && stats && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5 }}
-                      className="bg-base-200 p-6 rounded-lg"
-                    >
-                      <h4 className="text-xl font-semibold mb-4">みんなの診断結果</h4>
-                      <div className="space-y-4">
-                        {Object.entries(stats).map(([type, data]) => (
-                          <div key={type} className="space-y-2">
-                            <div className="flex justify-between items-center">
-                              <span className="font-medium">
-                                {type === 'giver' ? '体系的学習者' :
-                                 type === 'taker' ? '実践的学習者' :
-                                 'バランス型学習者'}
-                              </span>
-                              <span>{data.percentage.toFixed(1)}%</span>
-                            </div>
-                            <div className="w-full bg-base-300 rounded-full h-2">
-                              <div
-                                className="bg-primary rounded-full h-2 transition-all duration-300"
-                                style={{ width: `${data.percentage}%` }}
-                              />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-
-                  <div className="flex flex-col items-center space-y-4">
-                    <button
-                      onClick={handleShare}
-                      className="bg-primary text-white px-6 py-3 rounded-full hover:bg-primary-dark transition-colors duration-200"
-                    >
-                      結果をシェアする
-                    </button>
-                    <div className="flex space-x-4">
-                      <button className="p-2 hover:text-primary transition-colors duration-200">
-                        <TwitterIcon className="w-6 h-6" />
-                      </button>
-                      <button className="p-2 hover:text-primary transition-colors duration-200">
-                        <LineIcon className="w-6 h-6" />
-                      </button>
-                      <button className="p-2 hover:text-primary transition-colors duration-200">
-                        <InstagramIcon className="w-6 h-6" />
-                      </button>
-                      <button className="p-2 hover:text-primary transition-colors duration-200">
-                        <FacebookIcon className="w-6 h-6" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="text-center">
-                    <button
-                      onClick={() => {
-                        setCurrentQuestionIndex(0);
-                        setAnswers([]);
-                        setShowResult(false);
-                        setPersonalityType(null);
-                        setStats(null);
-                        setShowStats(false);
-                        window.scrollTo(0, 0);
-                      }}
-                      className="text-primary hover:text-primary-dark transition-colors duration-200"
-                    >
-                      もう一度診断する
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-    </main>
+        </div>
+      </footer>
+    </div>
   );
 } 
