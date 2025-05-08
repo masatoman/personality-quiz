@@ -3,62 +3,49 @@
 @tailwind utilities;
 
 :root {
-  /* プライマリーカラー（濃い青緑色） */
-  --color-primary: #065A6B;  /* コントラスト比7:1以上を確保 */
-  --color-primary-light: #0B7285;
-  --color-primary-dark: #044957;
+  /* カラーバリアブル */
+  --color-primary: #1A9A9D;
+  --color-primary-light: #2DB6B9;
+  --color-primary-dark: #158385;
   
-  /* タイプカラー */
-  --color-supporter: #059669;
-  --color-supporter-light: #10B981;
+  --color-supporter: #00B4D8;
+  --color-supporter-light: #90E0EF;
   --color-supporter-dark: #047857;
   
-  --color-cooperative: #0284C7;
-  --color-cooperative-light: #0EA5E9;
+  --color-cooperative: #0077B6;
+  --color-cooperative-light: #48CAE4;
   --color-cooperative-dark: #0369A1;
   
-  --color-balanced: #7C3AED;
-  --color-balanced-light: #8B5CF6;
+  --color-balanced: #7B2CBF;
+  --color-balanced-light: #C77DFF;
   --color-balanced-dark: #6D28D9;
   
-  /* テキストカラー */
-  --color-text-primary: #111827;
-  --color-text-secondary: #374151;
-  --color-text-tertiary: #6B7280;
-  
-  /* 背景色 */
-  --color-background: #FFFFFF;
-  --color-card: #FFFFFF;
-  
-  /* アクセントカラー（紫色） */
-  --color-accent: #522470;  /* コントラスト比7:1以上を確保 */
-  --color-accent-light: #6B2D90;
+  --color-accent: #6B2D90;
+  --color-accent-light: #8039AB;
   --color-accent-dark: #3E1B54;
-
-  /* セカンダリーカラー（ティール） */
-  --color-secondary: #0A7468;  /* コントラスト比7:1以上を確保 */
-  --color-secondary-light: #0D9488;
+  
+  --color-secondary: #4ECDC4;
+  --color-secondary-light: #7CEAE3;
   --color-secondary-dark: #065A52;
   
-  /* ニュートラルカラー */
-  --color-neutral: #374151;
-  --color-neutral-light: #4B5563;
+  --color-neutral: #1D3461;
+  --color-neutral-light: #274580;
   --color-neutral-dark: #1F2937;
   
-  /* ベースカラー */
-  --color-base: #FFFFFF;
-  --color-base-100: #F9FAFB;
-  --color-base-200: #F3F4F6;
-  --color-base-300: #E5E7EB;
-
-  --primary: #5E35B1;
-  --primary-light: #7E57C2;
+  --color-background: #F5F7FA;
+  --color-card: #FFFFFF;
+  
+  --color-text-primary: #1F2937;
+  --color-text-secondary: #4B5563;
+  --color-text-tertiary: #9CA3AF;
+  
+  --primary: #1A9A9D;
+  --primary-light: #2DB6B9;
   --primary-dark: #4527A0;
-  --secondary: #26A69A;
-  --tertiary: #43A047;
-  --light: #FFFFFF;
+  
+  --light: #ffffff;
   --dark: #333333;
-  --gray: #F5F5F5;
+  --gray-light: #E0E0E0;
   --gray-dark: #9E9E9E;
 
   /* ユーザータイプカラー */
@@ -70,18 +57,26 @@
   --font-rounded: 'M PLUS Rounded 1c', sans-serif;
 }
 
-/* ダークモード設定（オプション） */
+.dark {
+  --color-background: #121212;
+  --color-card: #1E1E1E;
+  --color-text-primary: #F9FAFB;
+  --color-text-secondary: #D1D5DB;
+  --color-text-tertiary: #9CA3AF;
+  
+  /* ダークモードでも視認性を保つため、カラーを少し明るく調整 */
+  --color-primary-light: #3DD8DB;
+  --color-accent-light: #A356CD;
+  --color-secondary-light: #7CEAE3;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: #111827;
-    --color-card: #1F2937;
+  :root:not(.light) {
+    --color-background: #121212;
+    --color-card: #1E1E1E;
     --color-text-primary: #F9FAFB;
-    --color-text-secondary: #E5E7EB;
+    --color-text-secondary: #D1D5DB;
     --color-text-tertiary: #9CA3AF;
-    --color-base: #1F2937;
-    --color-base-100: #374151;
-    --color-base-200: #4B5563;
-    --color-base-300: #6B7280;
   }
 }
 

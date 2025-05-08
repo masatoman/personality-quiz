@@ -10,6 +10,8 @@ interface ThemeContextType {
   changeTheme: (theme: ThemeName) => void;
   themeColors: typeof themeColors;
   isLoading: boolean;
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
 }
 
 // カラーをRGBに変換するヘルパー関数
@@ -109,6 +111,7 @@ export const useTheme = () => {
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentTheme, setCurrentTheme] = useState<ThemeName>('tealPurpleTheme');
   const [isLoading, setIsLoading] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   // テーマの色をCSSカスタムプロパティに適用
   const applyThemeColors = useCallback((theme: ThemeName) => {
@@ -183,6 +186,22 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     applyThemeColors(theme);
   }, [applyThemeColors]);
 
+  // ダークモード切り替え
+  const toggleDarkMode = useCallback(() => {
+    setIsDarkMode(prev => {
+      const newValue = !prev;
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('darkMode', newValue ? 'dark' : 'light');
+          document.documentElement.classList.toggle('dark', newValue);
+        } catch (error) {
+          console.error('ダークモード設定保存エラー:', error);
+        }
+      }
+      return newValue;
+    });
+  }, []);
+
   useEffect(() => {
     if (typeof window === 'undefined') {
       setIsLoading(false);
@@ -200,6 +219,14 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
           await new Promise(resolve => requestAnimationFrame(resolve));
           applyThemeColors('tealPurpleTheme');
         }
+
+        // ダークモード設定を読み込む
+        const savedDarkMode = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const shouldUseDarkMode = savedDarkMode ? savedDarkMode === 'dark' : prefersDark;
+        
+        setIsDarkMode(shouldUseDarkMode);
+        document.documentElement.classList.toggle('dark', shouldUseDarkMode);
       } catch (error) {
         console.error('テーマ初期化エラー:', error);
         await new Promise(resolve => requestAnimationFrame(resolve));
@@ -216,8 +243,10 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     currentTheme,
     changeTheme,
     themeColors,
-    isLoading
-  }), [currentTheme, changeTheme, isLoading]);
+    isLoading,
+    isDarkMode,
+    toggleDarkMode
+  }), [currentTheme, changeTheme, isLoading, isDarkMode, toggleDarkMode]);
 
   return (
     <ThemeContext.Provider value={contextValue}>

@@ -4,26 +4,25 @@ import { Noto_Sans_JP, M_PLUS_Rounded_1c } from 'next/font/google'
 import ClientLayout from './ClientLayout'
 import './globals.css'
 import ErrorBoundary from '@/components/ErrorBoundary'
-import ErrorFallback from '@/components/ErrorFallback'
+import { ErrorFallback } from '@/components/ErrorFallback'
 
 // eslint-disable-next-line @next/next/no-page-custom-font
-const noto = Noto_Sans_JP({ 
+const notoSansJP = Noto_Sans_JP({
   subsets: ['latin'],
-  weight: ['400', '700'],
+  variable: '--font-noto-sans-jp',
   display: 'swap',
-  variable: '--font-noto',
 })
 
-const rounded = M_PLUS_Rounded_1c({
-  weight: ['400', '700'],
+const mPlusRounded1c = M_PLUS_Rounded_1c({
+  weight: ['400', '500', '700'],
   subsets: ['latin'],
+  variable: '--font-m-plus-rounded-1c',
   display: 'swap',
-  variable: '--font-rounded',
 })
 
 export const metadata: Metadata = {
-  title: '英語学習タイプ診断',
-  description: 'あなたに合った英語学習法を見つけましょう',
+  title: 'ShiftWith - 教えて学べるオンライン学習プラットフォーム',
+  description: '自分だけの教材を作りながら、効率的に学習できるプラットフォーム。知識をシェアして学びを深めましょう。',
 }
 
 export default function RootLayout({
@@ -32,14 +31,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ja" className={`${noto.variable} ${rounded.variable}`}>
+    <html lang="ja" className={`${notoSansJP.variable} ${mPlusRounded1c.variable}`}>
       <head>
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional" rel="stylesheet" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=optional" rel="stylesheet" />
       </head>
-      <body suppressHydrationWarning className="bg-background text-text-primary min-h-screen font-noto">
+      <body className="bg-color-background text-color-text-primary antialiased">
         <ErrorBoundary
           fallback={<ErrorFallback />}
         >
