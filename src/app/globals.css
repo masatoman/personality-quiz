@@ -206,7 +206,7 @@
   }
   
   .btn-primary {
-    @apply bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors;
+    @apply bg-primary hover:bg-primary-dark text-white transition-all duration-300 shadow-md hover:shadow-lg;
   }
   
   .btn-outline {
@@ -698,7 +698,7 @@
 
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-light;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
   }
   
   .bg-mesh {

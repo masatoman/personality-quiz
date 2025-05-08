@@ -193,7 +193,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       if (typeof window !== 'undefined') {
         try {
           localStorage.setItem('darkMode', newValue ? 'dark' : 'light');
-          document.documentElement.classList.toggle('dark', newValue);
+          // document.documentElementの操作はDarkModeApplierコンポーネントに任せる
         } catch (error) {
           console.error('ダークモード設定保存エラー:', error);
         }
@@ -226,7 +226,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const shouldUseDarkMode = savedDarkMode ? savedDarkMode === 'dark' : prefersDark;
         
         setIsDarkMode(shouldUseDarkMode);
-        document.documentElement.classList.toggle('dark', shouldUseDarkMode);
+        // document.documentElementの操作はDarkModeApplierコンポーネントに任せる
       } catch (error) {
         console.error('テーマ初期化エラー:', error);
         await new Promise(resolve => requestAnimationFrame(resolve));
