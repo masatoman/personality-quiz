@@ -11,12 +11,16 @@ import { QuizResults } from './QuizResults';
 import { Answer, QuizQuestion, QuizResults as QuizResultsType, QuizState, PersonalityType } from './types';
 import { AnimatePresence } from 'framer-motion';
 import { PlayArrow } from '@mui/icons-material';
+import { useSearchParams } from 'next/navigation';
 
 export const QuizContainer: React.FC = () => {
+  const searchParams = useSearchParams();
+  const startParam = searchParams.get('start');
+  
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [quizState, setQuizState] = useState<QuizState>('intro');
+  const [quizState, setQuizState] = useState<QuizState>(startParam === 'true' ? 'questioning' : 'intro');
   const [results, setResults] = useState<QuizResultsType | null>(null);
 
   // 質問データをチェック
