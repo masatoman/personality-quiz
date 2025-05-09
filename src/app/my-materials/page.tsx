@@ -1,46 +1,82 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PlusIcon, PencilIcon, EyeIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { createClient } from '@/lib/supabase/client';
 
-// 仮のデータ
-const materials = [
-  {
-    id: '1',
-    title: '英語初心者のための基礎文法',
-    description: '英語の基本文法を初心者にもわかりやすく解説した教材です。',
-    coverImage: '/images/placeholder.jpg',
-    status: 'published',
-    viewCount: 245,
-    rating: 4.5,
-    createdAt: '2023-12-15T12:00:00Z',
-    updatedAt: '2023-12-16T10:30:00Z',
-  },
-  {
-    id: '2',
-    title: '実践ビジネス英語：メール作成テクニック',
-    description: 'ビジネスシーンで使える英語メールの書き方を例文付きで解説します。',
-    coverImage: '/images/placeholder2.jpg',
-    status: 'published',
-    viewCount: 123,
-    rating: 4.2,
-    createdAt: '2023-12-10T09:15:00Z',
-    updatedAt: '2023-12-12T14:20:00Z',
-  },
-  {
-    id: '3',
-    title: 'TOEICリスニング対策クイズ',
-    description: 'TOEIC頻出のリスニング問題を集めたクイズ形式の教材です。',
-    coverImage: null,
-    status: 'draft',
-    viewCount: 0,
-    rating: 0,
-    createdAt: '2023-12-18T16:45:00Z',
-    updatedAt: '2023-12-18T16:45:00Z',
-  },
-];
+// 教材の型定義
+interface Material {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail_url?: string;
+  status: 'published' | 'draft';
+  view_count: number;
+  rating: number;
+  created_at: string;
+  updated_at: string;
+}
 
 export default function MyMaterialsPage() {
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'all' | 'published' | 'draft'>('all');
+  
+  useEffect(() => {
+    const fetchMaterials = async () => {
+      try {
+        setLoading(true);
+        const supabase = createClient();
+        
+        // ユーザー情報を取得
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError || !user) {
+          setError('ユーザー情報の取得に失敗しました。ログインしてください。');
+          setLoading(false);
+          return;
+        }
+        
+        // ユーザーIDに基づいて教材を取得
+        let query = supabase
+          .from('materials')
+          .select('*')
+          .eq('author_id', user.id);
+        
+        // タブに応じてフィルタリング
+        if (activeTab === 'published') {
+          query = query.eq('status', 'published');
+        } else if (activeTab === 'draft') {
+          query = query.eq('status', 'draft');
+        }
+        
+        const { data, error: materialsError } = await query;
+        
+        if (materialsError) {
+          console.error('教材取得エラー:', materialsError);
+          setError('教材の取得に失敗しました。');
+        } else {
+          setMaterials(data || []);
+        }
+      } catch (err) {
+        console.error('マイ教材取得エラー:', err);
+        setError('教材の取得中にエラーが発生しました。');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchMaterials();
+  }, [activeTab]);
+  
+  // タブ切り替え
+  const handleTabChange = (tab: 'all' | 'published' | 'draft') => {
+    setActiveTab(tab);
+  };
+  
   return (
     <div className="max-w-5xl mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
@@ -56,13 +92,22 @@ export default function MyMaterialsPage() {
       
       <div className="bg-white rounded-lg shadow mb-6">
         <div className="flex border-b">
-          <button className="px-6 py-3 font-medium text-blue-600 border-b-2 border-blue-500">
+          <button 
+            className={`px-6 py-3 font-medium ${activeTab === 'all' ? 'text-blue-600 border-b-2 border-blue-500' : 'text-gray-600 hover:text-gray-900'}`}
+            onClick={() => handleTabChange('all')}
+          >
             すべて ({materials.length})
           </button>
-          <button className="px-6 py-3 font-medium text-gray-600 hover:text-gray-900">
+          <button 
+            className={`px-6 py-3 font-medium ${activeTab === 'published' ? 'text-blue-600 border-b-2 border-blue-500' : 'text-gray-600 hover:text-gray-900'}`}
+            onClick={() => handleTabChange('published')}
+          >
             公開済み ({materials.filter(m => m.status === 'published').length})
           </button>
-          <button className="px-6 py-3 font-medium text-gray-600 hover:text-gray-900">
+          <button 
+            className={`px-6 py-3 font-medium ${activeTab === 'draft' ? 'text-blue-600 border-b-2 border-blue-500' : 'text-gray-600 hover:text-gray-900'}`}
+            onClick={() => handleTabChange('draft')}
+          >
             下書き ({materials.filter(m => m.status === 'draft').length})
           </button>
         </div>
@@ -102,121 +147,133 @@ export default function MyMaterialsPage() {
           </div>
         </div>
         
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  教材
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  ステータス
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  閲覧数
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  評価
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  最終更新日
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  アクション
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {materials.map((material) => (
-                <tr key={material.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="h-12 w-16 flex-shrink-0 bg-gray-200 rounded overflow-hidden mr-4">
-                        {material.coverImage ? (
-                          <div className="relative h-full w-full">
-                            <Image
-                              src={material.coverImage}
-                              alt={material.title}
-                              fill
-                              style={{ objectFit: 'cover' }}
-                            />
-                          </div>
-                        ) : (
-                          <div className="h-full w-full flex items-center justify-center text-gray-400">
-                            なし
-                          </div>
-                        )}
-                      </div>
-                      <div>
-                        <div className="font-medium text-gray-900 truncate max-w-xs">
-                          {material.title}
-                        </div>
-                        <div className="text-sm text-gray-500 truncate max-w-xs">
-                          {material.description}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        material.status === 'published'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}
-                    >
-                      {material.status === 'published' ? '公開中' : '下書き'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {material.viewCount.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {material.rating > 0 ? (
-                      <div className="flex items-center">
-                        <span className="text-yellow-500 mr-1">★</span>
-                        <span>{material.rating.toFixed(1)}</span>
-                      </div>
-                    ) : (
-                      '未評価'
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(material.updatedAt).toLocaleDateString('ja-JP')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                    <Link
-                      href={`/materials/${material.id}`}
-                      className="text-blue-600 hover:text-blue-900"
-                    >
-                      <EyeIcon className="w-5 h-5 inline" />
-                    </Link>
-                    <Link
-                      href={`/edit/${material.id}`}
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      <PencilIcon className="w-5 h-5 inline" />
-                    </Link>
-                    <button className="text-red-600 hover:text-red-900">
-                      <TrashIcon className="w-5 h-5 inline" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
-        {materials.length === 0 && (
+        {loading ? (
           <div className="p-10 text-center">
-            <p className="text-gray-500 mb-4">教材がまだありません</p>
-            <Link
-              href="/create"
-              className="text-blue-500 hover:text-blue-700 font-medium"
-            >
-              教材を作成する
-            </Link>
+            <p className="text-gray-500">読み込み中...</p>
           </div>
+        ) : error ? (
+          <div className="p-10 text-center">
+            <p className="text-red-500">{error}</p>
+          </div>
+        ) : (
+          <>
+            {materials.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        教材
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        ステータス
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        閲覧数
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        評価
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        最終更新日
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        アクション
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {materials.map((material) => (
+                      <tr key={material.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="h-12 w-16 flex-shrink-0 bg-gray-200 rounded overflow-hidden mr-4">
+                              {material.thumbnail_url ? (
+                                <div className="relative h-full w-full">
+                                  <Image
+                                    src={material.thumbnail_url}
+                                    alt={material.title}
+                                    fill
+                                    style={{ objectFit: 'cover' }}
+                                  />
+                                </div>
+                              ) : (
+                                <div className="h-full w-full flex items-center justify-center text-gray-400">
+                                  なし
+                                </div>
+                              )}
+                            </div>
+                            <div>
+                              <div className="font-medium text-gray-900 truncate max-w-xs">
+                                {material.title}
+                              </div>
+                              <div className="text-sm text-gray-500 truncate max-w-xs">
+                                {material.description}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              material.status === 'published'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-yellow-100 text-yellow-800'
+                            }`}
+                          >
+                            {material.status === 'published' ? '公開中' : '下書き'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {material.view_count?.toLocaleString() || 0}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {material.rating > 0 ? (
+                            <div className="flex items-center">
+                              <span className="text-yellow-500 mr-1">★</span>
+                              <span>{material.rating?.toFixed(1) || '未評価'}</span>
+                            </div>
+                          ) : (
+                            '未評価'
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {material.updated_at ? new Date(material.updated_at).toLocaleDateString('ja-JP') : ''}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                          <Link
+                            href={`/materials/${material.id}`}
+                            className="text-blue-600 hover:text-blue-900"
+                          >
+                            <EyeIcon className="w-5 h-5 inline" />
+                          </Link>
+                          <Link
+                            href={`/edit/${material.id}`}
+                            className="text-indigo-600 hover:text-indigo-900"
+                          >
+                            <PencilIcon className="w-5 h-5 inline" />
+                          </Link>
+                          <button className="text-red-600 hover:text-red-900">
+                            <TrashIcon className="w-5 h-5 inline" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="p-10 text-center">
+                <p className="text-gray-500 mb-4">教材がまだありません</p>
+                <Link
+                  href="/create"
+                  className="text-blue-500 hover:text-blue-700 font-medium"
+                >
+                  教材を作成する
+                </Link>
+              </div>
+            )}
+          </>
         )}
       </div>
       

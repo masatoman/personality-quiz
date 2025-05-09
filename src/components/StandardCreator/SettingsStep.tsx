@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
 
 // 設定項目の型定義
 interface SettingsData {
@@ -18,7 +17,7 @@ interface SettingsStepProps {
 }
 
 const SettingsStep: React.FC<SettingsStepProps> = ({ initialData, onSave, onBack }) => {
-  const router = useRouter();
+  // ルーターは使用しない（親コンポーネントからのonSave関数を使用）
   const [settings, setSettings] = useState<SettingsData>({
     isPublic: initialData?.isPublic ?? true,
     allowComments: initialData?.allowComments ?? true,
@@ -82,9 +81,6 @@ const SettingsStep: React.FC<SettingsStepProps> = ({ initialData, onSave, onBack
     
     // 保存処理
     onSave(settings);
-    
-    // 確認画面へ
-    router.push('/create/standard/confirm');
   };
   
   return (

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { ArrowLeftIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { useCreator } from '@/contexts/CreatorContext';
 
 // 基本情報の型定義
 interface BasicInfo {
@@ -15,7 +16,10 @@ interface BasicInfo {
 interface ContentSection {
   id: string;
   type: 'text' | 'image' | 'video' | 'quiz';
-  content: any;
+  title: string;
+  content: string;
+  options?: string[];
+  answer?: number;
 }
 
 // 設定情報の型定義
@@ -47,14 +51,50 @@ const ConfirmStep: React.FC<ConfirmStepProps> = ({
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { resetData } = useCreator();
+  
+  // 初期データをログ出力
+  React.useEffect(() => {
+    console.log('ConfirmStep: 受け取ったデータ', { 
+      basicInfo,
+      contentSections,
+      settings 
+    });
+  }, [basicInfo, contentSections, settings]);
   
   const handlePublish = async () => {
     setIsSubmitting(true);
     setError(null);
     
+    // 公開前の最終チェック
+    if (!basicInfo.title || !basicInfo.description || basicInfo.tags.length === 0) {
+      setError('基本情報が不足しています。タイトル、説明、タグを設定してください。');
+      setIsSubmitting(false);
+      return;
+    }
+    
+    if (contentSections.length === 0) {
+      setError('コンテンツが追加されていません。最低1つのコンテンツを追加してください。');
+      setIsSubmitting(false);
+      return;
+    }
+    
     try {
       await onPublish();
-      router.push('/my-materials'); // 公開後はマイ教材一覧へ
+      
+      // データをリセット
+      resetData();
+      console.log('教材公開完了: データをリセットしました');
+      
+      // 公開に成功したらリダイレクト
+      try {
+        await router.push('/my-materials');
+        console.log('マイ教材一覧へ正常に遷移しました');
+      } catch (routerError) {
+        console.error('ルーター遷移エラー:', routerError);
+        // 代替方法としてwindow.locationを使用
+        window.location.href = '/my-materials';
+      }
     } catch (err) {
       setError('教材の公開中にエラーが発生しました。もう一度お試しください。');
       console.error(err);

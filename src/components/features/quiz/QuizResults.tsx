@@ -2,16 +2,34 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Container, Paper, Typography, Button, Box, Stack, LinearProgress } from '@mui/material';
-import { Lightbulb, Refresh } from '@mui/icons-material';
+import { Container, Paper, Typography, Button, Box, Stack, LinearProgress, Card, CardContent, CardActions, Chip, Divider } from '@mui/material';
+import { Lightbulb, Refresh, AutoStories, ArrowForward, School, Timer } from '@mui/icons-material';
 import { QuizResults as QuizResultsType } from './types';
+
+// 教材の型定義
+interface Material {
+  id: number;
+  title: string;
+  duration: string;
+  level: string;
+  description: string;
+}
 
 interface QuizResultsProps {
   results: QuizResultsType;
   onRetake?: () => void;
+  isQuickMode?: boolean;
+  recommendedMaterials?: Material[];
+  onGoToMaterial?: (materialId: number) => void;
 }
 
-export const QuizResults: React.FC<QuizResultsProps> = ({ results, onRetake }) => {
+export const QuizResults: React.FC<QuizResultsProps> = ({ 
+  results, 
+  onRetake,
+  isQuickMode = false,
+  recommendedMaterials = [],
+  onGoToMaterial
+}) => {
   const getTypeDescription = (type: string) => {
     switch (type) {
       case 'giver':
@@ -46,6 +64,15 @@ export const QuizResults: React.FC<QuizResultsProps> = ({ results, onRetake }) =
           aria-labelledby="results-title"
         >
           <Stack spacing={4}>
+            {isQuickMode && (
+              <Chip 
+                label="簡易診断結果" 
+                color="secondary" 
+                size="small" 
+                sx={{ alignSelf: 'flex-start', mb: -2 }} 
+              />
+            )}
+            
             <Box
               textAlign="center"
               role="banner"
@@ -133,20 +160,110 @@ export const QuizResults: React.FC<QuizResultsProps> = ({ results, onRetake }) =
               </Typography>
             </Box>
 
-            {onRetake && (
-              <Box textAlign="center">
+            {recommendedMaterials && recommendedMaterials.length > 0 && (
+              <>
+                <Divider />
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                    <School sx={{ mr: 1 }} />
+                    おすすめクイックスタート教材
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    あなたの学習タイプに合わせた5分以内で完了できる教材です
+                  </Typography>
+                  
+                  <Box sx={{ 
+                    display: 'flex', 
+                    flexWrap: 'wrap', 
+                    gap: 2 
+                  }}>
+                    {recommendedMaterials.map((material) => (
+                      <Box 
+                        key={material.id} 
+                        sx={{ 
+                          flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' },
+                          minWidth: { xs: '100%', sm: 'calc(50% - 8px)' } 
+                        }}
+                      >
+                        <Card 
+                          elevation={2} 
+                          sx={{
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                            '&:hover': {
+                              transform: 'translateY(-5px)',
+                              boxShadow: 6
+                            }
+                          }}
+                        >
+                          <CardContent sx={{ flexGrow: 1 }}>
+                            <Typography variant="h6" component="h3" gutterBottom>
+                              {material.title}
+                            </Typography>
+                            <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+                              <Chip 
+                                icon={<Timer fontSize="small" />} 
+                                label={material.duration} 
+                                size="small" 
+                                color="primary" 
+                                variant="outlined" 
+                              />
+                              <Chip 
+                                label={material.level} 
+                                size="small" 
+                                color="secondary" 
+                                variant="outlined" 
+                              />
+                            </Stack>
+                            <Typography variant="body2" color="text.secondary">
+                              {material.description}
+                            </Typography>
+                          </CardContent>
+                          <CardActions>
+                            <Button
+                              size="small"
+                              endIcon={<ArrowForward />}
+                              onClick={() => onGoToMaterial && onGoToMaterial(material.id)}
+                              sx={{ ml: 'auto' }}
+                            >
+                              学習する
+                            </Button>
+                          </CardActions>
+                        </Card>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              </>
+            )}
+
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+              {onRetake && (
                 <Button
                   variant="outlined"
-                  size="large"
                   startIcon={<Refresh aria-hidden="true" />}
                   onClick={onRetake}
-                  sx={{ mt: 2 }}
                   aria-label="診断をやり直す"
                 >
-                  もう一度診断する
+                  診断をやり直す
                 </Button>
-              </Box>
-            )}
+              )}
+              
+              {isQuickMode && (
+                <Button
+                  variant="contained"
+                  startIcon={<AutoStories />}
+                  onClick={() => {
+                    onRetake && onRetake();
+                    // ここに詳細診断に切り替えるロジックを追加できます
+                  }}
+                >
+                  詳細診断を受ける
+                </Button>
+              )}
+            </Box>
           </Stack>
         </Paper>
       </motion.div>

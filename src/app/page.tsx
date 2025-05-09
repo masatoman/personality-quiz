@@ -3,15 +3,19 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { FaArrowRight, FaCheck, FaUsers, FaLightbulb, FaGraduationCap } from 'react-icons/fa';
+import { FaArrowRight, FaCheck, FaUsers, FaLightbulb, FaGraduationCap, FaBolt } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 
 export default function LandingPage() {
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
 
-  const startQuiz = () => {
-    router.push('/quiz?start=true');
+  const startQuiz = (isQuick = false) => {
+    if (isQuick) {
+      router.push('/quiz?start=true&quick=true');
+    } else {
+      router.push('/quiz?start=true');
+    }
   };
 
   return (
@@ -48,23 +52,35 @@ export default function LandingPage() {
                 あなたの強みを活かした効率的な英語学習法がわかります。
               </p>
               
-              <motion.button
-                onClick={startQuiz}
-                className="bg-white text-blue-700 dark:text-blue-800 hover:bg-white/90 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg flex items-center transition-all duration-300"
-                whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)" }}
-                whileTap={{ scale: 0.95 }}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-              >
-                診断を始める
-                <motion.span
-                  className="ml-2"
-                  animate={{ x: isHovered ? 5 : 0 }}
-                  transition={{ duration: 0.2 }}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <motion.button
+                  onClick={() => startQuiz(false)}
+                  className="bg-white text-blue-700 dark:text-blue-800 hover:bg-white/90 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg flex items-center transition-all duration-300"
+                  whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)" }}
+                  whileTap={{ scale: 0.95 }}
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
                 >
-                  <FaArrowRight />
-                </motion.span>
-              </motion.button>
+                  診断を始める
+                  <motion.span
+                    className="ml-2"
+                    animate={{ x: isHovered ? 5 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <FaArrowRight />
+                  </motion.span>
+                </motion.button>
+                
+                <motion.button
+                  onClick={() => startQuiz(true)}
+                  className="bg-indigo-100 text-indigo-800 hover:bg-indigo-200 px-6 py-4 rounded-lg font-semibold text-lg shadow-lg flex items-center justify-center transition-all duration-300"
+                  whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)" }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <FaBolt className="mr-2" />
+                  簡易診断（1分）
+                </motion.button>
+              </div>
               
               <div className="mt-8 flex items-center text-white text-sm">
                 <div className="flex -space-x-2 mr-3">
@@ -310,19 +326,36 @@ export default function LandingPage() {
           >
             たった5分でわかる診断テスト。あなたに最適な英語学習法を見つけて、効率的に上達しましょう！
           </motion.p>
-          <motion.button
-            onClick={startQuiz}
-            className="bg-white text-blue-700 hover:bg-white/90 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg flex items-center mx-auto transition-all duration-300"
-            whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)" }}
-            whileTap={{ scale: 0.95 }}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            無料で診断テストを受ける
-            <FaArrowRight className="ml-2" />
-          </motion.button>
+          
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <motion.button
+              onClick={() => startQuiz(false)}
+              className="bg-white text-blue-700 hover:bg-white/90 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg flex items-center mx-auto transition-all duration-300"
+              whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)" }}
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              詳細診断を受ける
+              <FaArrowRight className="ml-2" />
+            </motion.button>
+            
+            <motion.button
+              onClick={() => startQuiz(true)}
+              className="bg-indigo-200 text-indigo-800 hover:bg-indigo-300 px-6 py-4 rounded-lg font-semibold text-lg shadow-lg flex items-center mx-auto transition-all duration-300"
+              whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)" }}
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <FaBolt className="mr-2" />
+              簡易診断を試す（1分）
+            </motion.button>
+          </div>
         </div>
       </section>
       

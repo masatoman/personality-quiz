@@ -23,11 +23,16 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   onBack
 }) => {
   // 初期データがあれば使用、なければデフォルト値を設定
-  const [basicInfo, setBasicInfo] = useState<BasicInfo>(initialData || {
-    title: '',
-    description: '',
-    tags: [],
-    coverImage: undefined
+  const [basicInfo, setBasicInfo] = useState<BasicInfo>(() => {
+    console.log('BasicInfoStep: 初期データ受信', initialData);
+    return initialData && Object.keys(initialData).length > 0
+      ? { ...initialData }
+      : {
+          title: '',
+          description: '',
+          tags: [],
+          coverImage: undefined
+        };
   });
   
   const [currentTag, setCurrentTag] = useState('');
@@ -142,6 +147,8 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   // フォーム送信処理
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('フォーム送信が開始されました');
+    console.log('送信するデータ:', basicInfo);
     
     // バリデーション
     const newErrors: Record<string, string> = {};
@@ -163,12 +170,23 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
     }
     
     if (Object.keys(newErrors).length > 0) {
+      console.log('バリデーションエラー:', newErrors);
       setErrors(newErrors);
       return;
     }
     
+    console.log('バリデーション成功、データを保存して次のステップへ:', basicInfo);
+    
+    // データの完全コピーを作成して親コンポーネントに渡す
+    const dataToSave: BasicInfo = {
+      title: basicInfo.title.trim(),
+      description: basicInfo.description.trim(),
+      tags: [...basicInfo.tags],
+      coverImage: basicInfo.coverImage
+    };
+    
     // データを保存して次のステップへ
-    onSave(basicInfo);
+    onSave(dataToSave);
   };
   
   return (
@@ -343,12 +361,57 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
         </div>
         
         {/* 送信ボタン */}
-        <div className="pt-4">
+        <div className="pt-4 flex flex-col gap-2">
           <button
             type="submit"
             className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            次へ進む
+            次へ進む（フォーム送信）
+          </button>
+          
+          <button
+            type="button"
+            onClick={() => {
+              // バリデーション
+              const newErrors: Record<string, string> = {};
+              
+              if (!basicInfo.title.trim()) {
+                newErrors.title = 'タイトルを入力してください';
+              } else if (basicInfo.title.length > 100) {
+                newErrors.title = 'タイトルは100文字以内で入力してください';
+              }
+              
+              if (!basicInfo.description.trim()) {
+                newErrors.description = '説明を入力してください';
+              } else if (basicInfo.description.length > 500) {
+                newErrors.description = '説明は500文字以内で入力してください';
+              }
+              
+              if (basicInfo.tags.length === 0) {
+                newErrors.tag = '少なくとも1つのタグを追加してください';
+              }
+              
+              if (Object.keys(newErrors).length > 0) {
+                console.log('バリデーションエラー:', newErrors);
+                setErrors(newErrors);
+                return;
+              }
+              
+              console.log('代替ボタンでデータを保存して次のステップへ:', basicInfo);
+              
+              // データの完全コピーを作成して親コンポーネントに渡す
+              const dataToSave: BasicInfo = {
+                title: basicInfo.title.trim(),
+                description: basicInfo.description.trim(),
+                tags: [...basicInfo.tags],
+                coverImage: basicInfo.coverImage
+              };
+              
+              onSave(dataToSave);
+            }}
+            className="w-full py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            次へ進む（代替方法）
           </button>
         </div>
       </form>

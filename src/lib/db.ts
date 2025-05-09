@@ -1,10 +1,16 @@
 import fs from 'fs';
 import path from 'path';
 import { PersonalityType, Stats } from '@/types/quiz';
-import { Pool } from 'pg';
+import { Pool, PoolClient } from 'pg';
 
 // PostgreSQLの接続プール設定
 export let pool: Pool;
+
+// 再接続の試行回数とタイムアウト設定
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 2000; // 2秒
+let isConnecting = false;
+let lastConnectAttempt = 0;
 
 // 接続設定
 const dbConfig = {
@@ -12,6 +18,7 @@ const dbConfig = {
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
+  port: parseInt(process.env.DB_PORT || '5432', 10),
   ssl: process.env.NODE_ENV === 'production' 
     ? {
         rejectUnauthorized: false
@@ -19,71 +26,89 @@ const dbConfig = {
     : false,
   // 接続タイムアウトを15秒に設定（短縮）
   connectionTimeoutMillis: 15000,
-  // アイドル接続のタイムアウトを5秒に設定（短縮）
-  idleTimeoutMillis: 5000,
-  // 最大接続数を10に設定（調整）
-  max: 10,
-  // 最小プールサイズを2に設定（追加）
-  min: 2,
-  // アイドル状態の最大接続数を5に設定（追加）
-  maxUses: 5
+  // アイドル接続のタイムアウトを10秒に設定（調整）
+  idleTimeoutMillis: 10000,
+  // 最大接続数を5に設定（調整）
+  max: 5,
+  // 最小プールサイズを1に設定（調整）
+  min: 1
 };
+
+// シングルトンパターンで接続プールを管理
+let poolInstance: Pool | null = null;
 
 // プールの初期化関数
 export async function initPool() {
   try {
-    if (!pool) {
+    const now = Date.now();
+    
+    // 接続頻度を制限（最低1秒間隔）
+    if (isConnecting || (now - lastConnectAttempt < 1000)) {
+      console.log('接続試行中または直近で試行済みのため、重複接続を防止します');
+      return pool;
+    }
+    
+    isConnecting = true;
+    lastConnectAttempt = now;
+    
+    if (!poolInstance) {
       console.log('データベースプールを初期化します...');
-      pool = new Pool(dbConfig);
+      
+      poolInstance = new Pool({
+        ...dbConfig,
+        // エラー発生時に自動的に接続を破棄して再接続
+        allowExitOnIdle: true
+      });
       
       // エラーイベントのハンドリング
-      pool.on('error', (err: Error & { client?: any }) => {
+      poolInstance.on('error', (err: Error) => {
         console.error('PostgreSQL接続エラー:', {
           message: err.message,
           stack: err.stack,
           code: (err as any).code,
           detail: (err as any).detail
         });
-        // エラーが発生した接続を破棄
-        if (err.client) {
-          console.log('問題のある接続を破棄します');
-          err.client.release(true);
+        
+        // 致命的なエラーの場合はプールを再作成
+        if ((err as any).code === 'ECONNREFUSED' || 
+            (err as any).code === 'PROTOCOL_CONNECTION_LOST' ||
+            (err as any).code === '57P01') { // PostgreSQL: データベース管理者によって接続が終了
+          console.log('致命的なエラーが発生したため、プールを再作成します');
+          cleanupPool();
         }
       });
 
       // プール状態の監視
-      pool.on('connect', () => {
+      poolInstance.on('connect', (client: PoolClient) => {
         console.log('新しい接続が確立されました');
-      });
-
-      pool.on('acquire', () => {
-        console.log('接続がプールから取得されました');
-      });
-
-      pool.on('remove', () => {
-        console.log('接続がプールから削除されました');
+        client.on('error', (err: Error) => {
+          console.error('クライアント接続エラー:', err.message);
+        });
       });
 
       // 接続テスト
-      console.log('接続テストを実行します...');
-      const client = await pool.connect();
       try {
-        const result = await client.query('SELECT NOW()');
-        console.log('データベース接続テスト成功:', result.rows[0]);
-        
-        // 接続プールの状態を確認
-        const poolStatus = await client.query(`
-          SELECT count(*) as connection_count 
-          FROM pg_stat_activity 
-          WHERE datname = $1
-        `, [process.env.DB_NAME]);
-        console.log('アクティブな接続数:', poolStatus.rows[0].connection_count);
-      } finally {
-        client.release();
+        console.log('接続テストを実行します...');
+        const client = await poolInstance.connect();
+        try {
+          await client.query('SELECT 1 as connection_test');
+          console.log('データベース接続テスト成功');
+        } finally {
+          client.release();
+        }
+      } catch (testError) {
+        console.error('接続テストに失敗しました:', testError);
+        cleanupPool();
+        throw new Error('データベース接続テストに失敗しました');
       }
+      
+      pool = poolInstance;
     } else {
       console.log('既存のデータベースプールを再利用します');
+      pool = poolInstance;
     }
+    
+    isConnecting = false;
     return pool;
   } catch (error) {
     console.error('PostgreSQLプールの初期化に失敗しました:', {
@@ -92,8 +117,89 @@ export async function initPool() {
       code: (error as any).code,
       detail: (error as any).detail
     });
+    
+    isConnecting = false;
     throw error;
   }
+}
+
+// プールのクリーンアップ関数
+function cleanupPool() {
+  if (poolInstance) {
+    console.log('データベースプールをクリーンアップします');
+    try {
+      poolInstance.end()
+        .then(() => console.log('プールが正常に終了しました'))
+        .catch(err => console.error('プール終了中にエラーが発生しました:', err));
+    } catch (error) {
+      console.error('プールのクリーンアップ中にエラーが発生しました:', error);
+    }
+    poolInstance = null;
+  }
+}
+
+// リトライロジックを含むクエリ実行関数
+export async function query(text: string, params?: any[], retries = MAX_RETRIES) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      // プールが未初期化の場合は初期化
+      if (!pool) {
+        await initPool();
+      }
+
+      // パフォーマンス計測開始
+      const startTime = Date.now();
+      let client: PoolClient | null = null;
+      
+      try {
+        // コネクションプールからクライアントを取得
+        client = await pool.connect();
+        
+        // クエリタイムアウトを設定（30秒）
+        await client.query('SET statement_timeout = 30000');
+        
+        // クエリを実行
+        const result = await client.query(text, params);
+        
+        // パフォーマンス計測終了と記録
+        const executionTime = Date.now() - startTime;
+        if (executionTime > 1000) { // 1秒以上かかったクエリをログ
+          console.warn('スロークエリ検出:', {
+            query: text.substring(0, 100) + (text.length > 100 ? '...' : ''),
+            executionTime,
+            timestamp: new Date().toISOString()
+          });
+        }
+        
+        return result;
+      } finally {
+        if (client) {
+          client.release();
+        }
+      }
+    } catch (error) {
+      const isLastAttempt = attempt === retries;
+      const shouldRetry = 
+        ((error as any).code === 'ECONNREFUSED' || 
+         (error as any).code === '08006' || // PostgreSQL: 接続の喪失
+         (error as any).code === '57P01');  // PostgreSQL: データベース管理者によって接続が終了
+      
+      console.error(`クエリ実行エラー (試行 ${attempt}/${retries}):`, error);
+      
+      if (!isLastAttempt && shouldRetry) {
+        console.log(`${RETRY_DELAY}ms後に再試行します...`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        
+        // エラーが接続関連の場合はプールを再初期化
+        cleanupPool();
+        continue;
+      }
+      
+      throw error;
+    }
+  }
+  
+  throw new Error(`${retries}回の試行後もクエリの実行に失敗しました`);
 }
 
 // クエリ結果のキャッシュ管理
@@ -109,13 +215,21 @@ export async function cachedQuery(text: string, params?: any[], ttl: number = CA
     return cached.data;
   }
   
-  const result = await query(text, params);
-  queryCache.set(cacheKey, {
-    data: result,
-    timestamp: Date.now()
-  });
-  
-  return result;
+  try {
+    const result = await query(text, params);
+    queryCache.set(cacheKey, {
+      data: result,
+      timestamp: Date.now()
+    });
+    return result;
+  } catch (error) {
+    // キャッシュがあれば期限切れでも使用
+    if (cached) {
+      console.log('データベースエラーのため期限切れキャッシュを使用します');
+      return cached.data;
+    }
+    throw error;
+  }
 }
 
 // バッチ処理用のクエリ実行関数
@@ -138,52 +252,6 @@ export async function batchQuery<T>(
   }
   
   return results;
-}
-
-export async function query(text: string, params?: any[]) {
-  try {
-    // プールが未初期化の場合は初期化
-    if (!pool) {
-      await initPool();
-    }
-
-    // パフォーマンス計測開始
-    const startTime = Date.now();
-
-    // コネクションプールからクライアントを取得
-    const client = await pool.connect();
-    
-    try {
-      // クエリタイムアウトを設定（30秒）
-      await client.query('SET statement_timeout = 30000');
-      
-      // クエリを実行
-      const result = await client.query(text, params);
-      
-      // パフォーマンス計測終了と記録
-      const executionTime = Date.now() - startTime;
-      if (executionTime > 1000) { // 1秒以上かかったクエリをログ
-        console.warn('スロークエリ検出:', {
-          query: text,
-          params,
-          executionTime,
-          timestamp: new Date().toISOString()
-        });
-      }
-      
-      return result;
-    } catch (queryError) {
-      console.error('クエリ実行エラー:', queryError);
-      console.error('実行されたクエリ:', text);
-      console.error('パラメータ:', params);
-      throw queryError;
-    } finally {
-      client.release();
-    }
-  } catch (error) {
-    console.error('データベース操作エラー:', error);
-    throw error;
-  }
 }
 
 // データベースファイルのパス

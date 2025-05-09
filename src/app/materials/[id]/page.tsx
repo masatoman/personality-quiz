@@ -70,80 +70,276 @@ const MaterialDetailPage = () => {
     const fetchMaterial = async () => {
       setLoading(true);
       try {
-        // モックデータを使用（実際はAPIから取得）
-        const mockMaterial: Material = {
-          id: materialId,
-          title: 'ビジネス英語：互恵的関係の構築',
-          description: 'ビジネスシーンで互恵的な関係を構築するための英語表現とコミュニケーション戦略を学びます。',
-          content: `
-          <h2>互恵的関係とは</h2>
-          <p>互恵的関係（reciprocal relationship）とは、双方が利益を得られる関係性のことです。ビジネスにおいて、長期的かつ持続可能なパートナーシップを築くためには、この互恵性が不可欠です。</p>
-          
-          <h3>キーポイント</h3>
-          <ul>
-            <li>信頼関係の構築（Building Trust）</li>
-            <li>価値の交換（Exchange of Value）</li>
-            <li>長期的視点（Long-term Perspective）</li>
-          </ul>
-          
-          <h2>役立つ英語表現</h2>
-          
-          <h3>1. 関係構築のための表現</h3>
-          <div class="example-box">
-            <p>"I believe we can create a win-win situation here."</p>
-            <p>（ここでは双方にとって良い状況を作れると思います。）</p>
-          </div>
-          
-          <div class="example-box">
-            <p>"We're looking for a long-term partnership that benefits both parties."</p>
-            <p>（私たちは双方に利益をもたらす長期的なパートナーシップを求めています。）</p>
-          </div>
-          
-          <h3>2. 価値提案の表現</h3>
-          <div class="example-box">
-            <p>"What we bring to the table is..."</p>
-            <p>（私たちが提供できるのは...）</p>
-          </div>
-          
-          <div class="example-box">
-            <p>"In return for your expertise, we can offer..."</p>
-            <p>（あなたの専門知識に対して、私たちは...を提供できます。）</p>
-          </div>
-          
-          <h3>3. 協力の提案</h3>
-          <div class="example-box">
-            <p>"How can we support each other's goals?"</p>
-            <p>（どのようにお互いの目標をサポートできるでしょうか？）</p>
-          </div>
-          
-          <div class="example-box">
-            <p>"I see potential synergies between our companies."</p>
-            <p>（私たちの会社間に潜在的な相乗効果を見ています。）</p>
-          </div>
-          
-          <h2>実践エクササイズ</h2>
-          <p>次のシナリオに基づいて、互恵的関係を構築するための会話を練習してみましょう：</p>
-          
-          <div class="scenario-box">
-            <p><strong>シナリオ：</strong> あなたは小規模なデザイン会社の代表です。大手企業のマーケティング部門と会議を持ち、潜在的なコラボレーションについて話し合います。彼らはブランドの刷新を検討していますが、予算に制約があります。あなたの会社は露出を必要としています。互恵的な提案をしてください。</p>
-          </div>
-          `,
-          category: 'business',
-          difficulty: 'intermediate',
-          author: {
-            id: '550e8400-e29b-41d4-a716-446655440001',
-            name: 'ギバー太郎',
-            avatar: '/avatars/giver.png',
-            giverScore: 85,
-            type: 'ギバー'
-          },
-          created_at: '2023-09-15T10:30:00Z',
-          view_count: 234,
-          rating: 4.7,
-          is_bookmarked: false,
-          is_published: true,
-          tags: ['ビジネス英語', '交渉', 'コミュニケーション', '関係構築']
-        };
+        // IDに応じたモックデータを選択
+        let mockMaterial: Material;
+        
+        switch(materialId) {
+          case '1':
+            mockMaterial = {
+              id: '1',
+              title: 'ビジネス英語の基礎',
+              description: 'ビジネスシーンで使える基本的な英語表現とコミュニケーション戦略を学びます',
+              content: `
+              <h2>ビジネス英語の基本</h2>
+              <p>ビジネス英語は、職場や商談などの専門的な環境で使用される英語の一形態です。フォーマルな表現や業界特有の用語が多く使われます。</p>
+              
+              <h3>キーポイント</h3>
+              <ul>
+                <li>明確さと簡潔さを重視する</li>
+                <li>適切な敬語表現を使用する</li>
+                <li>文化的な違いに配慮する</li>
+              </ul>
+              
+              <h2>挨拶と自己紹介</h2>
+              
+              <h3>1. 基本的な挨拶</h3>
+              <div class="example-box">
+                <p>"Good morning/afternoon/evening."</p>
+                <p>"It's a pleasure to meet you."</p>
+                <p>"Thank you for taking the time to meet with me today."</p>
+              </div>
+              
+              <h3>2. 自己紹介</h3>
+              <div class="example-box">
+                <p>"My name is [Your Name]. I'm the [Your Position] at [Your Company]."</p>
+                <p>"I've been working in the [Industry] industry for [Number] years."</p>
+                <p>"I'm responsible for [Your Responsibilities]."</p>
+              </div>
+              
+              <h2>電話とメール</h2>
+              <p>ビジネスコミュニケーションでは、電話やメールのスキルが非常に重要です。</p>
+              
+              <div class="example-box">
+                <p>"Hello, this is [Your Name] from [Your Company]."</p>
+                <p>"I'm calling/writing regarding..."</p>
+                <p>"Could I speak to [Person's Name], please?"</p>
+                <p>"I look forward to hearing from you soon."</p>
+                <p>"Should you have any questions, please don't hesitate to contact me."</p>
+              </div>
+              `,
+              category: 'ビジネス英語',
+              difficulty: 'beginner',
+              author: {
+                id: '550e8400-e29b-41d4-a716-446655440001',
+                name: 'ギバー太郎',
+                avatar: '/avatars/giver.png',
+                giverScore: 85,
+                type: 'ギバー'
+              },
+              created_at: '2023-09-15T10:30:00Z',
+              view_count: 345,
+              rating: 4.8,
+              is_bookmarked: false,
+              is_published: true,
+              tags: ['ビジネス英語', '自己紹介', 'メール', '電話対応']
+            };
+            break;
+            
+          case '2':
+            mockMaterial = {
+              id: '2',
+              title: '日常英会話マスター',
+              description: '日常生活で役立つ実践的な英会話表現とシチュエーション別のフレーズ集',
+              content: `
+              <h2>日常英会話の基本</h2>
+              <p>日常英会話は、カジュアルな状況で使われる自然な英語表現です。文法的に完璧である必要はなく、コミュニケーションの流れを重視します。</p>
+              
+              <h3>キーポイント</h3>
+              <ul>
+                <li>自然な表現と縮約形を使う</li>
+                <li>相手の話をよく聞き、適切に応答する</li>
+                <li>文脈に応じた表現を選ぶ</li>
+              </ul>
+              
+              <h2>カフェやレストランでの会話</h2>
+              
+              <h3>1. 注文する</h3>
+              <div class="example-box">
+                <p>"I'd like a coffee, please."</p>
+                <p>"Could I have the menu, please?"</p>
+                <p>"What do you recommend?"</p>
+              </div>
+              
+              <h3>2. 支払い</h3>
+              <div class="example-box">
+                <p>"Can I have the bill/check, please?"</p>
+                <p>"Do you take credit cards?"</p>
+                <p>"Could we have separate checks?"</p>
+              </div>
+              
+              <h2>道案内と交通</h2>
+              <p>旅行や外出時に役立つ表現です。</p>
+              
+              <div class="example-box">
+                <p>"Excuse me, could you tell me how to get to the station?"</p>
+                <p>"Is this the right way to the museum?"</p>
+                <p>"How much is the fare to downtown?"</p>
+                <p>"Could you recommend a good hotel in this area?"</p>
+                <p>"I think I'm lost. Could you help me find this address?"</p>
+              </div>
+              `,
+              category: '日常会話',
+              difficulty: 'intermediate',
+              author: {
+                id: '550e8400-e29b-41d4-a716-446655440002',
+                name: 'マッチャー花子',
+                avatar: '/avatars/matcher.png',
+                giverScore: 72,
+                type: 'マッチャー'
+              },
+              created_at: '2023-10-05T14:30:00Z',
+              view_count: 287,
+              rating: 4.6,
+              is_bookmarked: false,
+              is_published: true,
+              tags: ['日常会話', '旅行', 'レストラン', '道案内']
+            };
+            break;
+            
+          case '3':
+            mockMaterial = {
+              id: '3',
+              title: '英語発音のコツとトレーニング',
+              description: 'ネイティブのような発音を身につけるための実践的なトレーニング方法',
+              content: `
+              <h2>英語発音の基礎</h2>
+              <p>英語の発音は、リスニングとスピーキング能力の向上に直結する重要なスキルです。正しい口の形や舌の位置を意識することが大切です。</p>
+              
+              <h3>キーポイント</h3>
+              <ul>
+                <li>母音と子音の正確な発音</li>
+                <li>リズムとイントネーション</li>
+                <li>リンキングとリダクション</li>
+              </ul>
+              
+              <h2>母音の発音</h2>
+              
+              <h3>1. 単母音</h3>
+              <div class="example-box">
+                <p>/i:/ - sheep, meet, leaf</p>
+                <p>/ɪ/ - ship, bit, fish</p>
+                <p>/e/ - bed, head, said</p>
+              </div>
+              
+              <h3>2. 二重母音</h3>
+              <div class="example-box">
+                <p>/eɪ/ - face, day, break</p>
+                <p>/aɪ/ - price, fly, buy</p>
+                <p>/ɔɪ/ - choice, boy, employ</p>
+              </div>
+              
+              <h2>リズムとイントネーション</h2>
+              <p>英語は強弱のリズムを持つ言語です。強調される単語や音節に注意しましょう。</p>
+              
+              <div class="example-box">
+                <p>"I'm GOing to the STORE." (強調される音節を大文字で表示)</p>
+                <p>"Do you WANT to GO to the MOvie?"</p>
+                <p>"She's a DOCtor, NOT a TEACHer."</p>
+              </div>
+              
+              <h2>練習方法</h2>
+              <p>効果的な発音練習のテクニックをいくつか紹介します。</p>
+              
+              <div class="example-box">
+                <p>1. シャドーイング：音声を聞きながら少し遅れて同じ内容を繰り返す</p>
+                <p>2. 録音して比較：自分の発音を録音し、ネイティブの発音と比較する</p>
+                <p>3. 舌の体操：発音前に舌をほぐす簡単なエクササイズを行う</p>
+              </div>
+              `,
+              category: '発音・スピーキング',
+              difficulty: 'advanced',
+              author: {
+                id: '550e8400-e29b-41d4-a716-446655440003',
+                name: 'テイカー次郎',
+                avatar: '/avatars/taker.png',
+                giverScore: 45,
+                type: 'テイカー'
+              },
+              created_at: '2023-11-10T09:30:00Z',
+              view_count: 178,
+              rating: 4.9,
+              is_bookmarked: false,
+              is_published: true,
+              tags: ['発音', 'スピーキング', 'リスニング', '音声学']
+            };
+            break;
+            
+          default:
+            // デフォルトの教材データ（ID不明の場合）
+            mockMaterial = {
+              id: materialId,
+              title: 'ビジネス英語：互恵的関係の構築',
+              description: 'ビジネスシーンで互恵的な関係を構築するための英語表現とコミュニケーション戦略を学びます。',
+              content: `
+              <h2>互恵的関係とは</h2>
+              <p>互恵的関係（reciprocal relationship）とは、双方が利益を得られる関係性のことです。ビジネスにおいて、長期的かつ持続可能なパートナーシップを築くためには、この互恵性が不可欠です。</p>
+              
+              <h3>キーポイント</h3>
+              <ul>
+                <li>信頼関係の構築（Building Trust）</li>
+                <li>価値の交換（Exchange of Value）</li>
+                <li>長期的視点（Long-term Perspective）</li>
+              </ul>
+              
+              <h2>役立つ英語表現</h2>
+              
+              <h3>1. 関係構築のための表現</h3>
+              <div class="example-box">
+                <p>"I believe we can create a win-win situation here."</p>
+                <p>（ここでは双方にとって良い状況を作れると思います。）</p>
+              </div>
+              
+              <div class="example-box">
+                <p>"We're looking for a long-term partnership that benefits both parties."</p>
+                <p>（私たちは双方に利益をもたらす長期的なパートナーシップを求めています。）</p>
+              </div>
+              
+              <h3>2. 価値提案の表現</h3>
+              <div class="example-box">
+                <p>"What we bring to the table is..."</p>
+                <p>（私たちが提供できるのは...）</p>
+              </div>
+              
+              <div class="example-box">
+                <p>"In return for your expertise, we can offer..."</p>
+                <p>（あなたの専門知識に対して、私たちは...を提供できます。）</p>
+              </div>
+              
+              <h3>3. 協力の提案</h3>
+              <div class="example-box">
+                <p>"How can we support each other's goals?"</p>
+                <p>（どのようにお互いの目標をサポートできるでしょうか？）</p>
+              </div>
+              
+              <div class="example-box">
+                <p>"I see potential synergies between our companies."</p>
+                <p>（私たちの会社間に潜在的な相乗効果を見ています。）</p>
+              </div>
+              
+              <h2>実践エクササイズ</h2>
+              <p>次のシナリオに基づいて、互恵的関係を構築するための会話を練習してみましょう：</p>
+              
+              <div class="scenario-box">
+                <p><strong>シナリオ：</strong> あなたは小規模なデザイン会社の代表です。大手企業のマーケティング部門と会議を持ち、潜在的なコラボレーションについて話し合います。彼らはブランドの刷新を検討していますが、予算に制約があります。あなたの会社は露出を必要としています。互恵的な提案をしてください。</p>
+              </div>
+              `,
+              category: 'ビジネス英語',
+              difficulty: 'intermediate',
+              author: {
+                id: '550e8400-e29b-41d4-a716-446655440001',
+                name: 'ギバー太郎',
+                avatar: '/avatars/giver.png',
+                giverScore: 85,
+                type: 'ギバー'
+              },
+              created_at: '2023-09-15T10:30:00Z',
+              view_count: 234,
+              rating: 4.7,
+              is_bookmarked: false,
+              is_published: true,
+              tags: ['ビジネス英語', '交渉', 'コミュニケーション', '関係構築']
+            };
+        }
 
         setMaterial(mockMaterial);
         setIsBookmarked(mockMaterial.is_bookmarked);
@@ -171,34 +367,65 @@ const MaterialDetailPage = () => {
         ];
         setFeedbacks(mockFeedbacks);
 
-        // 関連教材のモックデータ
-        const mockRelatedMaterials: RelatedMaterial[] = [
+        // 関連教材のモックデータ - 現在の教材IDに基づいて関連コンテンツを調整
+        const allMaterials = [
           {
-            id: 'r1',
-            title: 'ポリートレスポンスガイド',
-            category: 'communication',
+            id: '1',
+            title: 'ビジネス英語の基礎',
+            category: 'ビジネス英語',
             difficulty: 'beginner',
             rating: 4.8,
             author_name: 'ギバー太郎'
           },
           {
-            id: 'r2',
-            title: 'ビジネスミーティングでのプレゼンテーション術',
-            category: 'business',
+            id: '2',
+            title: '日常英会話マスター',
+            category: '日常会話',
             difficulty: 'intermediate',
-            rating: 4.5,
+            rating: 4.6,
             author_name: 'マッチャー花子'
           },
           {
-            id: 'r3',
+            id: '3',
+            title: '英語発音のコツとトレーニング',
+            category: '発音・スピーキング',
+            difficulty: 'advanced',
+            rating: 4.9,
+            author_name: 'テイカー次郎'
+          },
+          {
+            id: '4',
+            title: 'ポリートレスポンスガイド',
+            category: 'ビジネス英語',
+            difficulty: 'beginner',
+            rating: 4.5,
+            author_name: 'ギバー太郎'
+          },
+          {
+            id: '5',
+            title: 'ビジネスミーティングでのプレゼンテーション術',
+            category: 'ビジネス英語',
+            difficulty: 'intermediate',
+            rating: 4.7,
+            author_name: 'マッチャー花子'
+          },
+          {
+            id: '6',
             title: '英語でのネゴシエーション：基本戦略',
-            category: 'business',
+            category: 'ビジネス英語',
             difficulty: 'advanced',
             rating: 4.9,
             author_name: 'ギバー太郎'
           }
         ];
-        setRelatedMaterials(mockRelatedMaterials);
+        
+        // 現在の教材以外から3つをランダムに選択
+        const relatedMaterials = allMaterials
+          .filter(m => m.id !== materialId)
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 3);
+          
+        setRelatedMaterials(relatedMaterials);
       } catch (err) {
         console.error('教材データの取得に失敗しました', err);
         setError('教材データの取得に失敗しました。再度お試しください。');

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 // コンテンツセクションの型定義
 interface ContentSection {
@@ -19,7 +18,6 @@ interface ContentStepProps {
 }
 
 const ContentStep: React.FC<ContentStepProps> = ({ initialData, onSave, onBack }) => {
-  const router = useRouter();
   const [sections, setSections] = useState<ContentSection[]>(initialData || []);
   const [activeSection, setActiveSection] = useState<string | null>(null);
   
@@ -30,7 +28,6 @@ const ContentStep: React.FC<ContentStepProps> = ({ initialData, onSave, onBack }
     }
     
     onSave(sections);
-    router.push('/create/standard/settings');
   };
   
   const addSection = (type: 'text' | 'image' | 'video' | 'quiz') => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import TaskItem from './TaskItem';
-import { Task } from '@/hooks/useTodoStorage';
+import { Task } from '@/types/todo';
 
 interface TaskListProps {
   tasks: Task[];

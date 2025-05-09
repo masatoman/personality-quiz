@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Task } from '@/hooks/useTodoStorage';
+import { Task } from '@/types/todo';
 
 type TaskFormProps = {
   onAddTask: (task: Task) => void;

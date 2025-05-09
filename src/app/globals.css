@@ -87,6 +87,58 @@
   transition-duration: 300ms;
 }
 
+/* 教材コンテンツ用スタイル */
+.example-box {
+  @apply bg-blue-50 border-l-4 border-blue-500 p-4 my-4 rounded-r-md;
+}
+
+.example-box p {
+  @apply my-2 text-gray-800;
+}
+
+.scenario-box {
+  @apply bg-purple-50 border-l-4 border-purple-500 p-4 my-4 rounded-r-md;
+}
+
+.scenario-box p {
+  @apply my-2 text-gray-800;
+}
+
+/* プローズスタイルのカスタマイズ */
+.prose h2 {
+  @apply text-2xl font-bold mt-8 mb-4 text-gray-800;
+}
+
+.prose h3 {
+  @apply text-xl font-bold mt-6 mb-3 text-gray-700;
+}
+
+.prose ul {
+  @apply list-disc pl-6 my-4;
+}
+
+.prose li {
+  @apply mb-2 text-gray-800;
+}
+
+.prose p {
+  @apply text-gray-800;
+}
+
+/* キーポイント用のスタイル */
+.prose ul li {
+  @apply text-gray-800 relative pl-1;
+}
+
+.prose ul li::marker {
+  @apply text-primary;
+}
+
+/* 背景付きテキスト */
+.prose .bg-blue-50 {
+  @apply text-gray-800 font-normal;
+}
+
 @layer base {
   html {
     @apply antialiased;

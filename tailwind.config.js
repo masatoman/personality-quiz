@@ -59,6 +59,11 @@ module.exports = {
     'hover:bg-secondary-light/10',
     'hover:bg-secondary/10',
     'hover:bg-secondary-dark/10',
+    'prose',
+    'prose-lg',
+    'max-w-none',
+    'prose-h2:text-gray-800',
+    'prose-h3:text-gray-700',
   ],
   theme: {
     extend: {
@@ -157,7 +162,52 @@ module.exports = {
         'matcher-gradient': 'linear-gradient(to bottom right, rgba(59, 130, 246, 0.1), rgba(29, 78, 216, 0.05))',
         'taker-gradient': 'linear-gradient(to bottom right, rgba(245, 158, 11, 0.1), rgba(180, 83, 9, 0.05))',
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: 'none',
+            color: '#1F2937',
+            a: {
+              color: 'var(--color-primary)',
+              '&:hover': {
+                color: 'var(--color-primary-dark)',
+              },
+            },
+            h2: {
+              color: '#1F2937',
+              fontWeight: '700',
+            },
+            h3: {
+              color: '#374151',
+              fontWeight: '600',
+            },
+            strong: {
+              color: '#111827',
+              fontWeight: '600',
+            },
+            li: {
+              color: '#1F2937',
+              margin: '0.5em 0',
+            },
+            ul: {
+              margin: '1.5em 0',
+            },
+            'ul > li': {
+              paddingLeft: '0.25em',
+            },
+            'ul > li::marker': {
+              color: 'var(--color-primary)',
+            },
+            blockquote: {
+              color: '#1F2937',
+              borderLeftColor: 'var(--color-primary-light)',
+            },
+          },
+        },
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 } 
