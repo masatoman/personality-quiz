@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { FaHome, FaSearch, FaEdit, FaUser, FaBell, FaBars, FaSignOutAlt, FaCog, FaUserCircle } from 'react-icons/fa';
+import { getClient } from '@/lib/supabase/client';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,15 +14,13 @@ const Navbar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
 
-  // クライアントサイドでログイン状態を確認（実際はSupabaseなどの認証状態を確認）
+  // クライアントサイドでログイン状態を確認（Supabaseの認証状態を確認）
   useEffect(() => {
-    // ここで認証状態を確認する処理を実装
-    // 仮のデモ用コード：
     const checkAuth = async () => {
       try {
-        // ローカルストレージにトークンがあるかどうかで簡易的に判定
-        const token = localStorage.getItem('supabase.auth.token');
-        setIsLoggedIn(!!token);
+        const supabase = getClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        setIsLoggedIn(!!session);
       } catch (error) {
         console.error('認証状態の確認に失敗しました', error);
         setIsLoggedIn(false);
@@ -29,6 +28,16 @@ const Navbar: React.FC = () => {
     };
 
     checkAuth();
+
+    // 認証状態の変化を監視
+    const supabase = getClient();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   // プロフィールメニュー外のクリックを検知してメニューを閉じる
@@ -45,22 +54,33 @@ const Navbar: React.FC = () => {
     };
   }, [profileMenuRef]);
 
-  const handleLogout = () => {
-    // ログアウト処理
-    localStorage.removeItem('supabase.auth.token');
-    localStorage.removeItem('is_new_user');
-    setIsLoggedIn(false);
-    setShowProfileMenu(false);
-    router.push('/');
+  const handleLogout = async () => {
+    try {
+      const supabase = getClient();
+      await supabase.auth.signOut();
+      setIsLoggedIn(false);
+      setShowProfileMenu(false);
+      router.push('/');
+    } catch (error) {
+      console.error('ログアウトに失敗しました', error);
+    }
   };
 
-  const menuItems = [
+  // 全てのユーザーに表示するメニュー項目
+  const publicMenuItems = [
     { label: 'ホーム', href: '/', icon: <FaHome className="inline mr-2" /> },
     { label: '教材探索', href: '/explore', icon: <FaSearch className="inline mr-2" /> },
+  ];
+
+  // ログインユーザーのみに表示するメニュー項目
+  const privateMenuItems = [
     { label: '教材作成', href: '/create', icon: <FaEdit className="inline mr-2" /> },
     { label: 'マイページ', href: '/profile', icon: <FaUser className="inline mr-2" /> },
     { label: '通知', href: '/notifications', icon: <FaBell className="inline mr-2" /> },
   ];
+
+  // 表示するメニュー項目
+  const visibleMenuItems = [...publicMenuItems, ...(isLoggedIn ? privateMenuItems : [])];
 
   return (
     <nav className="bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md">
@@ -73,7 +93,7 @@ const Navbar: React.FC = () => {
 
           {/* PC向けナビゲーション */}
           <div className="hidden md:flex space-x-8 items-center">
-            {menuItems.map((item) => (
+            {visibleMenuItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -156,7 +176,7 @@ const Navbar: React.FC = () => {
         {/* モバイル向けドロップダウンメニュー */}
         {isOpen && (
           <div className="md:hidden pb-4">
-            {menuItems.map((item) => (
+            {visibleMenuItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
