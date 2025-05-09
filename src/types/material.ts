@@ -17,7 +17,9 @@ export type TargetAudience =
 export interface Section {
   id: string;
   title: string;
-  type: 'text' | 'image' | 'quiz';
+  type: 'text' | 'image' | 'video' | 'quiz';
+  content?: string;
+  format?: 'plain' | 'markdown' | 'html';
 }
 
 // テキストセクションの型定義
@@ -88,8 +90,21 @@ export interface Material {
   title: string;
   description: string;
   category?: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: Difficulty;
+  estimatedTime: number;
+  createdAt: string;
+  updatedAt: string;
+  author: Author;
+  targetAudience: string[];
+  language: string;
+  version: string;
   sections: Section[];
+  reviews: Review[];
+  relatedMaterials: RelatedMaterial[];
+  tags: string[];
+  status?: 'published' | 'draft';
+  view_count?: number;
+  rating?: number;
 }
 
 export interface MaterialSection {

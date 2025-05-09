@@ -10,21 +10,35 @@ import { QuizForm } from './QuizForm';
 import { QuizResults } from './QuizResults';
 import { Answer, QuizQuestion, QuizResults as QuizResultsType, QuizState, PersonalityType } from './types';
 import { AnimatePresence } from 'framer-motion';
-import { PlayArrow } from '@mui/icons-material';
-import { useSearchParams } from 'next/navigation';
+import { PlayArrow, AutoAwesome, FactCheck } from '@mui/icons-material';
+import { useSearchParams, useRouter } from 'next/navigation';
+
+// 簡易診断用の質問（オリジナルの質問から重要な5問を選択）
+const quickQuestions = [1, 3, 5, 7, 9].map(id => 
+  questions.find(q => q.id === id)
+).filter(q => q !== undefined) as QuizQuestion[];
 
 export const QuizContainer: React.FC = () => {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const startParam = searchParams.get('start');
+  const quickParam = searchParams.get('quick');
   
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [quizState, setQuizState] = useState<QuizState>(startParam === 'true' ? 'questioning' : 'intro');
+  const [quizState, setQuizState] = useState<QuizState>(
+    startParam === 'true' ? 'questioning' : 'intro'
+  );
   const [results, setResults] = useState<QuizResultsType | null>(null);
+  const [isQuickMode, setIsQuickMode] = useState(quickParam === 'true');
+  const [recommendedMaterials, setRecommendedMaterials] = useState<any[]>([]);
 
-  // 質問データをチェック
-  const questionsData = Array.isArray(questions) ? (questions as unknown as QuizQuestion[]) : [];
+  // 質問データをチェック：簡易モードかフルモードかで使用する質問を切り替え
+  const questionsData = isQuickMode 
+    ? quickQuestions 
+    : (Array.isArray(questions) ? (questions as unknown as QuizQuestion[]) : []);
+  
   const currentQuestion = questionsData[currentQuestionIndex];
   const progress = questionsData.length > 0
     ? ((currentQuestionIndex + 1) / questionsData.length) * 100
@@ -120,6 +134,45 @@ export const QuizContainer: React.FC = () => {
     setResults(results);
     setQuizState('loading');
     saveResults(results);
+    // 教材推薦を取得
+    fetchRecommendedMaterials(dominantType);
+  };
+
+  // 教材推薦データの取得
+  const fetchRecommendedMaterials = async (personalityType: PersonalityType) => {
+    try {
+      // サンプルとしてパーソナリティタイプに基づいた教材を返す
+      // 実際の実装では API からデータを取得する
+      const materials = [
+        {
+          id: 1,
+          title: personalityType === 'giver' 
+            ? '他者に効果的に教える英会話テクニック' 
+            : personalityType === 'taker' 
+              ? '自己学習のための効率的な単語記憶法'
+              : 'グループディスカッションでの英語表現',
+          duration: '5分',
+          level: '初級',
+          description: 'クイックスタートのための短時間教材です。すぐに実践できるテクニックが学べます。'
+        },
+        {
+          id: 2,
+          title: personalityType === 'giver'
+            ? '初心者への説明が上手くなる英語表現集'
+            : personalityType === 'taker'
+              ? '個人学習者向け英語ニュースサイトの活用法'
+              : '英語学習コミュニティでの効果的な参加方法',
+          duration: '3分',
+          level: '初中級',
+          description: 'あなたの学習スタイルに合わせた短時間で効果的な学習方法です。'
+        }
+      ];
+      
+      setRecommendedMaterials(materials);
+    } catch (error) {
+      console.error('教材推薦の取得中にエラーが発生しました:', error);
+      setRecommendedMaterials([]);
+    }
   };
 
   // 結果の保存
@@ -130,7 +183,10 @@ export const QuizContainer: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(results),
+        body: JSON.stringify({
+          ...results,
+          isQuickMode // 簡易診断かどうかを送信
+        }),
       });
 
       if (!response.ok) {
@@ -154,6 +210,16 @@ export const QuizContainer: React.FC = () => {
     setResults(null);
     setQuizState('intro');
   };
+  
+  // 簡易モードと詳細モードの切り替え
+  const toggleQuickMode = () => {
+    setIsQuickMode(!isQuickMode);
+  };
+
+  // 教材ページへ移動
+  const goToMaterial = (materialId: number) => {
+    router.push(`/materials/${materialId}`);
+  };
 
   if (quizState === 'loading') {
     return (
@@ -164,7 +230,15 @@ export const QuizContainer: React.FC = () => {
   }
 
   if (quizState === 'completed' && results) {
-    return <QuizResults results={results} onRetake={handleRetake} />;
+    return (
+      <QuizResults 
+        results={results} 
+        onRetake={handleRetake} 
+        isQuickMode={isQuickMode}
+        recommendedMaterials={recommendedMaterials}
+        onGoToMaterial={goToMaterial}
+      />
+    );
   }
 
   if (quizState === 'intro') {
@@ -178,20 +252,52 @@ export const QuizContainer: React.FC = () => {
             <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
               あなたの学習スタイルと他者への貢献傾向を分析し、最適な学習方法を提案します。
             </Typography>
-            <Button
-              variant="contained"
-              size="large"
-              endIcon={<PlayArrow />}
-              onClick={() => setQuizState('questioning')}
-              sx={{
-                px: 4,
-                py: 1.5,
-                borderRadius: 2,
-                fontSize: '1.2rem'
-              }}
-            >
-              診断を開始する
-            </Button>
+            
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'center', gap: 2, mb: 2 }}>
+              <Button
+                variant="contained"
+                size="large"
+                endIcon={<AutoAwesome />}
+                onClick={() => {
+                  setIsQuickMode(true);
+                  setQuizState('questioning');
+                }}
+                sx={{
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: 2,
+                  fontSize: '1.1rem',
+                  backgroundColor: 'secondary.main',
+                  '&:hover': {
+                    backgroundColor: 'secondary.dark',
+                  }
+                }}
+              >
+                簡易診断（5問）
+              </Button>
+              
+              <Button
+                variant="contained"
+                size="large"
+                endIcon={<FactCheck />}
+                onClick={() => {
+                  setIsQuickMode(false);
+                  setQuizState('questioning');
+                }}
+                sx={{
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: 2,
+                  fontSize: '1.1rem'
+                }}
+              >
+                詳細診断（全問）
+              </Button>
+            </Box>
+            
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+              簡易診断は約1分、詳細診断は約3分で完了します
+            </Typography>
           </Box>
         </Paper>
       </Container>
@@ -203,6 +309,12 @@ export const QuizContainer: React.FC = () => {
       {currentQuestion && (
         <Container maxWidth="md" sx={{ py: 8 }}>
           <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                {isQuickMode ? '簡易診断' : '詳細診断'} - 質問 {currentQuestionIndex + 1}/{questionsData.length}
+              </Typography>
+            </Box>
+            
             <QuizForm
               question={currentQuestion}
               selectedOption={selectedOption}

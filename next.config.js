@@ -14,8 +14,17 @@ const nextConfig = {
         aggregateTimeout: 300,
       }
     }
+    
+    // React-Beautiful-DND関連の警告を抑制
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'react/jsx-runtime': require.resolve('react/jsx-runtime'),
+    };
+    
     return config
   },
+  // React 18の厳格モードで特定の警告を抑制
+  reactProductionProfiling: false,
   // 開発環境でのエラー表示を詳細に
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,

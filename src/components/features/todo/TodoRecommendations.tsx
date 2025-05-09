@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Task } from '@/hooks/useTodoStorage';
+import { Task } from '@/types/todo';
 import { FaLightbulb } from 'react-icons/fa';
 
 // 推奨タスクの種類

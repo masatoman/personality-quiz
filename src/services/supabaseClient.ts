@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-unused-vars */
-
 import { createClient } from '@supabase/supabase-js';
 
 // 環境変数からSupabaseの設定を取得
@@ -12,7 +9,7 @@ const isValidUrl = (urlString: string): boolean => {
   try {
     new URL(urlString);
     return true;
-  } catch (_error) {
+  } catch (_) {
     console.error('Invalid Supabase URL:', urlString);
     return false;
   }

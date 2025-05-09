@@ -1,38 +1,11 @@
 "use client";
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import BasicInfoStep from './BasicInfoStep';
 import ContentStep from './ContentStep';
 import SettingsStep from './SettingsStep';
 import ConfirmStep from './ConfirmStep';
-
-// 基本情報の型定義
-interface BasicInfo {
-  title: string;
-  description: string;
-  tags: string[];
-  coverImage?: string;
-}
-
-// コンテンツセクションの型定義
-interface ContentSection {
-  id: string;
-  type: 'text' | 'image' | 'video' | 'quiz';
-  title: string;
-  content: string;
-  options?: string[];
-  answer?: number;
-}
-
-// 設定情報の型定義
-interface SettingsData {
-  isPublic: boolean;
-  allowComments: boolean;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  estimatedTime: number;
-  targetAudience: string[];
-  prerequisites: string;
-}
+import { useCreator } from '@/contexts/CreatorContext';
 
 // 標準教材作成コンポーネント
 const StandardCreator: React.FC = () => {
@@ -40,23 +13,20 @@ const StandardCreator: React.FC = () => {
   const params = useParams();
   const step = params?.step as string;
   
-  // 各ステップのデータを管理
-  const [basicInfo, setBasicInfo] = useState<BasicInfo>({
-    title: '',
-    description: '',
-    tags: [],
-  });
-  
-  const [contentSections, setContentSections] = useState<ContentSection[]>([]);
-  
-  const [settings, setSettings] = useState<SettingsData>({
-    isPublic: true,
-    allowComments: true,
-    difficulty: 'beginner',
-    estimatedTime: 30,
-    targetAudience: [],
-    prerequisites: '',
-  });
+  // Context APIから状態を取得
+  const { 
+    basicInfo, setBasicInfo,
+    contentSections, setContentSections,
+    settings, setSettings
+  } = useCreator();
+
+  // 開発用: コンポーネント初期化時にデータ状態をログ出力
+  React.useEffect(() => {
+    console.log('StandardCreator初期化 - 現在のステップ:', step);
+    console.log('初期basicInfo:', basicInfo);
+    console.log('初期contentSections:', contentSections);
+    console.log('初期settings:', settings);
+  }, [step, basicInfo, contentSections, settings]);
   
   // 戻るボタンのハンドラー
   const handleBack = () => {
@@ -73,6 +43,75 @@ const StandardCreator: React.FC = () => {
       default:
         router.push('/create');
         break;
+    }
+  };
+  
+  // 基本情報保存と次のステップへの遷移
+  const handleSaveBasicInfo = async (data: typeof basicInfo) => {
+    console.log('基本情報を保存します:', data);
+    
+    // 重要: 深いコピーを作成してステート更新
+    const newBasicInfo = JSON.parse(JSON.stringify(data));
+    setBasicInfo(newBasicInfo);
+    
+    console.log('保存後のbasicInfo:', newBasicInfo);
+    
+    try {
+      // Next.jsのルーターを使用してナビゲーション
+      await router.push('/create/standard/content');
+      console.log('コンテンツステップへの遷移が完了しました');
+    } catch (error) {
+      console.error('Next.jsルーターでのナビゲーションエラー:', error);
+      
+      // 代替方法: window.locationを使用する
+      console.log('代替方法でナビゲーションを試みます');
+      window.location.href = '/create/standard/content';
+    }
+  };
+  
+  // コンテンツ保存と次のステップへの遷移
+  const handleSaveContent = async (data: typeof contentSections) => {
+    console.log('コンテンツを保存します:', data);
+    
+    // 重要: 深いコピーを作成してステート更新
+    const newContentSections = JSON.parse(JSON.stringify(data));
+    setContentSections(newContentSections);
+    
+    console.log('保存後のcontentSections:', newContentSections);
+    
+    try {
+      // Next.jsのルーターを使用してナビゲーション
+      await router.push('/create/standard/settings');
+      console.log('設定ステップへの遷移が完了しました');
+    } catch (error) {
+      console.error('Next.jsルーターでのナビゲーションエラー:', error);
+      
+      // 代替方法: window.locationを使用する
+      console.log('代替方法でナビゲーションを試みます');
+      window.location.href = '/create/standard/settings';
+    }
+  };
+  
+  // 設定保存と次のステップへの遷移
+  const handleSaveSettings = async (data: typeof settings) => {
+    console.log('設定を保存します:', data);
+    
+    // 重要: 深いコピーを作成してステート更新
+    const newSettings = JSON.parse(JSON.stringify(data));
+    setSettings(newSettings);
+    
+    console.log('保存後のsettings:', newSettings);
+    
+    try {
+      // Next.jsのルーターを使用してナビゲーション
+      await router.push('/create/standard/confirm');
+      console.log('確認ステップへの遷移が完了しました');
+    } catch (error) {
+      console.error('Next.jsルーターでのナビゲーションエラー:', error);
+      
+      // 代替方法: window.locationを使用する
+      console.log('代替方法でナビゲーションを試みます');
+      window.location.href = '/create/standard/confirm';
     }
   };
   
@@ -111,7 +150,7 @@ const StandardCreator: React.FC = () => {
         return (
           <BasicInfoStep 
             initialData={basicInfo}
-            onSave={setBasicInfo}
+            onSave={handleSaveBasicInfo}
             onBack={handleBack}
           />
         );
@@ -119,7 +158,7 @@ const StandardCreator: React.FC = () => {
         return (
           <ContentStep 
             initialData={contentSections}
-            onSave={setContentSections}
+            onSave={handleSaveContent}
             onBack={handleBack}
           />
         );
@@ -127,7 +166,7 @@ const StandardCreator: React.FC = () => {
         return (
           <SettingsStep 
             initialData={settings}
-            onSave={setSettings}
+            onSave={handleSaveSettings}
             onBack={handleBack}
           />
         );
@@ -145,7 +184,7 @@ const StandardCreator: React.FC = () => {
         return (
           <BasicInfoStep 
             initialData={basicInfo}
-            onSave={setBasicInfo}
+            onSave={handleSaveBasicInfo}
             onBack={handleBack}
           />
         );

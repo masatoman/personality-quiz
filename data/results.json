@@ -18,5 +18,33 @@
     "id": 1744210326531,
     "type": "giver",
     "timestamp": "2025-04-09T14:52:06.531Z"
+  },
+  {
+    "giver": 8,
+    "taker": 7,
+    "matcher": 10,
+    "dominantType": "matcher",
+    "percentage": {
+      "giver": 32,
+      "taker": 28,
+      "matcher": 40
+    },
+    "isQuickMode": true,
+    "userId": "41a95cb2-4ebe-497f-8c6a-dcbb58f72c34",
+    "timestamp": "2025-05-08T07:27:43.486Z"
+  },
+  {
+    "giver": 7,
+    "taker": 8,
+    "matcher": 9,
+    "dominantType": "matcher",
+    "percentage": {
+      "giver": 29,
+      "taker": 33,
+      "matcher": 38
+    },
+    "isQuickMode": true,
+    "userId": "7fc7be0a-8a8f-40f1-8fb0-2f7b188b6169",
+    "timestamp": "2025-05-09T00:16:31.124Z"
   }
 ]
