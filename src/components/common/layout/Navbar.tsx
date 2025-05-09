@@ -18,8 +18,10 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        console.log('認証状態の確認を開始します');
         const supabase = getClient();
         const { data: { session } } = await supabase.auth.getSession();
+        console.log('セッション状態:', session ? 'ログイン中' : 'ログインなし', session);
         setIsLoggedIn(!!session);
       } catch (error) {
         console.error('認証状態の確認に失敗しました', error);
@@ -31,7 +33,8 @@ const Navbar: React.FC = () => {
 
     // 認証状態の変化を監視
     const supabase = getClient();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('認証状態の変化:', event, session ? 'ログイン中' : 'ログインなし');
       setIsLoggedIn(!!session);
     });
 
@@ -39,6 +42,11 @@ const Navbar: React.FC = () => {
       subscription.unsubscribe();
     };
   }, []);
+
+  // isLoggedInの変更を監視
+  useEffect(() => {
+    console.log('ログイン状態の変更:', isLoggedIn ? 'ログイン中' : 'ログインなし');
+  }, [isLoggedIn]);
 
   // プロフィールメニュー外のクリックを検知してメニューを閉じる
   useEffect(() => {
