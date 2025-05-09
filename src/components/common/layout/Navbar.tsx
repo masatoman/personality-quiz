@@ -7,8 +7,10 @@ import { FaHome, FaSearch, FaEdit, FaUser, FaBell, FaBars, FaSignOutAlt, FaCog, 
 import { getClient } from '@/lib/supabase/client';
 
 const Navbar: React.FC = () => {
+  // 初期値を明示的にfalseに設定
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
@@ -16,16 +18,26 @@ const Navbar: React.FC = () => {
 
   // クライアントサイドでログイン状態を確認（Supabaseの認証状態を確認）
   useEffect(() => {
+    let isMounted = true;
+
     const checkAuth = async () => {
       try {
         console.log('認証状態の確認を開始します');
         const supabase = getClient();
         const { data: { session } } = await supabase.auth.getSession();
         console.log('セッション状態:', session ? 'ログイン中' : 'ログインなし', session);
-        setIsLoggedIn(!!session);
+        
+        // コンポーネントがまだマウントされている場合のみ状態を更新
+        if (isMounted) {
+          setIsLoggedIn(!!session);
+          setAuthChecked(true);
+        }
       } catch (error) {
         console.error('認証状態の確認に失敗しました', error);
-        setIsLoggedIn(false);
+        if (isMounted) {
+          setIsLoggedIn(false);
+          setAuthChecked(true);
+        }
       }
     };
 
@@ -35,18 +47,22 @@ const Navbar: React.FC = () => {
     const supabase = getClient();
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('認証状態の変化:', event, session ? 'ログイン中' : 'ログインなし');
-      setIsLoggedIn(!!session);
+      if (isMounted) {
+        setIsLoggedIn(!!session);
+        setAuthChecked(true);
+      }
     });
 
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
     };
   }, []);
 
   // isLoggedInの変更を監視
   useEffect(() => {
-    console.log('ログイン状態の変更:', isLoggedIn ? 'ログイン中' : 'ログインなし');
-  }, [isLoggedIn]);
+    console.log('ログイン状態の変更:', isLoggedIn ? 'ログイン中' : 'ログインなし', '認証チェック済み:', authChecked);
+  }, [isLoggedIn, authChecked]);
 
   // プロフィールメニュー外のクリックを検知してメニューを閉じる
   useEffect(() => {
@@ -87,8 +103,11 @@ const Navbar: React.FC = () => {
     { label: '通知', href: '/notifications', icon: <FaBell className="inline mr-2" /> },
   ];
 
-  // 表示するメニュー項目
-  const visibleMenuItems = [...publicMenuItems, ...(isLoggedIn ? privateMenuItems : [])];
+  // 認証チェックが完了しており、ログイン状態の場合のみプライベートメニューを表示
+  const visibleMenuItems = [
+    ...publicMenuItems, 
+    ...(authChecked && isLoggedIn ? privateMenuItems : [])
+  ];
 
   return (
     <nav className="bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md">
