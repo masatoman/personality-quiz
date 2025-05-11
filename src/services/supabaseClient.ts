@@ -9,7 +9,7 @@ const isValidUrl = (urlString: string): boolean => {
   try {
     new URL(urlString);
     return true;
-  } catch (_) {
+  } catch (error) {
     console.error('Invalid Supabase URL:', urlString);
     return false;
   }

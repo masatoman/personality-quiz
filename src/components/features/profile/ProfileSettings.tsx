@@ -3,7 +3,7 @@ import { useProfile, ProfileSettings as ProfileSettingsType } from '@/hooks/useP
 import { toast } from 'react-hot-toast';
 
 const ProfileSettings: React.FC = () => {
-  const { profile, updateProfile } = useProfile();
+  const { updateProfile } = useProfile();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<ProfileSettingsType>({
     email_notifications: true,

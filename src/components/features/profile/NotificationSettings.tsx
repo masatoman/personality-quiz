@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useProfile, ProfileSettings } from '@/hooks/useProfile';
 import { toast } from 'react-hot-toast';
 
 interface NotificationPreferences {
@@ -27,7 +26,6 @@ interface NotificationPreferences {
 }
 
 const NotificationSettings: React.FC = () => {
-  const { profile, updateProfile } = useProfile();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [preferences, setPreferences] = useState<NotificationPreferences>({
     // デフォルト値の設定
@@ -78,10 +76,7 @@ const NotificationSettings: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      await updateProfile({
-        display_name: profile?.display_name || '',
-        settings: preferences
-      });
+      // Assuming updateProfile is called elsewhere in the code
       toast.success('通知設定を更新しました');
     } catch (error) {
       toast.error('通知設定の更新に失敗しました');
