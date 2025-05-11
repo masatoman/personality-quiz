@@ -11,7 +11,7 @@ import { supabase } from '@/lib/supabase';
 
 // ローディングコンポーネント
 const DashboardLoading = () => (
-  <div className="flex justify-center items-center min-h-screen">
+  <div className="flex justify-center items-center min-h-[calc(100vh-4rem)]">
     <LoadingSpinner />
   </div>
 );
@@ -19,26 +19,28 @@ const DashboardLoading = () => (
 // エラーコンポーネント
 const DashboardError = ({ error, reset }: { error: Error; reset: () => void }) => {
   return (
-    <div className="text-center py-8">
-      <h2 className="text-xl font-bold text-red-600 mb-4">
-        エラーが発生しました
-      </h2>
-      <p className="text-gray-600 mb-4">
-        {error.message || 'データの読み込み中にエラーが発生しました。'}
-      </p>
-      <div className="space-x-4">
-        <button
-          onClick={reset}
-          className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark"
-        >
-          再試行
-        </button>
-        <button
-          onClick={() => window.location.reload()}
-          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-        >
-          ページを更新
-        </button>
+    <div className="container mx-auto px-4 py-8">
+      <div className="text-center max-w-2xl mx-auto">
+        <h2 className="text-lg font-semibold text-red-600 mb-3">
+          エラーが発生しました
+        </h2>
+        <p className="text-sm text-gray-600 mb-4">
+          {error.message || 'データの読み込み中にエラーが発生しました。'}
+        </p>
+        <div className="space-x-4">
+          <button
+            onClick={reset}
+            className="bg-primary text-white px-4 py-2 rounded-md text-sm hover:bg-primary-dark transition-colors"
+          >
+            再試行
+          </button>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-gray-500 text-white px-4 py-2 rounded-md text-sm hover:bg-gray-600 transition-colors"
+          >
+            ページを更新
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -64,23 +66,14 @@ const DashboardContent = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          setUserId(user.id);
-          // プロフィールデータの取得
-          const { data: profileData, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single();
-
-          if (profileError) throw profileError;
-
+        const { data: userData } = await supabase.auth.getUser();
+        if (userData.user) {
+          setUserId(userData.user.id);
           // アクティビティデータの取得
           const { data: activityData, error: activityError } = await supabase
             .from('user_activities')
             .select('*')
-            .eq('user_id', user.id);
+            .eq('user_id', userData.user.id);
 
           if (activityError) throw activityError;
 
@@ -127,16 +120,25 @@ const DashboardContent = () => {
   if (loading) return <DashboardLoading />;
 
   return (
-    <div className="space-y-6">
-      <ActivitySummary 
-        createdMaterials={userData.activitySummary.createdMaterials}
-        earnedPoints={userData.activitySummary.earnedPoints}
-        viewedMaterials={userData.activitySummary.viewedMaterials}
-      />
-      
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <GiverScoreChart userId={userId || ''} />
-        <ActivityPieChart data={userData.activityPie} />
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-10">ダッシュボード</h1>
+      <div className="space-y-6 sm:space-y-10">
+        <ActivitySummary 
+          createdMaterials={userData.activitySummary.createdMaterials}
+          earnedPoints={userData.activitySummary.earnedPoints}
+          viewedMaterials={userData.activitySummary.viewedMaterials}
+        />
+        
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-10">
+          <div className="bg-white rounded-lg shadow-sm p-6 sm:p-8">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">ギバースコアの推移</h2>
+            <GiverScoreChart userId={userId || ''} />
+          </div>
+          <div className="bg-white rounded-lg shadow-sm p-6 sm:p-8">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">活動内訳</h2>
+            <ActivityPieChart data={userData.activityPie} />
+          </div>
+        </div>
       </div>
     </div>
   );

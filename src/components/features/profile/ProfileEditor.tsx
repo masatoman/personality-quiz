@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import { useProfile } from '@/hooks/useProfile';
 import { toast } from 'react-hot-toast';
 import Image from 'next/image';
-import type { UserProfile } from '@/services/apiService';
 
 interface ProfileFormData {
   display_name: string;
