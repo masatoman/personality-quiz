@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaEnvelope, FaLock, FaUser, FaGoogle, FaGithub } from 'react-icons/fa';
+import { supabase } from '@/lib/supabase';
 
 const SignupPage = () => {
   const [name, setName] = useState('');
@@ -26,25 +27,59 @@ const SignupPage = () => {
       return;
     }
 
+    // メールアドレスのバリデーション
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(email)) {
+      setError('有効なメールアドレスを入力してください');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      // 実際にはSupabaseなどの認証サービスを使用する
-      // 現在はテスト用の実装
-      console.log('新規登録処理:', { name, email, password });
-      
-      // テスト用：ローカルストレージにトークンを保存
-      localStorage.setItem('supabase.auth.token', 'new-user-token');
-      localStorage.setItem('is_new_user', 'true');
+      // Supabaseで新規ユーザー登録
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name,
+          },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
 
-      // 1秒後にウェルカム画面/診断画面へリダイレクト
-      setTimeout(() => {
-        router.push('/quiz');
-      }, 1000);
+      if (signUpError) {
+        if (signUpError.message.includes('Email address') && signUpError.message.includes('invalid')) {
+          throw new Error('このメールアドレスは使用できません。有効なメールアドレスを入力してください。');
+        }
+        throw signUpError;
+      }
+
+      if (data?.user) {
+        // プロフィールテーブルにユーザー情報を保存
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: data.user.id,
+              name,
+              email,
+              created_at: new Date().toISOString(),
+            },
+          ]);
+
+        if (profileError) {
+          console.error('プロフィール作成エラー:', profileError);
+        }
+
+        // メール確認画面へリダイレクト
+        router.push('/auth/verify-email');
+      }
     } catch (err) {
       console.error('新規登録エラー:', err);
-      setError('アカウント作成に失敗しました。別のメールアドレスを使用するか、後でもう一度お試しください。');
+      setError(err instanceof Error ? err.message : 'アカウント作成に失敗しました。別のメールアドレスを使用するか、後でもう一度お試しください。');
     } finally {
       setLoading(false);
     }

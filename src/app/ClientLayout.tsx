@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/common/layout/Navbar';
 import ThemeProviderClient from '@/components/ThemeProviderClient';
 import dynamic from 'next/dynamic';
 import ErrorFallback from '@/components/ErrorFallback';

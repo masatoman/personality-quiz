@@ -46,5 +46,19 @@
     "isQuickMode": true,
     "userId": "7fc7be0a-8a8f-40f1-8fb0-2f7b188b6169",
     "timestamp": "2025-05-09T00:16:31.124Z"
+  },
+  {
+    "giver": 8,
+    "taker": 7,
+    "matcher": 9,
+    "dominantType": "matcher",
+    "percentage": {
+      "giver": 33,
+      "taker": 29,
+      "matcher": 38
+    },
+    "isQuickMode": true,
+    "userId": "831ee396-db19-49a4-98c1-97591e49a5b8",
+    "timestamp": "2025-05-10T23:55:07.791Z"
   }
 ]
