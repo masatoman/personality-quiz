@@ -23,6 +23,30 @@ const mockMatchMedia = jest.fn().mockReturnValue({
 }) as unknown as typeof window.matchMedia;
 global.window.matchMedia = mockMatchMedia;
 
+// jsdom環境でDOMRectが未定義の場合のポリフィル追加
+if (typeof (global as any).DOMRect === 'undefined') {
+  (global as any).DOMRect = class {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+    constructor(x = 0, y = 0, width = 0, height = 0) {
+      this.x = x;
+      this.y = y;
+      this.width = width;
+      this.height = height;
+      this.top = y;
+      this.bottom = y + height;
+      this.left = x;
+      this.right = x + width;
+    }
+  };
+}
+
 // IntersectionObserverの型が未定義の場合の型定義追加
 
 type IntersectionObserverCallback = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => void;
