@@ -1,5 +1,7 @@
 // import supabase, { Database } from './supabase';
-import supabase, { Database } from './supabaseClient';
+// import supabase, { Database } from './supabaseClient';
+import { Database } from '@/types/supabase';
+import { getClient } from '@/lib/supabase/client';
 import { PersonalityType } from '@/types/quiz';
 
 // APIエンドポイントのベースパス
@@ -34,16 +36,39 @@ export const ACTIVITY_POINTS = {
 // ユーザープロファイル関連の関数
 export async function getProfile(userId: string): Promise<UserProfile | null> {
   try {
+    const supabase = getClient();
+    
     // プロファイル情報を取得
-    const { data: profileData, error: profileError } = await supabase
+    let { data: profileData, error: profileError } = await supabase
       .from('profiles')
       .select('*')
       .eq('user_id', userId)
       .single();
 
-    if (profileError) {
-      console.error('プロファイル取得エラー:', profileError);
-      return null;
+    // プロフィールが存在しない場合は作成
+    if (profileError?.code === 'PGRST116') {
+      const defaultProfile = {
+        user_id: userId,
+        display_name: 'ゲスト',
+        avatar_url: null,
+        bio: null,
+      };
+
+      const { data: newProfile, error: createError } = await supabase
+        .from('profiles')
+        .insert(defaultProfile)
+        .select()
+        .single();
+
+      if (createError) {
+        console.error('プロフィール作成エラー:', createError);
+        throw createError;
+      }
+
+      profileData = newProfile;
+    } else if (profileError) {
+      console.error('プロフィール取得エラー:', profileError);
+      throw profileError;
     }
 
     // ユーザー情報を取得
@@ -55,19 +80,19 @@ export async function getProfile(userId: string): Promise<UserProfile | null> {
 
     if (userError) {
       console.error('ユーザー情報取得エラー:', userError);
-      return null;
+      throw userError;
     }
 
-    // プロファイル情報とユーザー情報を結合
+    // プロフィール情報とユーザー情報を結合
     return {
       ...profileData,
-      personality_type: userData.personality_type as PersonalityType | null,
-      giver_score: userData.giver_score,
-      points: userData.points,
+      personality_type: userData?.personality_type as PersonalityType | null,
+      giver_score: userData?.giver_score || 0,
+      points: userData?.points || 0,
     };
   } catch (error) {
-    console.error('プロファイル取得中にエラーが発生しました:', error);
-    return null;
+    console.error('プロフィール取得中にエラーが発生しました:', error);
+    throw error;
   }
 }
 
@@ -82,6 +107,8 @@ export async function upsertProfile(
   }
 ): Promise<boolean> {
   try {
+    const supabase = getClient();
+    
     // プロファイル情報を更新
     const { error: profileError } = await supabase
       .from('profiles')
@@ -94,7 +121,7 @@ export async function upsertProfile(
 
     if (profileError) {
       console.error('プロファイル更新エラー:', profileError);
-      return false;
+      throw profileError;
     }
 
     // パーソナリティタイプが指定されている場合は、ユーザー情報も更新
@@ -106,14 +133,14 @@ export async function upsertProfile(
 
       if (userError) {
         console.error('ユーザー情報更新エラー:', userError);
-        return false;
+        throw userError;
       }
     }
 
     return true;
   } catch (error) {
     console.error('プロファイル更新中にエラーが発生しました:', error);
-    return false;
+    throw error;
   }
 }
 
@@ -124,15 +151,18 @@ export async function logActivity(
   referenceId?: string
 ): Promise<boolean> {
   try {
+    const supabase = getClient();
     const points = ACTIVITY_POINTS[activityType];
 
     // 活動ログを記録
-    const { error: activityError } = await supabase.from('activities').insert({
-      user_id: userId,
-      activity_type: activityType,
-      reference_id: referenceId || null,
-      points,
-    });
+    const { error: activityError } = await supabase
+      .from('activities')
+      .insert({
+        user_id: userId,
+        activity_type: activityType,
+        reference_id: referenceId || null,
+        points,
+      });
 
     if (activityError) {
       console.error('活動ログ記録エラー:', activityError);
@@ -140,10 +170,11 @@ export async function logActivity(
     }
 
     // ユーザーのポイントを更新
-    const { error: pointsError } = await supabase.rpc('increment_user_points', {
-      user_id: userId,
-      points_to_add: points,
-    });
+    const { error: pointsError } = await supabase
+      .rpc('increment_user_points', {
+        user_id: userId,
+        points_to_add: points,
+      });
 
     if (pointsError) {
       console.error('ポイント更新エラー:', pointsError);
@@ -156,10 +187,11 @@ export async function logActivity(
       // 今はポイントの10%をギバースコアに加算する簡易的な実装
       const giverScoreIncrement = Math.round(points * 0.1);
       
-      const { error: giverScoreError } = await supabase.rpc('increment_giver_score', {
-        user_id: userId,
-        score_to_add: giverScoreIncrement,
-      });
+      const { error: giverScoreError } = await supabase
+        .rpc('increment_giver_score', {
+          user_id: userId,
+          score_to_add: giverScoreIncrement,
+        });
 
       if (giverScoreError) {
         console.error('ギバースコア更新エラー:', giverScoreError);
@@ -177,6 +209,7 @@ export async function logActivity(
 // ユーザーの活動ログを取得
 export async function getUserActivities(userId: string, limit = 10) {
   try {
+    const supabase = getClient();
     const { data, error } = await supabase
       .from('activities')
       .select('*')

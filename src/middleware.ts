@@ -2,14 +2,26 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // 認証が必要なパス
-const authRequiredPaths = ['/dashboard', '/create', '/settings'];
+const authRequiredPaths = [
+  '/dashboard',
+  '/create',
+  '/settings',
+  '/profile',
+  '/my-materials',
+  '/notifications',
+  '/result'
+];
 
 // 認証をバイパスするパス（API、静的ファイルなど）
 const publicPaths = [
-  '/api/auth',  // 認証API
-  '/login',     // ログインページ
-  '/',          // トップページ
-  '/quiz',      // ギバー診断
+  '/api/auth',    // 認証API
+  '/login',       // ログインページ
+  '/',            // トップページ
+  '/quiz',        // ギバー診断
+  '/auth',        // 認証関連ページ
+  '/welcome',     // 新規ユーザーウェルカム
+  '/explore',     // 教材探索
+  '/materials'    // 公開教材一覧
 ];
 
 export function middleware(request: NextRequest) {
