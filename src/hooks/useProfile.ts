@@ -39,9 +39,15 @@ export function useProfile() {
 
       try {
         const profileData = await getProfile(user.id);
+        if (!profileData) {
+          throw new Error('プロファイルが見つかりません');
+        }
         setProfile(profileData);
+        setError(null);
       } catch (err) {
+        console.error('プロファイル取得エラー:', err);
         setError(err instanceof Error ? err : new Error('プロファイルの取得に失敗しました'));
+        setProfile(null);
       } finally {
         setIsLoading(false);
       }
@@ -71,14 +77,15 @@ export function useProfile() {
         updateData = data as UpdateProfileData;
       }
 
-      const success = await upsertProfile(user.id, updateData);
-      if (!success) {
-        throw new Error('プロファイルの更新に失敗しました');
-      }
-
+      await upsertProfile(user.id, updateData);
       const updatedProfile = await getProfile(user.id);
+      if (!updatedProfile) {
+        throw new Error('プロファイルの更新後の取得に失敗しました');
+      }
       setProfile(updatedProfile);
+      setError(null);
     } catch (err) {
+      console.error('プロファイル更新エラー:', err);
       setError(err instanceof Error ? err : new Error('プロファイルの更新に失敗しました'));
       throw err;
     } finally {

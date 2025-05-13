@@ -1,178 +1,96 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { Activity } from '@/types/activity';
+import { Activity, ActivityType } from '@/types/activity';
 import { GiverScoreDisplay } from '@/components/features/giver-score/GiverScoreDisplay';
 import { FaHistory, FaTrophy, FaUser, FaPlus } from 'react-icons/fa';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import TodoList from '@/components/features/todo/TodoList';
 import type { GiverScore } from '@/types/giver-score';
-
-// モックユーザー情報（認証システム実装後に修正）
-const initialUserData = {
-  name: 'ユーザー',
-  email: 'user@example.com',
-  avatar: null
-};
+import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
+import { getClient } from '@/lib/supabase/client';
+import Image from 'next/image';
+import { toast } from 'react-hot-toast';
 
 // アクティビティタイプのラベル
-const ACTIVITY_LABELS = {
+const ACTIVITY_LABELS: Record<ActivityType, string> = {
   'CREATE_CONTENT': 'コンテンツ作成',
-  'PROVIDE_FEEDBACK': 'フィードバック提供',
   'CONSUME_CONTENT': 'コンテンツ閲覧',
   'SHARE_RESOURCE': 'リソース共有',
   'ASK_QUESTION': '質問',
-  'COMPLETE_QUIZ': 'クイズ完了'
+  'COMPLETE_QUIZ': 'クイズ完了',
+  'PROVIDE_FEEDBACK': 'フィードバック提供'
 };
 
 const ProfileClient: React.FC = () => {
-  // クライアントコンポーネントとしてIDをローカルで生成
-  const [userId, setUserId] = useState<string>('');
+  const { user } = useAuth();
+  const { profile, isLoading: profileLoading } = useProfile();
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [giverScore, setGiverScore] = useState<number>(15);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedTab, setSelectedTab] = useState<'activities' | 'achievements'>('activities');
-  const [isClientRendered, setIsClientRendered] = useState<boolean>(false);
-
-  // クライアントサイドでのみ実行される初期化
-  useEffect(() => {
-    // 既存のIDを取得するか新規生成
-    const storedUserId = localStorage.getItem('userId');
-    const newUserId = storedUserId || 'user_' + uuidv4();
-    
-    if (!storedUserId) {
-      localStorage.setItem('userId', newUserId);
-    }
-    
-    setUserId(newUserId);
-    setIsClientRendered(true);
-    
-    // 以下のコードは既存のままで問題ない
-  }, []);
 
   useEffect(() => {
-    if (!userId) return;
-    
-    // ページがマウントされた時にユーザーデータを取得
-    const fetchUserData = async () => {
+    if (!user?.id) return;
+
+    const fetchActivities = async () => {
       try {
-        setLoading(true);
+        const supabase = getClient();
+        const { data, error } = await supabase
+          .from('activities')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        if (error) throw error;
         
-        // リクエストが失敗した場合に備えてローカルストレージから取得
-        let localScore = parseInt(localStorage.getItem('giverScore') || '0', 10);
-        let localActivities: Activity[] = [];
-        
-        try {
-          const localActivitiesData = localStorage.getItem('activities');
-          if (localActivitiesData) {
-            localActivities = JSON.parse(localActivitiesData);
-          }
-        } catch (parseError) {
-          console.error('ローカルストレージからの活動データの解析に失敗しました:', parseError);
-        }
-        
-        try {
-          // ユーザーのアクティビティとスコアを取得
-          const response = await fetch(`/api/activities/user/${userId}`);
-          
-          if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
-          }
-          
-          const data = await response.json();
-          
-          if (data.success) {
-            setActivities(data.data.activities);
-            setGiverScore(data.data.giverScore);
-            
-            // キャッシュのために更新
-            localStorage.setItem('activities', JSON.stringify(data.data.activities));
-            localStorage.setItem('giverScore', data.data.giverScore.toString());
-          } else {
-            throw new Error(data.error || 'Unknown error');
-          }
-        } catch (apiError) {
-          console.error('APIからのデータ取得に失敗しました:', apiError);
-          
-          // APIエラーの場合、ローカルデータを使用
-          setActivities(localActivities);
-          setGiverScore(localScore);
-        }
+        // データベースの型をActivityの型に変換
+        const convertedActivities: Activity[] = data?.map(item => ({
+          id: item.id,
+          userId: item.user_id,
+          activityType: item.activity_type as ActivityType,
+          referenceId: item.reference_id || undefined,
+          points: item.points,
+          createdAt: item.created_at
+        })) || [];
+
+        setActivities(convertedActivities);
+      } catch (error) {
+        console.error('アクティビティの取得に失敗しました:', error);
+        toast.error('アクティビティの取得に失敗しました');
       } finally {
         setLoading(false);
       }
     };
-    
-    fetchUserData();
-  }, [userId]);
 
-  // 新しいアクティビティをモックデータとして追加（テスト用）
-  const addMockActivity = async (activityType: string) => {
-    if (!userId) return;
-    
-    try {
-      const response = await fetch('/api/activities/log', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: userId,
-          activityType
-        }),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        // アクティビティ追加後にデータを再取得
-        const refreshResponse = await fetch(`/api/activities/user/${userId}`);
-        const refreshData = await refreshResponse.json();
-        
-        if (refreshData.success) {
-          setActivities(refreshData.data.activities);
-          setGiverScore(refreshData.data.giverScore);
-          
-          localStorage.setItem('activities', JSON.stringify(refreshData.data.activities));
-          localStorage.setItem('giverScore', refreshData.data.giverScore.toString());
-        }
-      } else {
-        throw new Error(data.error || 'Unknown error');
-      }
-    } catch (error) {
-      console.error('アクティビティの追加に失敗しました:', error);
-      alert('アクティビティの追加に失敗しました。');
-    }
-  };
+    fetchActivities();
+  }, [user?.id]);
 
-  // GiverScore型のデータを生成
-  const getGiverScore = (): GiverScore => {
-    const level = Math.min(10, Math.floor(giverScore / 10) + 1);
-    const points = giverScore;
-    const progress = Math.min(100, ((giverScore % 10) / 10) * 100);
-    const pointsToNextLevel = (level * 10) - giverScore;
-    const personalityType: 'giver' | 'matcher' | 'taker' = 
-      giverScore >= 67 ? 'giver' : (giverScore >= 34 ? 'matcher' : 'taker');
-    return {
-      level,
-      points,
-      progress,
-      pointsToNextLevel,
-      personalityType,
-    };
-  };
-
-  // クライアントサイドレンダリングされるまでローディング表示
-  if (!isClientRendered) {
+  // ローディング中の表示
+  if (loading || profileLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
+
+  // ユーザーが未認証の場合
+  if (!user) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-600">プロフィールを表示するにはログインしてください。</p>
+      </div>
+    );
+  }
+
+  // プロフィールが取得できない場合
+  if (!profile) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-600">プロフィールの読み込みに失敗しました。</p>
       </div>
     );
   }
@@ -181,179 +99,95 @@ const ProfileClient: React.FC = () => {
     <div className="profile-page max-w-4xl mx-auto p-4 md:p-8">
       <div className="profile-header bg-white rounded-lg shadow-md p-6 mb-6 flex flex-col md:flex-row items-center">
         <div className="avatar bg-blue-100 rounded-full h-24 w-24 flex items-center justify-center mb-4 md:mb-0 md:mr-6">
-          <FaUser className="text-blue-500 text-4xl" />
-        </div>
-        
-        <div className="profile-info flex-1">
-          <h1 className="text-2xl font-bold">{initialUserData.name}さんのプロフィール</h1>
-          <p className="text-gray-600 mb-2">{initialUserData.email}</p>
-          {userId && <p className="text-sm text-gray-500">ユーザーID: {userId}</p>}
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
-          <div className="tabs mb-4">
-            <button 
-              className={`mr-4 pb-2 px-2 font-medium ${selectedTab === 'activities' 
-                ? 'border-b-2 border-blue-500 text-blue-600' 
-                : 'text-gray-500'}`}
-              onClick={() => setSelectedTab('activities')}
-            >
-              <FaHistory className="inline mr-2" />
-              活動履歴
-            </button>
-            <button 
-              className={`pb-2 px-2 font-medium ${selectedTab === 'achievements' 
-                ? 'border-b-2 border-blue-500 text-blue-600' 
-                : 'text-gray-500'}`}
-              onClick={() => setSelectedTab('achievements')}
-            >
-              <FaTrophy className="inline mr-2" />
-              実績
-            </button>
-          </div>
-          
-          {selectedTab === 'activities' ? (
-            <div className="activities-panel bg-white rounded-lg shadow-md p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold">最近の活動</h2>
-                
-                {/* テスト用のアクティビティ追加ボタン */}
-                <div className="test-buttons">
-                  <select
-                    className="p-2 border rounded text-sm"
-                    id="activityType"
-                    defaultValue=""
-                    onChange={(e) => {
-                      if (e.target.value) {
-                        addMockActivity(e.target.value);
-                        // 選択後にデフォルト値に戻す
-                        e.target.value = "";
-                      }
-                    }}
-                  >
-                    <option value="" disabled>アクティビティを選択</option>
-                    <option value="CREATE_CONTENT">コンテンツ作成</option>
-                    <option value="PROVIDE_FEEDBACK">フィードバック提供</option>
-                    <option value="CONSUME_CONTENT">コンテンツ閲覧</option>
-                    <option value="SHARE_RESOURCE">リソース共有</option>
-                    <option value="ASK_QUESTION">質問</option>
-                    <option value="COMPLETE_QUIZ">クイズ完了</option>
-                  </select>
-                  <button
-                    className="ml-2 bg-green-500 text-white px-3 py-2 rounded text-sm flex items-center"
-                    onClick={() => {
-                      alert('アクティビティを選択してください。選択するだけで追加されます。');
-                    }}
-                  >
-                    <FaPlus className="mr-1" />
-                    <span>テスト活動追加（選択するだけでOK）</span>
-                  </button>
-                </div>
-              </div>
-              
-              {loading ? (
-                <div className="loading-spinner flex justify-center p-10">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                </div>
-              ) : activities.length > 0 ? (
-                <ul className="activity-list divide-y">
-                  {activities.map((activity) => (
-                    <li key={activity.id} className="py-4">
-                      <div className="flex justify-between">
-                        <div>
-                          <span className="font-medium">
-                            {ACTIVITY_LABELS[activity.activityType] || activity.activityType}
-                          </span>
-                          <span className="ml-2 text-sm text-gray-500">
-                            +{activity.points}ポイント
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {format(new Date(activity.createdAt), 'yyyy年MM月dd日 HH:mm', { locale: ja })}
-                        </div>
-                      </div>
-                      {activity.referenceId && (
-                        <div className="text-xs text-gray-500 mt-1">
-                          参照ID: {activity.referenceId}
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="no-activities text-center py-10 text-gray-500">
-                  <p>まだアクティビティがありません。</p>
-                  <p className="mt-2 text-sm">クイズを受けたり、コンテンツを閲覧したりしてアクティビティを増やしましょう。</p>
-                </div>
-              )}
-            </div>
+          {profile.avatar_url ? (
+            <Image
+              src={profile.avatar_url}
+              alt="プロフィール画像"
+              width={96}
+              height={96}
+              className="rounded-full"
+            />
           ) : (
-            <div className="achievements-panel bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold mb-6">実績</h2>
-              <p className="text-gray-600 mb-4">獲得した実績や達成したマイルストーンがここに表示されます。</p>
-              
-              <div className="achievements-list grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className={`achievement-item p-4 border rounded-lg ${giverScore >= 10 ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'}`}>
-                  <div className="flex items-center mb-2">
-                    <div className={`achievement-icon mr-3 text-xl ${giverScore >= 10 ? 'text-blue-500' : 'text-gray-400'}`}>
-                      {giverScore >= 10 ? '🌟' : '⭐'}
-                    </div>
-                    <h3 className="font-medium">初めてのギバー</h3>
-                  </div>
-                  <p className="text-sm text-gray-600">ギバースコア10以上を獲得する</p>
-                  <div className="progress mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-blue-500" 
-                      style={{ width: `${Math.min(100, (giverScore / 10) * 100)}%` }}
-                    ></div>
-                  </div>
-                  <div className="text-right text-xs text-gray-500 mt-1">
-                    {giverScore}/10
-                  </div>
-                </div>
-                
-                <div className={`achievement-item p-4 border rounded-lg ${activities.filter(a => a.activityType === 'CREATE_CONTENT').length >= 1 ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
-                  <div className="flex items-center mb-2">
-                    <div className={`achievement-icon mr-3 text-xl ${activities.filter(a => a.activityType === 'CREATE_CONTENT').length >= 1 ? 'text-green-500' : 'text-gray-400'}`}>
-                      {activities.filter(a => a.activityType === 'CREATE_CONTENT').length >= 1 ? '📝' : '📄'}
-                    </div>
-                    <h3 className="font-medium">初めての投稿</h3>
-                  </div>
-                  <p className="text-sm text-gray-600">コンテンツを1つ以上作成する</p>
-                  <div className="progress mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-green-500" 
-                      style={{ width: `${Math.min(100, (activities.filter(a => a.activityType === 'CREATE_CONTENT').length / 1) * 100)}%` }}
-                    ></div>
-                  </div>
-                  <div className="text-right text-xs text-gray-500 mt-1">
-                    {activities.filter(a => a.activityType === 'CREATE_CONTENT').length}/1
-                  </div>
-                </div>
-              </div>
-            </div>
+            <FaUser className="text-blue-500 text-4xl" />
           )}
         </div>
         
-        <div className="sidebar">
-          <GiverScoreDisplay score={getGiverScore()} />
-          
-          <TodoList />
-          
-          <div className="tips bg-white rounded-lg shadow-md p-5 mt-6">
-            <h3 className="font-bold text-lg mb-3">スコアを伸ばすには？</h3>
-            <ul className="text-sm text-gray-600 space-y-2">
-              <li>• 教材コンテンツを作成する (+10)</li>
-              <li>• 他のユーザーにフィードバックを提供する (+5)</li>
-              <li>• 教材や有用なリソースを共有する (+3)</li>
-              <li>• 質問を投稿する (+2)</li>
-              <li>• 毎日学習コンテンツを閲覧する (+1)</li>
-            </ul>
-          </div>
+        <div className="profile-info flex-1">
+          <h1 className="text-2xl font-bold">{profile.display_name}さんのプロフィール</h1>
+          <p className="text-gray-600 mb-2">{user.email}</p>
+          {profile.bio && <p className="text-gray-700">{profile.bio}</p>}
         </div>
       </div>
+
+      <div className="tabs flex border-b mb-6">
+        <button
+          className={`px-4 py-2 font-medium ${
+            selectedTab === 'activities'
+              ? 'text-primary-600 border-b-2 border-primary-600'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+          onClick={() => setSelectedTab('activities')}
+        >
+          <FaHistory className="inline mr-2" />
+          アクティビティ
+        </button>
+        <button
+          className={`px-4 py-2 font-medium ${
+            selectedTab === 'achievements'
+              ? 'text-primary-600 border-b-2 border-primary-600'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+          onClick={() => setSelectedTab('achievements')}
+        >
+          <FaTrophy className="inline mr-2" />
+          実績
+        </button>
+      </div>
+
+      {selectedTab === 'activities' ? (
+        <div className="activities space-y-4">
+          {activities.length > 0 ? (
+            activities.map((activity) => (
+              <div
+                key={activity.id}
+                className="activity-item bg-white rounded-lg shadow-sm p-4 flex items-center"
+              >
+                <div className="activity-icon mr-4">
+                  <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
+                    <FaPlus className="text-primary-600" />
+                  </div>
+                </div>
+                <div className="activity-content flex-1">
+                  <p className="font-medium text-gray-900">
+                    {ACTIVITY_LABELS[activity.activityType]}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {format(new Date(activity.createdAt), 'yyyy年MM月dd日 HH:mm', { locale: ja })}
+                  </p>
+                </div>
+                <div className="activity-points text-right">
+                  <span className="text-primary-600 font-medium">+{activity.points}</span>
+                  <p className="text-xs text-gray-500">ポイント</p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-8 bg-white rounded-lg shadow-sm">
+              <p className="text-gray-500">まだアクティビティがありません</p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="achievements bg-white rounded-lg shadow-sm p-6">
+          <GiverScoreDisplay score={{
+            level: Math.min(10, Math.floor((profile.giver_score || 0) / 10) + 1),
+            points: profile.giver_score || 0,
+            progress: ((profile.giver_score || 0) % 10) / 10 * 100,
+            pointsToNextLevel: 10 - ((profile.giver_score || 0) % 10),
+            personalityType: profile.personality_type || 'matcher'
+          }} />
+        </div>
+      )}
     </div>
   );
 };
