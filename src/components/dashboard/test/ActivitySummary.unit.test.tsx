@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ActivitySummary from '../dashboard/ActivitySummary';
+import ActivitySummary from '@/components/dashboard/ActivitySummary';
 
 // ActivitySummaryコンポーネントのAPIをモック
 jest.mock('next/navigation', () => ({
@@ -135,5 +135,39 @@ describe('ActivitySummary Component', () => {
     expect(document.body.textContent).not.toContain('作成した教材');
     expect(document.body.textContent).not.toContain('獲得ポイント');
     expect(document.body.textContent).not.toContain('閲覧した教材');
+  });
+
+  const mockProps = {
+    createdMaterials: 12,
+    earnedPoints: 1250,
+    viewedMaterials: 48
+  };
+  
+  it('ユーザーの活動サマリー情報が正しく表示されること', () => {
+    render(<ActivitySummary {...mockProps} />);
+    
+    // 各データ項目のタイトルと値が表示されていることを確認
+    expect(screen.getByText('作成した教材')).toBeInTheDocument();
+    expect(screen.getByText('12')).toBeInTheDocument();
+    
+    expect(screen.getByText('獲得ポイント')).toBeInTheDocument();
+    expect(screen.getByText('1250')).toBeInTheDocument();
+    
+    expect(screen.getByText('閲覧した教材')).toBeInTheDocument();
+    expect(screen.getByText('48')).toBeInTheDocument();
+  });
+  
+  it('空の値でもコンポーネントが正しく表示されること', () => {
+    const emptyProps = {
+      createdMaterials: 0,
+      earnedPoints: 0,
+      viewedMaterials: 0
+    };
+    
+    render(<ActivitySummary {...emptyProps} />);
+    
+    // ゼロ値が正しく表示されることを確認
+    expect(screen.getByText('作成した教材')).toBeInTheDocument();
+    expect(screen.getByText('0')).toBeInTheDocument();
   });
 }); 

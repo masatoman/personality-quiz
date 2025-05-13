@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ActivityTypeChart from '../ActivityTypeChart';
+import ActivityPieChart from '@/components/dashboard/ActivityPieChart';
 
 // ActivityTypeChartコンポーネントの依存関係をモック
 jest.mock('next/navigation', () => ({
@@ -170,5 +171,35 @@ describe('ActivityTypeChart Component', () => {
       expect(screen.getByText(/ギバースコアの向上には/i)).toBeInTheDocument();
       expect(screen.getByText(/特に「コンテンツ作成」と「フィードバック提供」が効果的です/i)).toBeInTheDocument();
     });
+  });
+});
+
+describe('ActivityPieChart Component', () => {
+  const mockData = [
+    { type: '教材作成', percentage: 30 },
+    { type: '学習', percentage: 50 },
+    { type: 'フィードバック', percentage: 20 }
+  ];
+  
+  it('活動種類の円グラフが正しく表示されること', () => {
+    render(<ActivityPieChart data={mockData} />);
+    
+    // グラフコンポーネントが表示されていることを確認
+    expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
+    expect(screen.getByTestId('pie-chart')).toBeInTheDocument();
+    expect(screen.getByTestId('recharts-pie')).toBeInTheDocument();
+    
+    // すべてのデータタイプが表示されていることを確認
+    mockData.forEach(item => {
+      expect(screen.getByText(item.type)).toBeInTheDocument();
+    });
+  });
+  
+  it('データが空の場合は空のグラフが表示されること', () => {
+    render(<ActivityPieChart data={[]} />);
+    
+    // グラフコンポーネントは表示されるが、データは表示されないことを確認
+    expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
+    expect(screen.getByTestId('pie-chart')).toBeInTheDocument();
   });
 }); 
