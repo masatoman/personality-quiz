@@ -30,5 +30,8 @@ export function getClient() {
   return client;
 }
 
+// 互換性のためのエイリアス
+export const createClient = getClient;
+
 // デフォルトエクスポートとしてシングルトンインスタンスを提供
 export const supabase = getClient(); 
