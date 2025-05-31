@@ -24,14 +24,22 @@
       "@/components/*": ["components/*"],
       "@/lib/*": ["lib/*"],
       "@/styles/*": ["styles/*"]
-    }
+    },
+    "types": ["node"]
   },
   "include": [
     "next-env.d.ts", 
     "**/*.ts", 
     "**/*.tsx", 
-    ".next/types/**/*.ts",
-    "src/types/jest-dom.d.ts"
+    ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules", 
+    ".next", 
+    "coverage", 
+    "jest.setup.ts", 
+    "**/*.test.*", 
+    "**/__tests__/**", 
+    "**/test/**"
+  ]
 }

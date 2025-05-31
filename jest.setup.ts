@@ -1,4 +1,3 @@
-/// <reference types="@testing-library/jest-dom" />
 import '@testing-library/jest-dom';
 
 // 環境変数の設定

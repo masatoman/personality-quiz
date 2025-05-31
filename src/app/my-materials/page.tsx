@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PlusIcon, PencilIcon, EyeIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { createClient } from '@/lib/supabase/client';
+import { getClient } from '@/lib/supabase/client';
 
 // 教材の型定義
 interface Material {
@@ -29,7 +29,7 @@ export default function MyMaterialsPage() {
     const fetchMaterials = async () => {
       try {
         setLoading(true);
-        const supabase = createClient();
+        const supabase = getClient();
         
         // ユーザー情報を取得
         const { data: { user }, error: userError } = await supabase.auth.getUser();
