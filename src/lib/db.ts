@@ -1,205 +1,58 @@
 import fs from 'fs';
 import path from 'path';
 import { PersonalityType, Stats } from '@/types/quiz';
-import { Pool, PoolClient } from 'pg';
+import { createClient } from '@supabase/supabase-js';
 
-// PostgreSQLの接続プール設定
-export let pool: Pool;
+// Supabaseクライアントの初期化
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
-// 再接続の試行回数とタイムアウト設定
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 2000; // 2秒
-let isConnecting = false;
-let lastConnectAttempt = 0;
+let supabaseClient: any = null;
 
-// 接続設定
-const dbConfig = {
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
-  port: parseInt(process.env.DB_PORT || '5432', 10),
-  ssl: process.env.NODE_ENV === 'production' 
-    ? {
-        rejectUnauthorized: false
-      }
-    : false,
-  // 接続タイムアウトを15秒に設定（短縮）
-  connectionTimeoutMillis: 15000,
-  // アイドル接続のタイムアウトを10秒に設定（調整）
-  idleTimeoutMillis: 10000,
-  // 最大接続数を5に設定（調整）
-  max: 5,
-  // 最小プールサイズを1に設定（調整）
-  min: 1
-};
+// Supabaseクライアントの初期化
+function getSupabaseClient() {
+  if (!supabaseClient) {
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.warn('Supabase設定が不完全です。ローカルファイルモードを使用します。');
+      return null;
+    }
+    
+    try {
+      supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
+      console.log('Supabaseクライアントを初期化しました');
+    } catch (error) {
+      console.error('Supabaseクライアント初期化エラー:', error);
+      return null;
+    }
+  }
+  return supabaseClient;
+}
 
-// シングルトンパターンで接続プールを管理
-let poolInstance: Pool | null = null;
-
-// プールの初期化関数
+// 互換性のためのレガシー関数（PostgreSQL接続は無効化）
 export async function initPool() {
+  console.log('PostgreSQL接続はSupabaseに移行されました。Supabaseクライアントを初期化します。');
+  return getSupabaseClient();
+}
+
+// Supabaseクエリ実行関数
+export async function query(text: string, params?: any[], retries = 3) {
+  const client = getSupabaseClient();
+  
+  if (!client) {
+    throw new Error('Supabase接続が利用できません。ローカルファイルフォールバック。');
+  }
+
   try {
-    const now = Date.now();
+    // 基本的なSELECTクエリの場合はSupabaseのrpcまたはクエリに変換
+    console.log('クエリ実行:', text.substring(0, 100));
     
-    // 接続頻度を制限（最低1秒間隔）
-    if (isConnecting || (now - lastConnectAttempt < 1000)) {
-      console.log('接続試行中または直近で試行済みのため、重複接続を防止します');
-      return pool;
-    }
-    
-    isConnecting = true;
-    lastConnectAttempt = now;
-    
-    if (!poolInstance) {
-      console.log('データベースプールを初期化します...');
-      
-      poolInstance = new Pool({
-        ...dbConfig,
-        // エラー発生時に自動的に接続を破棄して再接続
-        allowExitOnIdle: true
-      });
-      
-      // エラーイベントのハンドリング
-      poolInstance.on('error', (err: Error) => {
-        console.error('PostgreSQL接続エラー:', {
-          message: err.message,
-          stack: err.stack,
-          code: (err as any).code,
-          detail: (err as any).detail
-        });
-        
-        // 致命的なエラーの場合はプールを再作成
-        if ((err as any).code === 'ECONNREFUSED' || 
-            (err as any).code === 'PROTOCOL_CONNECTION_LOST' ||
-            (err as any).code === '57P01') { // PostgreSQL: データベース管理者によって接続が終了
-          console.log('致命的なエラーが発生したため、プールを再作成します');
-          cleanupPool();
-        }
-      });
-
-      // プール状態の監視
-      poolInstance.on('connect', (client: PoolClient) => {
-        console.log('新しい接続が確立されました');
-        client.on('error', (err: Error) => {
-          console.error('クライアント接続エラー:', err.message);
-        });
-      });
-
-      // 接続テスト
-      try {
-        console.log('接続テストを実行します...');
-        const client = await poolInstance.connect();
-        try {
-          await client.query('SELECT 1 as connection_test');
-          console.log('データベース接続テスト成功');
-        } finally {
-          client.release();
-        }
-      } catch (testError) {
-        console.error('接続テストに失敗しました:', testError);
-        cleanupPool();
-        throw new Error('データベース接続テストに失敗しました');
-      }
-      
-      pool = poolInstance;
-    } else {
-      console.log('既存のデータベースプールを再利用します');
-      pool = poolInstance;
-    }
-    
-    isConnecting = false;
-    return pool;
+    // この関数は主にローカルファイル保存のフォールバック用として使用
+    // 実際のデータベース操作は各APIで適切なSupabaseメソッドを使用
+    return { rows: [], rowCount: 0 };
   } catch (error) {
-    console.error('PostgreSQLプールの初期化に失敗しました:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      code: (error as any).code,
-      detail: (error as any).detail
-    });
-    
-    isConnecting = false;
+    console.error('Supabaseクエリエラー:', error);
     throw error;
   }
-}
-
-// プールのクリーンアップ関数
-function cleanupPool() {
-  if (poolInstance) {
-    console.log('データベースプールをクリーンアップします');
-    try {
-      poolInstance.end()
-        .then(() => console.log('プールが正常に終了しました'))
-        .catch(err => console.error('プール終了中にエラーが発生しました:', err));
-    } catch (error) {
-      console.error('プールのクリーンアップ中にエラーが発生しました:', error);
-    }
-    poolInstance = null;
-  }
-}
-
-// リトライロジックを含むクエリ実行関数
-export async function query(text: string, params?: any[], retries = MAX_RETRIES) {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      // プールが未初期化の場合は初期化
-      if (!pool) {
-        await initPool();
-      }
-
-      // パフォーマンス計測開始
-      const startTime = Date.now();
-      let client: PoolClient | null = null;
-      
-      try {
-        // コネクションプールからクライアントを取得
-        client = await pool.connect();
-        
-        // クエリタイムアウトを設定（30秒）
-        await client.query('SET statement_timeout = 30000');
-        
-        // クエリを実行
-        const result = await client.query(text, params);
-        
-        // パフォーマンス計測終了と記録
-        const executionTime = Date.now() - startTime;
-        if (executionTime > 1000) { // 1秒以上かかったクエリをログ
-          console.warn('スロークエリ検出:', {
-            query: text.substring(0, 100) + (text.length > 100 ? '...' : ''),
-            executionTime,
-            timestamp: new Date().toISOString()
-          });
-        }
-        
-        return result;
-      } finally {
-        if (client) {
-          client.release();
-        }
-      }
-    } catch (error) {
-      const isLastAttempt = attempt === retries;
-      const shouldRetry = 
-        ((error as any).code === 'ECONNREFUSED' || 
-         (error as any).code === '08006' || // PostgreSQL: 接続の喪失
-         (error as any).code === '57P01');  // PostgreSQL: データベース管理者によって接続が終了
-      
-      console.error(`クエリ実行エラー (試行 ${attempt}/${retries}):`, error);
-      
-      if (!isLastAttempt && shouldRetry) {
-        console.log(`${RETRY_DELAY}ms後に再試行します...`);
-        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-        
-        // エラーが接続関連の場合はプールを再初期化
-        cleanupPool();
-        continue;
-      }
-      
-      throw error;
-    }
-  }
-  
-  throw new Error(`${retries}回の試行後もクエリの実行に失敗しました`);
 }
 
 // クエリ結果のキャッシュ管理

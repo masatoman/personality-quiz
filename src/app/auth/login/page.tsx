@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaEnvelope, FaLock, FaGoogle, FaGithub } from 'react-icons/fa';
@@ -15,6 +15,20 @@ const LoginPage = () => {
   const router = useRouter();
   const { signIn, signInWithGoogle, signInWithGithub } = useAuth();
 
+  useEffect(() => {
+    // URLパラメータからエラーメッセージや情報を取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const errorParam = urlParams.get('error');
+    const messageParam = urlParams.get('message');
+    
+    if (errorParam) {
+      setError(decodeURIComponent(errorParam));
+    } else if (messageParam) {
+      // 情報メッセージの場合（エラーではない）
+      console.log('ログインページメッセージ:', decodeURIComponent(messageParam));
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -22,7 +36,12 @@ const LoginPage = () => {
 
     try {
       await signIn(email, password, rememberMe);
-      router.push('/dashboard');
+      
+      // リダイレクト先を取得
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectTo = urlParams.get('redirect') || '/dashboard';
+      
+      router.push(redirectTo);
     } catch (err) {
       console.error('ログインエラー:', err);
       setError('ログインに失敗しました。メールアドレスとパスワードを確認してください。');
@@ -35,8 +54,15 @@ const LoginPage = () => {
     try {
       setLoading(true);
       setError(null);
+      
+      // リダイレクト先を保持
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectTo = urlParams.get('redirect') || '/dashboard';
+      
+      // コールバックURLにリダイレクト先を含める
+      const callbackUrl = `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`;
+      
       await signInWithGoogle();
-      router.push('/dashboard');
     } catch (err) {
       console.error('Googleログインエラー:', err);
       setError('Googleログインに失敗しました。');
@@ -49,8 +75,15 @@ const LoginPage = () => {
     try {
       setLoading(true);
       setError(null);
+      
+      // リダイレクト先を保持
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectTo = urlParams.get('redirect') || '/dashboard';
+      
+      // コールバックURLにリダイレクト先を含める
+      const callbackUrl = `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`;
+      
       await signInWithGithub();
-      router.push('/dashboard');
     } catch (err) {
       console.error('GitHubログインエラー:', err);
       setError('GitHubログインに失敗しました。');
