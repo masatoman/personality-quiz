@@ -1,32 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
-import supabase from '@/services/supabaseClient';
-import { getSession } from '@/lib/session';
+import { createClient } from '@/lib/supabase/server';
 
 /**
- * ポイントを消費するAPI
- * 
- * @param req リクエスト
- * @returns レスポンス
+ * ポイント消費API (強化版)
  */
 export async function POST(req: NextRequest) {
   try {
-    // セッションからユーザーIDを取得
-    const session = await getSession();
-    if (!session) {
+    const supabase = createClient();
+    
+    // 認証確認
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
       return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
     }
-
-    const userId = session.user.id;
     
     // リクエストボディからデータ取得
-    const body = await req.json();
     const { 
       points, 
       actionType, 
       referenceId, 
       referenceType, 
       description 
-    } = body;
+    } = await req.json();
     
     // バリデーション
     if (!points || !actionType) {
@@ -43,73 +38,92 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    // トランザクションを開始
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('points')
-      .eq('id', userId)
+    // 現在のポイント残高を取得
+    const { data: currentPoints, error: fetchError } = await supabase
+      .from('user_points')
+      .select('total_points')
+      .eq('user_id', user.id)
       .single();
       
-    if (userError) {
-      console.error('ユーザーデータ取得エラー:', userError);
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      console.error('ポイント取得エラー:', fetchError);
       return NextResponse.json(
-        { error: 'ユーザーデータの取得に失敗しました' }, 
+        { error: 'ポイント情報の取得に失敗しました' }, 
         { status: 500 }
       );
     }
     
+    const userPoints = currentPoints?.total_points || 0;
+    
     // ポイント不足チェック
-    if ((userData?.points || 0) < points) {
+    if (userPoints < points) {
       return NextResponse.json(
         { 
           error: 'ポイントが不足しています', 
-          currentPoints: userData?.points || 0,
-          requiredPoints: points
+          currentPoints: userPoints,
+          requiredPoints: points,
+          shortage: points - userPoints
         }, 
         { status: 400 }
       );
     }
     
-    // ポイントを消費
-    const { error: updateError } = await supabase.rpc(
-      'consume_user_points',
-      { 
-        user_id: userId,
-        points_to_consume: points,
-        action_type: actionType,
-        reference_id: referenceId || null,
-        reference_type: referenceType || null,
-        description: description || null
-      }
-    );
+    const newTotal = userPoints - points;
+    
+    // ポイント消費処理
+    const { error: updateError } = await supabase
+      .from('user_points')
+      .upsert({
+        user_id: user.id,
+        total_points: newTotal,
+        last_spent_at: new Date().toISOString(),
+      });
     
     if (updateError) {
-      console.error('ポイント消費エラー:', updateError);
+      console.error('ポイント更新エラー:', updateError);
       return NextResponse.json(
         { error: 'ポイントの消費に失敗しました' }, 
         { status: 500 }
       );
     }
     
-    // 更新後のポイントを取得
-    const { data: updatedUser, error: getError } = await supabase
-      .from('users')
-      .select('points')
-      .eq('id', userId)
-      .single();
-      
-    if (getError) {
-      console.error('更新後ユーザーデータ取得エラー:', getError);
-      return NextResponse.json(
-        { error: '更新後のユーザーデータ取得に失敗しました' }, 
-        { status: 500 }
-      );
-    }
+    // 活動履歴記録
+    await supabase
+      .from('user_activities')
+      .insert({
+        user_id: user.id,
+        activity_type: `points_consumed_${actionType}`,
+        activity_data: {
+          actionType,
+          referenceId,
+          referenceType,
+          pointsConsumed: points,
+        },
+        points_earned: -points, // 負の値でポイント消費を記録
+      });
+    
+    // ポイント取引履歴記録
+    await supabase
+      .from('point_transactions')
+      .insert({
+        user_id: user.id,
+        transaction_type: 'consumed',
+        points: points,
+        activity_type: actionType,
+        reference_id: referenceId,
+        reference_type: referenceType,
+        description: description || `${actionType}でポイント消費`,
+        previous_balance: userPoints,
+        new_balance: newTotal,
+      });
     
     return NextResponse.json({
       success: true,
       consumedPoints: points,
-      remainingPoints: updatedUser?.points || 0
+      remainingPoints: newTotal,
+      previousPoints: userPoints,
+      actionType,
+      message: `${points}ポイント消費しました`,
     });
   } catch (error) {
     console.error('ポイント消費API例外:', error);
