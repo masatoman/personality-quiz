@@ -148,7 +148,7 @@ export async function GET(request: Request) {
     // クエリパラメータの取得
     const options = {
       category: searchParams.get('category') || undefined,
-      difficulty: searchParams.get('difficulty') || undefined,
+      difficulty: searchParams.get('difficulty') as any || undefined,
       sort: searchParams.get('sort') || undefined,
       page: searchParams.get('page') ? parseInt(searchParams.get('page')!, 10) : undefined,
       limit: searchParams.get('limit') ? parseInt(searchParams.get('limit')!, 10) : undefined,

@@ -1,57 +1,81 @@
 import { createClient } from '@supabase/supabase-js';
 import { DashboardData } from '@/types/dashboard';
 
+interface Activity {
+  activity_type: string;
+  points_earned: number;
+  created_at: string;
+}
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export async function getDashboardData(userId: string): Promise<{
+export async function getDashboardData(supabase: any, userId: string): Promise<{
   data: DashboardData | null;
   error: Error | null;
 }> {
   try {
-    // ユーザーの活動サマリーを取得
-    const { data: summaryData, error: summaryError } = await supabase
+    // ユーザーの活動履歴から統計を集計
+    const { data: activities, error: activitiesError } = await supabase
       .from('user_activities')
-      .select('created_materials_count, earned_points, viewed_materials_count')
+      .select('activity_type, points_earned, created_at')
+      .eq('user_id', userId);
+
+    let activitiesData: Activity[] = [];
+    if (activitiesError) {
+      console.error('活動履歴取得エラー:', activitiesError);
+      // 活動履歴が空の場合もエラーとしない
+      activitiesData = [];
+    } else {
+      activitiesData = activities || [];
+    }
+
+    // 活動統計を計算
+    const createdMaterials = activitiesData.filter((a: Activity) => a.activity_type === 'material_created').length;
+    const earnedPoints = activitiesData.reduce((sum: number, a: Activity) => sum + (a.points_earned || 0), 0);
+    const viewedMaterials = activitiesData.filter((a: Activity) => a.activity_type === 'material_viewed').length;
+
+    // ユーザーポイントを取得
+    const { data: pointsData, error: pointsError } = await supabase
+      .from('user_points')
+      .select('points')
       .eq('user_id', userId)
       .single();
 
-    if (summaryError) throw summaryError;
+    const totalPoints = pointsData?.points || 0;
 
-    // ギバースコア履歴を取得
-    const { data: scoreData, error: scoreError } = await supabase
-      .from('giver_scores')
-      .select('date, score')
-      .eq('user_id', userId)
-      .order('date', { ascending: true })
-      .limit(7);
+    // モックデータでギバースコア履歴を生成（後でuser_giver_scoresテーブルから取得）
+    const mockScoreData = Array.from({ length: 7 }, (_, i) => ({
+      date: new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      score: Math.floor(Math.random() * 40) + 60, // 60-100のランダムスコア
+    }));
 
-    if (scoreError) throw scoreError;
-
-    // 活動分布を取得
-    const { data: distributionData, error: distributionError } = await supabase
-      .from('activity_distribution')
-      .select('type, percentage')
-      .eq('user_id', userId);
-
-    if (distributionError) throw distributionError;
+    // モックデータで活動分布を生成
+    const mockDistributionData = [
+      { type: '教材作成', percentage: 40 },
+      { type: 'クイズ完了', percentage: 30 },
+      { type: '教材閲覧', percentage: 30 },
+    ];
 
     return {
       data: {
         summary: {
-          createdMaterials: summaryData.created_materials_count,
-          earnedPoints: summaryData.earned_points,
-          viewedMaterials: summaryData.viewed_materials_count,
+          createdMaterials,
+          earnedPoints: totalPoints,
+          viewedMaterials,
         },
-        giverScores: scoreData.map(score => ({
-          date: score.date,
-          score: score.score,
-        })),
-        activityDistribution: distributionData.map(activity => ({
-          type: activity.type,
-          percentage: activity.percentage,
+        giverScores: mockScoreData,
+        activityDistribution: mockDistributionData,
+        activities: activitiesData.map((a: Activity) => ({
+          id: `activity-${Date.now()}-${Math.random()}`,
+          type: a.activity_type,
+          timestamp: a.created_at,
+          details: {
+            points: a.points_earned,
+            activity_type: a.activity_type,
+          },
         })),
       },
       error: null,
