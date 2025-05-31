@@ -1,89 +1,96 @@
 import { NextRequest, NextResponse } from 'next/server';
-import supabase from '@/services/supabaseClient';
-import { getSession } from '@/lib/session';
+import { createClient } from '@/lib/supabase/server';
 
 /**
  * ポイント履歴を取得するAPI
  * 
- * @param req リクエスト
+ * @param request リクエスト
  * @returns レスポンス
  */
-export async function GET(req: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    // セッションからユーザーIDを取得
-    const session = await getSession();
-    if (!session) {
-      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
+    const { searchParams } = new URL(request.url);
+    const supabase = createClient();
+    
+    // 認証確認
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      return NextResponse.json(
+        { error: '認証が必要です' },
+        { status: 401 }
+      );
     }
-
-    const userId = session.user.id;
     
-    // URLパラメータから取得
-    const { searchParams } = new URL(req.url);
-    const limit = parseInt(searchParams.get('limit') || '10', 10);
-    const offset = parseInt(searchParams.get('offset') || '0', 10);
-    const actionType = searchParams.get('actionType');
+    // クエリパラメータ
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '20');
+    const type = searchParams.get('type'); // 'earned' | 'consumed'
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
     
-    // ポイント履歴を取得するクエリを作成
+    const offset = (page - 1) * limit;
+    
+    // ベースクエリ
     let query = supabase
-      .from('points_history')
+      .from('point_transactions')
       .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .range(offset, offset + limit - 1);
-      
-    // アクションタイプでフィルタリング（指定されている場合）
-    if (actionType) {
-      query = query.eq('action_type', actionType);
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+    
+    // フィルタリング
+    if (type) {
+      query = query.eq('transaction_type', type);
     }
     
-    // クエリの実行
-    const { data, error } = await query;
+    if (startDate) {
+      query = query.gte('created_at', startDate);
+    }
+    
+    if (endDate) {
+      query = query.lte('created_at', endDate);
+    }
+    
+    // ページング
+    query = query.range(offset, offset + limit - 1);
+    
+    const { data: transactions, error } = await query;
     
     if (error) {
       console.error('ポイント履歴取得エラー:', error);
-      return NextResponse.json({ error: 'ポイント履歴の取得に失敗しました' }, { status: 500 });
+      return NextResponse.json(
+        { error: 'ポイント履歴の取得に失敗しました' },
+        { status: 500 }
+      );
     }
     
-    // 合計ポイントを取得
-    const { data: totalPoints, error: totalError } = await supabase
-      .from('users')
-      .select('points')
-      .eq('id', userId)
-      .single();
-      
-    if (totalError) {
-      console.error('合計ポイント取得エラー:', totalError);
-      return NextResponse.json({ error: '合計ポイントの取得に失敗しました' }, { status: 500 });
-    }
+    // 統計情報も取得
+    const { data: stats } = await supabase
+      .from('point_transactions')
+      .select('transaction_type, points')
+      .eq('user_id', user.id);
     
-    // 総履歴数を取得
-    let countQuery = supabase
-      .from('points_history')
-      .select('id', { count: 'exact' })
-      .eq('user_id', userId);
-      
-    // アクションタイプでフィルタリング（指定されている場合）
-    if (actionType) {
-      countQuery = countQuery.eq('action_type', actionType);
-    }
-    
-    const { count, error: countError } = await countQuery;
-    
-    if (countError) {
-      console.error('履歴数取得エラー:', countError);
-      return NextResponse.json({ error: '履歴数の取得に失敗しました' }, { status: 500 });
-    }
+    const statistics = {
+      totalEarned: stats?.filter(s => s.transaction_type === 'earned')
+                        .reduce((sum, s) => sum + s.points, 0) || 0,
+      totalConsumed: stats?.filter(s => s.transaction_type === 'consumed')
+                          .reduce((sum, s) => sum + s.points, 0) || 0,
+      transactionCount: stats?.length || 0,
+    };
     
     return NextResponse.json({
-      points: data,
-      totalPoints: totalPoints?.points || 0,
-      count: count || 0,
-      limit,
-      offset
+      transactions: transactions || [],
+      pagination: {
+        page,
+        limit,
+        hasMore: transactions?.length === limit,
+      },
+      statistics,
     });
   } catch (error) {
     console.error('ポイント履歴API例外:', error);
-    return NextResponse.json({ error: '予期せぬエラーが発生しました' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'ポイント履歴取得中にエラーが発生しました' },
+      { status: 500 }
+    );
   }
 } 
