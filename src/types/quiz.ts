@@ -173,6 +173,15 @@ export interface QuizResult {
   recommendations: string[];
 }
 
+// 活動ログ
+export interface ActivityLog {
+  id: number;
+  userId: number;
+  activityType: ActivityType;
+  scoreChange: ScoreChange;
+  createdAt: Date;
+}
+
 // ポイント履歴項目
 export interface PointHistoryItem {
   id: string;

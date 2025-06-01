@@ -140,8 +140,8 @@ export async function GET(request: NextRequest) {
       .select('is_helpful', { count: 'exact' })
       .eq('comment_id', commentId);
 
-    const helpfulCount = stats?.filter(v => v.is_helpful).length || 0;
-    const notHelpfulCount = stats?.filter(v => !v.is_helpful).length || 0;
+    const helpfulCount = stats?.filter((v: any) => v.is_helpful).length || 0;
+    const notHelpfulCount = stats?.filter((v: any) => !v.is_helpful).length || 0;
 
     // ユーザーの投票状況（ログイン済みの場合）
     let userVote = null;
@@ -182,7 +182,7 @@ async function updateCommentHelpfulCount(supabase: any, commentId: string) {
       .select('is_helpful')
       .eq('comment_id', commentId);
 
-    const helpfulCount = votes?.filter(v => v.is_helpful).length || 0;
+    const helpfulCount = votes?.filter((v: any) => v.is_helpful).length || 0;
 
     await supabase
       .from('resource_comments')

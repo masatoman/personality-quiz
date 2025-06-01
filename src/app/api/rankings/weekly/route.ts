@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { pool, initPool } from '@/lib/db';
+import { createClient } from '@/utils/supabase/server';
 import { unstable_cache } from 'next/cache';
 
 type RankingRow = {
@@ -23,72 +23,26 @@ const CACHE_CONFIG = {
   }
 };
 
-// データベース接続の初期化とテスト
+// Supabaseクライアントの初期化とテスト
 async function initializeAndTestConnection() {
   try {
-    // 接続タイムアウトを30秒に設定
-    await Promise.race([
-      initPool(),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('データベース接続がタイムアウトしました')), 30000)
-      )
-    ]);
-
-    // テーブル存在確認とインデックス最適化
-    await Promise.all([
-      verifyTableExists(),
-      optimizeIndexes()
-    ]);
+    const supabase = createClient();
+    
+    // テーブル存在確認
+    const { data, error } = await supabase
+      .from('quiz_results')
+      .select('id')
+      .limit(1);
+    
+    if (error) {
+      console.error('データベース接続テストエラー:', error);
+      throw error;
+    }
 
     return true;
   } catch (error) {
     console.error('データベース初期化エラー:', error);
     throw error;
-  }
-}
-
-// テーブル存在確認
-async function verifyTableExists() {
-  const tableCheck = await pool.query(`
-    SELECT EXISTS (
-      SELECT FROM information_schema.tables 
-      WHERE table_schema = 'public' 
-      AND table_name = 'quiz_results'
-    )
-  `);
-  
-  if (!tableCheck.rows[0].exists) {
-    throw new Error('quiz_resultsテーブルが存在しません');
-  }
-}
-
-// インデックス最適化
-async function optimizeIndexes() {
-  const requiredIndexes = [
-    {
-      name: 'idx_quiz_results_created_at',
-      definition: 'CREATE INDEX idx_quiz_results_created_at ON quiz_results (created_at)'
-    },
-    {
-      name: 'idx_quiz_results_user_score',
-      definition: 'CREATE INDEX idx_quiz_results_user_score ON quiz_results (user_id, score)'
-    }
-  ];
-
-  for (const index of requiredIndexes) {
-    const indexExists = await pool.query(`
-      SELECT EXISTS (
-        SELECT FROM pg_indexes
-        WHERE schemaname = 'public'
-        AND tablename = 'quiz_results'
-        AND indexname = $1
-      )
-    `, [index.name]);
-
-    if (!indexExists.rows[0].exists) {
-      console.log(`${index.name}のインデックスを作成します`);
-      await pool.query(index.definition);
-    }
   }
 }
 
@@ -98,62 +52,82 @@ const getWeeklyRankings = unstable_cache(
     const startTime = Date.now();
     try {
       await initializeAndTestConnection();
+      const supabase = createClient();
 
-      const result = await pool.query(`
-        WITH RankedScores AS (
-          SELECT 
-            u.id as user_id,
-            u.username,
-            COALESCE(SUM(qr.score), 0) as total_score,
-            COUNT(qr.id) as activity_count,
-            MAX(qr.created_at) as last_activity,
-            ROW_NUMBER() OVER (
-              ORDER BY COALESCE(SUM(qr.score), 0) DESC,
-                       COUNT(qr.id) DESC,
-                       MAX(qr.created_at) DESC
-            ) as rank
-          FROM users u
-          LEFT JOIN LATERAL (
-            SELECT id, score, created_at, user_id
-            FROM quiz_results
-            WHERE created_at >= NOW() - INTERVAL '7 days'
-            AND user_id = u.id
-          ) qr ON true
-          GROUP BY u.id, u.username
-          HAVING COUNT(qr.id) > 0 OR EXISTS (
-            SELECT 1 FROM quiz_results qr2 
-            WHERE qr2.user_id = u.id 
-            AND qr2.created_at >= NOW() - INTERVAL '30 days'
-          )
-        )
-        SELECT 
-          user_id,
-          username,
-          total_score,
-          activity_count,
-          last_activity,
-          rank
-        FROM RankedScores
-        WHERE rank <= 100
-        ORDER BY total_score DESC, activity_count DESC, last_activity DESC
-      `);
+      // 週次ランキングデータを取得
+      const { data: rankings, error } = await supabase
+        .rpc('get_weekly_rankings', { limit_count: 100 });
+
+      if (error) {
+        console.error('ランキングデータ取得エラー:', error);
+        // フォールバック: 基本的なクエリを実行
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('quiz_results')
+          .select(`
+            user_id,
+            score,
+            created_at,
+            users!inner(username)
+          `)
+          .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+          .order('score', { ascending: false })
+          .limit(100);
+
+        if (fallbackError) {
+          throw fallbackError;
+        }
+
+        // フォールバックデータを処理
+        const userScores = new Map();
+        fallbackData?.forEach((result: any) => {
+          const userId = result.user_id;
+          if (!userScores.has(userId)) {
+            userScores.set(userId, {
+              user_id: userId,
+              username: result.users.username,
+              total_score: 0,
+              activity_count: 0,
+              last_activity: result.created_at
+            });
+          }
+          const userScore = userScores.get(userId);
+          userScore.total_score += result.score;
+          userScore.activity_count += 1;
+          if (result.created_at > userScore.last_activity) {
+            userScore.last_activity = result.created_at;
+          }
+        });
+
+        const sortedRankings = Array.from(userScores.values())
+          .sort((a, b) => b.total_score - a.total_score)
+          .map((user, index) => ({ ...user, rank: index + 1 }));
+
+        return sortedRankings.map((row: any) => ({
+          id: row.user_id,
+          username: row.username,
+          score: row.total_score,
+          rank: row.rank,
+          activityCount: row.activity_count,
+          lastActive: row.last_activity
+        }));
+      }
 
       // パフォーマンスメトリクスの記録
       const executionTime = Date.now() - startTime;
       console.log('ランキングクエリパフォーマンス:', {
-        rowCount: result.rowCount,
+        rowCount: rankings?.length || 0,
         executionTimeMs: executionTime,
         timestamp: new Date().toISOString()
       });
 
-      return result.rows.map((row: RankingRow) => ({
+      return rankings?.map((row: any) => ({
         id: row.user_id,
         username: row.username,
         score: row.total_score,
         rank: row.rank,
         activityCount: row.activity_count,
         lastActive: row.last_activity
-      }));
+      })) || [];
 
     } catch (error) {
       console.error('ランキングデータ取得エラー:', error);

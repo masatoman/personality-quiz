@@ -6,8 +6,6 @@ import { GiverScoreDisplay } from '@/components/features/giver-score/GiverScoreD
 import { FaHistory, FaTrophy, FaUser, FaPlus } from 'react-icons/fa';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
-import TodoList from '@/components/features/todo/TodoList';
-import type { GiverScore } from '@/types/giver-score';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { getClient } from '@/lib/supabase/client';

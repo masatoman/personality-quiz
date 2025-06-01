@@ -35,25 +35,11 @@ const ResultsTabs: React.FC<ResultsTabsProps> = ({ selectedTab, setSelectedTab }
         弱み
       </button>
       <button 
-        className={`px-4 py-2 font-medium ${selectedTab === 'advice' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
-        onClick={() => setSelectedTab('advice')}
+        className={`px-4 py-2 font-medium ${selectedTab === 'tips' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+        onClick={() => setSelectedTab('tips')}
       >
         <FaLightbulb className="inline mr-2" />
         アドバイス
-      </button>
-      <button 
-        className={`px-4 py-2 font-medium ${selectedTab === 'tools' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
-        onClick={() => setSelectedTab('tools')}
-      >
-        <FaTools className="inline mr-2" />
-        ツール
-      </button>
-      <button 
-        className={`px-4 py-2 font-medium ${selectedTab === 'scenarios' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
-        onClick={() => setSelectedTab('scenarios')}
-      >
-        <FaRegLightbulb className="inline mr-2" />
-        シナリオ
       </button>
     </div>
   );

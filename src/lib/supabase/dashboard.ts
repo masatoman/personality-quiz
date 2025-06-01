@@ -1,4 +1,3 @@
-import { createClient } from '@supabase/supabase-js';
 import { DashboardData } from '@/types/dashboard';
 
 interface Activity {
@@ -6,11 +5,6 @@ interface Activity {
   points_earned: number;
   created_at: string;
 }
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 export async function getDashboardData(supabase: any, userId: string): Promise<{
   data: DashboardData | null;
@@ -34,11 +28,10 @@ export async function getDashboardData(supabase: any, userId: string): Promise<{
 
     // 活動統計を計算
     const createdMaterials = activitiesData.filter((a: Activity) => a.activity_type === 'material_created').length;
-    const earnedPoints = activitiesData.reduce((sum: number, a: Activity) => sum + (a.points_earned || 0), 0);
     const viewedMaterials = activitiesData.filter((a: Activity) => a.activity_type === 'material_viewed').length;
 
     // ユーザーポイントを取得
-    const { data: pointsData, error: pointsError } = await supabase
+    const { data: pointsData } = await supabase
       .from('user_points')
       .select('points')
       .eq('user_id', userId)

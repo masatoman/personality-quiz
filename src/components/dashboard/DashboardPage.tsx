@@ -11,7 +11,7 @@ import ActivityTypeChart from './ActivityTypeChart';
 
 // ダッシュボードページコンポーネント
 const DashboardPage: React.FC = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [userName, setUserName] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'overview' | 'materials' | 'progress'>('overview');
   
@@ -59,7 +59,11 @@ const DashboardPage: React.FC = () => {
         return (
           <>
             {/* 活動サマリー */}
-            <ActivitySummary userId={user.id} />
+            <ActivitySummary 
+              createdMaterials={0}
+              earnedPoints={0}
+              viewedMaterials={0}
+            />
             
             {/* チャートセクション */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">

@@ -13,7 +13,7 @@ import { LearningActivity } from '@/types/learning';
 export async function POST(req: NextRequest) {
   try {
     // ユーザー認証情報を取得
-    const { user } = await getUserAuth();
+    const user = await getUserAuth();
     if (!user) {
       return NextResponse.json(
         { error: '認証されていません。' },
@@ -165,7 +165,7 @@ export async function POST(req: NextRequest) {
       // すべての要件が満たされた場合、バッジを獲得
       if (requirementsMet) {
         updatedBadge.acquired = true;
-        updatedBadge.acquired_at = new Date().toISOString();
+        updatedBadge.acquiredAt = new Date().toISOString();
         newlyAcquiredBadges.push(badge);
       }
       

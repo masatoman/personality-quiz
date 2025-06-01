@@ -8,13 +8,33 @@ export default function MaterialsList() {
 
   useEffect(() => {
     // 仮のデータを使用
-    const mockMaterials = [
+    const mockMaterials: Material[] = [
       {
         id: '550e8400-e29b-41d4-a716-446655440001',
         title: 'ギバーのための英会話フレーズ集',
         description: '日常会話で相手を助けるための便利なフレーズを集めました',
         category: 'conversation',
         difficulty: 'beginner',
+        estimatedTime: 30,
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
+        author: {
+          id: 'author1',
+          name: '田中太郎',
+          avatarUrl: '/avatars/default.png',
+          bio: '英語教育の専門家',
+          expertise: ['英会話', '教育']
+        },
+        targetAudience: ['beginner'],
+        language: 'ja',
+        version: '1.0',
+        sections: [],
+        reviews: [],
+        relatedMaterials: [],
+        tags: ['英会話', 'フレーズ'],
+        status: 'published',
+        view_count: 100,
+        rating: 4.5
       },
       {
         id: '550e8400-e29b-41d4-a716-446655440002',
@@ -22,6 +42,26 @@ export default function MaterialsList() {
         description: 'ビジネスパートナーとWin-Winの関係を築くための英語表現',
         category: 'business',
         difficulty: 'intermediate',
+        estimatedTime: 45,
+        createdAt: '2024-01-02T00:00:00Z',
+        updatedAt: '2024-01-02T00:00:00Z',
+        author: {
+          id: 'author2',
+          name: '佐藤花子',
+          avatarUrl: '/avatars/default.png',
+          bio: 'ビジネス英語の専門家',
+          expertise: ['ビジネス英語', 'コミュニケーション']
+        },
+        targetAudience: ['professional'],
+        language: 'ja',
+        version: '1.0',
+        sections: [],
+        reviews: [],
+        relatedMaterials: [],
+        tags: ['ビジネス英語', '関係構築'],
+        status: 'published',
+        view_count: 150,
+        rating: 4.8
       },
     ];
 

@@ -9,7 +9,26 @@ const getMaterials = (): Material[] => {
       description: 'Reactの基本概念と実践的な使い方を学びます',
       category: 'フロントエンド',
       difficulty: 'beginner',
-      sections: []
+      estimatedTime: 120,
+      createdAt: '2024-01-01T00:00:00Z',
+      updatedAt: '2024-01-01T00:00:00Z',
+      author: {
+        id: 'author1',
+        name: '田中太郎',
+        avatarUrl: '/avatars/default.png',
+        bio: 'フロントエンド開発者',
+        expertise: ['React', 'TypeScript']
+      },
+      targetAudience: ['beginner', 'student'],
+      language: 'ja',
+      version: '1.0',
+      sections: [],
+      reviews: [],
+      relatedMaterials: [],
+      tags: ['React', 'JavaScript', 'フロントエンド'],
+      status: 'published',
+      view_count: 0,
+      rating: 4.5
     },
     {
       id: '2',
@@ -17,7 +36,26 @@ const getMaterials = (): Material[] => {
       description: 'TypeScriptの高度な型システムと実践的なパターンを解説',
       category: 'プログラミング言語',
       difficulty: 'intermediate',
-      sections: []
+      estimatedTime: 180,
+      createdAt: '2024-01-02T00:00:00Z',
+      updatedAt: '2024-01-02T00:00:00Z',
+      author: {
+        id: 'author2',
+        name: '佐藤花子',
+        avatarUrl: '/avatars/default.png',
+        bio: 'TypeScript専門家',
+        expertise: ['TypeScript', 'JavaScript']
+      },
+      targetAudience: ['intermediate', 'professional'],
+      language: 'ja',
+      version: '1.0',
+      sections: [],
+      reviews: [],
+      relatedMaterials: [],
+      tags: ['TypeScript', 'JavaScript', '型システム'],
+      status: 'published',
+      view_count: 0,
+      rating: 4.8
     },
     {
       id: '3',
@@ -25,7 +63,26 @@ const getMaterials = (): Material[] => {
       description: 'Next.jsを使用したフルスタックアプリケーションの開発手法',
       category: 'フレームワーク',
       difficulty: 'advanced',
-      sections: []
+      estimatedTime: 240,
+      createdAt: '2024-01-03T00:00:00Z',
+      updatedAt: '2024-01-03T00:00:00Z',
+      author: {
+        id: 'author3',
+        name: '山田次郎',
+        avatarUrl: '/avatars/default.png',
+        bio: 'フルスタック開発者',
+        expertise: ['Next.js', 'React', 'Node.js']
+      },
+      targetAudience: ['advanced', 'professional'],
+      language: 'ja',
+      version: '1.0',
+      sections: [],
+      reviews: [],
+      relatedMaterials: [],
+      tags: ['Next.js', 'React', 'フルスタック'],
+      status: 'published',
+      view_count: 0,
+      rating: 4.7
     }
   ];
 };

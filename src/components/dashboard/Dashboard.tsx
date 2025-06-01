@@ -65,7 +65,7 @@ const Dashboard: React.FC<DashboardProps> = ({ userId }) => {
           className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6"
         >
           <h2 className="text-xl font-semibold mb-4">ギバースコア推移</h2>
-          <GiverScoreChart data={data.giverScores} />
+          <GiverScoreChart userId={userId} />
         </motion.div>
 
         {/* 活動種類別グラフ */}

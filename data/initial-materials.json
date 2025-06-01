@@ -1,0 +1,334 @@
+[
+  {
+    "basicInfo": {
+      "title": "英語の基本的な挨拶と自己紹介",
+      "description": "日常的な挨拶と簡単な自己紹介の表現を学習します。初心者向けの基礎的な内容です。",
+      "coverImage": null,
+      "tags": [
+        "挨拶",
+        "自己紹介",
+        "基礎"
+      ]
+    },
+    "settings": {
+      "isPublic": true,
+      "difficulty": "beginner",
+      "estimatedTime": 20,
+      "allowComments": true,
+      "targetAudience": [
+        "beginner",
+        "student"
+      ],
+      "prerequisites": "アルファベットが読める"
+    },
+    "contentSections": [
+      {
+        "type": "text",
+        "title": "基本的な挨拶",
+        "content": "# 基本的な挨拶\n\n## 朝の挨拶\n- Good morning! (おはようございます！)\n- How are you? (元気ですか？)\n- I'm fine, thank you. (元気です、ありがとう。)\n\n## 昼間の挨拶\n- Good afternoon! (こんにちは！)\n- Nice to see you. (お会いできて嬉しいです。)\n\n## 夜の挨拶\n- Good evening! (こんばんは！)\n- Good night! (おやすみなさい！)",
+        "order": 0
+      },
+      {
+        "type": "text",
+        "title": "自己紹介",
+        "content": "# 自己紹介\n\n## 基本の型\n- My name is [名前]. (私の名前は[名前]です。)\n- I'm from [出身地]. (私は[出身地]出身です。)\n- Nice to meet you. (初めまして。)\n\n## 例文\n- My name is Tanaka. I'm from Japan. Nice to meet you.\n(私の名前は田中です。日本出身です。初めまして。)",
+        "order": 1
+      }
+    ]
+  },
+  {
+    "basicInfo": {
+      "title": "英語の基本文法：be動詞",
+      "description": "be動詞（am, is, are）の基本的な使い方を学習します。",
+      "coverImage": null,
+      "tags": [
+        "文法",
+        "be動詞",
+        "基礎"
+      ]
+    },
+    "settings": {
+      "isPublic": true,
+      "difficulty": "beginner",
+      "estimatedTime": 25,
+      "allowComments": true,
+      "targetAudience": [
+        "beginner",
+        "student"
+      ],
+      "prerequisites": "基本的な挨拶ができる"
+    },
+    "contentSections": [
+      {
+        "type": "text",
+        "title": "be動詞とは",
+        "content": "# be動詞とは\n\nbe動詞は「〜です」「〜である」という意味を表す動詞です。\n\n## be動詞の形\n- I am (私は〜です)\n- You are (あなたは〜です)\n- He/She/It is (彼/彼女/それは〜です)\n\n## 例文\n- I am a student. (私は学生です)\n- You are kind. (あなたは親切です)\n- She is a teacher. (彼女は先生です)",
+        "order": 0
+      },
+      {
+        "type": "quiz",
+        "title": "be動詞クイズ",
+        "content": "",
+        "options": [
+          {
+            "question": "次の文の空欄に入る適切なbe動詞を選んでください：I ___ a student.",
+            "options": [
+              "am",
+              "is",
+              "are"
+            ],
+            "answer": 0,
+            "explanation": "主語がIの時は、be動詞はamを使います。"
+          }
+        ],
+        "order": 1
+      }
+    ]
+  },
+  {
+    "basicInfo": {
+      "title": "基本単語100選：日常生活編",
+      "description": "日常生活でよく使う基本的な英単語100個を覚えます。",
+      "coverImage": null,
+      "tags": [
+        "単語",
+        "日常生活",
+        "基礎"
+      ]
+    },
+    "settings": {
+      "isPublic": true,
+      "difficulty": "beginner",
+      "estimatedTime": 30,
+      "allowComments": true,
+      "targetAudience": [
+        "beginner",
+        "student"
+      ],
+      "prerequisites": "アルファベットが読める"
+    },
+    "contentSections": [
+      {
+        "type": "text",
+        "title": "家族に関する単語",
+        "content": "# 家族に関する単語\n\n## 基本の家族\n- family (家族)\n- father (父)\n- mother (母)\n- brother (兄弟)\n- sister (姉妹)\n- grandfather (祖父)\n- grandmother (祖母)\n\n## 例文\n- My family is small. (私の家族は小さいです)\n- I have one brother and one sister. (私には兄弟が一人と姉妹が一人います)",
+        "order": 0
+      }
+    ]
+  },
+  {
+    "basicInfo": {
+      "title": "ビジネス英語：メールの書き方",
+      "description": "ビジネスシーンで使える英語メールの基本的な書き方を学習します。",
+      "coverImage": null,
+      "tags": [
+        "ビジネス",
+        "メール",
+        "中級"
+      ]
+    },
+    "settings": {
+      "isPublic": true,
+      "difficulty": "intermediate",
+      "estimatedTime": 40,
+      "allowComments": true,
+      "targetAudience": [
+        "professional",
+        "intermediate"
+      ],
+      "prerequisites": "基本的な英文法を理解している"
+    },
+    "contentSections": [
+      {
+        "type": "text",
+        "title": "メールの基本構造",
+        "content": "# ビジネスメールの基本構造\n\n## 1. 件名 (Subject Line)\n明確で簡潔な件名をつけます。\n例：Meeting Request for Project Discussion\n\n## 2. 宛名 (Salutation)\n- Dear Mr./Ms. [姓]\n- Dear [名前] (親しい場合)\n\n## 3. 本文 (Body)\n- 用件を明確に\n- 丁寧で簡潔に\n\n## 4. 結び (Closing)\n- Best regards,\n- Sincerely,\n\n## サンプルメール\n```\nSubject: Meeting Request for Next Week\n\nDear Mr. Smith,\n\nI hope this email finds you well. I would like to schedule a meeting to discuss our upcoming project.\n\nWould next Tuesday at 2 PM work for you?\n\nBest regards,\nTanaka\n```",
+        "order": 0
+      }
+    ]
+  },
+  {
+    "basicInfo": {
+      "title": "英語プレゼンテーション基礎",
+      "description": "効果的な英語プレゼンテーションの構成と表現を学習します。",
+      "coverImage": null,
+      "tags": [
+        "プレゼンテーション",
+        "スピーキング",
+        "中級"
+      ]
+    },
+    "settings": {
+      "isPublic": true,
+      "difficulty": "intermediate",
+      "estimatedTime": 45,
+      "allowComments": true,
+      "targetAudience": [
+        "professional",
+        "intermediate"
+      ],
+      "prerequisites": "ビジネス英語の基礎知識"
+    },
+    "contentSections": [
+      {
+        "type": "text",
+        "title": "プレゼンテーションの構成",
+        "content": "# プレゼンテーションの基本構成\n\n## 1. 導入 (Introduction)\n- Good morning/afternoon, everyone.\n- Today, I'm going to talk about...\n- Let me start by...\n\n## 2. 本論 (Main Body)\n- First of all...\n- Secondly...\n- Finally...\n\n## 3. 結論 (Conclusion)\n- In conclusion...\n- To sum up...\n- Thank you for your attention.\n\n## 便利なフレーズ\n- Let me show you... (見せします)\n- As you can see... (ご覧のように)\n- Any questions? (質問はありますか？)",
+        "order": 0
+      }
+    ]
+  },
+  {
+    "basicInfo": {
+      "title": "TOEIC対策：リーディング戦略",
+      "description": "TOEICリーディングセクションで高得点を取るための戦略を学習します。",
+      "coverImage": null,
+      "tags": [
+        "TOEIC",
+        "リーディング",
+        "試験対策"
+      ]
+    },
+    "settings": {
+      "isPublic": true,
+      "difficulty": "intermediate",
+      "estimatedTime": 50,
+      "allowComments": true,
+      "targetAudience": [
+        "intermediate",
+        "student"
+      ],
+      "prerequisites": "TOEIC500点以上"
+    },
+    "contentSections": [
+      {
+        "type": "text",
+        "title": "スキミング技術",
+        "content": "# スキミング（Skimming）技術\n\nスキミングとは、文章の要点を素早く掴む読み方です。\n\n## コツ\n1. タイトルと見出しに注目\n2. 各段落の最初と最後の文を読む\n3. キーワードを探す\n4. 時間配分を意識する\n\n## 実践方法\n- 1分で全体を見渡す\n- 重要な情報を見つける\n- 詳細は後で読む\n\n## TOEIC Part 7での活用\n- 文書の種類を特定\n- 設問を先に読む\n- 必要な情報だけを探す",
+        "order": 0
+      }
+    ]
+  },
+  {
+    "basicInfo": {
+      "title": "英語リスニング：ニュース英語入門",
+      "description": "CNNやBBCなどのニュース英語を理解するためのリスニング練習です。",
+      "coverImage": null,
+      "tags": [
+        "リスニング",
+        "ニュース",
+        "中級"
+      ]
+    },
+    "settings": {
+      "isPublic": true,
+      "difficulty": "intermediate",
+      "estimatedTime": 35,
+      "allowComments": true,
+      "targetAudience": [
+        "intermediate"
+      ],
+      "prerequisites": "英検準2級程度のリスニング力"
+    },
+    "contentSections": [
+      {
+        "type": "text",
+        "title": "ニュース英語の特徴",
+        "content": "# ニュース英語の特徴\n\n## 1. 明確な構造\n- Lead（導入）: 最も重要な情報\n- Body（本文）: 詳細な説明\n- Conclusion（結論）: まとめ\n\n## 2. 使用される表現\n- Breaking news (速報)\n- According to sources (情報筋によると)\n- It is reported that... (報道によると...)\n\n## 3. 聞き取りのコツ\n- 5W1H（Who, What, When, Where, Why, How）に注目\n- キーワードを意識\n- 文脈から推測\n- 完璧を求めない\n\n## 練習方法\n1. BBC Learning English を活用\n2. スクリプトと併用する\n3. 毎日5分から始める",
+        "order": 0
+      }
+    ]
+  },
+  {
+    "basicInfo": {
+      "title": "中級英文法：仮定法",
+      "description": "仮定法の基本的な使い方と応用を学習します。",
+      "coverImage": null,
+      "tags": [
+        "文法",
+        "仮定法",
+        "中級"
+      ]
+    },
+    "settings": {
+      "isPublic": true,
+      "difficulty": "intermediate",
+      "estimatedTime": 40,
+      "allowComments": true,
+      "targetAudience": [
+        "intermediate",
+        "student"
+      ],
+      "prerequisites": "基本的な時制を理解している"
+    },
+    "contentSections": [
+      {
+        "type": "text",
+        "title": "仮定法過去",
+        "content": "# 仮定法過去\n\n現在の事実に反する仮定を表現します。\n\n## 基本形\nIf + 主語 + 動詞の過去形, 主語 + would/could/might + 動詞の原形\n\n## 例文\n- If I had money, I would buy a car.\n（もしお金があれば、車を買うのに）\n\n- If I were you, I would study harder.\n（もし私があなたなら、もっと勉強するのに）\n\n## 注意点\n- be動詞は常に \"were\" を使用\n- 現実とは反対のことを表現\n- 願望や後悔を表すことが多い\n\n## 練習問題\n1. If I (be) rich, I (travel) around the world.\n2. If you (know) the answer, you (tell) me.",
+        "order": 0
+      }
+    ]
+  },
+  {
+    "basicInfo": {
+      "title": "Academic Writing: 論文の書き方",
+      "description": "学術的な英語論文の構成と表現技法を学習します。",
+      "coverImage": null,
+      "tags": [
+        "ライティング",
+        "学術論文",
+        "上級"
+      ]
+    },
+    "settings": {
+      "isPublic": true,
+      "difficulty": "advanced",
+      "estimatedTime": 60,
+      "allowComments": true,
+      "targetAudience": [
+        "advanced",
+        "professional"
+      ],
+      "prerequisites": "高度な英文法知識、研究経験"
+    },
+    "contentSections": [
+      {
+        "type": "text",
+        "title": "論文の基本構造",
+        "content": "# Academic Paper の基本構造\n\n## 1. Abstract（要約）\n研究の目的、方法、結果、結論を簡潔にまとめます。\n通常150-250語程度。\n\n## 2. Introduction（序論）\n- Background information\n- Literature review (簡潔に)\n- Research question/hypothesis\n- Thesis statement\n\n## 3. Literature Review（文献レビュー）\n既存研究の分析と評価。研究のギャップを明確にする。\n\n## 4. Methodology（方法論）\n研究手法の詳細な説明。再現可能性を重視。\n\n## 5. Results（結果）\nデータの客観的な報告。表やグラフを効果的に活用。\n\n## 6. Discussion（考察）\n結果の解釈と意味。制限や今後の研究方向も含む。\n\n## 7. Conclusion（結論）\n研究の総括と今後の展望。\n\n## アカデミックな表現例\n- This study aims to...\n- Previous research has shown that...\n- The findings suggest that...\n- Further research is needed to...",
+        "order": 0
+      }
+    ]
+  },
+  {
+    "basicInfo": {
+      "title": "上級英語：慣用表現とスラング",
+      "description": "ネイティブスピーカーがよく使う慣用表現とスラングを学習します。",
+      "coverImage": null,
+      "tags": [
+        "慣用表現",
+        "スラング",
+        "上級"
+      ]
+    },
+    "settings": {
+      "isPublic": true,
+      "difficulty": "advanced",
+      "estimatedTime": 45,
+      "allowComments": true,
+      "targetAudience": [
+        "advanced"
+      ],
+      "prerequisites": "上級レベルの英語力"
+    },
+    "contentSections": [
+      {
+        "type": "text",
+        "title": "よく使われる慣用表現",
+        "content": "# よく使われる慣用表現\n\n## ビジネスシーン\n- \"Think outside the box\" (従来の枠にとらわれずに考える)\n- \"Touch base\" (連絡を取る)\n- \"Ball is in your court\" (決定権はあなたにある)\n- \"Move the needle\" (大きな変化をもたらす)\n\n## 日常会話\n- \"Break a leg\" (頑張って)\n- \"Hit the nail on the head\" (的を射る)\n- \"Piece of cake\" (朝飯前)\n- \"When pigs fly\" (ありえない)\n\n## 感情表現\n- \"Over the moon\" (大喜び)\n- \"Down in the dumps\" (落ち込んでいる)\n- \"On cloud nine\" (有頂天)\n- \"Spill the beans\" (秘密をばらす)\n\n## 使用上の注意\n- カジュアルな場面で使用\n- 相手との関係性を考慮\n- 文脈を理解して使用\n- 過度に使用しない",
+        "order": 0
+      }
+    ]
+  }
+]

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 
 // 認証が必要なパス
 const authRequiredPaths = [
@@ -46,9 +45,6 @@ export async function middleware(request: NextRequest) {
     }
 
     try {
-      // Supabaseクライアントを作成
-      const supabase = createClient(supabaseUrl, supabaseKey);
-      
       // リクエストからセッション情報を取得
       const authHeader = request.headers.get('authorization');
       const sessionToken = request.cookies.get('sb-access-token')?.value ||
@@ -77,7 +73,7 @@ export async function middleware(request: NextRequest) {
             return redirectToLogin(request, path);
           }
           
-        } catch (jwtError) {
+        } catch {
           console.log('🔒 不正なセッショントークン:', path);
           return redirectToLogin(request, path);
         }

@@ -1,4 +1,4 @@
-import { Question } from '@/types/quiz';
+import { QuizQuestion } from '@/types/quiz';
 
 export const metadata = {
   version: "1.2.0",
@@ -31,7 +31,7 @@ export const metadata = {
   }
 };
 
-export const questions: Question[] = [
+export const questions: QuizQuestion[] = [
   {
     id: 1,
     category: "単語学習について",

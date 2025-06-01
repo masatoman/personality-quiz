@@ -18,12 +18,12 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
   redirectUrl = '/login',
 }) => {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkAccess = async () => {
-      if (loading) return;
+      if (isLoading) return;
 
       if (!user) {
         setHasAccess(false);
@@ -52,15 +52,15 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     };
 
     checkAccess();
-  }, [user, loading, requiredPermissions]);
+  }, [user, isLoading, requiredPermissions]);
 
   useEffect(() => {
-    if (!loading && hasAccess === false) {
+    if (!isLoading && hasAccess === false) {
       router.push(redirectUrl);
     }
-  }, [loading, hasAccess, redirectUrl, router]);
+  }, [isLoading, hasAccess, redirectUrl, router]);
 
-  if (loading || hasAccess === null) {
+  if (isLoading || hasAccess === null) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner />

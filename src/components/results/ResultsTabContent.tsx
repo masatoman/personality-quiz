@@ -161,24 +161,41 @@ const ResultsTabContent: React.FC<ResultsTabContentProps> = ({
           </div>
         );
       
-      case 'details':
+      case 'strengths':
         return (
           <div className="space-y-6">
             <VirtualScrollContainer<string>
-              items={data.personalityInfo[learningType.primary].tips}
+              items={data.personalityInfo[learningType.primary].strengths}
               height={400}
-              itemHeight={80}
-              renderItem={(tip: string, index: number) => (
+              itemHeight={60}
+              renderItem={(strength: string, index: number) => (
                 <div key={index} className="p-4 bg-white rounded-lg shadow mb-4">
-                  <h3 className="text-lg font-semibold text-gray-800">アドバイス {index + 1}</h3>
-                  <p className="text-gray-600">{tip}</p>
+                  <h3 className="text-lg font-semibold text-gray-800">強み {index + 1}</h3>
+                  <p className="text-gray-600">{strength}</p>
                 </div>
               )}
             />
           </div>
         );
       
-      case 'recommendations':
+      case 'weaknesses':
+        return (
+          <div className="space-y-6">
+            <VirtualScrollContainer<string>
+              items={data.personalityInfo[learningType.primary].weaknesses}
+              height={400}
+              itemHeight={60}
+              renderItem={(weakness: string, index: number) => (
+                <div key={index} className="p-4 bg-white rounded-lg shadow mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800">課題 {index + 1}</h3>
+                  <p className="text-gray-600">{weakness}</p>
+                </div>
+              )}
+            />
+          </div>
+        );
+      
+      case 'tips':
         return (
           <div className="space-y-6">
             <VirtualScrollContainer<Recommendation>

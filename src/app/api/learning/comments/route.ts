@@ -184,7 +184,7 @@ export async function POST(request: NextRequest) {
     await awardCommentPoints(user.id, resource_id, parent_comment_id ? 'reply' : 'comment');
 
     // 返信の場合、親コメント投稿者に通知ポイント
-    if (parent_comment_id && parentComment?.user_id !== user.id) {
+    if (parent_comment_id && parentComment && parentComment.user_id !== user.id) {
       await awardReplyNotificationPoints(parentComment.user_id, newComment.id);
     }
 

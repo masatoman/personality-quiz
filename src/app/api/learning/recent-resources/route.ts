@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
     }
 
     // レスポンス用にデータを整形
-    const formattedResources: RecentResource[] = (recentResources as ResourceWithMaterials[]).map(item => ({
+    const formattedResources: RecentResource[] = (recentResources as unknown as ResourceWithMaterials[]).map(item => ({
       id: item.resource_id,
       title: item.materials?.title || '不明なタイトル',
       thumbnailUrl: item.materials?.thumbnail_url || null,
