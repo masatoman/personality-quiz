@@ -19,24 +19,10 @@ export default function MaterialsList() {
       setLoading(true);
       setError(null);
 
+      // 修正: 外部キー参照を使わずに基本データのみ取得
       const { data, error } = await supabase
         .from('materials')
-        .select(`
-          id,
-          title,
-          description,
-          category,
-          tags,
-          difficulty_level,
-          view_count,
-          rating,
-          created_at,
-          updated_at,
-          profiles!materials_user_id_fkey (
-            display_name,
-            avatar_url
-          )
-        `)
+        .select('*')
         .eq('is_published', true)
         .order('created_at', { ascending: false });
 
@@ -46,34 +32,62 @@ export default function MaterialsList() {
         return;
       }
 
+      if (!data || data.length === 0) {
+        setMaterials([]);
+        return;
+      }
+
+      // 一意の作者IDを取得（author_idとuser_idの両方から）
+      const authorIds = [...new Set(data.map(item => item.author_id || item.user_id).filter(Boolean))];
+      
+      // 作者情報を一括取得
+      let authorsMap = new Map();
+      if (authorIds.length > 0) {
+        const { data: authorsData, error: authorsError } = await supabase
+          .from('profiles')
+          .select('id, username, display_name, avatar_url')
+          .in('id', authorIds);
+        
+        if (!authorsError && authorsData) {
+          authorsData.forEach(author => {
+            authorsMap.set(author.id, author);
+          });
+        }
+      }
+
       // データを Material 型に変換
-      const transformedMaterials: Material[] = (data || []).map((item: any) => ({
-        id: item.id,
-        title: item.title,
-        description: item.description || '説明なし',
-        category: item.category,
-        difficulty: getDifficultyLabel(item.difficulty_level),
-        estimatedTime: 30, // デフォルト値（将来的にはDBに追加）
-        createdAt: item.created_at,
-        updatedAt: item.updated_at,
-        author: {
-          id: '', // プロフィールIDは別途取得可能
-          name: item.profiles?.display_name || '匿名ユーザー',
-          avatarUrl: item.profiles?.avatar_url || '/avatars/default.png',
-          bio: '',
-          expertise: []
-        },
-        targetAudience: ['beginner'], // デフォルト値
-        language: 'ja',
-        version: '1.0',
-        sections: [],
-        reviews: [],
-        relatedMaterials: [],
-        tags: item.tags || [],
-        status: 'published',
-        view_count: item.view_count || 0,
-        rating: item.rating || 0
-      }));
+      const transformedMaterials: Material[] = data.map((item: any) => {
+        const authorId = item.author_id || item.user_id;
+        const authorData = authorsMap.get(authorId);
+        
+        return {
+          id: item.id,
+          title: item.title,
+          description: item.description || '説明なし',
+          category: item.category,
+          difficulty: getDifficultyLabel(item.difficulty_level),
+          estimatedTime: item.estimated_time || 30,
+          createdAt: item.created_at,
+          updatedAt: item.updated_at,
+          author: {
+            id: authorId || 'unknown',
+            name: authorData ? (authorData.display_name || authorData.username) : '匿名ユーザー',
+            avatarUrl: authorData?.avatar_url || '/avatars/default.png',
+            bio: '',
+            expertise: []
+          },
+          targetAudience: item.target_audience || ['beginner'],
+          language: item.language || 'ja',
+          version: item.version || '1.0',
+          sections: [],
+          reviews: [],
+          relatedMaterials: [],
+          tags: item.tags || [],
+          status: 'published',
+          view_count: item.view_count || 0,
+          rating: item.rating || 0
+        };
+      });
 
       setMaterials(transformedMaterials);
     } catch (err) {
@@ -85,9 +99,18 @@ export default function MaterialsList() {
   };
 
   const getDifficultyLabel = (level: number): 'beginner' | 'intermediate' | 'advanced' => {
-    if (level <= 2) return 'beginner';
-    if (level <= 3) return 'intermediate';
-    return 'advanced';
+    switch (level) {
+      case 1:
+      case 2:
+        return 'beginner';
+      case 3:
+        return 'intermediate';
+      case 4:
+      case 5:
+        return 'advanced';
+      default:
+        return 'beginner';
+    }
   };
 
   const getDifficultyText = (difficulty: string) => {
