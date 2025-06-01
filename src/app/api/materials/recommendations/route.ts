@@ -58,7 +58,6 @@ async function getUserBasedRecommendations(supabase: any, userId: string, limit:
       const categories = Array.from(new Set(userInterests?.map((m: any) => m.category).filter(Boolean)));
       const allTags = userInterests?.flatMap((m: any) => m.tags || []) || [];
       const popularTags = getPopularTags(allTags);
-      const preferredDifficulty = getMostCommonDifficulty(userInterests);
 
       // 類似教材を取得
       const { data: similarMaterials } = await supabase
@@ -232,18 +231,4 @@ function getPopularTags(tags: string[]): string[] {
     .sort(([,a], [,b]) => (b as number) - (a as number))
     .slice(0, 5)
     .map(([tag]) => tag);
-}
-
-function getMostCommonDifficulty(materials: any[]): string {
-  if (!materials?.length) return 'beginner';
-  
-  const difficultyCounts = materials.reduce((acc, m) => {
-    if (m.difficulty) {
-      acc[m.difficulty] = (acc[m.difficulty] || 0) + 1;
-    }
-    return acc;
-  }, {} as Record<string, number>);
-
-  return Object.entries(difficultyCounts)
-    .sort(([,a], [,b]) => (b as number) - (a as number))[0]?.[0] || 'beginner';
 } 

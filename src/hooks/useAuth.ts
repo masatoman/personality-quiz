@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { getClient } from '@/lib/supabase/client';
 
@@ -25,7 +25,7 @@ type UseAuthReturn = {
   user: User | null;
   isLoading: boolean;
   error: Error | null;
-  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signInWithGithub: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -38,7 +38,7 @@ export const useAuth = (): UseAuthReturn => {
   const [error, setError] = useState<Error | null>(null);
 
   // プロフィール情報を取得する関数
-  const fetchUserProfile = async (userId: string): Promise<User['profile'] | null> => {
+  const fetchUserProfile = useCallback(async (userId: string): Promise<User['profile'] | null> => {
     try {
       const supabase = getClient();
       const { data, error } = await supabase
@@ -57,10 +57,10 @@ export const useAuth = (): UseAuthReturn => {
       console.error('プロフィール取得例外:', err);
       return null;
     }
-  };
+  }, []);
 
   // ユーザー情報を更新する関数
-  const updateUserWithProfile = async (supabaseUser: SupabaseUser) => {
+  const updateUserWithProfile = useCallback(async (supabaseUser: SupabaseUser) => {
     const baseUser = mapSupabaseUser(supabaseUser);
     const profile = await fetchUserProfile(supabaseUser.id);
     
@@ -68,7 +68,7 @@ export const useAuth = (): UseAuthReturn => {
       ...baseUser,
       profile: profile || undefined,
     });
-  };
+  }, [fetchUserProfile]);
 
   // プロフィール情報を再取得する関数
   const refreshProfile = async () => {
@@ -135,9 +135,9 @@ export const useAuth = (): UseAuthReturn => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [updateUserWithProfile]);
 
-  const signIn = async (email: string, password: string, rememberMe?: boolean) => {
+  const signIn = async (email: string, password: string) => {
     try {
       setIsLoading(true);
       setError(null);

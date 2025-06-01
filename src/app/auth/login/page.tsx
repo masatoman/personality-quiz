@@ -35,7 +35,7 @@ const LoginPage = () => {
     setError(null);
 
     try {
-      await signIn(email, password, rememberMe);
+      await signIn(email, password);
       
       // リダイレクト先を取得
       const urlParams = new URLSearchParams(window.location.search);
@@ -55,13 +55,6 @@ const LoginPage = () => {
       setLoading(true);
       setError(null);
       
-      // リダイレクト先を保持
-      const urlParams = new URLSearchParams(window.location.search);
-      const redirectTo = urlParams.get('redirect') || '/dashboard';
-      
-      // コールバックURLにリダイレクト先を含める
-      const callbackUrl = `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`;
-      
       await signInWithGoogle();
     } catch (err) {
       console.error('Googleログインエラー:', err);
@@ -75,13 +68,6 @@ const LoginPage = () => {
     try {
       setLoading(true);
       setError(null);
-      
-      // リダイレクト先を保持
-      const urlParams = new URLSearchParams(window.location.search);
-      const redirectTo = urlParams.get('redirect') || '/dashboard';
-      
-      // コールバックURLにリダイレクト先を含める
-      const callbackUrl = `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`;
       
       await signInWithGithub();
     } catch (err) {

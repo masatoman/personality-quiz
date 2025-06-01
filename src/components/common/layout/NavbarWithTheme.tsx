@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from './Navbar';
-import ThemeSwitcher from './ThemeSwitcher';
+import ThemeSwitcher from '../ui/ThemeSwitcher';
 
 const NavbarWithTheme: React.FC = () => {
   return (

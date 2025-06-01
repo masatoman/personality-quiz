@@ -1,6 +1,6 @@
 export type LearningType = 'giver' | 'taker' | 'matcher';
 
-export type TabType = 'overview' | 'details' | 'recommendations';
+export type TabType = 'overview' | 'strengths' | 'weaknesses' | 'tips';
 
 export interface Recommendation {
   title: string;

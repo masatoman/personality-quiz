@@ -41,7 +41,13 @@
     "test:cypress": "cypress run",
     "generate:test": "ts-node src/utils/scripts/generate-test.ts",
     "test:accessibility": "playwright test tests/e2e/accessibility.e2e.test.ts",
-    "test:accessibility:report": "playwright test tests/e2e/accessibility.e2e.test.ts --reporter=html && playwright show-report"
+    "test:accessibility:report": "playwright test tests/e2e/accessibility.e2e.test.ts --reporter=html && playwright show-report",
+    "test:supabase": "source ./set_env.sh && node scripts/mcp-supabase-integration-test.js",
+    "test:supabase:debug": "source ./set_env.sh && DEBUG_SUPABASE=true node scripts/mcp-supabase-integration-test.js",
+    "test:db": "npm run test:supabase",
+    "test:integration:full": "npm run test:supabase && npm run test:integration",
+    "test:mvp": "npm run test:unit && npm run test:supabase && npm run test:e2e",
+    "ci:test": "npm run test:mvp"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

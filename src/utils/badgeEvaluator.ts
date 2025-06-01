@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
 
-import { BadgeRequirement, BadgeType, BADGE_DEFINITIONS } from '@/types/badges';
+import { BadgeRequirement, BadgeType, Badge } from '@/types/badges';
 import { ActivityType } from '@/types/learning';
 import { ActivitySummary } from '@/types/activitySummary';
 
@@ -12,14 +12,20 @@ import { ActivitySummary } from '@/types/activitySummary';
 export class BadgeEvaluator {
   private activitySummary: ActivitySummary;
   private currentActivityType: ActivityType;
+  private badgeDefinitions: Partial<Record<BadgeType, Badge>> = {};
 
-  constructor(activitySummary: ActivitySummary, currentActivityType: ActivityType) {
+  constructor(
+    activitySummary: ActivitySummary, 
+    currentActivityType: ActivityType,
+    badgeDefinitions: Partial<Record<BadgeType, Badge>> = {}
+  ) {
     this.activitySummary = activitySummary;
     this.currentActivityType = currentActivityType;
+    this.badgeDefinitions = badgeDefinitions;
   }
 
   public evaluateBadge(badgeType: BadgeType): boolean {
-    const badgeDefinition = BADGE_DEFINITIONS[badgeType];
+    const badgeDefinition = this.badgeDefinitions[badgeType];
     if (!badgeDefinition) {
       return false;
     }
@@ -36,10 +42,25 @@ export class BadgeEvaluator {
   }
 
   private getActivityCount(requirement: BadgeRequirement): number {
-    if (requirement.activityType === this.currentActivityType) {
-      return this.activitySummary.currentSession[requirement.activityType] || 0;
+    // ActivitySummary型の実際の構造に合わせてアクセス
+    switch (requirement.activityType) {
+      case 'complete_resource':
+        return this.activitySummary.complete_resource_count || 0;
+      case 'start_resource':
+        return this.activitySummary.start_resource_count || 0;
+      case 'create_material':
+        return this.activitySummary.create_material_count || 0;
+      case 'provide_feedback':
+        return this.activitySummary.provide_feedback_count || 0;
+      case 'daily_login':
+        return this.activitySummary.daily_login_count || 0;
+      case 'share_resource':
+        return this.activitySummary.share_resource_count || 0;
+      case 'quiz_complete':
+        return this.activitySummary.quiz_complete_count || 0;
+      default:
+        return 0;
     }
-    return this.activitySummary.total[requirement.activityType] || 0;
   }
 
   /**

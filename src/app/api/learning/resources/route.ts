@@ -25,11 +25,14 @@ export async function GET(request: NextRequest) {
       .from('learning_resources')
       .select(`
         *,
-        resource_categories(id, name, icon_name),
-        difficulty_levels(id, level_code, display_name, color_code)
-      `)
+        resource_categories(id, name, color_code),
+        difficulty_levels(id, display_name, color_code),
+        profiles!learning_resources_author_id_fkey(display_name)
+      `, { count: 'exact' })
       .eq('is_published', true)
-      .eq('moderation_status', 'approved');
+      .eq('moderation_status', 'approved')
+      .order('created_at', { ascending: false })
+      .range((page - 1) * limit, page * limit - 1);
 
     // フィルタリング
     if (category) {
@@ -64,7 +67,7 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit;
     query = query.range(offset, offset + limit - 1);
 
-    const { data: resources, error, count } = await query;
+    const { data: resources, error } = await query;
 
     if (error) throw error;
 

@@ -35,7 +35,7 @@ export async function initPool() {
 }
 
 // Supabaseクエリ実行関数
-export async function query(text: string, params?: any[], retries = 3) {
+export async function query(text: string) {
   const client = getSupabaseClient();
   
   if (!client) {
@@ -69,7 +69,7 @@ export async function cachedQuery(text: string, params?: any[], ttl: number = CA
   }
   
   try {
-    const result = await query(text, params);
+    const result = await query(text);
     queryCache.set(cacheKey, {
       data: result,
       timestamp: Date.now()

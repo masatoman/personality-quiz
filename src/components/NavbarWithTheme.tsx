@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from './Navbar';
+import Navbar from './common/layout/Navbar';
 import ThemeSwitcher from './ThemeSwitcher';
 
 const NavbarWithTheme: React.FC = () => {

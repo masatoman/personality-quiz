@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 
 import React, { memo, useCallback, useState, useTransition } from 'react';
-import { FixedSizeList as List } from 'react-window';
+import { FixedSizeList as List, ListOnScrollProps } from 'react-window';
 import { twMerge } from 'tailwind-merge';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -27,7 +27,7 @@ function WeeklyRankingsBase({
   const [isScrolling, setIsScrolling] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+  const handleScroll = useCallback((props: ListOnScrollProps) => {
     if (!isScrolling) {
       setIsScrolling(true);
     }

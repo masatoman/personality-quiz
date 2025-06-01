@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
-import { Question } from '@/types/quiz';
+import { QuizQuestion } from '@/types/quiz';
 
 interface QuestionCardProps {
-  question: Question;
+  question: QuizQuestion;
   currentQuestion: number;
   totalQuestions: number;
   onAnswer: (index: number) => void;

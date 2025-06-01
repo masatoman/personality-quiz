@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { query } from '@/lib/db';
+import { createClient } from '@/utils/supabase/server';
 import { v4 as uuidv4 } from 'uuid';
 import { QuizResults } from '@/types/quiz';
 import fs from 'fs';
@@ -70,13 +70,22 @@ export async function POST(request: NextRequest) {
     
     try {
       // データベースに結果を保存
-      await query(
-        `INSERT INTO quiz_results (user_id, dominant_type, giver_score, taker_score, matcher_score, is_quick_mode)
-         VALUES ($1, $2, $3, $4, $5, $6)
-         RETURNING id`,
-        [userId, data.dominantType, data.giver, data.taker, data.matcher, !!data.isQuickMode]
-      );
+      const supabase = createClient();
+      const { data: insertData, error } = await supabase
+        .from('quiz_results')
+        .insert([
+          {
+            user_id: userId,
+            dominant_type: data.dominantType,
+            giver_score: data.giver,
+            taker_score: data.taker,
+            matcher_score: data.matcher,
+            is_quick_mode: !!data.isQuickMode
+          }
+        ])
+        .select('id');
       
+      if (error) throw error;
       dbSaveSuccess = true;
     } catch (err) {
       const error = err as Error;

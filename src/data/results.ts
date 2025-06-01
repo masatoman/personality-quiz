@@ -1,6 +1,20 @@
-import { Result } from '@/types/quiz';
+import { QuizResult } from '@/types/quiz';
 
-export const results: Record<string, Result> = {
+interface LearningAdviceItem {
+  title: string;
+  tips: string[];
+  tools: string[];
+}
+
+interface PersonalityResult {
+  type: string;
+  description: string;
+  strengths: string[];
+  weaknesses: string[];
+  learningAdvice: LearningAdviceItem[];
+}
+
+export const results: Record<string, PersonalityResult> = {
   giver: {
     type: 'giver',
     description: '「共感型学習者」のあなたは、他者の成長をサポートしながら自身も成長することに喜びを感じるタイプです。共に学び合う環境で最も力を発揮します。',

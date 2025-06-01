@@ -103,20 +103,4 @@ export async function GET() {
     console.error('ポイント残高API例外:', error);
     return NextResponse.json({ error: '予期せぬエラーが発生しました' }, { status: 500 });
   }
-}
-
-// ギバーランク取得用のRPC関数が存在しない場合のフォールバック
-async function getUserGiverRankFallback(supabase: any, userId: string) {
-  try {
-    const { data: allUsers } = await supabase
-      .from('user_points')
-      .select('user_id, giver_score')
-      .order('giver_score', { ascending: false });
-    
-    const userIndex = allUsers?.findIndex((u: any) => u.user_id === userId);
-    return userIndex !== -1 ? userIndex + 1 : null;
-  } catch (error) {
-    console.error('ギバーランク計算エラー:', error);
-    return null;
-  }
 } 
