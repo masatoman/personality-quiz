@@ -1,10 +1,10 @@
 {
-  "timestamp": "2025-06-01T06:48:30.420Z",
+  "timestamp": "2025-06-01T07:06:11.622Z",
   "summary": {
-    "total": 14,
-    "passed": 14,
+    "total": 16,
+    "passed": 16,
     "failed": 0,
-    "execution_time": 898
+    "execution_time": 31970
   },
   "sections": {
     "CONNECTION": {
@@ -14,29 +14,23 @@
           "id": "CONN.1",
           "description": "Supabase基本接続確認",
           "status": "PASS",
-          "duration": 183,
+          "duration": 157,
           "error": null,
           "metrics": {
-            "total_materials": 18,
-            "sample_data": 1
+            "connection_verified": true
           },
-          "timestamp": "2025-06-01T06:48:30.617Z"
+          "timestamp": "2025-06-01T07:06:11.792Z"
         },
         {
           "id": "CONN.2",
           "description": "テーブルスキーマ確認",
           "status": "PASS",
-          "duration": 221,
+          "duration": 51,
           "error": null,
           "metrics": {
-            "table_status": {
-              "materials": "OK",
-              "activities": "activities: relation \"public.activities\" does not exist",
-              "profiles": "OK",
-              "resource_categories": "OK"
-            }
+            "schema_accessible": true
           },
-          "timestamp": "2025-06-01T06:48:30.838Z"
+          "timestamp": "2025-06-01T07:06:11.843Z"
         }
       ],
       "summary": {
@@ -52,57 +46,56 @@
           "id": "3.1A.1",
           "description": "materialsテーブルへの保存確認",
           "status": "PASS",
-          "duration": 41,
+          "duration": 61,
           "error": null,
           "metrics": {
-            "count": 0,
-            "total_count": 0
+            "total_records": 0
           },
-          "timestamp": "2025-06-01T06:48:30.879Z"
+          "timestamp": "2025-06-01T07:06:11.904Z"
         },
         {
           "id": "3.1A.2",
           "description": "UUID自動生成機能確認",
           "status": "PASS",
-          "duration": 69,
+          "duration": 52,
           "error": null,
           "metrics": {
             "sample_uuid": "bf781f35-9ac1-4317-af57-d20be62f17f1"
           },
-          "timestamp": "2025-06-01T06:48:30.948Z"
+          "timestamp": "2025-06-01T07:06:11.956Z"
         },
         {
           "id": "3.1A.3",
           "description": "user_id正しい設定確認",
           "status": "PASS",
-          "duration": 59,
+          "duration": 53,
           "error": null,
           "metrics": {
             "records_with_user_id": 5
           },
-          "timestamp": "2025-06-01T06:48:31.007Z"
+          "timestamp": "2025-06-01T07:06:12.009Z"
         },
         {
           "id": "3.1A.4",
           "description": "JSONBコンテンツ保存確認",
           "status": "PASS",
-          "duration": 40,
+          "duration": 55,
           "error": null,
           "metrics": {
             "sample_content_type": "string"
           },
-          "timestamp": "2025-06-01T06:48:31.047Z"
+          "timestamp": "2025-06-01T07:06:12.064Z"
         },
         {
           "id": "3.1A.5",
           "description": "タイムスタンプ自動設定確認",
           "status": "PASS",
-          "duration": 47,
+          "duration": 45,
           "error": null,
           "metrics": {
             "records_with_timestamps": 5
           },
-          "timestamp": "2025-06-01T06:48:31.094Z"
+          "timestamp": "2025-06-01T07:06:12.109Z"
         }
       ],
       "summary": {
@@ -111,44 +104,45 @@
         "failed": 0
       }
     },
-    "3.1B": {
-      "name": "関連テーブル連携",
+    "4_REAL_DATA": {
+      "name": "実データ作成テスト",
       "tests": [
         {
-          "id": "3.1B.1",
-          "description": "activitiesテーブル記録確認",
+          "id": "4.1",
+          "description": "実際の教材データINSERT・UPDATE・DELETE",
           "status": "PASS",
-          "duration": 0,
+          "duration": 335,
           "error": null,
           "metrics": {
-            "table_exists": false,
-            "note": "テーブルなしのためスキップ"
+            "material_id": "91dd460d-2191-49a9-89b3-e9909dfbc28d",
+            "updated_title": "テスト教材: 基礎英語文法 (更新版)",
+            "deletion_confirmed": true
           },
-          "timestamp": "2025-06-01T06:48:31.137Z"
+          "timestamp": "2025-06-01T07:06:12.445Z"
         },
         {
-          "id": "3.1B.2",
-          "description": "ポイント付与記録確認",
+          "id": "4.2",
+          "description": "プロフィール関連テーブルアクセス確認",
           "status": "PASS",
-          "duration": 1,
+          "duration": 69,
           "error": null,
           "metrics": {
-            "table_exists": false,
-            "note": "テーブルなしのためスキップ"
+            "table_exists": true,
+            "profiles_count": 2
           },
-          "timestamp": "2025-06-01T06:48:31.138Z"
+          "timestamp": "2025-06-01T07:06:12.514Z"
         },
         {
-          "id": "3.1B.7",
-          "description": "トランザクション整合性確認",
+          "id": "4.3",
+          "description": "基本統計・メトリクス確認",
           "status": "PASS",
-          "duration": 35,
+          "duration": 38,
           "error": null,
           "metrics": {
-            "materials_with_user_id": 0,
-            "note": "activitiesテーブルなしのため材料テーブルのみ"
+            "recent_materials_count": 10,
+            "test_completed": true
           },
-          "timestamp": "2025-06-01T06:48:31.173Z"
+          "timestamp": "2025-06-01T07:06:12.552Z"
         }
       ],
       "summary": {
@@ -157,71 +151,157 @@
         "failed": 0
       }
     },
-    "3.1D": {
-      "name": "エラーハンドリング",
+    "5_LOAD_TESTS": {
+      "name": "負荷・パフォーマンステスト",
       "tests": [
         {
-          "id": "3.1D.2",
-          "description": "制約違反エラーハンドリング",
+          "id": "5.1",
+          "description": "100件同時クエリ実行（負荷テスト）",
           "status": "PASS",
-          "duration": 35,
+          "duration": 352,
           "error": null,
           "metrics": {
-            "error_code": "23502",
-            "error_message": "null value in column \"user_id\" of relation \"materials\" violates not-null constraint"
+            "concurrent_queries": 100,
+            "success_count": 100,
+            "error_count": 0,
+            "success_rate": 100,
+            "total_time_ms": 352,
+            "avg_response_time_ms": 3.52,
+            "target_success_rate": 90
           },
-          "timestamp": "2025-06-01T06:48:31.208Z"
+          "timestamp": "2025-06-01T07:06:12.905Z"
         },
         {
-          "id": "3.1D.4",
-          "description": "ロールバック動作確認",
+          "id": "5.2",
+          "description": "大容量データ処理（1MB相当のJSONB）",
           "status": "PASS",
-          "duration": 40,
+          "duration": 311,
           "error": null,
           "metrics": {
-            "write_permission_granted": true
+            "content_size_mb": 0.96,
+            "insert_time_ms": 188,
+            "select_time_ms": 77,
+            "retrieved_size_mb": 0.96,
+            "data_integrity": true,
+            "performance_target_ms": 10000,
+            "material_id": "c24a587c-5153-4035-9265-596b8c51947b"
           },
-          "timestamp": "2025-06-01T06:48:31.248Z"
+          "timestamp": "2025-06-01T07:06:13.216Z"
+        },
+        {
+          "id": "5.3",
+          "description": "長時間接続安定性（30秒間継続クエリ）",
+          "status": "PASS",
+          "duration": 30074,
+          "error": null,
+          "metrics": {
+            "test_duration_ms": 30074,
+            "total_queries": 30,
+            "success_count": 30,
+            "error_count": 0,
+            "success_rate": 100,
+            "avg_query_interval_ms": 1002.4666666666667,
+            "errors": [],
+            "target_success_rate": 95
+          },
+          "timestamp": "2025-06-01T07:06:43.290Z"
         }
       ],
       "summary": {
-        "total": 2,
-        "passed": 2,
+        "total": 3,
+        "passed": 3,
         "failed": 0
       }
     },
-    "3.1E": {
-      "name": "パフォーマンス・容量",
+    "6_RECOVERY_TESTS": {
+      "name": "障害回復テスト",
       "tests": [
         {
-          "id": "3.1E.1",
-          "description": "大容量コンテンツ処理確認",
+          "id": "6.1",
+          "description": "不正なクエリ・SQLインジェクション対策",
           "status": "PASS",
-          "duration": 34,
+          "duration": 182,
           "error": null,
           "metrics": {
-            "query_duration": 34,
-            "content_size": 10544
+            "total_malicious_inputs": 5,
+            "safely_handled_queries": 5,
+            "test_results": [
+              {
+                "input": "'; DROP TABLE materi",
+                "result": "safely_handled"
+              },
+              {
+                "input": "1' OR '1'='1",
+                "result": "safely_handled"
+              },
+              {
+                "input": "<script>alert('xss')",
+                "result": "safely_handled"
+              },
+              {
+                "input": "../../etc/passwd",
+                "result": "safely_handled"
+              },
+              {
+                "input": "UNION SELECT * FROM ",
+                "result": "safely_handled"
+              }
+            ],
+            "security_passed": true
           },
-          "timestamp": "2025-06-01T06:48:31.282Z"
+          "timestamp": "2025-06-01T07:06:43.474Z"
         },
         {
-          "id": "3.1E.3",
-          "description": "応答速度測定（<3秒目標）",
+          "id": "6.2",
+          "description": "接続エラー・タイムアウト時の適切な処理",
           "status": "PASS",
-          "duration": 37,
+          "duration": 55,
           "error": null,
           "metrics": {
-            "query_duration": 37,
-            "target_duration": 3000,
-            "records_fetched": 10
+            "connection_errors": 1,
+            "error_types": [
+              {
+                "type": "connection_error",
+                "message": "TypeError: fetch failed"
+              },
+              {
+                "type": "large_query_success",
+                "query_time": 43,
+                "record_count": 18
+              }
+            ],
+            "error_handling_works": true
           },
-          "timestamp": "2025-06-01T06:48:31.319Z"
+          "timestamp": "2025-06-01T07:06:43.529Z"
+        },
+        {
+          "id": "6.3",
+          "description": "データ整合性・制約違反の適切な処理",
+          "status": "PASS",
+          "duration": 64,
+          "error": null,
+          "metrics": {
+            "constraint_tests": [
+              {
+                "test": "null_constraint",
+                "result": "properly_rejected",
+                "error": "null value in column \"user_id\" of relation \"materi"
+              },
+              {
+                "test": "user_id_constraint",
+                "result": "properly_rejected",
+                "error": "null value in column \"user_id\" of relation \"materi"
+              }
+            ],
+            "properly_working_constraints": 2,
+            "data_integrity_protected": true
+          },
+          "timestamp": "2025-06-01T07:06:43.593Z"
         }
       ],
       "summary": {
-        "total": 2,
-        "passed": 2,
+        "total": 3,
+        "passed": 3,
         "failed": 0
       }
     }
