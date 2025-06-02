@@ -1,167 +1,188 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getMaterials } from '@/lib/api/materials';
 import { createClient } from '@/lib/supabase/server';
+import { checkRateLimit, setRateLimitHeaders, RateLimitPresets } from '@/lib/rate-limit';
 
-// 基本情報の型定義
-interface BasicInfo {
-  title: string;
-  description: string;
-  tags: string[];
-  coverImage?: string;
-}
-
-// コンテンツセクションの型定義
-interface ContentSection {
-  id: string;
-  type: 'text' | 'image' | 'video' | 'quiz';
-  title: string;
-  content: string;
-  options?: string[];
-  answer?: number;
-}
-
-// 設定情報の型定義
-interface SettingsData {
-  isPublic: boolean;
-  allowComments: boolean;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  estimatedTime: number;
-  targetAudience: string[];
-  prerequisites: string;
-}
-
-interface MaterialData {
-  basicInfo: BasicInfo;
-  contentSections: ContentSection[];
-  settings: SettingsData;
-}
+// Dynamic Server Usage エラーを解決するため動的レンダリングを強制
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function POST(request: NextRequest) {
   try {
-    // リクエストボディからデータを取得
-    const data: MaterialData = await request.json();
+    // Rate Limiting チェック
+    const rateLimitResult = checkRateLimit(request, RateLimitPresets.CREATE);
     
-    // バリデーション
-    if (!data.basicInfo?.title) {
-      return NextResponse.json(
-        { error: 'タイトルは必須です' },
-        { status: 400 }
+    if (rateLimitResult.isBlocked) {
+      const response = NextResponse.json(
+        { 
+          error: 'Too many requests. Please try again later.',
+          message: 'Rate limit exceeded for material creation'
+        },
+        { status: 429 }
       );
+      setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.CREATE);
+      return response;
     }
-    
-    if (!data.contentSections || data.contentSections.length === 0) {
-      return NextResponse.json(
-        { error: 'コンテンツが必要です' },
-        { status: 400 }
-      );
-    }
-    
-    // Supabaseクライアントの初期化
+
     const supabase = createClient();
     
-    // 現在のユーザーを取得
+    // 認証確認
     const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
     if (userError || !user) {
-      console.error('認証エラー:', userError);
-      return NextResponse.json(
-        { error: 'ユーザー認証に失敗しました' },
+      const response = NextResponse.json(
+        { error: '認証が必要です' },
         { status: 401 }
       );
+      setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.CREATE);
+      return response;
     }
+
+    const data = await request.json();
     
-    // 教材データを作成
-    const materialData = {
-      title: data.basicInfo.title,
-      description: data.basicInfo.description,
-      author_id: user.id,
-      thumbnail_url: data.basicInfo.coverImage || null,
-      tags: data.basicInfo.tags,
-      status: data.settings.isPublic ? 'published' : 'draft',
-      difficulty: data.settings.difficulty,
-      estimated_time: data.settings.estimatedTime,
-      allow_comments: data.settings.allowComments,
-      target_audience: data.settings.targetAudience,
-      prerequisites: data.settings.prerequisites,
-    };
-    
-    // 教材をデータベースに保存
-    const { data: material, error: materialError } = await supabase
+    // バリデーション
+    if (!data.title || !data.content || !data.category || !data.difficulty_level) {
+      const response = NextResponse.json(
+        { error: '必須フィールドが不足しています' },
+        { status: 400 }
+      );
+      setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.CREATE);
+      return response;
+    }
+
+    // 教材作成
+    const { data: material, error } = await supabase
       .from('materials')
-      .insert(materialData)
+      .insert({
+        title: data.title,
+        content: data.content,
+        category: data.category,
+        difficulty_level: data.difficulty_level,
+        description: data.description || '',
+        author_id: user.id,
+        is_public: data.is_public || false,
+        tags: data.tags || [],
+        thumbnail_url: data.thumbnail_url || null,
+        estimated_duration: data.estimated_duration || null
+      })
       .select()
       .single();
-    
-    if (materialError) {
-      console.error('教材保存エラー:', materialError);
-      return NextResponse.json(
-        { error: '教材の保存に失敗しました' },
+
+    if (error) {
+      console.error('教材作成エラー:', error);
+      const response = NextResponse.json(
+        { error: '教材の作成に失敗しました' },
         { status: 500 }
       );
+      setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.CREATE);
+      return response;
     }
-    
-    // コンテンツセクションを保存
-    const sectionsWithMaterialId = data.contentSections.map((section, index) => ({
-      material_id: material.id,
-      type: section.type,
-      title: section.title,
-      content: section.content,
-      options: section.options,
-      answer: section.answer,
-      order: index,
-    }));
-    
-    const { error: sectionsError } = await supabase
-      .from('material_sections')
-      .insert(sectionsWithMaterialId);
-    
-    if (sectionsError) {
-      console.error('セクション保存エラー:', sectionsError);
-      // 教材は保存されているので、エラーだけ記録して続行する
-    }
-    
-    // DB保存成功時のレスポンス
-    return NextResponse.json({
-      id: material.id,
+
+    const response = NextResponse.json({
       success: true,
-      message: '教材が正常に保存されました',
-      createdAt: material.created_at,
-      updatedAt: material.created_at,
-      // ギバースコア変動値を仮に返す
-      giverScoreChange: 10,
-      earnedPoints: 50,
-    });
+      material
+    }, { status: 201 });
+    
+    // Rate Limit情報をヘッダーに追加
+    setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.CREATE);
+    
+    return response;
+
   } catch (error) {
-    console.error('教材保存エラー:', error);
-    return NextResponse.json(
-      { error: '教材の保存中にエラーが発生しました' },
+    console.error('教材作成API例外:', error);
+    const response = NextResponse.json(
+      { error: '教材作成中にエラーが発生しました' },
       { status: 500 }
     );
+    return response;
   }
 }
 
 // 教材一覧を取得
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
+    // 読み取り操作には緩い制限を適用
+    const rateLimitResult = checkRateLimit(request, RateLimitPresets.LENIENT);
+    
+    if (rateLimitResult.isBlocked) {
+      const response = NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      );
+      setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.LENIENT);
+      return response;
+    }
+
     const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 50);
+    const category = searchParams.get('category');
+    const difficulty = searchParams.get('difficulty');
+    const search = searchParams.get('search');
     
-    // クエリパラメータの取得
-    const options = {
-      category: searchParams.get('category') || undefined,
-      difficulty: searchParams.get('difficulty') as any || undefined,
-      sort: searchParams.get('sort') || undefined,
-      page: searchParams.get('page') ? parseInt(searchParams.get('page')!, 10) : undefined,
-      limit: searchParams.get('limit') ? parseInt(searchParams.get('limit')!, 10) : undefined,
-      userId: searchParams.get('userId') || undefined, // ユーザーIDフィルタリング用
-    };
+    const supabase = createClient();
     
-    const materials = await getMaterials(options);
+    // クエリ構築
+    let query = supabase
+      .from('materials')
+      .select(`
+        *,
+        profiles!author_id(
+          id,
+          username,
+          display_name,
+          avatar_url
+        )
+      `)
+      .eq('is_public', true)
+      .order('created_at', { ascending: false });
+
+    // フィルタリング
+    if (category) {
+      query = query.eq('category', category);
+    }
     
-    return NextResponse.json(materials);
+    if (difficulty) {
+      query = query.eq('difficulty_level', difficulty);
+    }
+    
+    if (search) {
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+    }
+    
+    // ページネーション
+    const offset = (page - 1) * limit;
+    const { data: materials, error, count } = await query
+      .range(offset, offset + limit - 1)
+      .limit(limit);
+
+    if (error) {
+      console.error('教材取得エラー:', error);
+      const response = NextResponse.json(
+        { error: '教材の取得に失敗しました' },
+        { status: 500 }
+      );
+      setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.LENIENT);
+      return response;
+    }
+
+    const response = NextResponse.json({
+      materials: materials || [],
+      pagination: {
+        page,
+        limit,
+        total: count || 0,
+        hasMore: (materials?.length || 0) === limit
+      }
+    });
+    
+    // Rate Limit情報をヘッダーに追加
+    setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.LENIENT);
+    
+    return response;
+
   } catch (error) {
-    console.error('教材一覧取得エラー:', error);
+    console.error('教材取得API例外:', error);
     return NextResponse.json(
-      { error: '教材一覧の取得中にエラーが発生しました' },
+      { error: '教材取得中にエラーが発生しました' },
       { status: 500 }
     );
   }

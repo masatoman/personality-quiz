@@ -24,12 +24,49 @@ const publicPaths = [
   '/materials'    // 公開教材一覧
 ];
 
+// セキュリティヘッダーを設定する関数
+function setSecurityHeaders(response: NextResponse): NextResponse {
+  // 基本セキュリティヘッダー
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
+  // コンテンツセキュリティポリシー
+  const csp = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data: blob: https:",
+    "connect-src 'self' https://*.supabase.co https://vercel.live wss://*.supabase.co",
+    "media-src 'self' data: blob:",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    "upgrade-insecure-requests"
+  ].join('; ');
+  
+  response.headers.set('Content-Security-Policy', csp);
+  
+  // その他のセキュリティヘッダー
+  response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  response.headers.set('X-DNS-Prefetch-Control', 'off');
+  response.headers.set('X-Download-Options', 'noopen');
+  response.headers.set('X-Permitted-Cross-Domain-Policies', 'none');
+  
+  return response;
+}
+
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  // 公開パスの場合はスキップ
+  // 公開パスの場合はスキップ（ただしセキュリティヘッダーは適用）
   if (publicPaths.some(publicPath => path.startsWith(publicPath))) {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    return setSecurityHeaders(response);
   }
 
   // 認証が必要なパスかチェック
@@ -41,7 +78,7 @@ export async function middleware(request: NextRequest) {
     
     if (!supabaseUrl || !supabaseKey) {
       console.error('Supabase環境変数が設定されていません');
-      return redirectToLogin(request, path);
+      return setSecurityHeaders(redirectToLogin(request, path));
     }
 
     try {
@@ -52,7 +89,7 @@ export async function middleware(request: NextRequest) {
       
       if (!sessionToken && !authHeader) {
         console.log(`🔒 未認証アクセスを検出: ${path}`);
-        return redirectToLogin(request, path);
+        return setSecurityHeaders(redirectToLogin(request, path));
       }
 
       // セッション検証（簡易版 - 本格的な検証はAPIレベルで実施）
@@ -70,33 +107,28 @@ export async function middleware(request: NextRequest) {
           // 有効期限チェック
           if (payload.exp && Date.now() >= payload.exp * 1000) {
             console.log('🕐 セッション期限切れ:', path);
-            return redirectToLogin(request, path);
+            return setSecurityHeaders(redirectToLogin(request, path));
           }
           
         } catch {
           console.log('🔒 不正なセッショントークン:', path);
-          return redirectToLogin(request, path);
+          return setSecurityHeaders(redirectToLogin(request, path));
         }
       }
 
     } catch (error) {
       console.error('認証ミドルウェアエラー:', error);
-      return redirectToLogin(request, path);
+      return setSecurityHeaders(redirectToLogin(request, path));
     }
 
     // 認証成功時のレスポンス
     const response = NextResponse.next();
-    
-    // セキュリティヘッダーの追加
-    response.headers.set('X-Content-Type-Options', 'nosniff');
-    response.headers.set('X-Frame-Options', 'DENY');
-    response.headers.set('X-XSS-Protection', '1; mode=block');
-    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-    
-    return response;
+    return setSecurityHeaders(response);
   }
 
-  return NextResponse.next();
+  // その他のパスもセキュリティヘッダーを適用
+  const response = NextResponse.next();
+  return setSecurityHeaders(response);
 }
 
 // ログインページへのリダイレクト関数
@@ -106,13 +138,6 @@ function redirectToLogin(request: NextRequest, originalPath: string) {
   url.search = `?redirect=${encodeURIComponent(originalPath)}`;
   
   const response = NextResponse.redirect(url);
-  
-  // セキュリティヘッダーの追加
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-XSS-Protection', '1; mode=block');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  
   return response;
 }
 

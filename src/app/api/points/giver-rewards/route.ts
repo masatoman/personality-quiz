@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+// Dynamic Server Usage エラーを解決するため動的レンダリングを強制
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // ギバー行動の種類とポイント
 const GIVER_ACTIONS = {
   material_created: { base: 50, multiplier: 1.0, description: '教材作成' },

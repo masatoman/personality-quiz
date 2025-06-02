@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { Material } from '@/types/material';
@@ -10,11 +10,22 @@ export default function MaterialsList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchMaterials();
+  const getDifficultyLabel = useCallback((level: number): 'beginner' | 'intermediate' | 'advanced' => {
+    switch (level) {
+      case 1:
+      case 2:
+        return 'beginner';
+      case 3:
+        return 'intermediate';
+      case 4:
+      case 5:
+        return 'advanced';
+      default:
+        return 'beginner';
+    }
   }, []);
 
-  const fetchMaterials = async () => {
+  const fetchMaterials = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -96,22 +107,11 @@ export default function MaterialsList() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [getDifficultyLabel]);
 
-  const getDifficultyLabel = (level: number): 'beginner' | 'intermediate' | 'advanced' => {
-    switch (level) {
-      case 1:
-      case 2:
-        return 'beginner';
-      case 3:
-        return 'intermediate';
-      case 4:
-      case 5:
-        return 'advanced';
-      default:
-        return 'beginner';
-    }
-  };
+  useEffect(() => {
+    fetchMaterials();
+  }, [fetchMaterials]);
 
   const getDifficultyText = (difficulty: string) => {
     switch (difficulty) {

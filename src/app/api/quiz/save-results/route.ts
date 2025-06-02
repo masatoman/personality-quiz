@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     try {
       // データベースに結果を保存
       const supabase = createClient();
-      const { data: insertData, error } = await supabase
+      const { error } = await supabase
         .from('quiz_results')
         .insert([
           {
@@ -82,8 +82,7 @@ export async function POST(request: NextRequest) {
             matcher_score: data.matcher,
             is_quick_mode: !!data.isQuickMode
           }
-        ])
-        .select('id');
+        ]);
       
       if (error) throw error;
       dbSaveSuccess = true;
