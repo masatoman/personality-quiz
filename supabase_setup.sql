@@ -28,20 +28,41 @@ COMMENT ON TABLE public.profiles IS 'ユーザープロフィール詳細情報'
 -- コンテンツ/教材テーブル
 CREATE TABLE IF NOT EXISTS public.materials (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  author_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   description TEXT,
   content JSONB NOT NULL,
+  thumbnail_url TEXT,
   category TEXT NOT NULL,
   tags TEXT[] DEFAULT '{}',
-  difficulty_level INTEGER CHECK (difficulty_level BETWEEN 1 AND 5),
-  is_published BOOLEAN DEFAULT FALSE,
+  difficulty TEXT CHECK (difficulty IN ('beginner', 'intermediate', 'advanced')),
+  estimated_time INTEGER DEFAULT 0,
+  status TEXT CHECK (status IN ('draft', 'published')) DEFAULT 'draft',
+  allow_comments BOOLEAN DEFAULT TRUE,
+  target_audience TEXT[] DEFAULT '{}',
+  prerequisites TEXT,
+  language TEXT DEFAULT 'ja',
+  version TEXT DEFAULT '1.0.0',
   view_count INTEGER DEFAULT 0,
   rating NUMERIC(3,2) DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 COMMENT ON TABLE public.materials IS '教材コンテンツ情報（JSONBフィールドに構造化コンテンツを格納）';
+
+-- 教材セクションテーブル（新規追加）
+CREATE TABLE IF NOT EXISTS public.material_sections (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  material_id UUID NOT NULL REFERENCES public.materials(id) ON DELETE CASCADE,
+  type TEXT NOT NULL CHECK (type IN ('text', 'image', 'video', 'quiz')),
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  options TEXT[],
+  answer INTEGER,
+  "order" INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+COMMENT ON TABLE public.material_sections IS '教材内のセクション・コンテンツ情報';
 
 -- コンテンツへのフィードバックテーブル
 CREATE TABLE IF NOT EXISTS public.feedback (
@@ -143,7 +164,7 @@ CREATE INDEX quiz_results_user_id_idx ON public.quiz_results(user_id);
 CREATE INDEX quiz_results_created_at_idx ON public.quiz_results(created_at);
 
 -- インデックス作成
-CREATE INDEX materials_user_id_idx ON public.materials(user_id);
+CREATE INDEX materials_user_id_idx ON public.materials(author_id);
 CREATE INDEX materials_category_idx ON public.materials(category);
 CREATE INDEX materials_created_at_idx ON public.materials(created_at);
 CREATE INDEX materials_rating_idx ON public.materials(rating);
@@ -194,10 +215,10 @@ CREATE POLICY profiles_update_own ON public.profiles FOR UPDATE
 
 -- 教材用ポリシー
 CREATE POLICY materials_read_published ON public.materials FOR SELECT
-  USING (is_published OR user_id = auth.uid() OR public.is_admin());
+  USING (status = 'published' OR author_id = auth.uid() OR public.is_admin());
 
 CREATE POLICY materials_crud_own ON public.materials FOR ALL
-  USING (user_id = auth.uid() OR public.is_admin());
+  USING (author_id = auth.uid() OR public.is_admin());
 
 -- フィードバック用ポリシー
 CREATE POLICY feedback_read_all ON public.feedback FOR SELECT TO authenticated

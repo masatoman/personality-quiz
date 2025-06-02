@@ -1,99 +1,105 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { checkRateLimit, setRateLimitHeaders, RateLimitPresets } from '@/lib/rate-limit';
 
 // ポイント獲得処理
 export async function POST(request: NextRequest) {
   try {
+    // Rate Limiting チェック - ポイント獲得は厳しい制限を適用
+    const rateLimitResult = checkRateLimit(request, RateLimitPresets.STRICT);
+    
+    if (rateLimitResult.isBlocked) {
+      const response = NextResponse.json(
+        { 
+          error: 'Too many requests. Please try again later.',
+          message: 'Rate limit exceeded for point earning'
+        },
+        { status: 429 }
+      );
+      setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.STRICT);
+      return response;
+    }
+
     const supabase = createClient();
     
     // 認証確認
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: '認証が必要です' },
         { status: 401 }
       );
+      setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.STRICT);
+      return response;
     }
     
-    const { activityType, activityData, points, description } = await request.json();
+    const { activity_type, points, metadata } = await request.json();
     
-    if (!activityType || !points || points <= 0) {
-      return NextResponse.json(
-        { error: 'アクティビティタイプとポイント数が必要です' },
+    if (!activity_type || !points || points <= 0) {
+      const response = NextResponse.json(
+        { error: 'Invalid request data' },
         { status: 400 }
       );
+      setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.STRICT);
+      return response;
     }
     
-    // トランザクション開始
-    const { data: currentPoints, error: fetchError } = await supabase
-      .from('user_points')
-      .select('total_points')
-      .eq('user_id', user.id)
-      .single();
-    
-    if (fetchError && fetchError.code !== 'PGRST116') {
-      console.error('現在のポイント取得エラー:', fetchError);
-      return NextResponse.json(
-        { error: 'ポイント情報の取得に失敗しました' },
-        { status: 500 }
-      );
-    }
-    
-    const previousPoints = currentPoints?.total_points || 0;
-    const newTotal = previousPoints + points;
-    
-    // ポイント更新
-    const { error: updateError } = await supabase
-      .from('user_points')
-      .upsert({
-        user_id: user.id,
-        total_points: newTotal,
-        last_earned_at: new Date().toISOString(),
-      });
-    
-    if (updateError) {
-      console.error('ポイント更新エラー:', updateError);
-      return NextResponse.json(
-        { error: 'ポイントの更新に失敗しました' },
-        { status: 500 }
-      );
-    }
-    
-    // 活動履歴記録
-    await supabase
-      .from('user_activities')
-      .insert({
-        user_id: user.id,
-        activity_type: activityType,
-        activity_data: activityData || {},
-        points_earned: points,
-      });
-    
-    // ポイント履歴記録
-    await supabase
+    // ポイント獲得処理
+    const { data: transaction, error } = await supabase
       .from('point_transactions')
       .insert({
         user_id: user.id,
         transaction_type: 'earned',
         points: points,
-        activity_type: activityType,
-        description: description || `${activityType}でポイント獲得`,
-        previous_balance: previousPoints,
-        new_balance: newTotal,
+        activity_type: activity_type,
+        metadata: metadata || {},
+        created_at: new Date().toISOString()
+      })
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('ポイント獲得エラー:', error);
+      const response = NextResponse.json(
+        { error: 'ポイントの獲得に失敗しました' },
+        { status: 500 }
+      );
+      setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.STRICT);
+      return response;
+    }
+    
+    // ユーザーの総ポイントを更新
+    const { error: updateError } = await supabase
+      .from('user_points')
+      .upsert({
+        user_id: user.id,
+        total_points: points,
+        last_earned_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id',
+        ignoreDuplicates: false
       });
     
-    return NextResponse.json({
+    if (updateError) {
+      console.error('ポイント更新エラー:', updateError);
+    }
+    
+    const response = NextResponse.json({
       success: true,
-      pointsEarned: points,
-      totalPoints: newTotal,
-      previousPoints,
-      message: `${points}ポイント獲得しました！`,
+      transaction,
+      earnedPoints: points
     });
+    
+    // Rate Limit情報をヘッダーに追加
+    setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.STRICT);
+    
+    return response;
   } catch (error) {
-    console.error('ポイント獲得エラー:', error);
-    return NextResponse.json(
-      { error: 'ポイント獲得処理中にエラーが発生しました' },
+    console.error('ポイント獲得API例外:', error);
+    const response = NextResponse.json(
+      { error: 'ポイント獲得中にエラーが発生しました' },
       { status: 500 }
     );
+    return response;
   }
 } 

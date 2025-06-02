@@ -3,6 +3,10 @@ import { createClient } from '@/utils/supabase/server';
 import { auth } from '@/lib/auth';
 import { RecentResource } from '@/types/learning';
 
+// Dynamic Server Usage エラーを解決するため動的レンダリングを強制
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface ResourceWithMaterials {
   resource_id: string | number;
   completion_percentage: number;

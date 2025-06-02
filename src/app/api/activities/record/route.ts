@@ -3,6 +3,10 @@ import { recordActivity, ActivityData } from '@/lib/supabase/user-activities';
 import { checkAndAwardBadges } from '@/lib/supabase/badges';
 import { getClient } from '@/lib/supabase/client';
 
+// Dynamic Server Usage エラーを解決するため動的レンダリングを強制
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

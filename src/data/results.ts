@@ -1,5 +1,3 @@
-import { QuizResult } from '@/types/quiz';
-
 interface LearningAdviceItem {
   title: string;
   tips: string[];

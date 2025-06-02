@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
-import { FaStar, FaRegStar, FaUser, FaClock, FaArrowLeft, FaChevronRight, FaBookmark, FaRegBookmark } from 'react-icons/fa';
+import { useParams } from 'next/navigation';
+import { FaStar, FaRegStar, FaUser, FaArrowLeft, FaBookmark, FaRegBookmark } from 'react-icons/fa';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 
@@ -30,17 +30,6 @@ type Material = {
   tags: string[];
 };
 
-// 評価・コメントの型定義
-type Feedback = {
-  id: string;
-  user_id: string;
-  user_name: string;
-  user_avatar: string;
-  rating: number;
-  comment: string;
-  created_at: string;
-}
-
 // 関連教材の型定義
 type RelatedMaterial = {
   id: string;
@@ -53,7 +42,6 @@ type RelatedMaterial = {
 
 const MaterialDetailPage = () => {
   const params = useParams();
-  const router = useRouter();
   const materialId = params?.id as string;
   
   const [material, setMaterial] = useState<Material | null>(null);
@@ -61,19 +49,37 @@ const MaterialDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (materialId) {
-      fetchMaterial();
-      fetchRelatedMaterials();
-    }
-  }, [materialId]);
+  const getDifficultyLabel = useCallback((level: number): 'beginner' | 'intermediate' | 'advanced' => {
+    if (level <= 2) return 'beginner';
+    if (level <= 3) return 'intermediate';
+    return 'advanced';
+  }, []);
 
-  const fetchMaterial = async () => {
+  const getDifficultyText = useCallback((difficulty: string) => {
+    switch (difficulty) {
+      case 'beginner': return '初級';
+      case 'intermediate': return '中級';
+      case 'advanced': return '上級';
+      default: return difficulty;
+    }
+  }, []);
+
+  const getPersonalityType = useCallback((type: string | null): 'ギバー' | 'マッチャー' | 'テイカー' => {
+    switch (type) {
+      case 'giver': return 'ギバー';
+      case 'matcher': return 'マッチャー';
+      case 'taker': return 'テイカー';
+      default: return 'マッチャー';
+    }
+  }, []);
+
+  const fetchMaterial = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const { data, error: fetchError } = await supabase
+      // 外部キー参照を削除し、基本データのみ取得
+      const { data: materialData, error: materialError } = await supabase
         .from('materials')
         .select(`
           id,
@@ -87,61 +93,71 @@ const MaterialDetailPage = () => {
           rating,
           created_at,
           is_published,
-          user_id,
-          profiles!materials_user_id_fkey (
-            display_name,
-            avatar_url
-          ),
-          users!materials_user_id_fkey (
-            personality_type,
-            giver_score
-          )
+          user_id
         `)
         .eq('id', materialId)
         .eq('is_published', true)
         .single();
 
-      if (fetchError) {
-        console.error('Supabase error:', fetchError);
+      if (materialError) {
+        console.error('Material fetch error:', materialError);
         setError('教材が見つかりませんでした');
         return;
       }
 
-      if (!data) {
+      if (!materialData) {
         setError('教材が見つかりませんでした');
         return;
+      }
+
+      // プロファイル情報を別途取得
+      let authorProfile = null;
+      let authorUser = null;
+
+      if (materialData.user_id) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('display_name, avatar_url')
+          .eq('id', materialData.user_id)
+          .single();
+
+        const { data: userData } = await supabase
+          .from('users')
+          .select('personality_type, giver_score')
+          .eq('id', materialData.user_id)
+          .single();
+
+        authorProfile = profileData;
+        authorUser = userData;
       }
 
       // ビューカウントを増加
       await supabase
         .from('materials')
-        .update({ view_count: (data.view_count || 0) + 1 })
+        .update({ view_count: (materialData.view_count || 0) + 1 })
         .eq('id', materialId);
 
-      // データを Material 型に変換（外部キー参照は単一オブジェクト）
-      const profile = Array.isArray(data.profiles) ? data.profiles[0] : data.profiles;
-      const user = Array.isArray(data.users) ? data.users[0] : data.users;
-
+      // データを Material 型に変換
       const transformedMaterial: Material = {
-        id: data.id,
-        title: data.title,
-        description: data.description || '',
-        content: data.content || '',
-        category: data.category,
-        difficulty: getDifficultyLabel(data.difficulty_level),
+        id: materialData.id,
+        title: materialData.title,
+        description: materialData.description || '',
+        content: materialData.content || '',
+        category: materialData.category,
+        difficulty: getDifficultyLabel(materialData.difficulty_level),
         author: {
-          id: data.user_id,
-          name: profile?.display_name || '匿名ユーザー',
-          avatar: profile?.avatar_url || '/avatars/default.png',
-          giverScore: user?.giver_score || 50,
-          type: getPersonalityType(user?.personality_type)
+          id: materialData.user_id,
+          name: authorProfile?.display_name || '匿名ユーザー',
+          avatar: authorProfile?.avatar_url || '/avatars/default.png',
+          giverScore: authorUser?.giver_score || 50,
+          type: getPersonalityType(authorUser?.personality_type)
         },
-        created_at: data.created_at,
-        view_count: (data.view_count || 0) + 1,
-        rating: data.rating || 0,
+        created_at: materialData.created_at,
+        view_count: (materialData.view_count || 0) + 1,
+        rating: materialData.rating || 0,
         is_bookmarked: false, // TODO: ユーザーのブックマーク状態を取得
-        is_published: data.is_published,
-        tags: data.tags || []
+        is_published: materialData.is_published,
+        tags: materialData.tags || []
       };
 
       setMaterial(transformedMaterial);
@@ -151,11 +167,12 @@ const MaterialDetailPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [materialId, getDifficultyLabel, getPersonalityType]);
 
-  const fetchRelatedMaterials = async () => {
+  const fetchRelatedMaterials = useCallback(async () => {
     try {
-      const { data, error } = await supabase
+      // 基本データのみ取得
+      const { data: materialsData, error } = await supabase
         .from('materials')
         .select(`
           id,
@@ -163,17 +180,27 @@ const MaterialDetailPage = () => {
           category,
           difficulty_level,
           rating,
-          profiles!materials_user_id_fkey (
-            display_name
-          )
+          user_id
         `)
         .eq('is_published', true)
         .neq('id', materialId)
         .limit(3);
 
-      if (!error && data) {
-        const transformed: RelatedMaterial[] = data.map((item: any) => {
-          const profile = Array.isArray(item.profiles) ? item.profiles[0] : item.profiles;
+      if (!error && materialsData) {
+        // プロファイル情報を別途取得してマッピング
+        const userIds = materialsData.map(m => m.user_id).filter(Boolean);
+        let profiles: any[] = [];
+        
+        if (userIds.length > 0) {
+          const { data: profilesData } = await supabase
+            .from('profiles')
+            .select('id, display_name')
+            .in('id', userIds);
+          profiles = profilesData || [];
+        }
+
+        const transformed: RelatedMaterial[] = materialsData.map((item: any) => {
+          const profile = profiles.find(p => p.id === item.user_id);
           return {
             id: item.id,
             title: item.title,
@@ -188,31 +215,14 @@ const MaterialDetailPage = () => {
     } catch (err) {
       console.error('Related materials fetch error:', err);
     }
-  };
+  }, [materialId, getDifficultyLabel, getDifficultyText]);
 
-  const getDifficultyLabel = (level: number): 'beginner' | 'intermediate' | 'advanced' => {
-    if (level <= 2) return 'beginner';
-    if (level <= 3) return 'intermediate';
-    return 'advanced';
-  };
-
-  const getDifficultyText = (difficulty: string) => {
-    switch (difficulty) {
-      case 'beginner': return '初級';
-      case 'intermediate': return '中級';
-      case 'advanced': return '上級';
-      default: return difficulty;
+  useEffect(() => {
+    if (materialId) {
+      fetchMaterial();
+      fetchRelatedMaterials();
     }
-  };
-
-  const getPersonalityType = (type: string | null): 'ギバー' | 'マッチャー' | 'テイカー' => {
-    switch (type) {
-      case 'giver': return 'ギバー';
-      case 'matcher': return 'マッチャー';
-      case 'taker': return 'テイカー';
-      default: return 'マッチャー';
-    }
-  };
+  }, [materialId, fetchMaterial, fetchRelatedMaterials]);
 
   const toggleBookmark = () => {
     if (material) {

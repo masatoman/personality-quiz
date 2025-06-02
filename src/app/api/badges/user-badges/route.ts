@@ -4,6 +4,10 @@ import { getUserAuth } from '@/lib/auth';
 import { Badge } from '@/types/badges';
 import { BADGE_DEFINITIONS } from '@/data/badges';
 
+// Dynamic Server Usage エラーを解決するため動的レンダリングを強制
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface UserBadgeData {
   id: string;
   user_id: string;

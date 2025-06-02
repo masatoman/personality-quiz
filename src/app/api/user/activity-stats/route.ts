@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import supabase from '@/services/supabaseClient';
 import { ActivityType } from '@/types/quiz';
 
+// Dynamic Server Usage エラーを解決するため動的レンダリングを強制
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 /**
  * ユーザーの活動タイプ別統計を取得するAPIエンドポイント
  * 
