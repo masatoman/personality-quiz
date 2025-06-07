@@ -12,11 +12,24 @@ export async function GET() {
   }
 
   try {
-    // Supabaseクライアントの初期化
+    // Supabaseクライアントの初期化（サービスロールキーで）
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    if (!supabaseServiceKey) {
+      return NextResponse.json({
+        success: false,
+        message: 'SUPABASE_SERVICE_ROLE_KEYが設定されていません',
+        results: []
+      });
+    }
+    
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    });
 
     // テストユーザーのデータ
     const testUsers = [
@@ -63,19 +76,17 @@ export async function GET() {
     // 各ユーザーを登録
     for (const userData of testUsers) {
       try {
-        // まず通常のサインアップを試みる
-        const { data, error } = await supabase.auth.signUp({
+        // 管理者権限でユーザーを作成
+        const { data, error } = await supabase.auth.admin.createUser({
           email: userData.email,
           password: userData.password,
-          options: {
-            data: userData.user_metadata,
-            emailRedirectTo: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/auth/callback`
-          }
+          email_confirm: true, // メール確認をスキップ
+          user_metadata: userData.user_metadata
         });
 
         if (error) {
-          // すでに存在する場合は更新を試みる
-          if (error.message.includes('already')) {
+          // すでに存在する場合
+          if (error.message.includes('already') || error.message.includes('duplicate')) {
             results.push({
               email: userData.email,
               status: 'exists',
@@ -84,6 +95,24 @@ export async function GET() {
             continue;
           }
           throw error;
+        }
+
+        // プロフィールテーブルにも追加
+        if (data.user) {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+              id: data.user.id,
+              username: userData.user_metadata.name.replace(/\s+/g, '_').toLowerCase(),
+              display_name: userData.user_metadata.name,
+              bio: `${userData.user_metadata.personality_type}タイプのテストユーザーです`,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+
+          if (profileError) {
+            console.error('プロフィール作成エラー:', profileError);
+          }
         }
 
         results.push({
