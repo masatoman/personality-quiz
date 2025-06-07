@@ -50,7 +50,16 @@
     "test:db": "npm run test:supabase",
     "test:integration:full": "npm run test:supabase && npm run test:integration",
     "test:mvp": "npm run test:unit && npm run test:supabase && npm run test:e2e",
-    "ci:test": "npm run test:mvp"
+    "ci:test": "npm run test:mvp",
+    "test:release": "playwright test tests/e2e/release-readiness.e2e.test.ts",
+    "test:release:headed": "playwright test tests/e2e/release-readiness.e2e.test.ts --headed",
+    "test:release:ui": "playwright test tests/e2e/release-readiness.e2e.test.ts --ui",
+    "test:smoke": "playwright test tests/e2e/release-smoke-test.e2e.test.ts",
+    "test:smoke:headed": "playwright test tests/e2e/release-smoke-test.e2e.test.ts --headed",
+    "test:smoke:fast": "playwright test tests/e2e/release-smoke-test.e2e.test.ts --workers=4",
+    "test:pre-release": "npm run test:smoke && npm run test:release",
+    "test:critical": "playwright test tests/e2e/release-smoke-test.e2e.test.ts --grep 'Critical Tests'",
+    "test:full-release": "npm run lint && npm run type-check && npm run test:unit && npm run test:supabase && npm run test:pre-release"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

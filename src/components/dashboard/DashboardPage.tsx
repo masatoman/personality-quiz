@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaUserCircle, FaBell, FaSearch, FaChartLine, FaBookOpen, FaAward } from 'react-icons/fa';
 import { useAuth } from '@/hooks/useAuth';
+import Link from 'next/link';
 
 // サブコンポーネントをインポート
 import ActivitySummary from './ActivitySummary';
@@ -84,7 +85,7 @@ const DashboardPage: React.FC = () => {
                   <p className="text-sm text-gray-600 mb-3">
                     あなたのギバースコアを上げるのに最適な教材です。
                   </p>
-                  <button className="text-blue-600 text-sm hover:underline">
+                  <button className="text-emerald-600 text-sm hover:underline">
                     詳細を見る →
                   </button>
                 </div>
@@ -95,7 +96,7 @@ const DashboardPage: React.FC = () => {
                   <p className="text-sm text-gray-600 mb-3">
                     多くのユーザーから高評価を受けている人気の教材です。
                   </p>
-                  <button className="text-blue-600 text-sm hover:underline">
+                  <button className="text-emerald-600 text-sm hover:underline">
                     詳細を見る →
                   </button>
                 </div>
@@ -106,7 +107,7 @@ const DashboardPage: React.FC = () => {
                   <p className="text-sm text-gray-600 mb-3">
                     最近のアクティビティに基づくおすすめの教材です。
                   </p>
-                  <button className="text-blue-600 text-sm hover:underline">
+                  <button className="text-emerald-600 text-sm hover:underline">
                     詳細を見る →
                   </button>
                 </div>
@@ -138,7 +139,7 @@ const DashboardPage: React.FC = () => {
                   </div>
                 ))}
               </div>
-              <button className="w-full mt-4 py-2 text-center text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+              <button className="w-full mt-4 py-2 text-center text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors">
                 すべての活動を見る
               </button>
             </div>
@@ -218,7 +219,7 @@ const DashboardPage: React.FC = () => {
           <div className="flex space-x-4">
             <button
               className={`py-2 px-4 font-medium ${activeTab === 'overview' 
-                ? 'text-blue-600 border-b-2 border-blue-600' 
+                ? 'text-emerald-600 border-b-2 border-emerald-600' 
                 : 'text-gray-600 hover:text-gray-900'}`}
               onClick={() => setActiveTab('overview')}
             >
@@ -226,7 +227,7 @@ const DashboardPage: React.FC = () => {
             </button>
             <button
               className={`py-2 px-4 font-medium ${activeTab === 'materials' 
-                ? 'text-blue-600 border-b-2 border-blue-600' 
+                ? 'text-emerald-600 border-b-2 border-emerald-600' 
                 : 'text-gray-600 hover:text-gray-900'}`}
               onClick={() => setActiveTab('materials')}
             >
@@ -234,7 +235,7 @@ const DashboardPage: React.FC = () => {
             </button>
             <button
               className={`py-2 px-4 font-medium ${activeTab === 'progress' 
-                ? 'text-blue-600 border-b-2 border-blue-600' 
+                ? 'text-emerald-600 border-b-2 border-emerald-600' 
                 : 'text-gray-600 hover:text-gray-900'}`}
               onClick={() => setActiveTab('progress')}
             >

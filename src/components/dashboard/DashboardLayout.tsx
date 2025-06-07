@@ -33,7 +33,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
             <h1 className="text-xl font-bold">ShiftWith ダッシュボード</h1>
-            <Link href="/create" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center">
+            <Link href="/create" className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center">
               <FaPlus className="mr-2" />
               教材作成
             </Link>
@@ -51,7 +51,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                     <Link
                       href={item.href}
                       className={`flex items-center px-4 py-3 hover:bg-gray-50 transition-colors ${
-                        pathname === item.href ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600' : 'text-gray-700'
+                        pathname === item.href ? 'bg-emerald-50 text-emerald-600 border-l-4 border-emerald-600' : 'text-gray-700'
                       }`}
                     >
                       <span className="mr-3">{item.icon}</span>

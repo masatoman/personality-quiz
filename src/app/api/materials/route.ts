@@ -36,12 +36,56 @@ export async function POST(request: NextRequest) {
       return response;
     }
 
-    const data = await request.json();
+    const requestData = await request.json();
+    console.log('教材作成API: 受信データ', requestData);
+    
+    // 新しいデータ構造の処理（フロントエンドからの構造化データ）
+    let data;
+    if (requestData.basicInfo && requestData.contentSections && requestData.settings) {
+      // 構造化データを平坦化
+      const { basicInfo, contentSections, settings } = requestData;
+      
+      data = {
+        title: basicInfo.title,
+        description: basicInfo.description,
+        content: {
+          sections: contentSections,
+          introduction: '',
+          conclusion: ''
+        },
+        category: settings.category || 'general',
+        difficulty: settings.difficulty || 'beginner',
+        tags: basicInfo.tags || [],
+        status: settings.isPublic ? 'published' : 'draft',
+        estimated_time: settings.estimatedTime || 0,
+        allow_comments: settings.allowComments !== false,
+        target_audience: settings.targetAudience || [],
+        prerequisites: settings.prerequisites || '',
+        thumbnail_url: null
+      };
+    } else {
+      // 従来のフラットなデータ構造もサポート
+      data = {
+        title: requestData.title,
+        description: requestData.description,
+        content: requestData.content,
+        category: requestData.category,
+        difficulty: requestData.difficulty || 'beginner',
+        tags: requestData.tags || [],
+        status: requestData.is_public ? 'published' : 'draft',
+        estimated_time: requestData.estimated_duration || 0,
+        allow_comments: requestData.allow_comments !== false,
+        target_audience: requestData.target_audience || [],
+        prerequisites: requestData.prerequisites || '',
+        thumbnail_url: requestData.thumbnail_url || null
+      };
+    }
     
     // バリデーション
-    if (!data.title || !data.content || !data.category || !data.difficulty_level) {
+    if (!data.title || !data.content || !data.category) {
+      console.error('バリデーションエラー:', { title: data.title, content: data.content, category: data.category });
       const response = NextResponse.json(
-        { error: '必須フィールドが不足しています' },
+        { error: '必須フィールドが不足しています（タイトル、コンテンツ、カテゴリが必要）' },
         { status: 400 }
       );
       setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.CREATE);
@@ -49,32 +93,41 @@ export async function POST(request: NextRequest) {
     }
 
     // 教材作成
+    const insertData = {
+      title: data.title,
+      content: data.content,
+      category: data.category,
+      difficulty: data.difficulty,
+      description: data.description || '',
+      author_id: user.id,
+      status: data.status,
+      tags: data.tags,
+      estimated_time: data.estimated_time,
+      allow_comments: data.allow_comments,
+      target_audience: data.target_audience,
+      prerequisites: data.prerequisites,
+      thumbnail_url: data.thumbnail_url
+    };
+
+    console.log('データベース挿入データ:', insertData);
+
     const { data: material, error } = await supabase
       .from('materials')
-      .insert({
-        title: data.title,
-        content: data.content,
-        category: data.category,
-        difficulty_level: data.difficulty_level,
-        description: data.description || '',
-        author_id: user.id,
-        is_public: data.is_public || false,
-        tags: data.tags || [],
-        thumbnail_url: data.thumbnail_url || null,
-        estimated_duration: data.estimated_duration || null
-      })
+      .insert(insertData)
       .select()
       .single();
 
     if (error) {
       console.error('教材作成エラー:', error);
       const response = NextResponse.json(
-        { error: '教材の作成に失敗しました' },
+        { error: `教材の作成に失敗しました: ${error.message}` },
         { status: 500 }
       );
       setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.CREATE);
       return response;
     }
+
+    console.log('教材作成成功:', material);
 
     const response = NextResponse.json({
       success: true,
@@ -132,7 +185,7 @@ export async function GET(request: NextRequest) {
           avatar_url
         )
       `)
-      .eq('is_public', true)
+      .eq('status', 'published')
       .order('created_at', { ascending: false });
 
     // フィルタリング
@@ -141,7 +194,7 @@ export async function GET(request: NextRequest) {
     }
     
     if (difficulty) {
-      query = query.eq('difficulty_level', difficulty);
+      query = query.eq('difficulty', difficulty);
     }
     
     if (search) {

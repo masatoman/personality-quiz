@@ -108,7 +108,7 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
             <div className={`${!isExpanded ? 'absolute bottom-0 w-full pt-16 pb-4 bg-gradient-to-t from-white' : 'mt-4'}`}>
               <button
                 onClick={toggleExpand}
-                className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 focus:outline-none"
+                                    className="px-4 py-2 text-sm font-medium text-emerald-600 hover:text-emerald-800 focus:outline-none"
               >
                 {isExpanded ? '折りたたむ' : 'もっと見る'}
               </button>
@@ -148,7 +148,7 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
         <h2 className="text-xl font-bold text-gray-900">{section.title}</h2>
         
         {isSubmitted && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
             <p className="font-bold text-lg">
               得点: {quizResult.score}% ({section.questions.length}問中{Math.round(section.questions.length * quizResult.score / 100)}問正解)
             </p>
@@ -168,7 +168,7 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
                     checked={answers[question.id] === optIdx}
                     onChange={() => handleQuizAnswerChange(section.id, question.id, optIdx)}
                     disabled={isSubmitted}
-                    className="h-4 w-4 text-blue-600"
+                    className="h-4 w-4 text-emerald-600"
                   />
                   <span className="text-gray-700">{option}</span>
                 </label>
@@ -185,14 +185,14 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
                 delete newResults[section.id];
                 return newResults;
               })}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
             >
               やり直す
             </button>
           ) : (
             <button
               onClick={() => handleQuizSubmit(section.id, section.questions)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
             >
               回答を送信
             </button>
@@ -225,7 +225,7 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
         <button
           className={`flex-1 px-4 py-3 text-center font-medium ${
             activeTab === 'content' 
-              ? 'border-b-2 border-blue-500 text-blue-600' 
+              ? 'border-b-2 border-emerald-500 text-emerald-600' 
               : 'text-gray-600 hover:text-gray-800'
           }`}
           onClick={() => setActiveTab('content')}
@@ -235,7 +235,7 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
         <button
           className={`flex-1 px-4 py-3 text-center font-medium ${
             activeTab === 'outline' 
-              ? 'border-b-2 border-blue-500 text-blue-600' 
+              ? 'border-b-2 border-emerald-500 text-emerald-600' 
               : 'text-gray-600 hover:text-gray-800'
           }`}
           onClick={() => setActiveTab('outline')}
@@ -255,7 +255,7 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
               </p>
               <div className="w-2/3 bg-gray-200 rounded-full h-2">
                 <div
-                  className="bg-blue-500 h-2 rounded-full"
+                  className="bg-emerald-500 h-2 rounded-full"
                   style={{ width: `${((currentSectionIndex + 1) / sections.length) * 100}%` }}
                 ></div>
               </div>
@@ -279,7 +279,7 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
               </button>
               <button
                 onClick={goToNextSection}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
               >
                 {currentSectionIndex < sections.length - 1 ? '次へ' : '完了'}
               </button>
@@ -299,7 +299,7 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
                 </span>
                 <span className="flex-1">{section.title}</span>
                 {section.type === 'quiz' && quizResults[section.id] && (
-                  <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">
+                  <span className="px-2 py-1 text-xs rounded-full bg-emerald-100 text-emerald-700">
                     {quizResults[section.id].score}%
                   </span>
                 )}
