@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeftIcon, EyeIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Bars3Icon } from '@heroicons/react/24/outline';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { useToast } from '../../hooks/useToast';
+import ToastContainer from '../ui/ToastContainer';
 
 // 型定義
 interface ContentSection {
@@ -18,6 +20,7 @@ interface ContentSection {
 interface MaterialData {
   title: string;
   description: string;
+  category: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   estimatedTime: number;
   isPublic: boolean;
@@ -30,6 +33,7 @@ const ImprovedCreator: React.FC = () => {
   const [material, setMaterial] = useState<MaterialData>({
     title: '',
     description: '',
+    category: 'general',
     difficulty: 'beginner',
     estimatedTime: 5,
     isPublic: true,
@@ -39,6 +43,7 @@ const ImprovedCreator: React.FC = () => {
   
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
+  const { toasts, removeToast, showSuccess, showError } = useToast();
 
   // 学習時間の自動推定
   useEffect(() => {
@@ -109,14 +114,69 @@ const ImprovedCreator: React.FC = () => {
   const handlePublish = async () => {
     try {
       console.log('公開データ:', material);
-      alert('教材が公開されました！');
+      
+      // APIデータの形式に変換（データベーススキーマに合わせる）
+      const publishData = {
+        title: material.title,
+        description: material.description || '',
+        content: JSON.stringify({
+          sections: material.sections.map(section => ({
+            type: section.type,
+            title: section.title,
+            content: section.content,
+            options: section.options || [],
+            answer: section.answer || 0
+          }))
+        }),
+        category: material.category,
+        difficulty: material.difficulty,
+        estimated_time: material.estimatedTime,
+        is_public: material.isPublic,
+        allow_comments: material.allowComments,
+        tags: []
+      };
+      
+      console.log('API送信データ:', publishData);
+      
+      const response = await fetch('/api/materials', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(publishData),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || '教材の保存に失敗しました');
+      }
+      
+      const result = await response.json();
+      console.log('保存成功:', result);
+      
+      showSuccess(
+        '教材を公開しました！',
+        '教材が正常に公開され、他のユーザーが学習できるようになりました。',
+        3000
+      );
+      
+      // 少し遅延してから教材一覧ページにリダイレクト
+      setTimeout(() => {
+        window.location.href = '/my-materials';
+      }, 2000);
+      
     } catch (error) {
       console.error('公開エラー:', error);
+      showError(
+        '公開に失敗しました',
+        error.message || '教材の公開中にエラーが発生しました。もう一度お試しください。',
+        7000
+      );
     }
   };
 
   // バリデーション
-  const canProceed = material.title.trim() && material.sections.length > 0;
+  const canProceed = material.title.trim() && material.category && material.sections.length > 0;
 
   if (step === 'publish') {
     return <PublishStep material={material} onBack={() => setStep('create')} onPublish={handlePublish} />;
@@ -310,6 +370,26 @@ const ImprovedCreator: React.FC = () => {
               
               <div className="space-y-4">
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">カテゴリ</label>
+                  <select
+                    value={material.category}
+                    onChange={(e) => setMaterial(prev => ({ 
+                      ...prev, 
+                      category: e.target.value
+                    }))}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  >
+                    <option value="general">一般</option>
+                    <option value="grammar">文法</option>
+                    <option value="vocabulary">語彙</option>
+                    <option value="listening">リスニング</option>
+                    <option value="reading">リーディング</option>
+                    <option value="writing">ライティング</option>
+                    <option value="speaking">スピーキング</option>
+                  </select>
+                </div>
+                
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">難易度</label>
                   <select
                     value={material.difficulty}
@@ -369,6 +449,9 @@ const ImprovedCreator: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      {/* トーストメッセージ */}
+      <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
     </div>
   );
 };

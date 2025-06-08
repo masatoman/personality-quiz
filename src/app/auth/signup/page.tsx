@@ -64,8 +64,10 @@ const SignupPage = () => {
           .insert([
             {
               id: data.user.id,
-              name,
-              email,
+              username: name,
+              display_name: name,
+              bio: null,
+              avatar_url: null,
               created_at: new Date().toISOString(),
             },
           ]);

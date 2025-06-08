@@ -25,7 +25,8 @@ const ContentStep: React.FC<ContentStepProps> = ({ initialData, onSave, onBack }
   
   const handleNext = () => {
     if (sections.length === 0) {
-      alert('コンテンツを最低1つ追加してください');
+      // トーストメッセージに置き換える（または親コンポーネントから渡されたコールバックを使用）
+      console.warn('コンテンツを最低1つ追加してください');
       return;
     }
     
