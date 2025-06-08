@@ -71,7 +71,8 @@ export default function StudyMaterialPage({ params }: StudyPageProps) {
           sections={material.sections}
           onComplete={() => {
             // 学習完了時の処理
-            alert('お疲れ様でした！教材を完了しました。');
+            // TODO: アラートの代わりにトーストメッセージを実装
+        console.log('お疲れ様でした！教材を完了しました。');
           }}
           onQuizSubmit={(quizId, answers, score) => {
             // クイズ提出時の処理

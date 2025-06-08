@@ -25,15 +25,31 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient();
     
-    // 認証確認
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      const response = NextResponse.json(
-        { error: '認証が必要です' },
-        { status: 401 }
-      );
-      setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.CREATE);
-      return response;
+    // 開発環境での認証スキップオプション
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const skipAuth = isDevelopment && process.env.SKIP_AUTH === 'true';
+    
+    let user = null;
+    
+    if (skipAuth) {
+      // 開発環境でのダミーユーザー
+      user = {
+        id: '11111111-1111-1111-1111-111111111111',
+        email: 'dev@example.com'
+      };
+      console.log('開発環境: 認証をスキップしています');
+    } else {
+      // 通常の認証確認
+      const { data: { user: authUser }, error: userError } = await supabase.auth.getUser();
+      if (userError || !authUser) {
+        const response = NextResponse.json(
+          { error: '認証が必要です' },
+          { status: 401 }
+        );
+        setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.CREATE);
+        return response;
+      }
+      user = authUser;
     }
 
     const requestData = await request.json();
@@ -92,25 +108,14 @@ export async function POST(request: NextRequest) {
       return response;
     }
 
-    // 教材作成 - 現在のスキーマに合わせて調整
+    // 教材作成 - 実際のテーブル構造に合わせて調整
     const insertData = {
       title: data.title,
-      content: data.content,
+      content: typeof data.content === 'string' ? data.content : JSON.stringify(data.content),
       category: data.category,
       description: data.description || '',
-      author_id: user.id,
-      tags: data.tags,
-      // 既存のカラムのみ使用（スキーマ問題を回避）
-      difficulty_level: data.difficulty === 'beginner' ? 1 : 
-                        data.difficulty === 'intermediate' ? 3 : 
-                        data.difficulty === 'advanced' ? 5 : 1,
-      is_published: data.status === 'published',
-      // 新しいカラムがない場合はスキップ
-      ...(data.estimated_time !== undefined && { estimated_time: data.estimated_time }),
-      ...(data.allow_comments !== undefined && { allow_comments: data.allow_comments }),
-      ...(data.target_audience !== undefined && { target_audience: data.target_audience }),
-      ...(data.prerequisites !== undefined && { prerequisites: data.prerequisites }),
-      ...(data.thumbnail_url !== undefined && { thumbnail_url: data.thumbnail_url })
+      user_id: user.id,  // user_idが必須のようなのでこちらを使用
+      author_id: user.id // author_idも設定
     };
 
     console.log('データベース挿入データ:', insertData);

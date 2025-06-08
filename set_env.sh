@@ -7,3 +7,6 @@ export TEST_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
 export TEST_SUPABASE_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 export DEBUG_SUPABASE=true
 export DEBUG_MCP=true
+
+# 開発環境での認証スキップ（テスト用）
+export SKIP_AUTH=true
