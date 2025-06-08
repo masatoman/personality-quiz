@@ -92,21 +92,25 @@ export async function POST(request: NextRequest) {
       return response;
     }
 
-    // 教材作成
+    // 教材作成 - 現在のスキーマに合わせて調整
     const insertData = {
       title: data.title,
       content: data.content,
       category: data.category,
-      difficulty: data.difficulty,
       description: data.description || '',
       author_id: user.id,
-      status: data.status,
       tags: data.tags,
-      estimated_time: data.estimated_time,
-      allow_comments: data.allow_comments,
-      target_audience: data.target_audience,
-      prerequisites: data.prerequisites,
-      thumbnail_url: data.thumbnail_url
+      // 既存のカラムのみ使用（スキーマ問題を回避）
+      difficulty_level: data.difficulty === 'beginner' ? 1 : 
+                        data.difficulty === 'intermediate' ? 3 : 
+                        data.difficulty === 'advanced' ? 5 : 1,
+      is_published: data.status === 'published',
+      // 新しいカラムがない場合はスキップ
+      ...(data.estimated_time !== undefined && { estimated_time: data.estimated_time }),
+      ...(data.allow_comments !== undefined && { allow_comments: data.allow_comments }),
+      ...(data.target_audience !== undefined && { target_audience: data.target_audience }),
+      ...(data.prerequisites !== undefined && { prerequisites: data.prerequisites }),
+      ...(data.thumbnail_url !== undefined && { thumbnail_url: data.thumbnail_url })
     };
 
     console.log('データベース挿入データ:', insertData);

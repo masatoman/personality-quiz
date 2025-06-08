@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   PieChart, 
   Pie, 
@@ -40,50 +40,7 @@ const ActivityTypeChart: React.FC<ActivityTypeChartProps> = ({ userId }) => {
     'ASK_QUESTION': { label: '質問', color: '#9C27B0' }
   }), []);
 
-  // モックデータ生成関数（開発用）をuseCallbackでラップ
-  const generateMockData = useCallback((): ActivityTypeInfo[] => {
-    const mockData: ActivityTypeInfo[] = [
-      {
-        type: 'CONSUME_CONTENT',
-        count: 45,
-        label: activityTypeMap['CONSUME_CONTENT'].label,
-        color: activityTypeMap['CONSUME_CONTENT'].color
-      },
-      {
-        type: 'CREATE_CONTENT',
-        count: 12,
-        label: activityTypeMap['CREATE_CONTENT'].label,
-        color: activityTypeMap['CREATE_CONTENT'].color
-      },
-      {
-        type: 'PROVIDE_FEEDBACK',
-        count: 23,
-        label: activityTypeMap['PROVIDE_FEEDBACK'].label,
-        color: activityTypeMap['PROVIDE_FEEDBACK'].color
-      },
-      {
-        type: 'RECEIVE_FEEDBACK',
-        count: 18,
-        label: activityTypeMap['RECEIVE_FEEDBACK'].label,
-        color: activityTypeMap['RECEIVE_FEEDBACK'].color
-      },
-      {
-        type: 'SHARE_RESOURCE',
-        count: 7,
-        label: activityTypeMap['SHARE_RESOURCE'].label,
-        color: activityTypeMap['SHARE_RESOURCE'].color
-      },
-      {
-        type: 'ASK_QUESTION',
-        count: 15,
-        label: activityTypeMap['ASK_QUESTION'].label,
-        color: activityTypeMap['ASK_QUESTION'].color
-      }
-    ];
-    return mockData;
-  }, [activityTypeMap]);
-
-  // データ取得
+  // モックデータ生成関数を削除し、データ取得のみに変更
   useEffect(() => {
     const fetchActivityData = async () => {
       try {
@@ -109,17 +66,15 @@ const ActivityTypeChart: React.FC<ActivityTypeChartProps> = ({ userId }) => {
         setActivityData(formattedData);
       } catch (error) {
         console.error('活動データの取得に失敗しました:', error);
-        setError('活動データの取得中にエラーが発生しました。');
-        
-        // 開発用のモックデータ
-        setActivityData(generateMockData());
+        setError('活動データを取得できませんでした。しばらく後にもう一度お試しください。');
+        setActivityData([]); // エラー時は空配列を設定
       } finally {
         setLoading(false);
       }
     };
     
     fetchActivityData();
-  }, [userId, activityTypeMap, generateMockData]);
+  }, [userId, activityTypeMap]);
 
   // 合計活動数を計算
   const totalActivities = activityData.reduce((sum, item) => sum + item.count, 0);
@@ -145,14 +100,26 @@ const ActivityTypeChart: React.FC<ActivityTypeChartProps> = ({ userId }) => {
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <span className="ml-2 text-gray-600">データを読み込み中...</span>
         </div>
       ) : error ? (
-        <div className="flex justify-center items-center h-64 text-red-500">
-          <p>{error}</p>
+        <div className="flex flex-col justify-center items-center h-64 text-center">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
+            <p className="text-red-700 mb-4">{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+            >
+              再試行
+            </button>
+          </div>
         </div>
       ) : activityData.length === 0 ? (
-        <div className="flex justify-center items-center h-64 text-gray-500">
-          <p>まだ活動データがありません。</p>
+        <div className="flex flex-col justify-center items-center h-64 text-center">
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 max-w-md">
+            <p className="text-gray-600 mb-2">まだ活動データがありません。</p>
+            <p className="text-sm text-gray-500">教材を学習したり、コンテンツを作成すると活動データが蓄積されます。</p>
+          </div>
         </div>
       ) : (
         <div className="h-64">

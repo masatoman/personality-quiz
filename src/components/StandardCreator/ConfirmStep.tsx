@@ -67,8 +67,8 @@ const ConfirmStep: React.FC<ConfirmStepProps> = ({
     setError(null);
     
     // 公開前の最終チェック
-    if (!basicInfo.title || !basicInfo.description || basicInfo.tags.length === 0) {
-      setError('基本情報が不足しています。タイトル、説明、タグを設定してください。');
+    if (!basicInfo.title || !basicInfo.description) {
+      setError('基本情報が不足しています。タイトル、説明を設定してください。');
       setIsSubmitting(false);
       return;
     }

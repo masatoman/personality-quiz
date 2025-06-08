@@ -50,11 +50,11 @@ const LoginPage = () => {
     }
   };
 
+  // Google OAuth ログイン
   const handleGoogleLogin = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       setError(null);
-      
       await signInWithGoogle();
     } catch (err) {
       console.error('Googleログインエラー:', err);
@@ -64,11 +64,11 @@ const LoginPage = () => {
     }
   };
 
+  // GitHub OAuth ログイン
   const handleGithubLogin = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       setError(null);
-      
       await signInWithGithub();
     } catch (err) {
       console.error('GitHubログインエラー:', err);
@@ -76,29 +76,6 @@ const LoginPage = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  // テスト用ユーザーでのログイン（開発環境のみ）
-  const loginAsTestUser = (userType: string) => {
-    let email = '';
-    
-    switch (userType) {
-      case 'giver':
-        email = 'giver@example.com';
-        break;
-      case 'matcher':
-        email = 'matcher@example.com';
-        break;
-      case 'taker':
-        email = 'taker@example.com';
-        break;
-      case 'admin':
-        email = 'admin@example.com';
-        break;
-    }
-    
-    setEmail(email);
-    setPassword('password123');
   };
 
   return (
@@ -243,50 +220,6 @@ const LoginPage = () => {
             </button>
           </div>
         </form>
-        
-        {/* テスト用ログインボタン（開発環境のみ） */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mt-8">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">テスト用ログイン（開発専用）</span>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2 mt-4">
-              <button
-                type="button"
-                onClick={() => loginAsTestUser('giver')}
-                className="text-sm py-2 px-3 border border-blue-300 text-blue-600 rounded hover:bg-blue-50"
-              >
-                ギバー太郎でログイン
-              </button>
-              <button
-                type="button"
-                onClick={() => loginAsTestUser('matcher')}
-                className="text-sm py-2 px-3 border border-purple-300 text-purple-600 rounded hover:bg-purple-50"
-              >
-                マッチャー花子でログイン
-              </button>
-              <button
-                type="button"
-                onClick={() => loginAsTestUser('taker')}
-                className="text-sm py-2 px-3 border border-green-300 text-green-600 rounded hover:bg-green-50"
-              >
-                テイカー次郎でログイン
-              </button>
-              <button
-                type="button"
-                onClick={() => loginAsTestUser('admin')}
-                className="text-sm py-2 px-3 border border-red-300 text-red-600 rounded hover:bg-red-50"
-              >
-                管理者でログイン
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
