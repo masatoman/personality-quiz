@@ -53,7 +53,7 @@ export const QuestionCard = ({
               onClick={() => onAnswer(index)}
               className="w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-blue-500 transition-all duration-300 group relative overflow-hidden"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/5 group-hover:to-blue-500/10 transition-all duration-300" />
+              <div className="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/5 transition-all duration-300" />
               <div className="relative flex items-center">
                 <div className="w-8 h-8 rounded-full bg-gray-100 group-hover:bg-blue-100 flex items-center justify-center mr-4 transition-all duration-300">
                   <span className="text-gray-600 group-hover:text-blue-600 font-medium">

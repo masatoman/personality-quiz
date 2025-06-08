@@ -153,24 +153,16 @@ export default function TaskItem({ task, onToggleComplete, onDelete }: TaskItemP
       {/* タスクの進捗バー */}
       <AnimatePresence initial={false}>
         {task.completed && (
-          <motion.div 
-            initial={{ width: 0 }}
-            animate={{ width: "100%" }}
-            exit={{ width: 0 }}
-            transition={{ duration: 0.4 }}
-            className="h-1.5 bg-gradient-to-r from-green-400 to-green-500 dark:from-green-500 dark:to-green-600 w-full" 
-          />
+          <div className="h-1.5 bg-green-500 w-full"></div>
         )}
         
         {/* 期限切れのタスクの警告バー */}
         {isOverdue && !task.completed && (
-          <motion.div 
-            initial={{ width: 0 }}
-            animate={{ width: "100%" }}
-            exit={{ width: 0 }}
-            transition={{ duration: 0.4 }}
-            className="h-1.5 bg-gradient-to-r from-red-400 to-red-500 dark:from-red-500 dark:to-red-600 w-full" 
-          />
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+            <div
+              className="h-1.5 bg-red-500 w-full"
+            ></div>
+          </div>
         )}
       </AnimatePresence>
     </motion.div>

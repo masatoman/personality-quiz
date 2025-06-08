@@ -116,5 +116,47 @@
     "isQuickMode": true,
     "userId": "347aee4e-6e0d-425a-86c5-f59858d38b6a",
     "timestamp": "2025-06-02T00:10:48.820Z"
+  },
+  {
+    "giver": 5,
+    "taker": 10,
+    "matcher": 11,
+    "dominantType": "matcher",
+    "percentage": {
+      "giver": 19,
+      "taker": 38,
+      "matcher": 42
+    },
+    "isQuickMode": true,
+    "userId": "b81af6ea-50ae-4b7f-9904-8e0b847c3531",
+    "timestamp": "2025-06-08T09:16:41.547Z"
+  },
+  {
+    "giver": 15,
+    "taker": 0,
+    "matcher": 9,
+    "dominantType": "giver",
+    "percentage": {
+      "giver": 63,
+      "taker": 0,
+      "matcher": 38
+    },
+    "isQuickMode": true,
+    "userId": "a8249901-ded2-416f-b545-45aea48d7739",
+    "timestamp": "2025-06-08T09:21:43.053Z"
+  },
+  {
+    "giver": 15,
+    "taker": 0,
+    "matcher": 9,
+    "dominantType": "giver",
+    "percentage": {
+      "giver": 63,
+      "taker": 0,
+      "matcher": 38
+    },
+    "isQuickMode": true,
+    "userId": "e1142241-cf33-4632-a671-193f35dc18aa",
+    "timestamp": "2025-06-08T09:34:41.919Z"
   }
 ]

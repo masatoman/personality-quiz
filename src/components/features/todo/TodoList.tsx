@@ -49,7 +49,7 @@ export default function TodoList() {
       transition={{ duration: 0.5 }}
       className="bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden transition-all duration-300 border border-gray-100 dark:border-gray-700"
     >
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 dark:from-blue-800 dark:to-indigo-900 p-5 relative overflow-hidden">
+      <div className="bg-blue-600 p-5 relative overflow-hidden">
         {/* 装飾効果 */}
         <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20 blur-xl"></div>
         <div className="absolute bottom-0 left-0 w-20 h-20 bg-indigo-400/20 rounded-full -ml-10 -mb-10 blur-lg"></div>

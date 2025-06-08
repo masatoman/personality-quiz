@@ -74,7 +74,7 @@ export default function WelcomePage() {
           <OnboardingFlow />
 
           {/* 統計情報 */}
-          <Box className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-8">
+          <Box className="bg-blue-50 border border-blue-200 rounded-2xl p-8">
             <Typography variant="h5" component="h2" textAlign="center" gutterBottom fontWeight="bold">
               📊 ShiftWithの効果
             </Typography>

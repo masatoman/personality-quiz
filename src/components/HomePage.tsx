@@ -23,7 +23,7 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen">
       {/* ヘッダー */}
-      <header className="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-6" role="banner">
+      <header className="bg-blue-600 text-white py-6" role="banner">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center px-4">
           <h1 className="text-3xl font-bold mb-4 md:mb-0">英語学習タイプ診断</h1>
           <nav className="space-x-4" role="navigation" aria-label="メインナビゲーション">
@@ -234,7 +234,7 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* フッター */}
-      <footer className="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-12">
+      <footer className="bg-blue-600 text-white py-12">
         <div className="container mx-auto text-center">
           <h2 className="text-2xl font-bold mb-4">今すぐ自分の英語学習タイプを見つけよう</h2>
           <p className="text-lg mb-8">たった5分の診断で、あなたに最適な英語学習法がわかります。</p>

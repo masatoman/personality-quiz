@@ -247,7 +247,7 @@ function ResultContent({
               </button>
               <button 
                 onClick={() => shareResult('instagram')}
-                className="bg-gradient-to-tr from-[#FFDC80] via-[#F56040] to-[#833AB4] text-white p-2 rounded-full hover:opacity-80 transition"
+                className="bg-purple-600 text-white p-2 rounded-full hover:bg-purple-700 transition"
               >
                 <FaInstagram size={24} />
               </button>

@@ -141,8 +141,7 @@ export const QuizContainer: React.FC = () => {
   // 教材推薦データの取得
   const fetchRecommendedMaterials = async (personalityType: PersonalityType) => {
     try {
-      // サンプルとしてパーソナリティタイプに基づいた教材を返す
-      // 実際の実装では API からデータを取得する
+      // パーソナリティタイプに基づいた実用的な教材推薦
       const materials = [
         {
           id: 1,
@@ -153,7 +152,11 @@ export const QuizContainer: React.FC = () => {
               : 'グループディスカッションでの英語表現',
           duration: '5分',
           level: '初級',
-          description: 'クイックスタートのための短時間教材です。すぐに実践できるテクニックが学べます。'
+          description: personalityType === 'giver'
+            ? '教えることで学ぶ効果を最大化する方法を学べます。'
+            : personalityType === 'taker'
+              ? '効率的な個人学習のテクニックを身につけられます。'
+              : 'バランスの取れた学習アプローチを習得できます。'
         },
         {
           id: 2,
@@ -164,7 +167,11 @@ export const QuizContainer: React.FC = () => {
               : '英語学習コミュニティでの効果的な参加方法',
           duration: '3分',
           level: '初中級',
-          description: 'あなたの学習スタイルに合わせた短時間で効果的な学習方法です。'
+          description: personalityType === 'giver'
+            ? '分かりやすい説明スキルを向上させる表現を学べます。'
+            : personalityType === 'taker'
+              ? '一人でも効果的に学習を進める方法を習得できます。'
+              : 'コミュニティを活用した学習方法を身につけられます。'
         }
       ];
       
@@ -218,7 +225,7 @@ export const QuizContainer: React.FC = () => {
 
   // 教材ページへ移動
   const goToMaterial = (materialId: number) => {
-    router.push(`/materials/${materialId}`);
+    router.push('/materials');
   };
 
   if (quizState === 'loading') {

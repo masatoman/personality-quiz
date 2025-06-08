@@ -61,7 +61,7 @@ export default function TodoForm({ onAddTask }: TodoFormProps) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300">
       <motion.div 
-        className="bg-gradient-to-r from-blue-100 to-blue-50 dark:from-blue-900/30 dark:to-indigo-900/20 px-5 py-4 cursor-pointer flex justify-between items-center"
+        className="bg-blue-50 px-5 py-4 cursor-pointer flex justify-between items-center border border-blue-200"
         onClick={() => setIsExpanded(!isExpanded)}
         whileHover={{ backgroundColor: 'rgba(0, 0, 0, 0.02)' }}
         whileTap={{ backgroundColor: 'rgba(0, 0, 0, 0.03)' }}

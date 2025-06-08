@@ -19,7 +19,7 @@ interface ResultPageProps {
 
 export function ResultPage({ results, onRestartTest }: ResultPageProps) {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 py-8 px-4">
+    <main className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="result-section">
         <div className="result-header">
           <div className="type-badge">{results.type}</div>
