@@ -15,6 +15,30 @@ export default function CreateMaterialPage() {
       <div className="mb-8">
         <p className="text-gray-600">作成したい教材のタイプを選択してください。作成後も編集可能です。</p>
       </div>
+
+      {/* 改善版の案内バナー */}
+      <div className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4">
+        <div className="flex items-start">
+          <div className="flex-shrink-0">
+            <span className="text-2xl">✨</span>
+          </div>
+          <div className="ml-3 flex-1">
+            <h3 className="text-lg font-semibold text-blue-900 mb-1">
+              新しい教材作成体験を試してみませんか？
+            </h3>
+            <p className="text-blue-700 text-sm mb-3">
+              より簡単で直感的な2ステップフローで、教材作成がさらに快適になりました。
+            </p>
+            <Link 
+              href="/create/improved"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition"
+            >
+              改善版を試す
+              <span className="ml-2">→</span>
+            </Link>
+          </div>
+        </div>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* 標準教材 */}
