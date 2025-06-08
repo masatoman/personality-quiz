@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 export default function WelcomeHero() {
   return (
-    <section className="bg-gradient-to-r from-primary to-primary-dark text-white py-20">
+    <section className="bg-blue-600 text-white py-20">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>

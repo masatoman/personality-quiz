@@ -3,14 +3,8 @@
 import React from 'react';
 import Navbar from '@/components/common/layout/Navbar';
 import ThemeProviderClient from '@/components/ThemeProviderClient';
-import dynamic from 'next/dynamic';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import ErrorFallback from '@/components/ErrorFallback';
-
-// ErrorBoundaryをクライアントサイドのみで動作するようにする
-const ErrorBoundary = dynamic(
-  () => import('@/components/ErrorBoundary'),
-  { ssr: false }
-);
 
 export default function ClientLayout({
   children,

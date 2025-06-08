@@ -82,7 +82,7 @@ const ResultsTabContent: React.FC<ResultsTabContentProps> = ({
 
   const renderStrengths = () => (
     <div className="space-y-6">
-      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-6 shadow-sm">
+      <div className="bg-green-50 border border-green-200 rounded-lg p-6 shadow-sm">
         <h3 className="text-xl font-semibold text-gray-900 mb-4">
           あなたの強み
         </h3>
@@ -100,7 +100,7 @@ const ResultsTabContent: React.FC<ResultsTabContentProps> = ({
 
   const renderWeaknesses = () => (
     <div className="space-y-6">
-      <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-lg p-6 shadow-sm">
+      <div className="bg-red-50 border border-red-200 rounded-lg p-6 shadow-sm">
         <h3 className="text-xl font-semibold text-gray-900 mb-4">
           改善が必要な点
         </h3>
@@ -118,7 +118,7 @@ const ResultsTabContent: React.FC<ResultsTabContentProps> = ({
 
   const renderTips = () => (
     <div className="space-y-6">
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6 shadow-sm">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 shadow-sm">
         <h3 className="text-xl font-semibold text-gray-900 mb-4">
           改善のためのヒント
         </h3>

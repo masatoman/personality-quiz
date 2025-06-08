@@ -102,7 +102,7 @@ export default function OnboardingFlow() {
   const currentStepData = onboardingSteps[currentStep];
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-3xl p-8 shadow-lg">
+    <div className="bg-blue-50 border border-blue-200 rounded-3xl p-8 shadow-lg">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-gray-900 mb-4">
           🚀 ShiftWithの始め方

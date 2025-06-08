@@ -111,11 +111,11 @@ const Navbar: React.FC = () => {
   ];
 
   return (
-    <nav className="bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-700 text-white shadow-md">
+    <nav className="bg-slate-900 border-b border-slate-700 text-white shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-3">
           {/* ロゴ */}
-          <Link href="/" className="text-xl font-bold flex items-center">
+          <Link href="/" className="text-xl font-bold flex items-center text-white hover:text-blue-300 transition-colors">
             ShiftWith
           </Link>
 
@@ -125,8 +125,8 @@ const Navbar: React.FC = () => {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center hover:text-emerald-200 transition-colors ${
-                  pathname === item.href ? 'font-bold' : ''
+                className={`flex items-center hover:text-blue-300 transition-colors ${
+                  pathname === item.href ? 'text-blue-400 font-bold' : 'text-gray-300'
                 }`}
               >
                 {item.icon}
@@ -139,13 +139,13 @@ const Navbar: React.FC = () => {
               <div className="flex space-x-3">
                 <Link
                   href="/auth/login"
-                  className="px-4 py-2 border border-white rounded hover:bg-white hover:text-emerald-600 transition-colors"
+                  className="px-4 py-2 border border-blue-400 text-blue-400 rounded hover:bg-blue-400 hover:text-white transition-colors"
                 >
                   ログイン
                 </Link>
                 <Link
                   href="/auth/signup"
-                  className="px-4 py-2 bg-white text-emerald-600 rounded hover:bg-emerald-100 transition-colors"
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                 >
                   新規登録
                 </Link>
@@ -154,7 +154,7 @@ const Navbar: React.FC = () => {
               <div className="relative" ref={profileMenuRef}>
                 <button
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
-                  className="flex items-center text-white hover:text-emerald-200 transition-colors focus:outline-none"
+                  className="flex items-center text-white hover:text-blue-300 transition-colors focus:outline-none"
                 >
                   <FaUserCircle size={24} className="mr-1" />
                   <span className="hidden lg:inline">マイアカウント</span>
@@ -168,7 +168,7 @@ const Navbar: React.FC = () => {
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={() => setShowProfileMenu(false)}
                     >
-                      <FaUser className="inline mr-2 text-emerald-500" />
+                      <FaUser className="inline mr-2 text-blue-500" />
                       プロフィール
                     </Link>
                     <Link
@@ -208,8 +208,8 @@ const Navbar: React.FC = () => {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`block py-2 hover:bg-emerald-700 rounded px-3 ${
-                  pathname === item.href ? 'bg-emerald-700' : ''
+                className={`block py-2 hover:bg-slate-800 rounded px-3 ${
+                  pathname === item.href ? 'bg-slate-800 text-blue-400' : 'text-gray-300'
                 }`}
                 onClick={() => setIsOpen(false)}
               >
@@ -223,24 +223,24 @@ const Navbar: React.FC = () => {
               <div className="flex flex-col space-y-2 mt-4">
                 <Link
                   href="/auth/login"
-                  className="block text-center py-2 border border-white rounded hover:bg-white hover:text-emerald-600 transition-colors"
+                  className="block text-center py-2 border border-blue-400 text-blue-400 rounded hover:bg-blue-400 hover:text-white transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   ログイン
                 </Link>
                 <Link
                   href="/auth/signup"
-                  className="block text-center py-2 bg-white text-emerald-600 rounded hover:bg-emerald-100 transition-colors"
+                  className="block text-center py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   新規登録
                 </Link>
               </div>
             ) : (
-              <div className="flex flex-col space-y-2 mt-4 border-t border-emerald-400 pt-4">
+              <div className="flex flex-col space-y-2 mt-4 border-t border-slate-700 pt-4">
                 <Link
                   href="/profile"
-                  className="block py-2 hover:bg-emerald-700 rounded px-3"
+                  className="block py-2 hover:bg-slate-800 rounded px-3 text-gray-300"
                   onClick={() => setIsOpen(false)}
                 >
                   <FaUser className="inline mr-2" />
@@ -248,7 +248,7 @@ const Navbar: React.FC = () => {
                 </Link>
                 <Link
                   href="/profile/settings"
-                  className="block py-2 hover:bg-emerald-700 rounded px-3"
+                  className="block py-2 hover:bg-slate-800 rounded px-3 text-gray-300"
                   onClick={() => setIsOpen(false)}
                 >
                   <FaCog className="inline mr-2" />
@@ -259,7 +259,7 @@ const Navbar: React.FC = () => {
                     handleLogout();
                     setIsOpen(false);
                   }}
-                  className="block text-left py-2 hover:bg-emerald-700 rounded px-3 w-full"
+                  className="block text-left py-2 hover:bg-slate-800 rounded px-3 w-full text-gray-300"
                 >
                   <FaSignOutAlt className="inline mr-2" />
                   ログアウト
