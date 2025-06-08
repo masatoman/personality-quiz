@@ -6,16 +6,20 @@
 # Error details
 
 ```
-Error: page.selectOption: Test ended.
+Error: page.fill: Test timeout of 60000ms exceeded.
 Call log:
-  - waiting for locator('select[name="category"]')
+  - waiting for locator('input[name="title"]')
 
-    at /Volumes/Samsung/Works/personality-quiz/tests/e2e/material-creation.e2e.test.ts:135:16
+    at /Volumes/Samsung/Works/personality-quiz/tests/e2e/material-creation.e2e.test.ts:131:16
 ```
 
 # Test source
 
 ```ts
+   31 |               options: [
+   32 |                 'What do you want?',
+   33 |                 'Is there anything I can do for you?',
+   34 |                 'You look confused.',
    35 |                 'Figure it out yourself.'
    36 |               ],
    37 |               correct_answer: 1,
@@ -112,12 +116,12 @@ Call log:
   128 |     await page.waitForURL(/\/create\/standard\/basic-info/);
   129 |
   130 |     // ステップ1: 基本情報入力
-  131 |     await page.fill('input[name="title"]', material.title);
+> 131 |     await page.fill('input[name="title"]', material.title);
+      |                ^ Error: page.fill: Test timeout of 60000ms exceeded.
   132 |     await page.fill('textarea[name="description"]', material.description);
   133 |     
   134 |     // カテゴリと難易度の選択
-> 135 |     await page.selectOption('select[name="category"]', material.category);
-      |                ^ Error: page.selectOption: Test ended.
+  135 |     await page.selectOption('select[name="category"]', material.category);
   136 |     await page.selectOption('select[name="difficulty"]', material.difficulty);
   137 |     
   138 |     // 次のステップへ
@@ -151,8 +155,8 @@ Call log:
   166 |     // ページが読み込まれるまで待機
   167 |     await page.waitForLoadState('networkidle');
   168 |     
-  169 |     // 教材一覧のタイトルが表示されることを確認
-  170 |     await expect(page.locator('h1, h2')).toContainText(/教材|Materials/);
+  169 |     // 教材一覧のタイトルが表示されることを確認（最初のh1タグを指定）
+  170 |     await expect(page.locator('h1').first()).toContainText(/教材|Materials/);
   171 |     
   172 |     // 何らかの教材コンテンツが表示されることを確認
   173 |     const materialCards = page.locator('[data-testid="material-card"], .material-card, article');
@@ -182,30 +186,36 @@ Call log:
   197 |     // APIエンドポイントを使って教材データを作成
   198 |     const response = await page.request.post('/api/materials', {
   199 |       data: {
-  200 |         title: material.title,
-  201 |         description: material.description,
-  202 |         content: material.content,
-  203 |         category: material.category,
-  204 |         tags: material.tags,
-  205 |         difficulty: material.difficulty,
-  206 |         is_published: true
-  207 |       }
-  208 |     });
-  209 |     
-  210 |     // API応答の確認
-  211 |     if (response.ok()) {
-  212 |       const responseData = await response.json();
-  213 |       console.log('教材作成API成功:', responseData);
-  214 |       
-  215 |       // 作成された教材の詳細ページを確認
-  216 |       if (responseData.id) {
-  217 |         await page.goto(`/materials/${responseData.id}`);
-  218 |         await expect(page.locator('h1')).toContainText(material.title);
-  219 |         await expect(page.locator('text=' + material.content.introduction)).toBeVisible();
-  220 |       }
-  221 |     } else {
-  222 |       console.log('教材作成API失敗:', response.status(), await response.text());
-  223 |     }
-  224 |   });
-  225 | }); 
+  200 |         basicInfo: {
+  201 |           title: material.title,
+  202 |           description: material.description,
+  203 |           category: material.category,
+  204 |           tags: material.tags,
+  205 |           difficulty: material.difficulty
+  206 |         },
+  207 |         contentSections: [
+  208 |           {
+  209 |             type: 'text',
+  210 |             title: '導入',
+  211 |             content: material.content.introduction
+  212 |           }
+  213 |         ],
+  214 |         settings: {
+  215 |           is_published: true,
+  216 |           target_level: material.difficulty
+  217 |         }
+  218 |       }
+  219 |     });
+  220 |     
+  221 |     // API応答の確認
+  222 |     if (response.ok()) {
+  223 |       const responseData = await response.json();
+  224 |       console.log('教材作成API成功:', responseData);
+  225 |       
+  226 |       // 作成された教材の詳細ページを確認
+  227 |       if (responseData.id || responseData.data?.id) {
+  228 |         const materialId = responseData.id || responseData.data.id;
+  229 |         await page.goto(`/materials/${materialId}`);
+  230 |         await expect(page.locator('h1')).toContainText(material.title);
+  231 |         await expect(page.locator('text=' + material.content.introduction)).toBeVisible();
 ```

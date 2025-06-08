@@ -7,6 +7,58 @@
 
 ---
 
+## 🚨 クリティカル解決待ち
+
+### 教材公開処理の根本修正 【最優先】
+**問題**: materialsテーブルのスキーマ不整合により、教材作成・公開が失敗する
+**影響度**: MVP核心機能の完全停止
+
+#### 判明した具体的問題:
+1. **スキーマ不整合**: 必要カラム7つが存在しない
+   - `difficulty` (TEXT) - API側で要求されるが、テーブル側は`difficulty_level` (INTEGER)
+   - `status` (TEXT) - API側で要求されるが、テーブル側は`is_published` (BOOLEAN)
+   - `estimated_time`, `allow_comments`, `target_audience`, `prerequisites`, `thumbnail_url`
+
+2. **マイグレーション未適用**: 修正SQLは作成済みだが実行されていない
+   - `exec_sql`関数が存在しないため、RPC経由でのスキーマ修正が不可能
+
+3. **現在の状況**:
+   - 📊 API修正完了: 既存スキーマに合わせてAPIを調整済み
+   - 🔧 フロントエンド修正完了: バリデーション緩和済み  
+   - ❌ データベース修正待ち: 手動でのスキーマ修正が必要
+
+#### 解決ステップ:
+- [ ] **手動スキーマ修正** (Supabase Dashboard SQL Editor使用)
+  ```sql
+  ALTER TABLE public.materials ADD COLUMN IF NOT EXISTS difficulty TEXT;
+  ALTER TABLE public.materials ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'published';
+  ALTER TABLE public.materials ADD COLUMN IF NOT EXISTS estimated_time INTEGER DEFAULT 0;
+  ALTER TABLE public.materials ADD COLUMN IF NOT EXISTS allow_comments BOOLEAN DEFAULT TRUE;
+  ALTER TABLE public.materials ADD COLUMN IF NOT EXISTS target_audience TEXT[] DEFAULT '{}';
+  ALTER TABLE public.materials ADD COLUMN IF NOT EXISTS prerequisites TEXT;
+  ALTER TABLE public.materials ADD COLUMN IF NOT EXISTS thumbnail_url TEXT;
+  ```
+
+- [ ] **データ移行**
+  ```sql
+  UPDATE public.materials SET difficulty = 
+    CASE WHEN difficulty_level <= 2 THEN 'beginner'
+         WHEN difficulty_level <= 4 THEN 'intermediate' 
+         ELSE 'advanced' END;
+  
+  UPDATE public.materials SET status = 
+    CASE WHEN is_published = true THEN 'published' ELSE 'draft' END;
+  ```
+
+- [ ] **動作検証**: 教材作成フローのE2Eテスト実行
+- [ ] **本番環境適用**: 修正SQLの本番反映
+
+#### 実装済みの応急措置:
+✅ APIレベル修正: 既存カラム(`difficulty_level`, `is_published`)に対応
+✅ フロントエンド修正: 必須項目の緩和
+
+---
+
 ## ✅ **Phase 8 - 完了済みタスク**
 
 ### 🧪 **結合テスト自動化（完了）**

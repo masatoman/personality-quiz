@@ -11,24 +11,49 @@ jest.mock('next/navigation', () => ({
   })),
 }));
 
+// Supabaseモック
+const mockGetSession = jest.fn();
+const mockSignOut = jest.fn();
+const mockOnAuthStateChange = jest.fn(() => ({
+  data: { subscription: { unsubscribe: jest.fn() } }
+}));
+
+jest.mock('@/lib/supabase/client', () => ({
+  getClient: () => ({
+    auth: {
+      getSession: mockGetSession,
+      signOut: mockSignOut,
+      onAuthStateChange: mockOnAuthStateChange,
+    }
+  })
+}));
+
 describe('Navbar', () => {
   beforeEach(() => {
     // パスネームのモックをリセット
     (usePathname as jest.Mock).mockReturnValue('/');
-    // ローカルストレージをクリア
-    localStorage.clear();
+    
+    // デフォルトでログアウト状態に設定
+    mockGetSession.mockResolvedValue({ data: { session: null } });
+    mockSignOut.mockResolvedValue({ error: null });
+    
+    jest.clearAllMocks();
   });
 
-  it('非ログイン時にログインと新規登録ボタンを表示する', () => {
+  it('非ログイン時にログインと新規登録ボタンを表示する', async () => {
     render(<Navbar />);
     
-    expect(screen.getByText('ログイン')).toBeInTheDocument();
-    expect(screen.getByText('新規登録')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('ログイン')).toBeInTheDocument();
+      expect(screen.getByText('新規登録')).toBeInTheDocument();
+    });
   });
 
   it('ログイン時にマイアカウントメニューを表示する', async () => {
     // ログイン状態をシミュレート
-    localStorage.setItem('supabase.auth.token', 'dummy-token');
+    mockGetSession.mockResolvedValue({ 
+      data: { session: { user: { id: 'test-user-id' } } } 
+    });
     
     render(<Navbar />);
     
@@ -39,7 +64,9 @@ describe('Navbar', () => {
 
   it('プロフィールメニューの開閉が正しく動作する', async () => {
     // ログイン状態をシミュレート
-    localStorage.setItem('supabase.auth.token', 'dummy-token');
+    mockGetSession.mockResolvedValue({ 
+      data: { session: { user: { id: 'test-user-id' } } } 
+    });
     
     render(<Navbar />);
     
@@ -61,7 +88,9 @@ describe('Navbar', () => {
 
   it('ログアウトが正しく動作する', async () => {
     // ログイン状態をシミュレート
-    localStorage.setItem('supabase.auth.token', 'dummy-token');
+    mockGetSession.mockResolvedValue({ 
+      data: { session: { user: { id: 'test-user-id' } } } 
+    });
     const router = { push: jest.fn() };
     (useRouter as jest.Mock).mockReturnValue(router);
     
@@ -74,8 +103,8 @@ describe('Navbar', () => {
     // ログアウトボタンをクリック
     fireEvent.click(screen.getByText('ログアウト'));
     
-    // 状態確認
-    expect(localStorage.getItem('supabase.auth.token')).toBeNull();
+    // Supabaseのログアウト関数が呼ばれたことを確認
+    expect(mockSignOut).toHaveBeenCalled();
     expect(router.push).toHaveBeenCalledWith('/');
   });
 

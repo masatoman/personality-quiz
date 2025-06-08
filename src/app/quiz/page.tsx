@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 import { QuizContainer } from '@/components/features/quiz/QuizContainer';
 
@@ -21,11 +21,24 @@ export const metadata: Metadata = {
   },
 };
 
+function QuizLoadingFallback() {
+  return (
+    <div className="min-h-screen bg-gray-50 py-12 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-lg text-gray-600">診断テストを準備中...</p>
+      </div>
+    </div>
+  );
+}
+
 // クイズページのメインコンポーネント
 export default function QuizPage() {
   return (
     <main className="min-h-screen bg-gray-50 py-12">
-      <QuizContainer />
+      <Suspense fallback={<QuizLoadingFallback />}>
+        <QuizContainer />
+      </Suspense>
     </main>
   );
 } 

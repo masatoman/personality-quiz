@@ -72,23 +72,23 @@ interface SaveNotificationProps {
 }
 
 // 動的インポートの型アサーション
-const ResultsHeader = dynamic(() => import('./results/ResultsHeader'), {
+const ResultsHeader = dynamic(() => import('./features/results/ResultsHeader'), {
   loading: () => <LoadingDisplay message="ヘッダーを読み込み中..." />,
   ssr: false
 }) as unknown as ComponentType<ResultsHeaderProps>;
 
-const ResultsTabs = dynamic(() => import('./results/ResultsTabs'), {
+const ResultsTabs = dynamic(() => import('./features/results/ResultsTabs'), {
   loading: () => <LoadingDisplay message="タブを読み込み中..." />,
   ssr: false
 }) as unknown as ComponentType<ResultsTabsProps>;
 
-const ResultsTabContent = dynamic(() => import('./results/ResultsTabContent'), {
+const ResultsTabContent = dynamic(() => import('./features/results/ResultsTabContent'), {
   loading: () => <LoadingDisplay message="コンテンツを読み込み中..." />,
   ssr: false
 }) as unknown as ComponentType<ResultsTabContentProps>;
 
-const SaveNotification = dynamic(() => import('./results/SaveNotification'), {
-  loading: () => null,
+const SaveNotification = dynamic(() => import('./features/results/SaveNotification'), {
+  loading: () => <LoadingDisplay message="通知を読み込み中..." />,
   ssr: false
 }) as unknown as ComponentType<SaveNotificationProps>;
 
@@ -112,75 +112,7 @@ const getSecondaryType = (
 export function ResultsClient() {
   const [selectedTab, setSelectedTab] = useState<TabType>('overview');
   const [isMobile, setIsMobile] = useState(false);
-  const [resultsData, setResultsData] = useState<ResultsData>({
-    answers: [],
-    recommendations: [],
-    timestamp: new Date().toISOString(),
-    personalityInfo: {
-      giver: {
-        title: 'Giver',
-        description: '他者を助け、知識を共有することに喜びを感じるタイプ',
-        strengths: [
-          '教えることで自身の理解も深まる',
-          '人との関係構築が得意',
-          '協調性が高い'
-        ],
-        weaknesses: [
-          '自身の学習時間が不足しがち',
-          '完璧を求めすぎる傾向がある',
-          '時間管理が難しい'
-        ],
-        tips: [
-          '自身の学習時間を確保する',
-          'メンタリングの時間を設定する',
-          '教えることと学ぶことのバランスを取る'
-        ]
-      },
-      taker: {
-        title: 'Taker',
-        description: '効率的に知識を吸収し、自己成長を重視するタイプ',
-        strengths: [
-          '学習効率が高い',
-          '目標達成への意識が強い',
-          '時間管理が得意'
-        ],
-        weaknesses: [
-          '他者との知識共有が少ない',
-          '協調学習が苦手',
-          'コミュニケーションが一方向的になりがち'
-        ],
-        tips: [
-          '学んだ内容を他者と共有する機会を作る',
-          'グループ学習に参加する',
-          '知識のアウトプットを意識する'
-        ]
-      },
-      matcher: {
-        title: 'Matcher',
-        description: '与えることと得ることのバランスを重視するタイプ',
-        strengths: [
-          'バランスの取れた学習スタイル',
-          '柔軟な対応力',
-          '持続可能な学習習慣'
-        ],
-        weaknesses: [
-          '特定分野での専門性が育ちにくい',
-          '決断に時間がかかる',
-          '中途半端になりがち'
-        ],
-        tips: [
-          '得意分野を見つけて伸ばす',
-          '明確な目標を設定する',
-          '定期的な振り返りを行う'
-        ]
-      }
-    },
-    scores: {
-      giver: 0,
-      taker: 0,
-      matcher: 0
-    }
-  });
+  const [resultsData, setResultsData] = useState<ResultsData | null>(null);
   const [saveNotification] = useState<{
     message: string;
     success: boolean;
@@ -193,6 +125,9 @@ export function ResultsClient() {
   
   // 結果データの取得と解析（メモ化）
   const quizResults = useMemo(() => {
+    // サーバーサイドでは null を返す
+    if (typeof window === 'undefined') return null;
+    
     const storedResults = localStorage.getItem('quizResults');
     if (!storedResults) return null;
     
@@ -305,101 +240,148 @@ export function ResultsClient() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // おすすめ教材の取得
-  useEffect(() => {
-    const fetchRecommendations = async () => {
-      if (!quizResults) return;
-      
-      setIsLoadingRecommendations(true);
-      try {
-        // テスト環境では代替データを使用
-        const isTestEnvironment = process.env.NODE_ENV === 'test' || 
-                                 typeof window !== 'undefined' && window.location.hostname === 'localhost';
-        
-        if (isTestEnvironment) {
-          // テスト用のサンプル教材データ
-          const sampleRecommendations = [
-            {
-              title: "英語基礎文法マスター",
-              description: "英語の基礎文法を体系的に学習できる教材です。初心者から中級者まで対応。",
-              link: "/materials/1"
-            },
-            {
-              title: "日常英会話フレーズ集",
-              description: "実際の会話で使える英語フレーズを場面別に学習できます。",
-              link: "/materials/2"
-            },
-            {
-              title: "TOEIC対策問題集",
-              description: "TOEIC試験対策に特化した問題集です。スコアアップを目指しましょう。",
-              link: "/materials/3"
-            },
-            {
-              title: "ビジネス英語エッセンシャル",
-              description: "ビジネスシーンで必要な英語表現を学習できる実践的な教材です。",
-              link: "/materials/4"
-            },
-            {
-              title: "英語プレゼンテーション入門",
-              description: "英語でのプレゼンテーションスキルを向上させる教材です。",
-              link: "/materials/5"
-            }
-          ];
-          
-          setResultsData(prev => ({
-            ...prev,
-            recommendations: sampleRecommendations
-          }));
-        } else {
-          // 実際のAPIから教材を取得
-          const response = await fetch('/api/learning/recommendations?limit=5&strategy=mixed');
-          if (response.ok) {
-            const data = await response.json();
-            const recommendations = data.recommendations.map((item: any) => ({
-              title: item.title || '教材名不明',
-              description: item.description || '説明なし',
-              link: `/materials/${item.id}`
-            }));
-            
-            setResultsData(prev => ({
-              ...prev,
-              recommendations
-            }));
-          } else {
-            console.warn('教材推薦の取得に失敗しました');
-            // フォールバックとしてサンプルデータを使用
-            setResultsData(prev => ({
-              ...prev,
-              recommendations: [
-                {
-                  title: "おすすめ英語教材（サンプル）",
-                  description: "現在教材を読み込み中です。しばらくお待ちください。",
-                  link: "/explore"
-                }
-              ]
-            }));
-          }
-        }
-      } catch (error) {
-        console.error('教材推薦の取得エラー:', error);
-        // エラー時のフォールバックデータ
-        setResultsData(prev => ({
-          ...prev,
-          recommendations: [
-            {
-              title: "教材を探索する",
-              description: "現在おすすめ教材を読み込めません。教材一覧から探索してください。",
-              link: "/explore"
-            }
-          ]
-        }));
-      } finally {
-        setIsLoadingRecommendations(false);
+  // パーソナリティ分析
+  const analyzePersonality = (answers: any[]) => {
+    // 簡単な分析ロジック（回答に基づいて判定）
+    let giverScore = 0;
+    let takerScore = 0;
+    
+    answers.forEach((answer, index) => {
+      if (answer === 0) { // 第1選択肢（他者助ける系）
+        giverScore++;
+      } else if (answer === 2) { // 第3選択肢（個人学習系）
+        takerScore++;
+      }
+    });
+    
+    if (giverScore > takerScore) return 'giver';
+    if (takerScore > giverScore) return 'taker';
+    return 'matcher';
+  };
+
+  // パーソナリティ情報の取得
+  const getPersonalityInfo = (personalityType: string) => {
+    const personalityData = {
+      giver: {
+        title: 'Giver（ギバー）',
+        description: '他者を助け、知識を共有することに喜びを感じるタイプ',
+        strengths: [
+          '教えることで自身の理解も深まる',
+          '人との関係構築が得意',
+          '協調性が高い'
+        ],
+        weaknesses: [
+          '自身の学習時間が不足しがち',
+          '完璧を求めすぎる傾向がある',
+          '時間管理が難しい'
+        ],
+        tips: [
+          '自身の学習時間を確保する',
+          'メンタリングの時間を設定する',
+          '教えることと学ぶことのバランスを取る'
+        ]
+      },
+      taker: {
+        title: 'Taker（テイカー）',
+        description: '効率的に知識を吸収し、自己成長を重視するタイプ',
+        strengths: [
+          '集中力が高い',
+          '効率的な学習方法を見つけるのが得意',
+          '目標達成に向けた計画性がある'
+        ],
+        weaknesses: [
+          '孤立しがちになる',
+          '他者からのフィードバックを受けにくい',
+          '知識の定着に時間がかかることがある'
+        ],
+        tips: [
+          '定期的に他者との交流を持つ',
+          '学んだことを誰かに教える機会を作る',
+          'アウトプットの練習を積極的に行う'
+        ]
+      },
+      matcher: {
+        title: 'Matcher（マッチャー）',
+        description: '与えることと受け取ることのバランスを重視するタイプ',
+        strengths: [
+          'バランス感覚に優れている',
+          '状況に応じて柔軟に対応できる',
+          '様々な学習方法を使い分けられる'
+        ],
+        weaknesses: [
+          '方向性を決めるのに時間がかかる',
+          '一貫性に欠ける場合がある',
+          '深い専門性を身につけにくい'
+        ],
+        tips: [
+          '自分の学習スタイルを明確にする',
+          '一つの方法を続ける習慣をつける',
+          '長期的な目標を設定する'
+        ]
       }
     };
 
-    fetchRecommendations();
-  }, [quizResults]);
+    return personalityData[personalityType as keyof typeof personalityData] || personalityData.matcher;
+  };
+
+  // 教材推薦の取得
+  const fetchMaterialRecommendations = async (personalityType: string) => {
+    try {
+      const response = await fetch(`/api/learning/recommendations?personality=${personalityType}&limit=3`);
+      if (!response.ok) {
+        throw new Error('推薦データの取得に失敗しました');
+      }
+      const data = await response.json();
+      return data.materials || [];
+    } catch (error) {
+      console.error('推薦取得エラー:', error);
+      // フォールバック：一般的な推薦を返す
+      return [
+        {
+          id: 'fallback-1',
+          title: '英語学習の基礎',
+          description: '効果的な英語学習方法を学ぶための入門教材',
+          duration: '10分',
+          level: '初級',
+          category: 'learning'
+        },
+        {
+          id: 'fallback-2', 
+          title: 'コミュニケーションスキル向上',
+          description: '他の学習者との効果的なコミュニケーション方法',
+          duration: '15分',
+          level: '中級',
+          category: 'communication'
+        }
+      ];
+    }
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('quiz-results');
+        if (stored) {
+          const data = JSON.parse(stored);
+          
+          // パーソナリティ分析
+          const personalityType = analyzePersonality(data.answers);
+          const personalityInfo = getPersonalityInfo(personalityType);
+          
+          // 教材推薦の取得
+          const recommendations = await fetchMaterialRecommendations(personalityType);
+          
+          setResultsData({
+            ...data,
+            personalityInfo,
+            recommendations
+          });
+        }
+      }
+    };
+    
+    loadData();
+  }, []);
 
   if (!quizResults || !learningType) {
     return (

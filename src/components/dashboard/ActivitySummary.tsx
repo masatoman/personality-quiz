@@ -56,7 +56,7 @@ const ActivitySummary: React.FC<ActivitySummaryProps> = ({
             <div className="flex-1">
               <h3 className="text-sm font-medium text-gray-600 mb-1.5 sm:mb-2">{item.label}</h3>
               <p className="text-2xl sm:text-3xl font-bold text-gray-900">
-                {item.value.toLocaleString()}
+                {(item.value || 0).toLocaleString()}
                 <span className="text-sm sm:text-base font-medium text-gray-600 ml-1.5 sm:ml-2">
                   {item.label === '獲得ポイント' ? 'pt' : '件'}
                 </span>
