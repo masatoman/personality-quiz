@@ -8,6 +8,8 @@ import { getPersonalityDescription } from '@/lib/personalities';
 import type { Stats } from '@/types/quiz';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { useToast } from '@/hooks/useToast';
+import ToastContainer from '@/components/ui/ToastContainer';
 import Link from 'next/link';
 import { FaTwitter, FaInstagram, FaFacebook } from 'react-icons/fa';
 import { SiLine } from 'react-icons/si';
@@ -27,6 +29,7 @@ function ResultContent({
   const resultRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { showSuccess, showError } = useToast();
   
   // グローバルエラーハンドリングを設定
   useErrorHandler();
@@ -101,11 +104,11 @@ function ResultContent({
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
-        alert('画像を保存しました。\nこの画像をインスタグラムでシェアしてください。');
+        showSuccess('画像を保存しました。', 'この画像をインスタグラムでシェアしてください。');
       }, 'image/png');
     } catch (error) {
       console.error('スクリーンショットの作成に失敗しました:', error);
-      alert('スクリーンショットの作成に失敗しました。');
+      showError('スクリーンショットの作成に失敗しました。');
     }
   };
 
@@ -137,10 +140,11 @@ function ResultContent({
   const learningMethods = description.learningAdvice.tips;
   const tools = description.learningAdvice.tools;
 
-  return (
-    <main className="min-h-screen bg-mesh py-8 px-4">
-      <div className="container mx-auto">
-        <div className="result-section" ref={resultRef}>
+    return (
+    <>
+      <main className="min-h-screen bg-mesh py-8 px-4">
+        <div className="container mx-auto">
+          <div className="result-section" ref={resultRef}>
           <div className="result-header">
             <div className="type-badge">{title}</div>
             <h1 className="text-2xl font-bold mb-4">

@@ -71,6 +71,13 @@ export default function AuthCallbackPage() {
           } else {
             console.log('プロフィール作成成功');
           }
+
+          // 新規ユーザーはウェルカムページへ誘導
+          const welcomeUrl = new URL('/welcome', window.location.origin);
+          welcomeUrl.searchParams.set('first_login', 'true');
+          console.log('新規ユーザーをウェルカムページへ誘導:', welcomeUrl.pathname + welcomeUrl.search);
+          router.push(welcomeUrl.pathname + welcomeUrl.search);
+          return;
         }
 
         // クエリパラメータから元のページを取得

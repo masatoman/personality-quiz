@@ -108,14 +108,20 @@ export async function POST(request: NextRequest) {
       return response;
     }
 
-    // 教材作成 - 実際のテーブル構造に合わせて調整
+    // 教材作成 - materialsテーブルの実際の構造に合わせて調整
     const insertData = {
       title: data.title,
       content: typeof data.content === 'string' ? data.content : JSON.stringify(data.content),
       category: data.category,
       description: data.description || '',
-      user_id: user.id,  // user_idが必須のようなのでこちらを使用
-      author_id: user.id // author_idも設定
+      user_id: user.id, // materialsテーブルのuser_idフィールドに保存
+      // author_idフィールドは存在しないため削除
+      difficulty_level: data.difficulty === 'beginner' ? 1 : 
+                       data.difficulty === 'intermediate' ? 3 : 
+                       data.difficulty === 'advanced' ? 5 : 2,
+      estimated_time: data.estimated_time || 0,
+      is_published: data.status === 'published' || data.is_public || false,
+      tags: data.tags || []
     };
 
     console.log('データベース挿入データ:', insertData);

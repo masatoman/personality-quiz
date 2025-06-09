@@ -59,21 +59,29 @@ const SignupPage = () => {
 
       if (data?.user) {
         // プロフィールテーブルにユーザー情報を保存
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert([
-            {
-              id: data.user.id,
-              username: name,
-              display_name: name,
-              bio: null,
-              avatar_url: null,
-              created_at: new Date().toISOString(),
-            },
-          ]);
+        // 一時的にRLSエラーをスキップしてテスト
+        try {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert([
+              {
+                id: data.user.id,
+                username: name,
+                display_name: name,
+                bio: null,
+                avatar_url: null,
+                created_at: new Date().toISOString(),
+              },
+            ]);
 
-        if (profileError) {
-          console.error('プロフィール作成エラー:', profileError);
+          if (profileError) {
+            console.error('プロフィール作成エラー:', profileError);
+            // RLSエラーは一時的に無視してメール確認へ進む
+            console.warn('プロフィール作成をスキップしてメール確認へ進みます');
+          }
+        } catch (profileErr) {
+          console.error('プロフィール作成で例外発生:', profileErr);
+          // プロフィール作成エラーでも登録は続行
         }
 
         // メール確認画面へリダイレクト

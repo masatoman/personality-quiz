@@ -3,8 +3,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Container, Paper, Typography, Button, Box, Stack, LinearProgress, Card, CardContent, CardActions, Chip, Divider } from '@mui/material';
-import { Lightbulb, Refresh, AutoStories, ArrowForward, School, Timer } from '@mui/icons-material';
+import { Lightbulb, Refresh, AutoStories, ArrowForward, School, Timer, PersonAdd, Save, TrendingUp, Group } from '@mui/icons-material';
 import { QuizResults as QuizResultsType } from './types';
+import Link from 'next/link';
 
 // 教材の型定義
 interface Material {
@@ -21,6 +22,7 @@ interface QuizResultsProps {
   isQuickMode?: boolean;
   recommendedMaterials?: Material[];
   onGoToMaterial?: (materialId: number) => void;
+  isLoggedIn?: boolean;
 }
 
 export const QuizResults: React.FC<QuizResultsProps> = ({ 
@@ -28,7 +30,8 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
   onRetake,
   isQuickMode = false,
   recommendedMaterials = [],
-  onGoToMaterial
+  onGoToMaterial,
+  isLoggedIn
 }) => {
   const getTypeDescription = (type: string) => {
     switch (type) {
@@ -235,6 +238,90 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
                       </Box>
                     ))}
                   </Box>
+                </Box>
+              </>
+            )}
+
+            {/* 未ログインユーザー向け新規登録誘導 */}
+            {!isLoggedIn && (
+              <>
+                <Divider sx={{ my: 4 }} />
+                <Box 
+                  sx={{ 
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    borderRadius: 3,
+                    p: 4,
+                    color: 'white',
+                    textAlign: 'center'
+                  }}
+                >
+                  <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ color: 'white' }}>
+                    🎉 診断結果を保存して、学習を始めませんか？
+                  </Typography>
+                  <Typography variant="body1" sx={{ mb: 3, color: 'rgba(255,255,255,0.9)' }}>
+                    アカウントを作成すると、あなたの診断結果に基づいた<br />
+                    パーソナライズされた学習体験を提供します
+                  </Typography>
+                  
+                  <Stack 
+                    direction={{ xs: 'column', sm: 'row' }} 
+                    spacing={2} 
+                    sx={{ mb: 3 }}
+                    justifyContent="center"
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', color: 'rgba(255,255,255,0.9)' }}>
+                      <Save sx={{ mr: 1, fontSize: 20 }} />
+                      <Typography variant="body2">診断結果の永続保存</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', color: 'rgba(255,255,255,0.9)' }}>
+                      <TrendingUp sx={{ mr: 1, fontSize: 20 }} />
+                      <Typography variant="body2">学習進捗の追跡</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', color: 'rgba(255,255,255,0.9)' }}>
+                      <Group sx={{ mr: 1, fontSize: 20 }} />
+                      <Typography variant="body2">コミュニティ参加</Typography>
+                    </Box>
+                  </Stack>
+                  
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
+                    <Link href="/auth/signup" style={{ textDecoration: 'none' }}>
+                      <Button
+                        variant="contained"
+                        size="large"
+                        startIcon={<PersonAdd />}
+                        sx={{
+                          bgcolor: 'white',
+                          color: '#667eea',
+                          fontWeight: 'bold',
+                          px: 4,
+                          py: 1.5,
+                          '&:hover': {
+                            bgcolor: 'rgba(255,255,255,0.9)',
+                          }
+                        }}
+                      >
+                        無料でアカウント作成
+                      </Button>
+                    </Link>
+                    <Link href="/auth/login" style={{ textDecoration: 'none' }}>
+                      <Button
+                        variant="outlined"
+                        size="large"
+                        sx={{
+                          borderColor: 'white',
+                          color: 'white',
+                          px: 4,
+                          py: 1.5,
+                          '&:hover': {
+                            borderColor: 'white',
+                            bgcolor: 'rgba(255,255,255,0.1)',
+                          }
+                        }}
+                      >
+                        ログイン
+                      </Button>
+                    </Link>
+                  </Stack>
                 </Box>
               </>
             )}

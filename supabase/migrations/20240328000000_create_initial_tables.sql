@@ -18,6 +18,10 @@ CREATE POLICY "プロフィールは誰でも参照可能" ON public.profiles
 CREATE POLICY "プロフィールは本人のみ更新可能" ON public.profiles
     FOR UPDATE USING (auth.uid() = id);
 
+-- 新規プロフィール作成用ポリシーを追加
+CREATE POLICY "認証ユーザーは自分のプロフィールを作成可能" ON public.profiles
+    FOR INSERT WITH CHECK (auth.uid() = id);
+
 -- giver_scores テーブルの作成
 CREATE TABLE public.giver_scores (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

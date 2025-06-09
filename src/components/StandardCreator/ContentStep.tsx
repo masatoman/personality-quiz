@@ -17,13 +17,17 @@ interface ContentStepProps {
   onBack: () => void;
 }
 
+import { useToast } from '@/hooks/useToast';
+import ToastContainer from '@/components/ui/ToastContainer';
+
 const ContentStep: React.FC<ContentStepProps> = ({ initialData, onSave, onBack }) => {
   const [sections, setSections] = useState<ContentSection[]>(initialData || []);
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const { showWarning, toasts, removeToast } = useToast();
   
   const handleNext = () => {
     if (sections.length === 0) {
-      alert('コンテンツを最低1つ追加してください');
+      showWarning('コンテンツを最低1つ追加してください');
       return;
     }
     
@@ -212,7 +216,9 @@ const ContentStep: React.FC<ContentStepProps> = ({ initialData, onSave, onBack }
   };
   
   return (
-    <div className="flex flex-col p-4 space-y-6">
+    <>
+      <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
+      <div className="flex flex-col p-4 space-y-6">
       <div className="flex items-center mb-2">
         <button 
           onClick={onBack}
@@ -340,6 +346,7 @@ const ContentStep: React.FC<ContentStepProps> = ({ initialData, onSave, onBack }
         </button>
       </div>
     </div>
+    </>
   );
 };
 
