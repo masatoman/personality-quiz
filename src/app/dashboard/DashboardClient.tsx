@@ -121,7 +121,10 @@ const DashboardContent = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-10">ダッシュボード</h1>
+      <div className="mb-6 sm:mb-10">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">ホーム</h1>
+        <p className="text-gray-600 text-sm sm:text-base">あなたの学習活動の全体像とギバースコアの成長を確認できます</p>
+      </div>
       <div className="space-y-6 sm:space-y-10">
         <ActivitySummary 
           createdMaterials={userData.activitySummary.createdMaterials}

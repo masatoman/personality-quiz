@@ -30,6 +30,7 @@ interface MaterialData {
 
 const ImprovedCreator: React.FC = () => {
   const [step, setStep] = useState<'create' | 'publish'>('create');
+  const [showFirstTimeHelp, setShowFirstTimeHelp] = useState(false);
   const [material, setMaterial] = useState<MaterialData>({
     title: '',
     description: '',
@@ -53,6 +54,14 @@ const ImprovedCreator: React.FC = () => {
     const estimatedMinutes = Math.max(3, Math.ceil(wordCount / 200)); // 200文字/分として計算
     setMaterial(prev => ({ ...prev, estimatedTime: estimatedMinutes }));
   }, [material.sections]);
+
+  // 初回ユーザーかチェック
+  useEffect(() => {
+    const hasCreatedMaterial = localStorage.getItem('has_created_material');
+    if (!hasCreatedMaterial && material.sections.length === 0) {
+      setShowFirstTimeHelp(true);
+    }
+  }, [material.sections.length]);
 
   // コンテンツセクション追加
   const addSection = (type: ContentSection['type']) => {
@@ -154,9 +163,12 @@ const ImprovedCreator: React.FC = () => {
       const result = await response.json();
       console.log('保存成功:', result);
       
+      // 初回作成フラグを設定
+      localStorage.setItem('has_created_material', 'true');
+      
       showSuccess(
-        '教材を公開しました！',
-        '教材が正常に公開され、他のユーザーが学習できるようになりました。',
+        '🎉 初回教材作成完了！',
+        '素晴らしい！教材を公開しました。「教えることで学ぶ」体験はいかがでしたか？',
         3000
       );
       
@@ -184,6 +196,82 @@ const ImprovedCreator: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* 初回ヘルプモーダル */}
+      {showFirstTimeHelp && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-8">
+            <div className="text-center mb-6">
+              <div className="text-4xl mb-4">🎨</div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                初回教材作成へようこそ！
+              </h2>
+              <p className="text-gray-600">
+                「教えることで学ぶ」体験を一緒に始めましょう
+              </p>
+            </div>
+            
+            <div className="space-y-4 mb-8">
+              <div className="flex items-start space-x-3">
+                <div className="bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="text-blue-600 font-bold">1</span>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-800">教材の基本情報を入力</h3>
+                  <p className="text-sm text-gray-600">タイトル、説明、カテゴリを設定します</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="bg-green-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="text-green-600 font-bold">2</span>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-800">コンテンツセクションを追加</h3>
+                  <p className="text-sm text-gray-600">テキスト、画像、動画、クイズなど様々な形式で作成</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="bg-purple-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="text-purple-600 font-bold">3</span>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-800">プレビューして公開</h3>
+                  <p className="text-sm text-gray-600">内容を確認してコミュニティと共有しましょう</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-blue-50 rounded-lg p-4 mb-6">
+              <h4 className="font-semibold text-blue-800 mb-2">💡 初回のコツ</h4>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• 簡単なトピックから始めてみましょう</li>
+                <li>• 自分が理解していることを説明してみてください</li>
+                <li>• 1-2個のセクションからスタートでも十分です</li>
+              </ul>
+            </div>
+            
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setShowFirstTimeHelp(false)}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+              >
+                始めましょう！
+              </button>
+              <button
+                onClick={() => {
+                  setShowFirstTimeHelp(false);
+                  window.history.back();
+                }}
+                className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                後で
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ヘッダー */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

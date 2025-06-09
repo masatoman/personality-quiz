@@ -12,6 +12,7 @@ import { Answer, QuizQuestion, QuizResults as QuizResultsType, QuizState, Person
 import { AnimatePresence } from 'framer-motion';
 import { PlayArrow, AutoAwesome, FactCheck } from '@mui/icons-material';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { getClient } from '@/lib/supabase/client';
 
 // 簡易診断用の質問（オリジナルの質問から重要な5問を選択）
 const quickQuestions = [1, 3, 5, 7, 9].map(id => 
@@ -21,6 +22,7 @@ const quickQuestions = [1, 3, 5, 7, 9].map(id =>
 export const QuizContainer: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const supabase = getClient();
   const startParam = searchParams.get('start');
   const quickParam = searchParams.get('quick');
   
@@ -33,6 +35,24 @@ export const QuizContainer: React.FC = () => {
   const [results, setResults] = useState<QuizResultsType | null>(null);
   const [isQuickMode, setIsQuickMode] = useState(quickParam === 'true');
   const [recommendedMaterials, setRecommendedMaterials] = useState<any[]>([]);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  // ログイン状態をチェック
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session?.user);
+    };
+    
+    checkAuthStatus();
+
+    // 認証状態の変更を監視
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsLoggedIn(!!session?.user);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase.auth]);
 
   // 質問データをチェック：簡易モードかフルモードかで使用する質問を切り替え
   const questionsData = isQuickMode 
@@ -244,6 +264,7 @@ export const QuizContainer: React.FC = () => {
         isQuickMode={isQuickMode}
         recommendedMaterials={recommendedMaterials}
         onGoToMaterial={goToMaterial}
+        isLoggedIn={isLoggedIn}
       />
     );
   }

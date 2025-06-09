@@ -41,8 +41,8 @@ export const getMaterial = async (id: string): Promise<Material | null> => {
     
     if (!data) return null;
     
-    // 作者情報を別途取得（author_idまたはuser_idから）
-    const authorId = data.author_id || data.user_id;
+    // 作者情報を別途取得（user_idから）
+    const authorId = data.user_id;
     let authorData = null;
     
     if (authorId) {
@@ -160,8 +160,8 @@ export async function getMaterials(options?: {
     }
     
     if (options?.userId) {
-      // author_idまたはuser_idでフィルタリング
-      query = query.or(`author_id.eq.${options.userId},user_id.eq.${options.userId}`);
+      // user_idでフィルタリング
+      query = query.eq('user_id', options.userId);
     }
     
     // published状態のもののみ取得
@@ -209,8 +209,8 @@ export async function getMaterials(options?: {
       return [];
     }
     
-    // 一意の作者IDを取得（author_idとuser_idの両方から）
-    const authorIds = [...new Set(data.map(item => item.author_id || item.user_id).filter(Boolean))];
+    // 一意の作者IDを取得（user_idから）
+    const authorIds = [...new Set(data.map(item => item.user_id).filter(Boolean))];
     
     // 作者情報を一括取得
     let authorsMap = new Map();
@@ -231,7 +231,7 @@ export async function getMaterials(options?: {
     
     // DBデータをフロントエンド用の形式に変換
     return data.map(item => {
-      const authorId = item.author_id || item.user_id;
+      const authorId = item.user_id;
       const authorData = authorsMap.get(authorId);
       
       return {

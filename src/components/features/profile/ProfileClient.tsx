@@ -95,6 +95,11 @@ const ProfileClient: React.FC = () => {
 
   return (
     <div className="profile-page max-w-4xl mx-auto p-4 md:p-8">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold mb-2">プロフィール</h1>
+        <p className="text-gray-600 text-sm">あなたのギバータイプ、アクティビティ履歴、獲得実績を確認・編集できます</p>
+      </div>
+      
       <div className="profile-header bg-white rounded-lg shadow-md p-6 mb-6 flex flex-col md:flex-row items-center">
         <div className="avatar bg-blue-100 rounded-full h-24 w-24 flex items-center justify-center mb-4 md:mb-0 md:mr-6">
           {profile.avatar_url ? (

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { FaHome, FaSearch, FaEdit, FaUser, FaBell, FaBars, FaSignOutAlt, FaCog, FaUserCircle, FaChartBar } from 'react-icons/fa';
+import { FaHome, FaSearch, FaEdit, FaUser, FaBell, FaBars, FaSignOutAlt, FaCog, FaUserCircle, FaChartBar, FaBook } from 'react-icons/fa';
 import { getClient } from '@/lib/supabase/client';
 
 const Navbar: React.FC = () => {
@@ -98,9 +98,10 @@ const Navbar: React.FC = () => {
 
   // ログインユーザーのみに表示するメニュー項目
   const privateMenuItems = [
-    { label: 'ダッシュボード', href: '/dashboard', icon: <FaChartBar className="inline mr-2" /> },
+    { label: 'ホーム', href: '/dashboard', icon: <FaHome className="inline mr-2" /> },
     { label: '教材作成', href: '/create', icon: <FaEdit className="inline mr-2" /> },
-    { label: 'マイページ', href: '/profile', icon: <FaUser className="inline mr-2" /> },
+    { label: 'マイ教材', href: '/my-materials', icon: <FaBook className="inline mr-2" /> },
+    { label: 'プロフィール', href: '/profile', icon: <FaUser className="inline mr-2" /> },
     { label: '通知', href: '/notifications', icon: <FaBell className="inline mr-2" /> },
   ];
 
