@@ -47,6 +47,76 @@ function getDifficultyInJapanese(difficulty: string) {
   }
 }
 
+// モバイル用フィルターコンポーネント
+function MobileFilterContent() {
+  const categories = [
+    { id: 'all', name: 'すべて' },
+    { id: 'grammar', name: '文法' },
+    { id: 'listening', name: 'リスニング' },
+    { id: 'speaking', name: 'スピーキング' },
+    { id: 'reading', name: 'リーディング' },
+    { id: 'writing', name: 'ライティング' },
+    { id: 'vocabulary', name: '語彙' },
+    { id: 'business', name: 'ビジネス英語' },
+    { id: 'test', name: '試験対策' },
+  ];
+
+  return (
+    <>
+      {/* 検索 */}
+      <div className="mb-6">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="キーワードで検索"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <MagnifyingGlassIcon className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
+        </div>
+      </div>
+      
+      {/* カテゴリー */}
+      <div className="mb-6">
+        <h3 className="font-medium mb-2">カテゴリー</h3>
+        <div className="space-y-2">
+          {categories.map((category) => (
+            <div key={category.id} className="flex items-center">
+              <input
+                type="checkbox"
+                id={`mobile-category-${category.id}`}
+                className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                defaultChecked={category.id === 'all'}
+              />
+              <label htmlFor={`mobile-category-${category.id}`} className="text-sm text-gray-700">
+                {category.name}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* 難易度 */}
+      <div className="mb-6">
+        <h3 className="font-medium mb-2">難易度</h3>
+        <div className="space-y-2">
+          {['beginner', 'intermediate', 'advanced'].map((level) => (
+            <div key={level} className="flex items-center">
+              <input
+                type="checkbox"
+                id={`mobile-level-${level}`}
+                className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label htmlFor={`mobile-level-${level}`} className="text-sm text-gray-700">
+                {getDifficultyInJapanese(level)}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
 // ヘルパー関数を追加
 function formatContentForDisplay(content: any): string {
   try {
@@ -99,6 +169,7 @@ export default function ExploreClient() {
   const [materials, setMaterials] = useState<DisplayMaterial[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showMobileFilter, setShowMobileFilter] = useState(false);
 
   useEffect(() => {
     async function fetchMaterials() {
@@ -191,11 +262,44 @@ export default function ExploreClient() {
 
   return (
     <div className="max-w-6xl mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-8">教材を探す</h1>
+      {/* モバイル用ヘッダー */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold">教材を探す</h1>
+        
+        {/* モバイル用フィルタートグル */}
+        <button 
+          className="lg:hidden bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          onClick={() => setShowMobileFilter(!showMobileFilter)}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707v6.585a1 1 0 01-1.553.894l-4-2.5A1 1 0 019 17.414V12.586a1 1 0 00-.293-.707L2.293 5.293A1 1 0 012 4.586V4z" />
+          </svg>
+          フィルター
+        </button>
+      </div>
       
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* サイドバー（フィルター） */}
-        <div className="w-full md:w-64 flex-shrink-0">
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* モバイル用フィルターオーバーレイ */}
+        {showMobileFilter && (
+          <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-50" onClick={() => setShowMobileFilter(false)}>
+            <div className="bg-white w-80 h-full p-4 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-bold">フィルター</h2>
+                <button 
+                  onClick={() => setShowMobileFilter(false)}
+                  className="p-2 text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              </div>
+              {/* フィルター内容はデスクトップと同じ */}
+              <MobileFilterContent />
+            </div>
+          </div>
+        )}
+        
+        {/* デスクトップ用サイドバー（フィルター） */}
+        <div className="hidden lg:block w-64 flex-shrink-0">
           <div className="bg-white rounded-lg shadow-sm p-4 sticky top-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-bold">フィルター</h2>
@@ -296,31 +400,33 @@ export default function ExploreClient() {
         </div>
         
         {/* メインコンテンツ（教材リスト） */}
-        <div className="flex-1">
-          {/* 並べ替えオプション */}
-          <div className="bg-white rounded-lg shadow-sm p-4 mb-6 flex justify-between items-center">
-            <div className="text-sm text-gray-500">
-              <span className="font-medium text-gray-900">{materials.length}</span> 件の教材が見つかりました
-            </div>
-            <div className="flex items-center">
-              <label htmlFor="sort-order" className="text-sm text-gray-700 mr-2">
-                並べ替え:
-              </label>
-              <select
-                id="sort-order"
-                className="border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="popular">人気順</option>
-                <option value="newest">新着順</option>
-                <option value="rating">評価順</option>
-                <option value="time-short">学習時間の短い順</option>
-                <option value="time-long">学習時間の長い順</option>
-              </select>
+        <div className="flex-1 min-w-0">
+          {/* 並べ替えオプション - モバイル最適化 */}
+          <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 mb-4 sm:mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+              <div className="text-sm text-gray-500">
+                <span className="font-medium text-gray-900">{materials.length}</span> 件の教材が見つかりました
+              </div>
+              <div className="flex items-center w-full sm:w-auto">
+                <label htmlFor="sort-order" className="text-sm text-gray-700 mr-2 whitespace-nowrap">
+                  並べ替え:
+                </label>
+                <select
+                  id="sort-order"
+                  className="flex-1 sm:flex-none border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="popular">人気順</option>
+                  <option value="newest">新着順</option>
+                  <option value="rating">評価順</option>
+                  <option value="time-short">学習時間の短い順</option>
+                  <option value="time-long">学習時間の長い順</option>
+                </select>
+              </div>
             </div>
           </div>
           
-          {/* 教材グリッド */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* 教材グリッド - モバイル最適化 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
             {materials.map((material) => (
               <Link
                 key={material.id}
@@ -333,9 +439,9 @@ export default function ExploreClient() {
                     alt={material.title}
                     width={400}
                     height={200}
-                    className="w-full h-48 object-cover"
+                    className="w-full h-40 sm:h-48 object-cover"
                   />
-                  <div className="absolute top-2 left-2 flex gap-2">
+                  <div className="absolute top-2 left-2 flex flex-col sm:flex-row gap-1 sm:gap-2">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                       material.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
                       material.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
@@ -349,12 +455,12 @@ export default function ExploreClient() {
                   </div>
                 </div>
                 
-                <div className="p-4">
-                  <h3 className="font-bold text-lg mb-2 line-clamp-2">{material.title}</h3>
+                <div className="p-3 sm:p-4">
+                  <h3 className="font-bold text-base sm:text-lg mb-2 line-clamp-2">{material.title}</h3>
                   <p className="text-gray-600 text-sm mb-3 line-clamp-2">{material.description}</p>
                   
                   <div className="flex flex-wrap gap-1 mb-3">
-                    {material.tags.slice(0, 3).map((tag, index) => (
+                    {material.tags.slice(0, 2).map((tag, index) => (
                       <span
                         key={index}
                         className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full"
@@ -362,15 +468,20 @@ export default function ExploreClient() {
                         {tag}
                       </span>
                     ))}
+                    {material.tags.length > 2 && (
+                      <span className="px-2 py-1 text-xs bg-gray-100 text-gray-500 rounded-full">
+                        +{material.tags.length - 2}
+                      </span>
+                    )}
                   </div>
                   
-                  <div className="flex items-center justify-between text-sm text-gray-500">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-gray-500">
                     <div className="flex items-center">
                       <StarIcon className="w-4 h-4 text-yellow-400 mr-1" />
                       <span className="font-medium text-gray-900">{material.rating}</span>
                       <span className="ml-1">({material.reviewCount})</span>
                     </div>
-                    <span>閲覧数: {material.viewCount}</span>
+                    <span className="text-xs sm:text-sm">閲覧数: {material.viewCount}</span>
                   </div>
                 </div>
               </Link>
