@@ -93,7 +93,7 @@ const Navbar: React.FC = () => {
   // 全てのユーザーに表示するメニュー項目
   const publicMenuItems = [
     { label: 'ホーム', href: '/', icon: <FaHome className="inline mr-2" /> },
-    { label: '教材探索', href: '/explore', icon: <FaSearch className="inline mr-2" /> },
+          { label: '教材一覧', href: '/materials', icon: <FaSearch className="inline mr-2" /> },
   ];
 
   // ログインユーザーのみに表示するメニュー項目
