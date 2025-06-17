@@ -99,7 +99,7 @@ const WelcomeClient = () => {
             </Link>
 
             <Link 
-              href="/explore" 
+              href="/materials" 
               className="group block bg-green-50 hover:bg-green-100 rounded-xl p-6 transition-colors border-2 border-transparent hover:border-green-300"
             >
               <div className="flex items-center justify-between">
