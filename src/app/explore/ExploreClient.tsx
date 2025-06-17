@@ -4,12 +4,14 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { StarIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { supabase } from '@/lib/supabase/client';
 
 // 教材データの型定義
 interface Material {
   id: string;
   title: string;
   description: string;
+  content: any; // JSONBコンテンツフィールド
   category: string;
   difficulty_level: number;
   estimated_time: number;
@@ -45,6 +47,54 @@ function getDifficultyInJapanese(difficulty: string) {
   }
 }
 
+// ヘルパー関数を追加
+function formatContentForDisplay(content: any): string {
+  try {
+    // contentがstringの場合、JSONパースを試行
+    if (typeof content === 'string') {
+      try {
+        content = JSON.parse(content);
+      } catch {
+        // JSONでない場合はそのまま返す
+        return content.substring(0, 120) + (content.length > 120 ? '...' : '');
+      }
+    }
+
+    // クイズ形式の場合
+    if (content.type === 'quiz' && content.questions) {
+      const firstQuestion = content.questions[0];
+      if (firstQuestion) {
+        return `クイズ: ${firstQuestion.question}`;
+      }
+      return 'クイズ形式の教材です';
+    }
+
+    // セクション形式の場合
+    if (content.sections && Array.isArray(content.sections)) {
+      const firstSection = content.sections[0];
+      if (firstSection && firstSection.content) {
+        return firstSection.content.substring(0, 120) + (firstSection.content.length > 120 ? '...' : '');
+      }
+    }
+
+    // 直接コンテンツがある場合
+    if (content.content) {
+      return content.content.substring(0, 120) + (content.content.length > 120 ? '...' : '');
+    }
+
+    // introductionフィールドがある場合
+    if (content.introduction) {
+      return content.introduction.substring(0, 120) + (content.introduction.length > 120 ? '...' : '');
+    }
+
+    // その他の場合
+    return 'このコンテンツの詳細は教材ページでご確認ください';
+  } catch (error) {
+    console.error('コンテンツフォーマットエラー:', error);
+    return '教材の詳細情報を読み込み中...';
+  }
+}
+
 export default function ExploreClient() {
   const [materials, setMaterials] = useState<DisplayMaterial[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,29 +104,28 @@ export default function ExploreClient() {
     async function fetchMaterials() {
       try {
         console.log('クライアント: 教材データ取得開始');
-        const response = await fetch('/api/materials');
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        const { data, error } = await supabase
+          .from('materials')
+          .select('*')
+          .eq('is_published', true)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          throw error;
         }
-        
-        const data = await response.json();
-        console.log('クライアント: APIレスポンス:', data);
-        
-        if (data.error) {
-          throw new Error(data.error);
-        }
-        
-        // データを表示用の形式に変換
-        const displayMaterials: DisplayMaterial[] = data.materials?.map((material: Material) => ({
+
+        console.log('サーバー: 取得した教材数:', data?.length || 0);
+        console.log('サーバー: 教材サンプル:', data?.[0]);
+
+        const displayMaterials = data?.map(material => ({
           id: material.id,
           title: material.title,
-          description: material.description || '説明がありません',
-          coverImage: '/images/placeholder.jpg',
+          description: formatContentForDisplay(material.content), // contentフィールドを適切にフォーマット
+          coverImage: material.thumbnail_url || '/images/placeholder.jpg',
           status: material.is_published ? 'published' : 'draft',
-          viewCount: Math.floor(Math.random() * 500) + 50,
-          rating: parseFloat((Math.random() * 2 + 3).toFixed(1)),
-          reviewCount: Math.floor(Math.random() * 20) + 1,
+          viewCount: material.view_count || 0,
+          rating: material.rating || 0,
+          reviewCount: 5,
           authorName: '匿名ユーザー',
           difficulty: material.difficulty_level <= 2 ? 'beginner' : 
                      material.difficulty_level <= 4 ? 'intermediate' : 'advanced',
