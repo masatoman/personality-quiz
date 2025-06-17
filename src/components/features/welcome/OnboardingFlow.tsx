@@ -56,7 +56,7 @@ const onboardingSteps: OnboardingStep[] = [
     icon: <Group sx={{ fontSize: 48, color: '#8B5CF6' }} />,
     action: {
       text: 'コミュニティを探索',
-      href: '/explore'
+              href: '/materials'
     },
     benefit: '🤝 学習効果が300%向上'
   },

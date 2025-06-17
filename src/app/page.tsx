@@ -66,7 +66,7 @@ export default function LandingPage() {
               </button>
             </Link>
             
-            <Link href="/explore">
+                          <Link href="/materials">
               <button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center">
                 <FaSearch className="mr-2" />
                 英語教材を見る
@@ -414,7 +414,7 @@ export default function LandingPage() {
                 </button>
               </Link>
               
-              <Link href="/explore">
+              <Link href="/materials">
                 <button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center">
                   <FaSearch className="mr-2" />
                   英語教材をのぞいてみる
