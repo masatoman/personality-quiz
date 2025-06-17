@@ -9,7 +9,7 @@ import type { Stats } from '@/types/quiz';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useToast } from '@/hooks/useToast';
-import ToastContainer from '@/components/ui/ToastContainer';
+
 import Link from 'next/link';
 import { FaTwitter, FaInstagram, FaFacebook } from 'react-icons/fa';
 import { SiLine } from 'react-icons/si';
@@ -140,7 +140,7 @@ function ResultContent({
   const learningMethods = description.learningAdvice.tips;
   const tools = description.learningAdvice.tools;
 
-    return (
+  return (
     <>
       <main className="min-h-screen bg-mesh py-8 px-4">
         <div className="container mx-auto">
@@ -272,6 +272,7 @@ function ResultContent({
         </div>
       </div>
     </main>
+    </>
   );
 }
 
