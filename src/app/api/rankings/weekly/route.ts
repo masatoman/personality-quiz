@@ -41,7 +41,6 @@ const generateMockRankings = () => {
 // 簡素化されたランキングデータ取得関数
 const getWeeklyRankings = unstable_cache(
   async () => {
-    const startTime = Date.now();
     try {
       const supabase = createClient();
 

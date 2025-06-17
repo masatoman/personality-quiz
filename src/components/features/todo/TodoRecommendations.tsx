@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Task } from '@/types/todo';
 import { FaLightbulb } from 'react-icons/fa';
 
@@ -30,7 +30,7 @@ export default function TodoRecommendations({
   const [loading, setLoading] = useState(true);
 
   // 動的な推薦タスク生成
-  const generateDynamicRecommendations = (): RecommendedTask[] => {
+  const generateDynamicRecommendations = useCallback((): RecommendedTask[] => {
     const dynamicRecommendations: RecommendedTask[] = [];
     const incompleteTasks = currentTasks.filter(task => !task.completed);
     const completedTasks = currentTasks.filter(task => task.completed);
@@ -94,7 +94,7 @@ export default function TodoRecommendations({
     
     // 最大3つまでの推薦を返す
     return dynamicRecommendations.slice(0, 3);
-  };
+  }, [currentTasks]);
 
   // 推薦タスクの取得
   useEffect(() => {
@@ -124,7 +124,7 @@ export default function TodoRecommendations({
     };
 
     fetchRecommendations();
-  }, [currentTasks.length]); // タスク数が変わったら再計算
+  }, [currentTasks.length, generateDynamicRecommendations]); // タスク数が変わったら再計算
 
   // 推奨タスクをTodoリストに追加する
   const handleAddRecommendation = (recommendation: RecommendedTask) => {

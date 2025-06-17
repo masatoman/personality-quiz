@@ -31,7 +31,7 @@ export async function GET() {
 
     for (const query of rlsQueries) {
       try {
-        const { data, error } = await supabase.rpc('execute_sql', { sql_query: query });
+        const { error } = await supabase.rpc('execute_sql', { sql_query: query });
         
         if (error) {
           console.error('SQL実行エラー:', error);
