@@ -121,7 +121,7 @@ export function ResultsClient() {
     message: '',
     success: false
   });
-  const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
+  // const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
   
   // 結果データの取得と解析（メモ化）
   const quizResults = useMemo(() => {
@@ -246,7 +246,7 @@ export function ResultsClient() {
     let giverScore = 0;
     let takerScore = 0;
     
-    answers.forEach((answer, index) => {
+    answers.forEach((answer) => {
       if (answer === 0) { // 第1選択肢（他者助ける系）
         giverScore++;
       } else if (answer === 2) { // 第3選択肢（個人学習系）

@@ -6,7 +6,6 @@ import {
   FaComments,
   FaLightbulb,
   FaTools,
-  FaCog,
   FaShieldAlt,
   FaSearch,
   FaExternalLinkAlt

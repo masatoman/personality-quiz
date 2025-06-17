@@ -1,22 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { FaArrowRight, FaCheck, FaUsers, FaChalkboardTeacher, FaHeart, FaGift, FaBalanceScale, FaHandHoldingHeart, FaStar, FaSearch, FaBrain, FaTrophy, FaGraduationCap, FaUserFriends, FaCheckCircle } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
+import { FaArrowRight, FaUsers, FaHeart, FaBalanceScale, FaSearch, FaBrain, FaTrophy, FaGraduationCap, FaUserFriends, FaCheckCircle } from 'react-icons/fa';
 
 export default function LandingPage() {
-  const router = useRouter();
-  const [isHovered, setIsHovered] = useState(false);
-
-  const startGiverDiagnosis = () => {
-    router.push('/auth/signup');
-  };
-
-  const exploreContent = () => {
-    router.push('/explore');
-  };
+  // const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
@@ -36,7 +26,7 @@ export default function LandingPage() {
             transition={{ delay: 0.1, duration: 0.5 }}
           >
             <span className="mr-2">🎓</span>
-            教えて学べるプラットフォーム
+            教えて学べる英語学習プラットフォーム
           </motion.div>
 
           {/* メインタイトル */}
@@ -46,8 +36,8 @@ export default function LandingPage() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.6 }}
           >
-            <span className="text-blue-400">教えることで学ぶ</span><br />
-            新しい英語学習体験
+            <span className="text-blue-400">教えて学ぶ</span><br />
+            英語学習コミュニティ
           </motion.h1>
 
           {/* 説明文 */}
@@ -57,9 +47,9 @@ export default function LandingPage() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            ShiftWithは「ギバー精神」を育てながら英語力を向上させる<br />
-            革新的な学習コミュニティです。あなたの知識を共有し、<br />
-            教えることで自分自身も成長しましょう。
+            ShiftWithでは「人に教えることで自分も学ぶ」という<br />
+            科学的に証明された学習方法で英語力を向上させます。<br />
+            まずはあなたの学習タイプを診断してみましょう！
           </motion.p>
 
           {/* CTAボタン */}
@@ -71,7 +61,7 @@ export default function LandingPage() {
           >
             <Link href="/quiz">
               <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300 flex items-center shadow-lg hover:shadow-xl">
-                ギバー診断を始める
+                学習タイプ診断を始める
                 <FaArrowRight className="ml-2" />
               </button>
             </Link>
@@ -79,7 +69,7 @@ export default function LandingPage() {
             <Link href="/explore">
               <button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center">
                 <FaSearch className="mr-2" />
-                教材を探索する
+                英語教材を見る
               </button>
             </Link>
           </motion.div>
@@ -97,7 +87,10 @@ export default function LandingPage() {
                 <div className="w-2 h-2 bg-white rounded-full"></div>
                 <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
               </div>
-              <span className="text-white font-medium">今週234人がギバー診断を完了</span>
+              <span className="text-white font-medium">
+                {/* TODO: 実際の統計データに置き換える */}
+                学習タイプ診断で最適な学習方法を発見
+              </span>
             </div>
           </motion.div>
         </div>
@@ -120,18 +113,18 @@ export default function LandingPage() {
                   <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4">
                     <FaUserFriends className="text-2xl" />
                   </div>
-                  <h3 className="text-2xl font-bold mb-2 text-white">あなたのギバータイプは？</h3>
-                  <p className="text-blue-100 mb-6">心理学に基づく診断で、あなたの「教える力」を発見</p>
+                  <h3 className="text-2xl font-bold mb-2 text-white">あなたの学習タイプは？</h3>
+                  <p className="text-blue-100 mb-6">科学的根拠に基づく診断で、最適な学習方法を発見</p>
                   
                   <div className="grid grid-cols-3 gap-2 w-full max-w-xs">
                     <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
-                      <p className="font-semibold text-sm text-white">ギバー</p>
+                      <p className="font-semibold text-sm text-white">教える型</p>
                     </div>
                     <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
-                      <p className="font-semibold text-sm text-white">マッチャー</p>
+                      <p className="font-semibold text-sm text-white">交流型</p>
                     </div>
                     <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
-                      <p className="font-semibold text-sm text-white">テイカー</p>
+                      <p className="font-semibold text-sm text-white">学習型</p>
                     </div>
                   </div>
                 </div>
@@ -163,7 +156,7 @@ export default function LandingPage() {
                 </li>
                 <li className="flex items-start">
                   <FaCheckCircle className="text-blue-500 mt-1 mr-3 flex-shrink-0" />
-                  <span>ギバースコア向上のための具体的アドバイス</span>
+                  <span>学習スコア向上のための具体的アドバイス</span>
                 </li>
               </ul>
 
@@ -192,10 +185,10 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 id="features-heading" className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              なぜ「教えること」が最強の学習法なのか
+              なぜ「教えること」が最強の英語学習法なのか
             </h2>
             <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              心理学の研究で証明された「ギバー効果」。教えることで、あなた自身の学習効果が飛躍的に向上します。
+              科学的研究で証明された「教えて学ぶ効果」。人に教えることで、あなたの英語力が飛躍的に向上します。
             </p>
           </motion.div>
 
@@ -265,9 +258,9 @@ export default function LandingPage() {
               <div className="w-16 h-16 bg-yellow-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <FaTrophy className="text-3xl text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">ギバースコアで成長実感</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">スコアで成長実感</h3>
               <p className="text-gray-700 mb-6">
-                あなたの貢献度を可視化。教える行動が評価され、成長を実感できます。
+                あなたの学習貢献度を可視化。教える行動が評価され、成長を実感できます。
               </p>
               <ul className="text-left space-y-3 text-sm text-gray-700">
                 <li className="flex items-center">
@@ -294,10 +287,10 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              あなたはどのギバータイプ？
+              あなたはどの学習タイプ？
             </h2>
             <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              心理学研究に基づく3つのタイプ。あなたの「教える力」を診断し、最適な学習方法を見つけましょう。
+              科学的研究に基づく3つのタイプ。あなたの学習スタイルを診断し、最適な英語学習方法を見つけましょう。
             </p>
           </motion.div>
 
@@ -313,9 +306,9 @@ export default function LandingPage() {
               <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <FaHeart className="text-3xl text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">ギバー（Giver）</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">教える型（Giver）</h3>
               <p className="text-gray-700 mb-6">
-                積極的に知識を共有し、他者の成長を支援する
+                積極的に知識を共有し、他の学習者の成長を支援するタイプ
               </p>
               <ul className="text-left space-y-3 text-sm text-gray-700">
                 <li className="flex items-center">
@@ -344,9 +337,9 @@ export default function LandingPage() {
               <div className="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <FaBalanceScale className="text-3xl text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">マッチャー（Matcher）</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">交流型（Matcher）</h3>
               <p className="text-gray-700 mb-6">
-                与えることと受け取ることのバランスを重視
+                教えることと学ぶことのバランスを重視するタイプ
               </p>
               <ul className="text-left space-y-3 text-sm text-gray-700">
                 <li className="flex items-center">
@@ -375,9 +368,9 @@ export default function LandingPage() {
               <div className="w-20 h-20 bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <FaGraduationCap className="text-3xl text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">テイカー（Taker）</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">学習型（Taker）</h3>
               <p className="text-gray-700 mb-6">
-                学びを受け取ることから始めて、徐々にギバーへ
+                まずは学ぶことから始めて、徐々に教える側へ成長するタイプ
               </p>
               <ul className="text-left space-y-3 text-sm text-gray-700">
                 <li className="flex items-center">
@@ -390,7 +383,7 @@ export default function LandingPage() {
                 </li>
                 <li className="flex items-center">
                   <FaCheckCircle className="text-orange-500 mr-3 flex-shrink-0" />
-                  <span>段階的にギバー行動を習得</span>
+                  <span>段階的に教える行動を習得</span>
                 </li>
               </ul>
             </motion.div>
@@ -410,13 +403,13 @@ export default function LandingPage() {
               今すぐShiftWithコミュニティに参加
             </h2>
             <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-              あなたのギバータイプを発見し、「教えることで学ぶ」新しい英語学習体験を始めましょう！
+              あなたの学習タイプを発見し、「教えて学ぶ」新しい英語学習体験を始めましょう！
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/quiz">
                 <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300 flex items-center shadow-lg hover:shadow-xl">
-                  ギバー診断でコミュニティ参加
+                  学習タイプ診断でコミュニティ参加
                   <FaArrowRight className="ml-2" />
                 </button>
               </Link>
@@ -424,7 +417,7 @@ export default function LandingPage() {
               <Link href="/explore">
                 <button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center">
                   <FaSearch className="mr-2" />
-                  教材をのぞいてみる
+                  英語教材をのぞいてみる
                 </button>
               </Link>
             </div>

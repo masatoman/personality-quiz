@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { FaHome, FaSearch, FaEdit, FaUser, FaBell, FaBars, FaSignOutAlt, FaCog, FaUserCircle, FaChartBar, FaBook } from 'react-icons/fa';
+import { FaHome, FaSearch, FaEdit, FaUser, FaBell, FaBars, FaSignOutAlt, FaCog, FaUserCircle, FaBook } from 'react-icons/fa';
 import { getClient } from '@/lib/supabase/client';
 
 const Navbar: React.FC = () => {

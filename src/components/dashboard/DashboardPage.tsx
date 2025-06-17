@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaUserCircle, FaBell, FaSearch, FaChartLine, FaBookOpen, FaAward } from 'react-icons/fa';
 import { useAuth } from '@/hooks/useAuth';
-import Link from 'next/link';
 
 // サブコンポーネントをインポート
 import ActivitySummary from './ActivitySummary';

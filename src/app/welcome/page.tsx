@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Metadata } from 'next'
 import WelcomeClient from './WelcomeClient';
 
@@ -8,5 +8,9 @@ export const metadata: Metadata = {
 }
 
 export default function WelcomePage() {
-  return <WelcomeClient />;
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center min-h-screen">読み込み中...</div>}>
+      <WelcomeClient />
+    </Suspense>
+  );
 } 

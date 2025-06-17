@@ -2,11 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { FaRocket, FaBookOpen, FaTrophy, FaArrowRight, FaUserGraduate, FaLightbulb, FaUsers } from 'react-icons/fa';
 
 const WelcomeClient = () => {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [isFirstLogin, setIsFirstLogin] = useState(false);
 
