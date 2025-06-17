@@ -1,14 +1,33 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
+// 環境変数の存在チェック
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseServiceRoleKey) {
+  console.error('Supabase環境変数が設定されていません:', {
+    url: !!supabaseUrl,
+    serviceRoleKey: !!supabaseServiceRoleKey
+  });
+}
+
 // Service Role Keyを使用したSupabaseクライアント
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabaseAdmin = supabaseUrl && supabaseServiceRoleKey 
+  ? createClient(supabaseUrl, supabaseServiceRoleKey)
+  : null;
 
 export async function POST(request: NextRequest) {
   try {
+    // Supabaseクライアントの初期化チェック
+    if (!supabaseAdmin) {
+      console.error('Supabaseクライアントが初期化されていません');
+      return NextResponse.json(
+        { error: 'データベース接続エラー' },
+        { status: 500 }
+      );
+    }
+
     const { userId, name, email } = await request.json();
     
     if (!userId || !name) {
