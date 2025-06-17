@@ -11,6 +11,31 @@ alwaysApply: false
 
 # テスト基準とパターン
 
+## ⚠️ **PLAYWRIGHT実行ルール（重要）**
+
+### 🚫 **禁止**: コマンドライン実行
+- `playwright test` コマンドの直接実行は禁止
+- `npm run test:e2e` などのpackage.jsonコマンド実行も禁止
+- コマンドライン実行では結果を自動で読み込めないため
+
+### ✅ **必須**: playwright-mcpツール使用
+- 全てのPlaywrightテストは `playwright-mcp` ツールを使用
+- ブラウザの直接制御・結果確認が可能
+- テスト結果を即座に確認できる
+- エラー時のスクリーンショット・デバッグ情報も取得可能
+
+### 📋 **実行手順**
+1. `mcp_playwright-mcp_browser_navigate` でテストページに移動
+2. `mcp_playwright-mcp_browser_snapshot` で画面状態確認
+3. `mcp_playwright-mcp_browser_click`, `mcp_playwright-mcp_browser_type` などで操作
+4. `mcp_playwright-mcp_browser_take_screenshot` で結果確認
+
+### 🎯 **対象テスト**
+- E2Eテスト全般
+- UI操作テスト
+- フロー確認テスト
+- 統合テスト
+
 ## 単体テストパターン
 ```tsx
 // component.test.tsx

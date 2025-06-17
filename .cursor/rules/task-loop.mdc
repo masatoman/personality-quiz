@@ -13,3 +13,9 @@ alwaysApply: true
 - 不明点・懸念点も [01_TODO.md](mdc:docs/03_進捗管理/01_TODO.md) に必ず記録
 - 設計のズレがあれば [01_基本設計.md](mdc:docs/01_プロジェクト概要/01_基本設計.md) に照らして修正またはメモ化
 
+## 🚫 **PLAYWRIGHT実行の重要ルール**
+- Playwrightテストは **絶対に** コマンドライン実行しない
+- `playwright test`, `npm run test:e2e` などのコマンド実行は禁止
+- 必ず `playwright-mcp` ツールを使用して直接ブラウザ制御を行う
+- テスト結果を即座に確認できるため効率的
+
