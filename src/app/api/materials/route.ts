@@ -188,19 +188,11 @@ export async function GET(request: NextRequest) {
     
     const supabase = createClient();
     
-    // クエリ構築
+    // クエリ構築 - JOINエラー回避のため、まずはmaterialsのみ取得
     let query = supabase
       .from('materials')
-      .select(`
-        *,
-        profiles!author_id(
-          id,
-          username,
-          display_name,
-          avatar_url
-        )
-      `)
-      .eq('status', 'published')
+      .select('*')
+      .eq('is_published', true)
       .order('created_at', { ascending: false });
 
     // フィルタリング

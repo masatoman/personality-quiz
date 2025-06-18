@@ -1,0 +1,23 @@
+
+> testcursor@0.1.0 dev
+> NODE_ENV=development next dev -p 3000
+
+ ⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1898:16)
+    at listenInCluster (node:net:1946:12)
+    at Server.listen (node:net:2044:7)
+    at /Volumes/Samsung/Works/personality-quiz/node_modules/next/dist/server/lib/start-server.js:280:16
+    at new Promise (<anonymous>)
+    at startServer (/Volumes/Samsung/Works/personality-quiz/node_modules/next/dist/server/lib/start-server.js:191:11)
+    at /Volumes/Samsung/Works/personality-quiz/node_modules/next/dist/server/lib/start-server.js:310:52
+    at Span.traceAsyncFn (/Volumes/Samsung/Works/personality-quiz/node_modules/next/dist/trace/trace.js:154:26)
+    at process.<anonymous> (/Volumes/Samsung/Works/personality-quiz/node_modules/next/dist/server/lib/start-server.js:310:35)
+    at process.emit (node:events:519:28) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+[?25h
