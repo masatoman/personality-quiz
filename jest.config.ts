@@ -8,10 +8,11 @@ const createJestConfig = nextJest({
 
 // Jestに渡すカスタム設定
 const config: Config = {
-  // テストファイルのパターンを指定
+  // テストファイルのパターンを指定（E2Eテストを除外）
   testMatch: [
     '**/__tests__/**/*.test.[jt]s?(x)',
     '**/test/**/*.test.[jt]s?(x)',
+    '**/tests/**/*.integration.test.[jt]s?(x)',
   ],
   // カバレッジの設定
   coverageProvider: 'v8',
