@@ -1,16 +1,31 @@
 import '@testing-library/jest-dom';
 
+// fetch polyfill for integration tests
+if (process.env.JEST_INTEGRATION_TEST) {
+  const fetch = require('node-fetch');
+  global.fetch = fetch;
+  global.Headers = fetch.Headers;
+  global.Request = fetch.Request;
+  global.Response = fetch.Response;
+}
+
 // 環境変数の設定
 process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost:54321';
 process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'your-anon-key';
 process.env.NEXT_PUBLIC_API_URL = 'http://localhost:3000/api';
 
-// モックの型定義
-const mockFetch = jest.fn().mockResolvedValue({
-  ok: true,
-  json: () => Promise.resolve({}),
-}) as unknown as typeof global.fetch;
-global.fetch = mockFetch;
+// integrationテスト用に実際のfetchを使用
+// モックは必要に応じて個別テストで設定
+if (process.env.NODE_ENV !== 'test' || process.env.JEST_INTEGRATION_TEST) {
+  // 実際のfetchを使用（integrationテスト用）
+} else {
+  // モックの型定義
+  const mockFetch = jest.fn().mockResolvedValue({
+    ok: true,
+    json: () => Promise.resolve({}),
+  }) as unknown as typeof global.fetch;
+  global.fetch = mockFetch;
+}
 
 const mockWindowOpen = jest.fn().mockReturnValue(null) as unknown as typeof window.open;
 global.window.open = mockWindowOpen;

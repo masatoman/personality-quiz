@@ -36,8 +36,8 @@ describe('システム全体フロー統合テスト', () => {
       expect(html).toContain('ギバー診断');
     });
 
-    test('教材探索ページが正常に表示される', async () => {
-      const response = await fetch(`${serverBaseUrl}/explore`);
+    test('教材一覧ページが正常に表示される', async () => {
+      const response = await fetch(`${serverBaseUrl}/materials`);
       expect(response.status).toBe(200);
     });
   });
