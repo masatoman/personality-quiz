@@ -1,5 +1,123 @@
 ---
-description:
-globs:
-alwaysApply: false
+description: 
+globs: 
+alwaysApply: true
 ---
+# 🎭 Playwright実行ルール（MUST FOLLOW）
+
+## 🚨 **絶対禁止事項**
+- ❌ `playwright test` コマンドの直接実行
+- ❌ `npm run test:e2e`, `npm run test:playwright` の実行
+- ❌ `yarn playwright test` の実行
+- ❌ 任意のPlaywrightコマンドライン実行
+
+**理由**: コマンドライン実行では結果を自動で読み込めず、効率が悪い
+
+## ✅ **必須使用ツール: playwright-mcp**
+
+### 📋 **基本実行パターン**
+
+#### 1. テスト開始 - ブラウザ起動・ページ移動
+```
+mcp_playwright-mcp_browser_navigate({ url: "http://localhost:3000/target-page" })
+```
+
+#### 2. 画面状態確認
+```
+mcp_playwright-mcp_browser_snapshot()  // アクセシビリティツリー取得
+mcp_playwright-mcp_browser_take_screenshot()  // 視覚的確認
+```
+
+#### 3. UI操作
+```
+mcp_playwright-mcp_browser_click({ element: "ログインボタン", ref: "button[type='submit']" })
+mcp_playwright-mcp_browser_type({ element: "メールアドレス入力", ref: "input[name='email']", text: "test@example.com" })
+```
+
+#### 4. 結果確認・終了
+```
+mcp_playwright-mcp_browser_snapshot()  // 最終状態確認
+mcp_playwright-mcp_browser_close()     // ブラウザ終了
+```
+
+### 🎯 **テストシナリオ例**
+
+#### ログインフローテスト
+1. `/auth/login` に移動
+2. 画面状態確認
+3. メールアドレス・パスワード入力
+4. ログインボタンクリック
+5. ダッシュボード遷移確認
+
+#### 教材作成フローテスト
+1. `/create` に移動
+2. 教材タイプ選択
+3. 各ステップでの入力・移動
+4. 最終公開・保存確認
+
+### 🔧 **高度な機能**
+
+#### エラーハンドリング
+```
+mcp_playwright-mcp_browser_console_messages()  // コンソールエラー確認
+mcp_playwright-mcp_browser_network_requests()  // ネットワークエラー確認
+```
+
+#### ファイルアップロード
+```
+mcp_playwright-mcp_browser_file_upload({ paths: ["/path/to/file"] })
+```
+
+#### 複数タブ操作
+```
+mcp_playwright-mcp_browser_tab_new({ url: "new-page" })
+mcp_playwright-mcp_browser_tab_select({ index: 1 })
+```
+
+### 📊 **テスト結果の活用**
+
+#### 成功ケース
+- スクリーンショットで視覚的確認
+- 画面遷移の正常性確認
+- データ投入・保存の確認
+
+#### 失敗ケース
+- エラーメッセージのスクリーンショット取得
+- コンソールログでエラー詳細確認
+- ネットワークリクエストで API エラー確認
+
+## 🏗️ **実装規約**
+
+### テストファイル構造
+```typescript
+// tests/e2e/feature-name.e2e.test.ts での実装は廃止
+// playwright-mcpツールを直接使用する
+```
+
+### 結果確認パターン
+1. **成功パターン**: 期待する画面・メッセージの表示確認
+2. **エラーパターン**: 適切なエラーハンドリング確認
+3. **パフォーマンス**: ページロード時間・レスポンス確認
+
+### データ管理
+- テスト用データは事前にSeeder で準備
+- テスト後のデータクリーンアップは不要（開発環境のため）
+- 本番データに影響しないことを確認
+
+## 🎯 **優先テストシナリオ**
+1. **認証フロー**: ログイン・ログアウト・新規登録
+2. **教材作成**: StandardCreator の全ステップ
+3. **教材閲覧**: 一覧表示・詳細表示・検索
+4. **ダッシュボード**: 統計表示・ナビゲーション
+5. **ポイントシステム**: ポイント獲得・消費・履歴
+
+## 📈 **測定指標**
+- **機能テスト**: 各機能の正常動作確認
+- **UIテスト**: レスポンシブ・アクセシビリティ確認
+- **パフォーマンステスト**: ページロード・API応答速度
+- **セキュリティテスト**: 認証・認可・データ保護
+
+---
+
+**重要**: このルールは常に適用され、例外は認められません。
+Playwrightテストが必要な場合は必ず playwright-mcp ツールを使用してください。
