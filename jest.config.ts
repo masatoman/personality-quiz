@@ -13,6 +13,15 @@ const config: Config = {
     '**/__tests__/**/*.test.[jt]s?(x)',
     '**/test/**/*.test.[jt]s?(x)',
     '**/tests/**/*.integration.test.[jt]s?(x)',
+    '**/*.unit.test.[jt]s?(x)',
+  ],
+  // E2Eテストを明示的に除外
+  testPathIgnorePatterns: [
+    '<rootDir>/.next/',
+    '<rootDir>/node_modules/',
+    '<rootDir>/tests/e2e/',
+    '\\.e2e\\.test\\.[jt]s?(x)$',
+    '\\.spec\\.[jt]s?(x)$',
   ],
   // カバレッジの設定
   coverageProvider: 'v8',
