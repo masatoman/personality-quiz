@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
 import { Material } from '@/types/material';
 
 export default function MaterialsList() {
@@ -30,47 +29,26 @@ export default function MaterialsList() {
       setLoading(true);
       setError(null);
 
-      // 修正: 外部キー参照を使わずに基本データのみ取得
-      const { data, error } = await supabase
-        .from('materials')
-        .select('*')
-        .eq('is_published', true)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Supabase error:', error);
-        setError('教材の取得に失敗しました');
-        return;
+      // 修正: バックエンドAPIを使用
+      const response = await fetch('/api/materials');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
       }
 
-      if (!data || data.length === 0) {
+      if (!data.materials || data.materials.length === 0) {
         setMaterials([]);
         return;
       }
 
-      // 一意の作者IDを取得（author_idとuser_idの両方から）
-      const authorIds = [...new Set(data.map(item => item.author_id || item.user_id).filter(Boolean))];
-      
-      // 作者情報を一括取得
-      let authorsMap = new Map();
-      if (authorIds.length > 0) {
-        const { data: authorsData, error: authorsError } = await supabase
-          .from('profiles')
-          .select('id, username, display_name, avatar_url')
-          .in('id', authorIds);
-        
-        if (!authorsError && authorsData) {
-          authorsData.forEach(author => {
-            authorsMap.set(author.id, author);
-          });
-        }
-      }
-
       // データを Material 型に変換
-      const transformedMaterials: Material[] = data.map((item: any) => {
-        const authorId = item.author_id || item.user_id;
-        const authorData = authorsMap.get(authorId);
-        
+      const transformedMaterials: Material[] = data.materials.map((item: any) => {
         return {
           id: item.id,
           title: item.title,
@@ -81,9 +59,9 @@ export default function MaterialsList() {
           createdAt: item.created_at,
           updatedAt: item.updated_at,
           author: {
-            id: authorId || 'unknown',
-            name: authorData ? (authorData.display_name || authorData.username) : '匿名ユーザー',
-            avatarUrl: authorData?.avatar_url || '/avatars/default.png',
+            id: item.user_id || 'unknown',
+            name: '匿名ユーザー', // API側で作者情報を含めるよう後で修正
+            avatarUrl: '/avatars/default.png',
             bio: '',
             expertise: []
           },
