@@ -30,6 +30,7 @@ type UseAuthReturn = {
   signInWithGithub: () => Promise<void>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
 };
 
 export const useAuth = (): UseAuthReturn => {
@@ -219,6 +220,23 @@ export const useAuth = (): UseAuthReturn => {
     }
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      setError(null);
+      
+      const supabase = getClient();
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password?mode=update`
+      });
+      
+      if (error) throw error;
+    } catch (err) {
+      const authError = err instanceof Error ? err : new Error('パスワードリセットメールの送信に失敗しました');
+      setError(authError);
+      throw authError;
+    }
+  };
+
   return {
     user,
     isLoading,
@@ -227,6 +245,7 @@ export const useAuth = (): UseAuthReturn => {
     signInWithGoogle,
     signInWithGithub,
     signOut,
-    refreshProfile
+    refreshProfile,
+    resetPassword
   };
 }; 

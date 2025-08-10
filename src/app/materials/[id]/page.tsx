@@ -6,6 +6,8 @@ import { useParams } from 'next/navigation';
 import { FaStar, FaRegStar, FaUser, FaArrowLeft, FaBookmark, FaRegBookmark } from 'react-icons/fa';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
+import MaterialComments from '@/components/features/materials/MaterialComments';
+import MockCommentData from '@/components/features/materials/MockCommentData';
 
 // 教材データの型定義
 type Material = {
@@ -534,6 +536,13 @@ const MaterialDetailPage = () => {
         <div className="bg-white rounded-lg shadow-md p-8 mb-8">
           {renderContent(material.content)}
         </div>
+
+        {/* コメント・気づき共有セクション - テスト用モックデータ表示 */}
+        <MockCommentData />
+        
+        {/* 実際のコメント機能（一時的に非表示）
+        <MaterialComments materialId={materialId} className="mb-8" />
+        */}
 
         {/* 関連教材 */}
         {relatedMaterials.length > 0 && (

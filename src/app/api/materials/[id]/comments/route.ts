@@ -2,31 +2,30 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 
-// コメント一覧取得 (GET /api/learning/comments?resource_id=xxx)
-export async function GET(request: NextRequest) {
+// 教材コメント一覧取得 (GET /api/materials/[id]/comments)
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const supabase = createRouteHandlerClient({ cookies });
     const { searchParams } = new URL(request.url);
     
-    const resourceId = searchParams.get('resource_id');
+    const materialId = params.id;
     const parentId = searchParams.get('parent_id');
-    const sort = searchParams.get('sort') || 'created_at'; // 'created_at', 'helpful_count'
-    const order = searchParams.get('order') || 'asc';
+    const sort = searchParams.get('sort') || 'helpful_count'; // 'created_at', 'helpful_count'
+    const order = searchParams.get('order') || 'desc';
     const page = parseInt(searchParams.get('page') || '1');
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100);
 
-    if (!resourceId) {
-      return NextResponse.json({ error: 'resource_idが必要です' }, { status: 400 });
-    }
-
     // ソート設定
     const validSortFields = ['created_at', 'helpful_count'];
-    const sortField = validSortFields.includes(sort) ? sort : 'created_at';
+    const sortField = validSortFields.includes(sort) ? sort : 'helpful_count';
     const sortOrder = order === 'desc' ? { ascending: false } : { ascending: true };
 
     // コメント取得クエリ
     let query = supabase
-      .from('resource_comments')
+      .from('material_comments')
       .select(`
         *,
         profiles!user_id(
@@ -35,11 +34,12 @@ export async function GET(request: NextRequest) {
           display_name,
           avatar_url
         ),
-        replies:resource_comments!parent_comment_id(
-          count
+        users!user_id(
+          personality_type,
+          giver_score
         )
       `)
-      .eq('resource_id', resourceId)
+      .eq('material_id', materialId)
       .eq('is_approved', true)
       .order(sortField, sortOrder);
 
@@ -56,24 +56,57 @@ export async function GET(request: NextRequest) {
 
     if (error) throw error;
 
+    // ユーザーの投票状況を取得（認証済みユーザーの場合）
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    let commentsWithVotes = comments || [];
+    if (user && comments?.length) {
+      const commentIds = comments.map(c => c.id);
+      const { data: votes } = await supabase
+        .from('comment_helpful_votes')
+        .select('comment_id, is_helpful')
+        .eq('user_id', user.id)
+        .in('comment_id', commentIds);
+
+      const voteMap = new Map(votes?.map(v => [v.comment_id, v.is_helpful]) || []);
+      
+      commentsWithVotes = comments.map(comment => ({
+        ...comment,
+        user_helpful_vote: voteMap.get(comment.id) || false
+      }));
+    }
+
     // 返信数を含めたコメントデータを整形
-    const formattedComments = (comments || []).map((comment: any) => ({
-      ...comment,
-      reply_count: comment.replies?.[0]?.count || 0,
-      replies: undefined // 重複データ削除
-    }));
+    const commentsWithReplies = await Promise.all(
+      commentsWithVotes.map(async (comment) => {
+        if (!parentId) { // 親コメントの場合のみ返信数を取得
+          const { count } = await supabase
+            .from('material_comments')
+            .select('*', { count: 'exact', head: true })
+            .eq('parent_comment_id', comment.id)
+            .eq('is_approved', true);
+          
+          return {
+            ...comment,
+            reply_count: count || 0
+          };
+        }
+        return comment;
+      })
+    );
 
     return NextResponse.json({
-      comments: formattedComments,
+      success: true,
+      comments: commentsWithReplies,
       pagination: {
         page,
         limit,
-        has_more: (comments?.length || 0) === limit
+        total: commentsWithReplies.length
       }
     });
 
   } catch (error) {
-    console.error('Comments fetch error:', error);
+    console.error('Comment fetch error:', error);
     return NextResponse.json(
       { error: 'コメントの取得中にエラーが発生しました' },
       { status: 500 }
@@ -81,8 +114,11 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// コメント作成 (POST /api/learning/comments)
-export async function POST(request: NextRequest) {
+// 教材コメント作成 (POST /api/materials/[id]/comments)
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const supabase = createRouteHandlerClient({ cookies });
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -93,15 +129,16 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const {
-      resource_id,
       parent_comment_id,
       comment_text
     } = body;
 
+    const materialId = params.id;
+
     // バリデーション
-    if (!resource_id || !comment_text?.trim()) {
+    if (!comment_text?.trim()) {
       return NextResponse.json(
-        { error: 'resource_idとcomment_textは必須です' },
+        { error: 'コメント内容は必須です' },
         { status: 400 }
       );
     }
@@ -114,25 +151,25 @@ export async function POST(request: NextRequest) {
     }
 
     // 教材の存在確認
-    const { data: resource } = await supabase
+    const { data: material } = await supabase
       .from('materials')
       .select('id')
-      .eq('id', resource_id)
+      .eq('id', materialId)
       .eq('is_published', true)
       .single();
 
-    if (!resource) {
-      return NextResponse.json({ error: 'リソースが見つかりません' }, { status: 404 });
+    if (!material) {
+      return NextResponse.json({ error: '教材が見つかりません' }, { status: 404 });
     }
 
     // 親コメントの存在確認（返信の場合）
     let parentComment = null;
     if (parent_comment_id) {
       const { data } = await supabase
-        .from('resource_comments')
+        .from('material_comments')
         .select('id, user_id, depth')
         .eq('id', parent_comment_id)
-        .eq('resource_id', resource_id)
+        .eq('material_id', materialId)
         .eq('is_approved', true)
         .single();
 
@@ -143,7 +180,7 @@ export async function POST(request: NextRequest) {
       // ネストレベル制限（最大3階層）
       if (data.depth >= 2) {
         return NextResponse.json(
-          { error: 'コメントの階層が深すぎます' },
+          { error: '返信の階層が深すぎます' },
           { status: 400 }
         );
       }
@@ -156,14 +193,14 @@ export async function POST(request: NextRequest) {
 
     // コメント作成
     const { data: newComment, error } = await supabase
-      .from('resource_comments')
+      .from('material_comments')
       .insert({
         user_id: user.id,
-        resource_id,
+        material_id: materialId,
         parent_comment_id: parent_comment_id || null,
         comment_text: comment_text.trim(),
         depth,
-        is_approved: true, // 自動承認（後でモデレーション機能追加可能）
+        is_approved: true, // 自動承認
         created_at: now,
         updated_at: now
       })
@@ -174,6 +211,10 @@ export async function POST(request: NextRequest) {
           username,
           display_name,
           avatar_url
+        ),
+        users!user_id(
+          personality_type,
+          giver_score
         )
       `)
       .single();
@@ -181,12 +222,7 @@ export async function POST(request: NextRequest) {
     if (error) throw error;
 
     // ギバーポイント付与（コメント投稿）
-    await awardCommentPoints(user.id, resource_id, parent_comment_id ? 'reply' : 'comment');
-
-    // 返信の場合、親コメント投稿者に通知ポイント
-    if (parent_comment_id && parentComment && parentComment.user_id !== user.id) {
-      await awardReplyNotificationPoints(parentComment.user_id, newComment.id);
-    }
+    await awardCommentPoints(user.id, materialId, parent_comment_id ? 'reply' : 'comment');
 
     return NextResponse.json({
       success: true,
@@ -203,41 +239,27 @@ export async function POST(request: NextRequest) {
 }
 
 // ヘルパー関数：コメントポイント付与
-async function awardCommentPoints(userId: string, resourceId: string, type: 'comment' | 'reply') {
+async function awardCommentPoints(userId: string, materialId: string, type: 'comment' | 'reply') {
   try {
-    const activityType = type === 'reply' ? 'answer_question' : 'create_content';
-    const description = type === 'reply' ? 'コメント返信投稿' : 'コメント投稿';
-
+    const supabase = createRouteHandlerClient({ cookies });
+    
+    // コメント投稿ポイント
+    const points = type === 'comment' ? 15 : 10; // コメント15pt、返信10pt
+    
+    // ポイント付与API呼び出し
     await fetch('/api/points/giver-rewards', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        activityType,
-        referenceId: resourceId,
-        referenceType: 'learning_resource',
-        description
+        user_id: userId,
+        activity_type: 'comment_helpful',
+        points,
+        description: type === 'comment' ? '教材への気づき共有' : 'コメントへの返信'
       })
     });
+    
   } catch (error) {
-    console.error('Award comment points error:', error);
+    console.error('Failed to award comment points:', error);
+    // ポイント付与エラーでもコメント投稿は成功扱い
   }
 }
-
-// ヘルパー関数：返信通知ポイント付与
-async function awardReplyNotificationPoints(parentUserId: string, commentId: string) {
-  try {
-    await fetch('/api/points/giver-rewards', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        activityType: 'comment_helpful',
-        userId: parentUserId,
-        referenceId: commentId,
-        referenceType: 'comment',
-        description: 'あなたのコメントに返信がありました'
-      })
-    });
-  } catch (error) {
-    console.error('Award reply notification points error:', error);
-  }
-} 
