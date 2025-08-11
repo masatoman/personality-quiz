@@ -80,6 +80,11 @@ const DEV_USERS = [
 
 // 開発環境かどうかをチェック
 const isDevMode = () => {
+  // クライアントサイドでの環境変数チェック
+  if (typeof window !== 'undefined') {
+    return process.env.NEXT_PUBLIC_SKIP_AUTH === 'true';
+  }
+  // サーバーサイドでの環境変数チェック
   return process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_SKIP_AUTH === 'true';
 };
 
@@ -114,15 +119,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   useEffect(() => {
+    console.log('🔧 AuthContext: useEffect開始');
+    console.log('🔧 AuthContext: NODE_ENV:', process.env.NODE_ENV);
+    console.log('🔧 AuthContext: NEXT_PUBLIC_SKIP_AUTH:', process.env.NEXT_PUBLIC_SKIP_AUTH);
+    console.log('🔧 AuthContext: isDevMode():', isDevMode());
+    
     // 開発環境でSKIP_AUTHが有効な場合の初期化
     if (isDevMode()) {
       console.log('🚧 開発モード: 認証をスキップしてダミーユーザーを使用');
       
       // ローカルストレージから選択されたユーザーを取得
       const savedUserId = localStorage.getItem('dev-current-user-id');
+      console.log('🔧 AuthContext: savedUserId:', savedUserId);
+      
       const selectedUser = savedUserId 
         ? DEV_USERS.find(u => u.id === savedUserId) 
-        : DEV_USERS[0]; // デフォルトは最初のユーザー
+        : null; // デフォルトは未ログイン状態
+      
+      console.log('🔧 AuthContext: selectedUser:', selectedUser?.profile?.display_name);
 
       setState({
         user: selectedUser || null,
@@ -266,6 +280,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // 開発環境用のユーザー切り替え機能
   const devSwitchUser = async (userId: string | null) => {
+    console.log('🔧 AuthContext: devSwitchUser called with userId:', userId);
+    console.log('🔧 AuthContext: isDevMode():', isDevMode());
+    
     if (!isDevMode()) {
       console.warn('devSwitchUser は開発環境でのみ利用可能です');
       return;
@@ -279,6 +296,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else {
       // 指定されたユーザーに切り替え
       const selectedUser = DEV_USERS.find(u => u.id === userId);
+      console.log('🔧 AuthContext: selectedUser found:', !!selectedUser, selectedUser?.profile?.display_name);
+      
       if (selectedUser) {
         localStorage.setItem('dev-current-user-id', userId);
         setState({ user: selectedUser, loading: false, error: null });

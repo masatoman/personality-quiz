@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useState, useContext } from 'react';
+import AuthContext from '@/contexts/AuthContext';
 import { FaUser, FaSignOutAlt, FaCog, FaUsers, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const DevAuthPanel: React.FC = () => {
-  const { user, devSwitchUser, devUsers, isDevMode } = useAuth();
+  const authContext = useContext(AuthContext);
+  const { user, devSwitchUser, devUsers, isDevMode } = authContext;
   const [isExpanded, setIsExpanded] = useState(false);
 
   // 開発環境でない場合は何も表示しない
@@ -14,8 +15,18 @@ const DevAuthPanel: React.FC = () => {
   }
 
   const handleUserSwitch = async (userId: string | null) => {
+    console.log('🔧 DevAuthPanel: handleUserSwitch called with userId:', userId);
+    console.log('🔧 DevAuthPanel: devSwitchUser function exists:', !!devSwitchUser);
+    
     if (devSwitchUser) {
-      await devSwitchUser(userId);
+      try {
+        await devSwitchUser(userId);
+        console.log('🔧 DevAuthPanel: devSwitchUser completed successfully');
+      } catch (error) {
+        console.error('🔧 DevAuthPanel: Error in devSwitchUser:', error);
+      }
+    } else {
+      console.error('🔧 DevAuthPanel: devSwitchUser function is not available');
     }
   };
 

@@ -9,4 +9,4 @@ export DEBUG_SUPABASE=true
 export DEBUG_MCP=true
 
 # 開発環境での認証スキップ（テスト用）
-export SKIP_AUTH=true
+export NEXT_PUBLIC_SKIP_AUTH=true
