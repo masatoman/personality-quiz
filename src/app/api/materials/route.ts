@@ -201,7 +201,7 @@ export async function GET(request: NextRequest) {
     }
     
     if (difficulty) {
-      query = query.eq('difficulty', difficulty);
+      query = query.eq('difficulty_level', difficulty);
     }
     
     if (search) {

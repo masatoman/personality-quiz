@@ -88,6 +88,7 @@ services:
       PGRST_DB_SCHEMA: public,storage
       PGRST_DB_ANON_ROLE: anon
       PGRST_JWT_SECRET: super-secret-jwt-token-with-at-least-32-characters-long
+      PGRST_JWT_ALGO: none
     ports:
       - "${SUPABASE_API_PORT}:3000"
 

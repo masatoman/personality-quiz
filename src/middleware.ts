@@ -72,6 +72,19 @@ export async function middleware(request: NextRequest) {
   // 認証が必要なパスかチェック
   if (authRequiredPaths.some(authPath => path.startsWith(authPath))) {
     
+    // 開発環境でSKIP_AUTHが有効な場合は認証をスキップ
+    const skipAuth = process.env.NEXT_PUBLIC_SKIP_AUTH === 'true';
+    const isDevMode = process.env.NODE_ENV === 'development';
+    
+    if (isDevMode && skipAuth) {
+      console.log(`🚧 開発モード: 認証をスキップ - ${path}`);
+      const response = NextResponse.next();
+      // 開発モードであることを示すヘッダーを追加
+      response.headers.set('X-Dev-Mode', 'true');
+      response.headers.set('X-Auth-Skipped', 'true');
+      return setSecurityHeaders(response);
+    }
+    
     // Supabase認証チェック
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;

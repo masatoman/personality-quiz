@@ -12,9 +12,15 @@ export interface UserProfile {
   id?: string;
   user_id?: string;
   username?: string;
+  display_name?: string;
   bio?: string;
   avatar_url?: string;
+  personality_type?: 'giver' | 'matcher' | 'taker';
+  giver_score?: number;
   giver_level?: number;
+  points?: number;
+  level?: number;
+  badges?: string[];
   role?: string;
   created_at?: string;
   updated_at?: string;
@@ -35,4 +41,8 @@ export interface AuthContextType {
   signInWithGithub: () => Promise<void>;
   signUp: (email: string, password: string, options?: { username?: string }) => Promise<void>;
   signOut: () => Promise<void>;
+  // 開発環境用の機能
+  devSwitchUser?: (userId: string | null) => Promise<void>;
+  devUsers?: User[];
+  isDevMode?: boolean;
 } 

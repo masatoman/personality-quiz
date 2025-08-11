@@ -6,6 +6,7 @@ import ThemeProviderClient from '@/components/ThemeProviderClient';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import ErrorFallback from '@/components/ErrorFallback';
 import SkipLink from '@/components/common/atoms/SkipLink';
+import DevAuthPanel from '@/components/common/DevAuthPanel';
 
 export default function ClientLayout({
   children,
@@ -29,6 +30,7 @@ export default function ClientLayout({
           {children}
         </ErrorBoundary>
       </main>
+      <DevAuthPanel />
     </ThemeProviderClient>
   );
 }
