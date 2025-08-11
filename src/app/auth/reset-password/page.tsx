@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { FaEnvelope, FaLock, FaArrowLeft } from 'react-icons/fa';
 import { useAuth } from '@/hooks/useAuth';
 import { getClient } from '@/lib/supabase/client';
 
-const ResetPasswordPage = () => {
+const ResetPasswordPageContent = () => {
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -266,6 +266,14 @@ const ResetPasswordPage = () => {
         )}
       </div>
     </div>
+  );
+};
+
+const ResetPasswordPage = () => {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center min-h-screen">読み込み中...</div>}>
+      <ResetPasswordPageContent />
+    </Suspense>
   );
 };
 

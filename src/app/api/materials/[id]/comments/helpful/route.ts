@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 // コメント役立った投票 (POST /api/materials/[id]/comments/helpful)
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params: _ }: { params: { id: string } }
 ) {
   try {
     const supabase = createRouteHandlerClient({ cookies });
@@ -80,7 +80,7 @@ export async function POST(
           .select()
           .single();
 
-        if (deleteError) throw error;
+        if (error) throw error;
         voteResult = { action: 'updated', is_helpful, vote: data };
       }
     } else {
@@ -127,7 +127,7 @@ export async function POST(
 // コメント投票状況取得 (GET /api/materials/[id]/comments/helpful?comment_id=xxx)
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params: _ }: { params: { id: string } }
 ) {
   try {
     const supabase = createRouteHandlerClient({ cookies });
@@ -183,7 +183,7 @@ async function updateCommentHelpfulCount(supabase: any, commentId: string) {
 }
 
 // ヘルパー関数：役立ち投票ポイント付与
-async function awardHelpfulVotePoints(userId: string, commentId: string) {
+async function awardHelpfulVotePoints(userId: string, _commentId: string) {
   try {
     // ハートをもらったユーザーにボーナスポイント
     await fetch('/api/points/giver-rewards', {

@@ -7,7 +7,7 @@ import { dataCollector } from '@/lib/analytics/dataCollector';
  * ページビュートラッキング用Hook
  */
 export const usePageTracking = (materialId?: string) => {
-  const router = useRouter();
+  const _router = useRouter();
   const previousPath = useRef<string>('');
 
   useEffect(() => {
@@ -198,7 +198,7 @@ export const useScrollTracking = (materialId?: string) => {
   useEffect(() => {
     if (!materialId) return;
 
-    let scrollTimeout: NodeJS.Timeout;
+    let scrollTimeout: ReturnType<typeof setTimeout>;
     
     const handleScroll = () => {
       clearTimeout(scrollTimeout);

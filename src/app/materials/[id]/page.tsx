@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 import { FaStar, FaRegStar, FaUser, FaArrowLeft, FaBookmark, FaRegBookmark } from 'react-icons/fa';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
-import MaterialComments from '@/components/features/materials/MaterialComments';
+// import MaterialComments from '@/components/features/materials/MaterialComments';
 import MockCommentData from '@/components/features/materials/MockCommentData';
 
 // 教材データの型定義

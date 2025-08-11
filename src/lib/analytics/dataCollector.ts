@@ -342,7 +342,7 @@ export class DataCollector {
     });
 
     // スクロールイベント（スロットル済み）
-    let scrollTimeout: NodeJS.Timeout;
+    let scrollTimeout: ReturnType<typeof setTimeout>;
     document.addEventListener('scroll', () => {
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
@@ -359,6 +359,11 @@ export class DataCollector {
    * デバイス情報の収集
    */
   private collectDeviceInfo() {
+    // サーバーサイドレンダリング中は実行しない
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+      return;
+    }
+
     // 基本的なデバイス情報を収集してセッションの開始を記録
     this.logBehavior({
       event_type: 'session_start',

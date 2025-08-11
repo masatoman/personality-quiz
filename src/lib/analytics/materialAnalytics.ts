@@ -98,7 +98,7 @@ export class MaterialAnalyticsService {
   /**
    * レベル別分析
    */
-  private async getAnalyticsByLevel(materialId: string) {
+  private async getAnalyticsByLevel(_materialId: string) {
     // TODO: ユーザーレベルとエンゲージメントの相関分析
     return {
       beginner: {
@@ -125,7 +125,7 @@ export class MaterialAnalyticsService {
   /**
    * パーソナリティ別分析
    */
-  private async getAnalyticsByPersonality(materialId: string) {
+  private async getAnalyticsByPersonality(_materialId: string) {
     // TODO: パーソナリティタイプと学習効果の相関分析
     return {
       giver: {
@@ -152,7 +152,7 @@ export class MaterialAnalyticsService {
   /**
    * 改善提案の生成
    */
-  private async generateOptimizationSuggestions(materialId: string, stats: any): Promise<string[]> {
+  private async generateOptimizationSuggestions(_materialId: string, stats: any): Promise<string[]> {
     const suggestions: string[] = [];
     
     // 閲覧数が少ない場合

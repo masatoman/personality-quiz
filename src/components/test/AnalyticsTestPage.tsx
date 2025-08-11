@@ -4,6 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { usePageAnalytics, useLearningSessionTracking, useCommentTracking } from '@/hooks/useAnalytics';
 
 const AnalyticsTestPage: React.FC = () => {
+  // クライアントサイドでのみ実行
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+  }, []);
+
   // 基本的なページ分析（自動開始）
   usePageAnalytics('test-material-123');
 

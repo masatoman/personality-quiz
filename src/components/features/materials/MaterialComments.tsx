@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { FaHeart, FaRegHeart, FaUser, FaReply, FaStar, FaRegStar } from 'react-icons/fa';
+import React, { useState, useEffect, useCallback } from 'react';
+import { FaHeart, FaRegHeart, FaUser, FaReply } from 'react-icons/fa';
 import Image from 'next/image';
 
 interface Comment {
@@ -36,7 +36,7 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
   const [submitting, setSubmitting] = useState(false);
 
   // コメント取得
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(
@@ -52,7 +52,7 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
     } finally {
       setLoading(false);
     }
-  };
+  }, [materialId, sortBy]);
 
   // コメント投稿
   const submitComment = async () => {
@@ -112,7 +112,7 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
     if (materialId) {
       fetchComments();
     }
-  }, [materialId, sortBy]);
+  }, [materialId, fetchComments]);
 
   const CommentItem: React.FC<{ comment: Comment; depth?: number }> = ({ comment, depth = 0 }) => (
     <div className={`border-l-2 border-gray-200 pl-4 mb-4 ${depth > 0 ? 'ml-6' : ''}`}>

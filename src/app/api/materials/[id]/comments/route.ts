@@ -241,7 +241,7 @@ export async function POST(
 // ヘルパー関数：コメントポイント付与
 async function awardCommentPoints(userId: string, materialId: string, type: 'comment' | 'reply') {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const _supabase = createRouteHandlerClient({ cookies });
     
     // コメント投稿ポイント
     const points = type === 'comment' ? 15 : 10; // コメント15pt、返信10pt
