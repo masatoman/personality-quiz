@@ -122,33 +122,46 @@ const ProfileClient: React.FC = () => {
         </div>
       </div>
 
-      <div className="tabs flex border-b mb-6">
+      <div className="tabs flex border-b mb-6" role="tablist" aria-label="プロフィール情報">
         <button
-          className={`px-4 py-2 font-medium ${
+          className={`px-4 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-t-md ${
             selectedTab === 'activities'
               ? 'text-primary-600 border-b-2 border-primary-600'
               : 'text-gray-500 hover:text-gray-700'
           }`}
           onClick={() => setSelectedTab('activities')}
+          role="tab"
+          aria-selected={selectedTab === 'activities'}
+          aria-controls="activities-panel"
+          id="activities-tab"
         >
-          <FaHistory className="inline mr-2" />
+          <FaHistory className="inline mr-2" aria-hidden="true" />
           アクティビティ
         </button>
         <button
-          className={`px-4 py-2 font-medium ${
+          className={`px-4 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-t-md ${
             selectedTab === 'achievements'
               ? 'text-primary-600 border-b-2 border-primary-600'
               : 'text-gray-500 hover:text-gray-700'
           }`}
           onClick={() => setSelectedTab('achievements')}
+          role="tab"
+          aria-selected={selectedTab === 'achievements'}
+          aria-controls="achievements-panel"
+          id="achievements-tab"
         >
-          <FaTrophy className="inline mr-2" />
+          <FaTrophy className="inline mr-2" aria-hidden="true" />
           実績
         </button>
       </div>
 
       {selectedTab === 'activities' ? (
-        <div className="activities space-y-4">
+        <div 
+          className="activities space-y-4"
+          role="tabpanel"
+          id="activities-panel"
+          aria-labelledby="activities-tab"
+        >
           {activities.length > 0 ? (
             activities.map((activity) => (
               <div
@@ -181,7 +194,12 @@ const ProfileClient: React.FC = () => {
           )}
         </div>
       ) : (
-        <div className="achievements bg-white rounded-lg shadow-sm p-6">
+        <div 
+          className="achievements bg-white rounded-lg shadow-sm p-6"
+          role="tabpanel"
+          id="achievements-panel"
+          aria-labelledby="achievements-tab"
+        >
           <GiverScoreDisplay score={{
             level: Math.min(10, Math.floor((profile.giver_score || 0) / 10) + 1),
             points: profile.giver_score || 0,

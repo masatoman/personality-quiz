@@ -80,6 +80,21 @@ export const QuizContainer: React.FC = () => {
     setSelectedOption(optionIndex);
   };
 
+  // キーボードナビゲーション対応
+  const handleKeyDown = (event: React.KeyboardEvent, optionIndex: number) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleOptionSelect(optionIndex);
+    }
+  };
+
+  // モーダル用キーボード対応
+  const handleModalKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      setQuizState('intro');
+    }
+  };
+
   // 前の質問に戻る
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {

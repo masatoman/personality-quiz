@@ -221,24 +221,32 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       {/* タブ */}
-      <div className="flex border-b">
+      <div className="flex border-b" role="tablist" aria-label="教材表示モード">
         <button
-          className={`flex-1 px-4 py-3 text-center font-medium ${
+          className={`flex-1 px-4 py-3 text-center font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
             activeTab === 'content' 
               ? 'border-b-2 border-emerald-500 text-emerald-600' 
               : 'text-gray-600 hover:text-gray-800'
           }`}
           onClick={() => setActiveTab('content')}
+          role="tab"
+          aria-selected={activeTab === 'content'}
+          aria-controls="content-panel"
+          id="content-tab"
         >
           コンテンツ
         </button>
         <button
-          className={`flex-1 px-4 py-3 text-center font-medium ${
+          className={`flex-1 px-4 py-3 text-center font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
             activeTab === 'outline' 
               ? 'border-b-2 border-emerald-500 text-emerald-600' 
               : 'text-gray-600 hover:text-gray-800'
           }`}
           onClick={() => setActiveTab('outline')}
+          role="tab"
+          aria-selected={activeTab === 'outline'}
+          aria-controls="outline-panel"
+          id="outline-tab"
         >
           目次
         </button>
@@ -247,7 +255,11 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
       {/* メインコンテンツ */}
       <div className="p-6">
         {activeTab === 'content' ? (
-          <>
+          <div 
+            role="tabpanel"
+            id="content-panel"
+            aria-labelledby="content-tab"
+          >
             {/* セクション進捗表示 */}
             <div className="flex justify-between items-center mb-6">
               <p className="text-sm text-gray-500">
@@ -284,10 +296,15 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
                 {currentSectionIndex < sections.length - 1 ? '次へ' : '完了'}
               </button>
             </div>
-          </>
+          </div>
         ) : (
           /* 目次 */
-          <div className="divide-y">
+          <div 
+            className="divide-y"
+            role="tabpanel"
+            id="outline-panel"
+            aria-labelledby="outline-tab"
+          >
             {sections.map((section, index) => (
               <button
                 key={section.id}

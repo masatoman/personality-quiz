@@ -492,11 +492,13 @@ const MaterialDetailPage = () => {
 
             <button
               onClick={toggleBookmark}
-              className={`ml-4 p-3 rounded-full ${
+              className={`ml-4 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                 material.is_bookmarked 
                   ? 'bg-blue-100 text-blue-600' 
                   : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
               }`}
+              aria-label={material.is_bookmarked ? 'ブックマークを削除' : 'ブックマークに追加'}
+              aria-pressed={material.is_bookmarked}
             >
               {material.is_bookmarked ? <FaBookmark size={20} /> : <FaRegBookmark size={20} />}
             </button>

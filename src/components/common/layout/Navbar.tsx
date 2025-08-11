@@ -195,8 +195,11 @@ const Navbar: React.FC = () => {
 
           {/* モバイル向けハンバーガーメニュー */}
           <button
-            className="md:hidden text-white focus:outline-none"
+            className="md:hidden text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900 rounded-md p-2"
             onClick={() => setIsOpen(!isOpen)}
+            aria-expanded={isOpen}
+            aria-controls="mobile-menu"
+            aria-label={isOpen ? 'メニューを閉じる' : 'メニューを開く'}
           >
             <FaBars size={24} />
           </button>
@@ -204,7 +207,7 @@ const Navbar: React.FC = () => {
 
         {/* モバイル向けドロップダウンメニュー */}
         {isOpen && (
-          <div className="md:hidden pb-4">
+          <div id="mobile-menu" className="md:hidden pb-4" role="menu" aria-label="モバイルナビゲーションメニュー">
             {visibleMenuItems.map((item) => (
               <Link
                 key={item.href}

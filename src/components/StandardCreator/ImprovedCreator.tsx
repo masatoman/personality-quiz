@@ -198,14 +198,25 @@ const ImprovedCreator: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       {/* 初回ヘルプモーダル */}
       {showFirstTimeHelp && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="help-modal-title"
+          aria-describedby="help-modal-desc"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setShowFirstTimeHelp(false);
+            }
+          }}
+        >
           <div className="bg-white rounded-2xl max-w-2xl w-full p-8">
             <div className="text-center mb-6">
-              <div className="text-4xl mb-4">🎨</div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              <div className="text-4xl mb-4" aria-hidden="true">🎨</div>
+              <h2 id="help-modal-title" className="text-2xl font-bold text-gray-800 mb-2">
                 初回教材作成へようこそ！
               </h2>
-              <p className="text-gray-600">
+              <p id="help-modal-desc" className="text-gray-600">
                 「教えることで学ぶ」体験を一緒に始めましょう
               </p>
             </div>
@@ -254,7 +265,9 @@ const ImprovedCreator: React.FC = () => {
             <div className="flex space-x-3">
               <button
                 onClick={() => setShowFirstTimeHelp(false)}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                aria-label="教材作成を開始する"
+                autoFocus
               >
                 始めましょう！
               </button>
@@ -263,7 +276,8 @@ const ImprovedCreator: React.FC = () => {
                   setShowFirstTimeHelp(false);
                   window.history.back();
                 }}
-                className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                aria-label="後で教材作成する"
               >
                 後で
               </button>
@@ -344,21 +358,23 @@ const ImprovedCreator: React.FC = () => {
                 <span className="text-sm text-gray-500">{material.sections.length}セクション</span>
               </div>
               
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3" role="group" aria-labelledby="content-types">
                 <button
                   onClick={() => addSection('text')}
-                  className="flex flex-col items-center p-6 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition"
+                  className="flex flex-col items-center p-6 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  aria-label="テキストセクションを追加 - 文章・説明を追加できます"
                 >
-                  <span className="text-3xl mb-2">📝</span>
+                  <span className="text-3xl mb-2" aria-hidden="true">📝</span>
                   <span className="text-sm font-medium">テキスト</span>
                   <span className="text-xs text-gray-500 mt-1">文章・説明を追加</span>
                 </button>
                 
                 <button
                   onClick={() => addSection('quiz')}
-                  className="flex flex-col items-center p-6 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition"
+                  className="flex flex-col items-center p-6 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                  aria-label="クイズセクションを追加 - 選択式問題を追加できます"
                 >
-                  <span className="text-3xl mb-2">❓</span>
+                  <span className="text-3xl mb-2" aria-hidden="true">❓</span>
                   <span className="text-sm font-medium">クイズ</span>
                   <span className="text-xs text-gray-500 mt-1">選択式問題を追加</span>
                 </button>

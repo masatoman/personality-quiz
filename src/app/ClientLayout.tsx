@@ -5,6 +5,7 @@ import Navbar from '@/components/common/layout/Navbar';
 import ThemeProviderClient from '@/components/ThemeProviderClient';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import ErrorFallback from '@/components/ErrorFallback';
+import SkipLink from '@/components/common/atoms/SkipLink';
 
 export default function ClientLayout({
   children,
@@ -18,8 +19,9 @@ export default function ClientLayout({
 
   return (
     <ThemeProviderClient>
+      <SkipLink href="#main-content">メインコンテンツにスキップ</SkipLink>
       <Navbar />
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <ErrorBoundary
           fallback={<ErrorFallback />}
           onError={handleError}
