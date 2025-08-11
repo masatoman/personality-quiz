@@ -195,7 +195,7 @@ const Navbar: React.FC = () => {
 
           {/* モバイル向けハンバーガーメニュー */}
           <button
-            className="md:hidden text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900 rounded-md p-2"
+            className="md:hidden text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900 rounded-md p-3 min-w-[48px] min-h-[48px] active:scale-95 touch-manipulation transition-transform"
             onClick={() => setIsOpen(!isOpen)}
             aria-expanded={isOpen}
             aria-controls="mobile-menu"
@@ -212,29 +212,30 @@ const Navbar: React.FC = () => {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`block py-2 hover:bg-slate-800 rounded px-3 ${
+                className={`flex items-center gap-3 py-4 px-4 min-h-[48px] hover:bg-slate-800 rounded-lg mx-2 mb-2 active:scale-95 touch-manipulation transition-all ${
                   pathname === item.href ? 'bg-slate-800 text-blue-400' : 'text-gray-300'
                 }`}
                 onClick={() => setIsOpen(false)}
+                role="menuitem"
               >
-                {item.icon}
-                {item.label}
+                <span className="text-lg">{item.icon}</span>
+                <span className="text-base font-medium">{item.label}</span>
               </Link>
             ))}
 
             {/* ログイン/新規登録ボタン（モバイル用）またはログアウト */}
             {!isLoggedIn ? (
-              <div className="flex flex-col space-y-2 mt-4">
+              <div className="flex flex-col space-y-3 mt-6 px-2">
                 <Link
                   href="/auth/login"
-                  className="block text-center py-2 border border-blue-400 text-blue-400 rounded hover:bg-blue-400 hover:text-white transition-colors"
+                  className="block text-center py-4 px-6 min-h-[48px] border border-blue-400 text-blue-400 rounded-lg hover:bg-blue-400 hover:text-white active:scale-95 touch-manipulation transition-all font-medium"
                   onClick={() => setIsOpen(false)}
                 >
                   ログイン
                 </Link>
                 <Link
                   href="/auth/signup"
-                  className="block text-center py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                  className="block text-center py-4 px-6 min-h-[48px] bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:scale-95 touch-manipulation transition-all font-medium"
                   onClick={() => setIsOpen(false)}
                 >
                   新規登録

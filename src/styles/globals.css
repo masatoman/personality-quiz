@@ -78,4 +78,47 @@
   overflow: visible;
   clip: auto;
   white-space: normal;
+}
+
+/* モバイルファーストUI改善 */
+/* タッチフレンドリーなインタラクション */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* モバイル用タップフィードバック */
+@media (hover: none) and (pointer: coarse) {
+  .active\:scale-95:active {
+    transform: scale(0.95);
+  }
+}
+
+/* スクロール改善 */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* モバイルレイアウト調整 */
+@media (max-width: 768px) {
+  .mobile-padding {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .mobile-full-width {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+  }
+}
+
+/* セーフエリア対応 */
+@supports (padding: max(0px)) {
+  .safe-area-inset {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
 } 

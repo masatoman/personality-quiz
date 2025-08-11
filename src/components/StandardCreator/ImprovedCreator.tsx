@@ -358,25 +358,25 @@ const ImprovedCreator: React.FC = () => {
                 <span className="text-sm text-gray-500">{material.sections.length}セクション</span>
               </div>
               
-              <div className="grid grid-cols-2 gap-3" role="group" aria-labelledby="content-types">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="group" aria-labelledby="content-types">
                 <button
                   onClick={() => addSection('text')}
-                  className="flex flex-col items-center p-6 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="flex flex-col items-center p-6 min-h-[120px] border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95 touch-manipulation"
                   aria-label="テキストセクションを追加 - 文章・説明を追加できます"
                 >
-                  <span className="text-3xl mb-2" aria-hidden="true">📝</span>
-                  <span className="text-sm font-medium">テキスト</span>
-                  <span className="text-xs text-gray-500 mt-1">文章・説明を追加</span>
+                  <span className="text-4xl mb-3" aria-hidden="true">📝</span>
+                  <span className="text-base font-medium">テキスト</span>
+                  <span className="text-sm text-gray-500 mt-2 text-center">文章・説明を追加</span>
                 </button>
                 
                 <button
                   onClick={() => addSection('quiz')}
-                  className="flex flex-col items-center p-6 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                  className="flex flex-col items-center p-6 min-h-[120px] border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 active:scale-95 touch-manipulation"
                   aria-label="クイズセクションを追加 - 選択式問題を追加できます"
                 >
-                  <span className="text-3xl mb-2" aria-hidden="true">❓</span>
-                  <span className="text-sm font-medium">クイズ</span>
-                  <span className="text-xs text-gray-500 mt-1">選択式問題を追加</span>
+                  <span className="text-4xl mb-3" aria-hidden="true">❓</span>
+                  <span className="text-base font-medium">クイズ</span>
+                  <span className="text-sm text-gray-500 mt-2 text-center">選択式問題を追加</span>
                 </button>
               </div>
               

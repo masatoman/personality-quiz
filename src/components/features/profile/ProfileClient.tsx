@@ -124,7 +124,7 @@ const ProfileClient: React.FC = () => {
 
       <div className="tabs flex border-b mb-6" role="tablist" aria-label="プロフィール情報">
         <button
-          className={`px-4 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-t-md ${
+          className={`flex-1 sm:flex-none px-6 py-4 min-h-[48px] font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-t-md active:scale-95 touch-manipulation transition-all ${
             selectedTab === 'activities'
               ? 'text-primary-600 border-b-2 border-primary-600'
               : 'text-gray-500 hover:text-gray-700'
@@ -136,10 +136,10 @@ const ProfileClient: React.FC = () => {
           id="activities-tab"
         >
           <FaHistory className="inline mr-2" aria-hidden="true" />
-          アクティビティ
+          <span className="text-base">アクティビティ</span>
         </button>
         <button
-          className={`px-4 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-t-md ${
+          className={`flex-1 sm:flex-none px-6 py-4 min-h-[48px] font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-t-md active:scale-95 touch-manipulation transition-all ${
             selectedTab === 'achievements'
               ? 'text-primary-600 border-b-2 border-primary-600'
               : 'text-gray-500 hover:text-gray-700'
@@ -151,7 +151,7 @@ const ProfileClient: React.FC = () => {
           id="achievements-tab"
         >
           <FaTrophy className="inline mr-2" aria-hidden="true" />
-          実績
+          <span className="text-base">実績</span>
         </button>
       </div>
 

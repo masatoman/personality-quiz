@@ -4,6 +4,7 @@ import React, { useState, useCallback } from 'react';
 import { Section, Question, ImageSection, TextSection } from '../../types/material';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import type { QuizSection as QuizSectionType } from '../../types/material';
+import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 
 interface MaterialViewerProps {
   sections: Section[];
@@ -41,6 +42,13 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
       window.scrollTo(0, 0);
     }
   };
+
+  // スワイプジェスチャー対応
+  const swipeRef = useSwipeGesture({
+    onSwipeLeft: goToNextSection,
+    onSwipeRight: goToPrevSection,
+    threshold: 100,
+  });
   
   // 特定のセクションに移動
   const goToSection = (index: number) => {
@@ -219,11 +227,11 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
   };
   
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div className="bg-white rounded-lg shadow-sm overflow-hidden" ref={swipeRef}>
       {/* タブ */}
       <div className="flex border-b" role="tablist" aria-label="教材表示モード">
         <button
-          className={`flex-1 px-4 py-3 text-center font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
+          className={`flex-1 px-6 py-4 min-h-[48px] text-center font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 active:scale-95 touch-manipulation transition-all ${
             activeTab === 'content' 
               ? 'border-b-2 border-emerald-500 text-emerald-600' 
               : 'text-gray-600 hover:text-gray-800'
@@ -234,10 +242,10 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
           aria-controls="content-panel"
           id="content-tab"
         >
-          コンテンツ
+          <span className="text-base">コンテンツ</span>
         </button>
         <button
-          className={`flex-1 px-4 py-3 text-center font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
+          className={`flex-1 px-6 py-4 min-h-[48px] text-center font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 active:scale-95 touch-manipulation transition-all ${
             activeTab === 'outline' 
               ? 'border-b-2 border-emerald-500 text-emerald-600' 
               : 'text-gray-600 hover:text-gray-800'
@@ -248,7 +256,7 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
           aria-controls="outline-panel"
           id="outline-tab"
         >
-          目次
+          <span className="text-base">目次</span>
         </button>
       </div>
       
@@ -277,11 +285,11 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
             {renderSectionContent()}
             
             {/* ナビゲーションボタン */}
-            <div className="flex justify-between mt-8">
+            <div className="flex justify-between items-center mt-8 gap-4">
               <button
                 onClick={goToPrevSection}
                 disabled={currentSectionIndex === 0}
-                className={`px-4 py-2 rounded-lg ${
+                className={`px-6 py-4 min-h-[48px] rounded-lg font-medium flex-1 sm:flex-none active:scale-95 touch-manipulation transition-all ${
                   currentSectionIndex === 0
                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                     : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
@@ -289,9 +297,12 @@ const MaterialViewer: React.FC<MaterialViewerProps> = ({
               >
                 前へ
               </button>
+              <span className="text-sm text-gray-500 text-center px-2">
+                {currentSectionIndex + 1} / {sections.length}
+              </span>
               <button
                 onClick={goToNextSection}
-                className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+                className="px-6 py-4 min-h-[48px] bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium flex-1 sm:flex-none active:scale-95 touch-manipulation transition-all"
               >
                 {currentSectionIndex < sections.length - 1 ? '次へ' : '完了'}
               </button>

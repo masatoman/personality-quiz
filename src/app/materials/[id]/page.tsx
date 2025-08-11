@@ -492,7 +492,7 @@ const MaterialDetailPage = () => {
 
             <button
               onClick={toggleBookmark}
-              className={`ml-4 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+              className={`ml-4 p-4 min-w-[48px] min-h-[48px] rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95 touch-manipulation transition-all ${
                 material.is_bookmarked 
                   ? 'bg-blue-100 text-blue-600' 
                   : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
@@ -500,7 +500,7 @@ const MaterialDetailPage = () => {
               aria-label={material.is_bookmarked ? 'ブックマークを削除' : 'ブックマークに追加'}
               aria-pressed={material.is_bookmarked}
             >
-              {material.is_bookmarked ? <FaBookmark size={20} /> : <FaRegBookmark size={20} />}
+              {material.is_bookmarked ? <FaBookmark size={24} /> : <FaRegBookmark size={24} />}
             </button>
           </div>
 
