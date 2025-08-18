@@ -4,6 +4,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import ActivitySummary from '@/components/dashboard/ActivitySummary';
 import GiverScoreChart from '@/components/dashboard/GiverScoreChart';
 import ActivityPieChart from '@/components/dashboard/ActivityPieChart';
+import PMFMetrics from '@/components/dashboard/PMFMetrics';
 import LoadingSpinner from '@/components/common/atoms/LoadingSpinner';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import type { ErrorInfo } from 'react';
@@ -145,7 +146,7 @@ const DashboardContent = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       <div className="mb-6 sm:mb-10">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">ホーム</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">マイページ</h1>
         <p className="text-gray-600 text-sm sm:text-base">あなたの学習活動の全体像とギバースコアの成長を確認できます</p>
       </div>
       <div className="space-y-6 sm:space-y-10">
@@ -165,6 +166,9 @@ const DashboardContent = () => {
             <ActivityPieChart data={userData.activityPie} />
           </div>
         </div>
+        
+        {/* PMF指標セクション */}
+        <PMFMetrics />
       </div>
     </div>
   );

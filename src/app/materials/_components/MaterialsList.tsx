@@ -26,17 +26,21 @@ export default function MaterialsList() {
 
   const fetchMaterials = useCallback(async () => {
     try {
+      console.log('🔍 MaterialsList: fetchMaterials開始');
       setLoading(true);
       setError(null);
 
       // 修正: バックエンドAPIを使用
+      console.log('🔍 MaterialsList: APIリクエスト送信');
       const response = await fetch('/api/materials');
       
+      console.log('🔍 MaterialsList: レスポンス受信', response.status);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
+      console.log('🔍 MaterialsList: データ解析完了', data);
       
       if (data.error) {
         throw new Error(data.error);
@@ -78,11 +82,13 @@ export default function MaterialsList() {
         };
       });
 
+      console.log('🔍 MaterialsList: データ変換完了', transformedMaterials);
       setMaterials(transformedMaterials);
     } catch (err) {
-      console.error('Fetch error:', err);
+      console.error('🔍 MaterialsList: Fetch error:', err);
       setError('データの取得中にエラーが発生しました');
     } finally {
+      console.log('🔍 MaterialsList: fetchMaterials完了');
       setLoading(false);
     }
   }, [getDifficultyLabel]);

@@ -208,15 +208,13 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       return;
     }
 
-    const initializeTheme = async () => {
+    const initializeTheme = () => {
       try {
         const savedTheme = localStorage.getItem('theme') as ThemeName | null;
         if (savedTheme && Object.keys(themeColors).includes(savedTheme)) {
           setCurrentTheme(savedTheme);
-          await new Promise(resolve => requestAnimationFrame(resolve));
           applyThemeColors(savedTheme);
         } else {
-          await new Promise(resolve => requestAnimationFrame(resolve));
           applyThemeColors('tealPurpleTheme');
         }
 
@@ -226,10 +224,8 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const shouldUseDarkMode = savedDarkMode ? savedDarkMode === 'dark' : prefersDark;
         
         setIsDarkMode(shouldUseDarkMode);
-        // document.documentElementの操作はDarkModeApplierコンポーネントに任せる
       } catch (error) {
         console.error('テーマ初期化エラー:', error);
-        await new Promise(resolve => requestAnimationFrame(resolve));
         applyThemeColors('tealPurpleTheme');
       } finally {
         setIsLoading(false);

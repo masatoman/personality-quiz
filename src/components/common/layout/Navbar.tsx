@@ -4,65 +4,25 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { FaHome, FaSearch, FaEdit, FaUser, FaBell, FaBars, FaSignOutAlt, FaCog, FaUserCircle, FaBook } from 'react-icons/fa';
-import { getClient } from '@/lib/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Navbar: React.FC = () => {
   // 初期値を明示的にfalseに設定
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [authChecked, setAuthChecked] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const router = useRouter();
+  
+  // AuthContextから認証状態を取得
+  const { user, loading, signOut } = useAuth();
+  const isLoggedIn = !!user;
+  const authChecked = !loading;
 
-  // クライアントサイドでログイン状態を確認（Supabaseの認証状態を確認）
+  // 認証状態の変更を監視
   useEffect(() => {
-    let isMounted = true;
-
-    const checkAuth = async () => {
-      try {
-        console.log('認証状態の確認を開始します');
-        const supabase = getClient();
-        const { data: { session } } = await supabase.auth.getSession();
-        console.log('セッション状態:', session ? 'ログイン中' : 'ログインなし', session);
-        
-        // コンポーネントがまだマウントされている場合のみ状態を更新
-        if (isMounted) {
-          setIsLoggedIn(!!session);
-          setAuthChecked(true);
-        }
-      } catch (error) {
-        console.error('認証状態の確認に失敗しました', error);
-        if (isMounted) {
-          setIsLoggedIn(false);
-          setAuthChecked(true);
-        }
-      }
-    };
-
-    checkAuth();
-
-    // 認証状態の変化を監視
-    const supabase = getClient();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('認証状態の変化:', event, session ? 'ログイン中' : 'ログインなし');
-      if (isMounted) {
-        setIsLoggedIn(!!session);
-        setAuthChecked(true);
-      }
-    });
-
-    return () => {
-      isMounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  // isLoggedInの変更を監視
-  useEffect(() => {
-    console.log('ログイン状態の変更:', isLoggedIn ? 'ログイン中' : 'ログインなし', '認証チェック済み:', authChecked);
-  }, [isLoggedIn, authChecked]);
+    console.log('ログイン状態の変更:', isLoggedIn ? 'ログイン中' : 'ログインなし', '認証チェック済み:', authChecked, 'ユーザー:', user?.profile?.display_name);
+  }, [isLoggedIn, authChecked, user]);
 
   // プロフィールメニュー外のクリックを検知してメニューを閉じる
   useEffect(() => {
@@ -80,9 +40,7 @@ const Navbar: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      const supabase = getClient();
-      await supabase.auth.signOut();
-      setIsLoggedIn(false);
+      await signOut();
       setShowProfileMenu(false);
       router.push('/');
     } catch (error) {
@@ -90,26 +48,24 @@ const Navbar: React.FC = () => {
     }
   };
 
-  // 全てのユーザーに表示するメニュー項目
+  // 未ログイン時に表示するメニュー項目
   const publicMenuItems = [
     { label: 'ホーム', href: '/', icon: <FaHome className="inline mr-2" /> },
-          { label: '教材一覧', href: '/materials', icon: <FaSearch className="inline mr-2" /> },
+    { label: '教材一覧', href: '/materials', icon: <FaSearch className="inline mr-2" /> },
   ];
 
   // ログインユーザーのみに表示するメニュー項目
   const privateMenuItems = [
-    { label: 'ホーム', href: '/dashboard', icon: <FaHome className="inline mr-2" /> },
+    { label: 'マイページ', href: '/dashboard', icon: <FaHome className="inline mr-2" /> },
+    { label: '教材一覧', href: '/materials', icon: <FaSearch className="inline mr-2" /> },
     { label: '教材作成', href: '/create', icon: <FaEdit className="inline mr-2" /> },
     { label: 'マイ教材', href: '/my-materials', icon: <FaBook className="inline mr-2" /> },
     { label: 'プロフィール', href: '/profile', icon: <FaUser className="inline mr-2" /> },
     { label: '通知', href: '/notifications', icon: <FaBell className="inline mr-2" /> },
   ];
 
-  // 認証チェックが完了しており、ログイン状態の場合のみプライベートメニューを表示
-  const visibleMenuItems = [
-    ...publicMenuItems, 
-    ...(authChecked && isLoggedIn ? privateMenuItems : [])
-  ];
+  // ログイン状態に応じてメニューを切り替え
+  const visibleMenuItems = authChecked && isLoggedIn ? privateMenuItems : publicMenuItems;
 
   return (
     <nav className="bg-slate-900 border-b border-slate-700 text-white shadow-lg sticky top-0 z-50">

@@ -24,6 +24,8 @@ export const createBrowserClient = () => {
         // ローカル開発環境ではJWT検証を回避するため、Authorizationを外しanon鍵のみ送信
         ...(isLocalDevelopment && { 'Authorization': '' }),
         ...(isLocalDevelopment && { 'apikey': supabaseAnonKey! }),
+        // ローカル開発環境ではContent-Typeを明示的に設定
+        ...(isLocalDevelopment && { 'Content-Type': 'application/json' }),
       },
     },
   });

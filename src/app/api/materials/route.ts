@@ -32,10 +32,10 @@ export async function POST(request: NextRequest) {
     let user = null;
     
     if (skipAuth) {
-      // 開発環境でのダミーユーザー
+      // 開発環境でのダミーユーザー（シードデータに存在するIDを使用）
       user = {
-        id: '11111111-1111-1111-1111-111111111111',
-        email: 'dev@example.com'
+        id: '550e8400-e29b-41d4-a716-446655440000',
+        email: 'admin@example.com'
       };
       console.log('開発環境: 認証をスキップしています');
     } else {
@@ -115,11 +115,9 @@ export async function POST(request: NextRequest) {
       category: data.category,
       description: data.description || '',
       user_id: user.id, // materialsテーブルのuser_idフィールドに保存
-      // author_idフィールドは存在しないため削除
       difficulty_level: data.difficulty === 'beginner' ? 1 : 
                        data.difficulty === 'intermediate' ? 3 : 
                        data.difficulty === 'advanced' ? 5 : 2,
-      estimated_time: data.estimated_time || 0,
       is_published: data.status === 'published' || data.is_public || false,
       tags: data.tags || []
     };

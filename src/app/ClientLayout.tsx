@@ -5,7 +5,7 @@ import Navbar from '@/components/common/layout/Navbar';
 import ThemeProviderClient from '@/components/ThemeProviderClient';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import ErrorFallback from '@/components/ErrorFallback';
-import SkipLink from '@/components/common/atoms/SkipLink';
+
 import DevAuthPanel from '@/components/common/DevAuthPanel';
 import { AuthProvider } from '@/contexts/AuthContext';
 
@@ -20,10 +20,9 @@ export default function ClientLayout({
   }, []);
 
   return (
-    <ThemeProviderClient>
-      <AuthProvider>
-        <SkipLink href="#main-content">メインコンテンツにスキップ</SkipLink>
-        <Navbar />
+             <ThemeProviderClient>
+           <AuthProvider>
+             <Navbar />
         <main id="main-content" tabIndex={-1}>
           <ErrorBoundary
             fallback={<ErrorFallback />}

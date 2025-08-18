@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🔎 リリース前チェックリストを確認中..."
+node scripts/prepush-release-check.js || exit 1
+
+echo "✅ チェックOK。pushを続行します"
+
+

@@ -1,6 +1,6 @@
 // アナリティクス用React Hooks
 import { useEffect, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { dataCollector } from '@/lib/analytics/dataCollector';
 
 /**

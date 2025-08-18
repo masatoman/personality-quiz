@@ -51,11 +51,11 @@ export class MaterialAnalyticsService {
     const basicStats = await this.getBasicStats(materialId);
     
     // 学習者属性別分析
-    const levelAnalysis = await this.getAnalyticsByLevel(materialId);
-    const personalityAnalysis = await this.getAnalyticsByPersonality(materialId);
+    const levelAnalysis = await this.getAnalyticsByLevel();
+    const personalityAnalysis = await this.getAnalyticsByPersonality();
     
     // 改善提案の生成
-    const suggestions = await this.generateOptimizationSuggestions(materialId, basicStats);
+    const suggestions = await this.generateOptimizationSuggestions(basicStats);
     
     return {
       material_id: materialId,
@@ -98,7 +98,7 @@ export class MaterialAnalyticsService {
   /**
    * レベル別分析
    */
-  private async getAnalyticsByLevel(materialId: string) {
+  private async getAnalyticsByLevel() {
     // TODO: ユーザーレベルとエンゲージメントの相関分析
     return {
       beginner: {
@@ -125,7 +125,7 @@ export class MaterialAnalyticsService {
   /**
    * パーソナリティ別分析
    */
-  private async getAnalyticsByPersonality(materialId: string) {
+  private async getAnalyticsByPersonality() {
     // TODO: パーソナリティタイプと学習効果の相関分析
     return {
       giver: {
@@ -152,7 +152,7 @@ export class MaterialAnalyticsService {
   /**
    * 改善提案の生成
    */
-  private async generateOptimizationSuggestions(materialId: string, stats: any): Promise<string[]> {
+  private async generateOptimizationSuggestions(stats: any): Promise<string[]> {
     const suggestions: string[] = [];
     
     // 閲覧数が少ない場合

@@ -1,39 +1,126 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-// 教材詳細取得
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    const materialId = params.id;
+    const skipAuth = process.env.SKIP_AUTH === 'true';
+
+    // 認証チェック（開発環境ではスキップ）
+    if (skipAuth) {
+      console.log('開発環境: 認証をスキップしています');
+    } else {
+      const supabase = createClient();
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !authUser) {
+        return NextResponse.json(
+          { error: '認証が必要です' },
+          { status: 401 }
+        );
+      }
+    }
+
     const supabase = createClient();
-    
+
     // 教材データを取得
-    const { data: material, error } = await supabase
+    const { data: materialData, error: materialError } = await supabase
       .from('materials')
       .select(`
-        *,
-        author:profiles!materials_author_id_fkey(
-          id,
-          username,
-          display_name,
-          avatar_url
-        ),
-        material_sections(*)
+        id,
+        title,
+        description,
+        content,
+        category,
+        tags,
+        difficulty_level,
+        view_count,
+        rating,
+        created_at,
+        is_published,
+        user_id
       `)
-      .eq('id', params.id)
+      .eq('id', materialId)
+      .eq('is_published', true)
       .single();
-    
-    if (error) {
-      console.error('教材取得エラー:', error);
+
+    if (materialError || !materialData) {
       return NextResponse.json(
         { error: '教材が見つかりませんでした' },
         { status: 404 }
       );
     }
-    
-    return NextResponse.json(material);
+
+    // プロファイル情報を取得
+    let authorProfile = null;
+    let authorUser = null;
+
+    if (materialData.user_id) {
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('display_name, avatar_url')
+        .eq('user_id', materialData.user_id)
+        .single();
+
+      const { data: userData } = await supabase
+        .from('users')
+        .select('personality_type, giver_score')
+        .eq('id', materialData.user_id)
+        .single();
+
+      authorProfile = profileData;
+      authorUser = userData;
+    }
+
+    // ビューカウントを増加
+    await supabase
+      .from('materials')
+      .update({ view_count: (materialData.view_count || 0) + 1 })
+      .eq('id', materialId);
+
+    // 難易度ラベルを取得
+    const getDifficultyLabel = (level: number): 'beginner' | 'intermediate' | 'advanced' => {
+      if (level <= 2) return 'beginner';
+      if (level <= 3) return 'intermediate';
+      return 'advanced';
+    };
+
+    const getPersonalityType = (type: string | null): 'ギバー' | 'マッチャー' | 'テイカー' => {
+      switch (type) {
+        case 'giver': return 'ギバー';
+        case 'matcher': return 'マッチャー';
+        case 'taker': return 'テイカー';
+        default: return 'マッチャー';
+      }
+    };
+
+    // レスポンスデータを構築
+    const responseData = {
+      id: materialData.id,
+      title: materialData.title,
+      description: materialData.description || '',
+      content: materialData.content || '',
+      category: materialData.category,
+      difficulty: getDifficultyLabel(materialData.difficulty_level),
+      author: {
+        id: materialData.user_id,
+        name: authorProfile?.display_name || '匿名ユーザー',
+        avatar: authorProfile?.avatar_url || '/avatars/default.png',
+        giverScore: authorUser?.giver_score || 50,
+        type: getPersonalityType(authorUser?.personality_type)
+      },
+      created_at: materialData.created_at,
+      view_count: (materialData.view_count || 0) + 1,
+      rating: materialData.rating || 0,
+      is_bookmarked: false, // TODO: ユーザーのブックマーク状態を取得
+      is_published: materialData.is_published,
+      tags: materialData.tags || []
+    };
+
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error('教材詳細取得エラー:', error);
     return NextResponse.json(

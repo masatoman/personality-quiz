@@ -31,7 +31,7 @@ export const useProgress = (userId: string) => {
   }, [userId]);
 
   // バッジの進捗確認（仮実装）
-  const checkBadgeProgress = useCallback((activityType: ActivityType): Badge[] => {
+  const checkBadgeProgress = useCallback((): Badge[] => {
     const newBadges: Badge[] = [];
     
     // TODO: バッジ進捗確認ロジックを実装
@@ -60,7 +60,7 @@ export const useProgress = (userId: string) => {
     scoreChange: number
   ) => {
     try {
-      const newBadges = checkBadgeProgress(activityType);
+      const newBadges = checkBadgeProgress();
       const newTotalScore = userProgress.points + scoreChange;
       const newLevel = checkLevel(newTotalScore);
 

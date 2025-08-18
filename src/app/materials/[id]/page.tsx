@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { FaStar, FaRegStar, FaUser, FaArrowLeft, FaBookmark, FaRegBookmark } from 'react-icons/fa';
 import Image from 'next/image';
-import { supabase } from '@/lib/supabase';
+
 // import MaterialComments from '@/components/features/materials/MaterialComments';
 import MockCommentData from '@/components/features/materials/MockCommentData';
 
@@ -66,153 +66,53 @@ const MaterialDetailPage = () => {
     }
   }, []);
 
-  const getPersonalityType = useCallback((type: string | null): 'ギバー' | 'マッチャー' | 'テイカー' => {
-    switch (type) {
-      case 'giver': return 'ギバー';
-      case 'matcher': return 'マッチャー';
-      case 'taker': return 'テイカー';
-      default: return 'マッチャー';
-    }
-  }, []);
+
 
   const fetchMaterial = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // 外部キー参照を削除し、基本データのみ取得
-      const { data: materialData, error: materialError } = await supabase
-        .from('materials')
-        .select(`
-          id,
-          title,
-          description,
-          content,
-          category,
-          tags,
-          difficulty_level,
-          view_count,
-          rating,
-          created_at,
-          is_published,
-          user_id
-        `)
-        .eq('id', materialId)
-        .eq('is_published', true)
-        .single();
-
-      if (materialError) {
-        console.error('Material fetch error:', materialError);
-        setError('教材が見つかりませんでした');
+      // APIエンドポイント経由でデータを取得
+      const response = await fetch(`/api/materials/${materialId}`);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          setError('教材が見つかりませんでした');
+        } else {
+          setError('データの取得中にエラーが発生しました');
+        }
         return;
       }
 
-      if (!materialData) {
-        setError('教材が見つかりませんでした');
-        return;
-      }
-
-      // プロファイル情報を別途取得
-      let authorProfile = null;
-      let authorUser = null;
-
-      if (materialData.user_id) {
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('display_name, avatar_url')
-          .eq('id', materialData.user_id)
-          .single();
-
-        const { data: userData } = await supabase
-          .from('users')
-          .select('personality_type, giver_score')
-          .eq('id', materialData.user_id)
-          .single();
-
-        authorProfile = profileData;
-        authorUser = userData;
-      }
-
-      // ビューカウントを増加
-      await supabase
-        .from('materials')
-        .update({ view_count: (materialData.view_count || 0) + 1 })
-        .eq('id', materialId);
-
-      // データを Material 型に変換
-      const transformedMaterial: Material = {
-        id: materialData.id,
-        title: materialData.title,
-        description: materialData.description || '',
-        content: materialData.content || '',
-        category: materialData.category,
-        difficulty: getDifficultyLabel(materialData.difficulty_level),
-        author: {
-          id: materialData.user_id,
-          name: authorProfile?.display_name || '匿名ユーザー',
-          avatar: authorProfile?.avatar_url || '/avatars/default.png',
-          giverScore: authorUser?.giver_score || 50,
-          type: getPersonalityType(authorUser?.personality_type)
-        },
-        created_at: materialData.created_at,
-        view_count: (materialData.view_count || 0) + 1,
-        rating: materialData.rating || 0,
-        is_bookmarked: false, // TODO: ユーザーのブックマーク状態を取得
-        is_published: materialData.is_published,
-        tags: materialData.tags || []
-      };
-
-      setMaterial(transformedMaterial);
+      const materialData = await response.json();
+      setMaterial(materialData);
     } catch (err) {
       console.error('Fetch error:', err);
       setError('データの取得中にエラーが発生しました');
     } finally {
       setLoading(false);
     }
-  }, [materialId, getDifficultyLabel, getPersonalityType]);
+  }, [materialId]);
 
   const fetchRelatedMaterials = useCallback(async () => {
     try {
-      // 基本データのみ取得
-      const { data: materialsData, error } = await supabase
-        .from('materials')
-        .select(`
-          id,
-          title,
-          category,
-          difficulty_level,
-          rating,
-          user_id
-        `)
-        .eq('is_published', true)
-        .neq('id', materialId)
-        .limit(3);
-
-      if (!error && materialsData) {
-        // プロファイル情報を別途取得してマッピング
-        const userIds = materialsData.map(m => m.user_id).filter(Boolean);
-        let profiles: any[] = [];
-        
-        if (userIds.length > 0) {
-          const { data: profilesData } = await supabase
-            .from('profiles')
-            .select('id, display_name')
-            .in('id', userIds);
-          profiles = profilesData || [];
-        }
-
-        const transformed: RelatedMaterial[] = materialsData.map((item: any) => {
-          const profile = profiles.find(p => p.id === item.user_id);
-          return {
+      // APIエンドポイント経由で関連教材を取得
+      const response = await fetch(`/api/materials?limit=3&exclude=${materialId}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.materials) {
+          const transformed: RelatedMaterial[] = data.materials.map((item: any) => ({
             id: item.id,
             title: item.title,
             category: item.category,
             difficulty: getDifficultyText(getDifficultyLabel(item.difficulty_level)),
             rating: item.rating || 0,
-            author_name: profile?.display_name || '匿名ユーザー'
-          };
-        });
-        setRelatedMaterials(transformed);
+            author_name: item.author?.name || '匿名ユーザー'
+          }));
+          setRelatedMaterials(transformed);
+        }
       }
     } catch (err) {
       console.error('Related materials fetch error:', err);
