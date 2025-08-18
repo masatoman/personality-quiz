@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { unstable_cache } from 'next/cache';
 
 // Dynamic Server Usage エラーを解決するため動的レンダリングを強制

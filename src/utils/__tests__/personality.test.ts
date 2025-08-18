@@ -1,5 +1,5 @@
 import { getPersonalityDescription } from '../personality';
-import { PersonalityType } from '@/types/quiz';
+import { PersonalityType } from '@/types/common';
 
 describe('personality utils', () => {
   describe('getPersonalityDescription', () => {

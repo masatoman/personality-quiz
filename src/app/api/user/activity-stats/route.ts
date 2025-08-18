@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import supabase from '@/services/supabaseClient';
-import { ActivityType } from '@/types/quiz';
+import { ActivityType } from '@/types/common';
 
 // Dynamic Server Usage エラーを解決するため動的レンダリングを強制
 export const dynamic = 'force-dynamic';

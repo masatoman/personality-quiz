@@ -83,14 +83,23 @@ services:
       postgres:
         condition: service_healthy
     restart: always
-    environment:
-      PGRST_DB_URI: postgres://postgres:postgres@postgres:5432/giver_english_db
-      PGRST_DB_SCHEMA: public,storage
-      PGRST_DB_ANON_ROLE: anon
-      PGRST_JWT_SECRET: super-secret-jwt-token-with-at-least-32-characters-long
-      PGRST_JWT_ALGO: none
+    command: ["postgrest", "/etc/postgrest.conf"]
+    volumes:
+      - ./docker/postgrest.conf:/etc/postgrest.conf
     ports:
-      - "${SUPABASE_API_PORT}:3000"
+      - "3005:3000"
+
+  # Nginx リバースプロキシ (PostgRESTを /rest/v1 パスで提供)
+  nginx-proxy:
+    image: nginx:alpine
+    container_name: giver-english-nginx
+    depends_on:
+      - supabase-rest
+    restart: always
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "${SUPABASE_API_PORT}:80"
 
   # イメージ処理サービス(imgproxy)
   imgproxy:

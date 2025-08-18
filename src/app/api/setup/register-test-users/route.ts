@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 // このAPIルートは開発環境でのみ使用可能にします
@@ -12,24 +12,8 @@ export async function GET() {
   }
 
   try {
-    // Supabaseクライアントの初期化（サービスロールキーで）
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    
-    if (!supabaseServiceKey) {
-      return NextResponse.json({
-        success: false,
-        message: 'SUPABASE_SERVICE_ROLE_KEYが設定されていません',
-        results: []
-      });
-    }
-    
-    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    });
+    // Supabaseクライアントの初期化
+    const supabase = createClient();
 
     // テストユーザーのデータ
     const testUsers = [

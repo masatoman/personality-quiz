@@ -2,17 +2,14 @@ import { useState, useCallback, useEffect } from 'react';
 import { Badge } from '@/types/badges';
 import { ActivityType } from '@/types/learning';
 import { LEVELS } from '@/data/levels';
-import { Level, UserProgress } from '@/types/quiz';
-import { BADGE_DEFINITIONS } from '@/data/badges';
+import { Level, UserProgress } from '@/types/common';
 
-export const useProgress = (userId: number) => {
+export const useProgress = (userId: string) => {
   const [userProgress, setUserProgress] = useState<UserProgress>({
     userId,
     level: 1,
-    totalScore: 0,
-    badges: [],
-    streakDays: 0,
-    lastActivityDate: new Date()
+    points: 0,
+    activities: []
   });
 
   // 進捗データの取得
@@ -33,38 +30,14 @@ export const useProgress = (userId: number) => {
     }
   }, [userId]);
 
-  // バッジの進捗確認
+  // バッジの進捗確認（仮実装）
   const checkBadgeProgress = useCallback((activityType: ActivityType): Badge[] => {
     const newBadges: Badge[] = [];
     
-    Object.values(BADGE_DEFINITIONS).forEach((badgeDef) => {
-      const existingBadge = userProgress.badges.find((b: Badge) => b.type === badgeDef.type);
-      if (existingBadge) return;
-
-      const relevantRequirements = badgeDef.requirements.filter(
-        (req) => req.activityType === activityType
-      );
-
-      if (relevantRequirements.length === 0) return;
-
-      // 進捗の計算（仮実装）
-      const progress = Math.min(
-        relevantRequirements.reduce((acc, req) => acc + (req.count * 10), 0),
-        100
-      );
-
-      if (progress >= 100) {
-        const newBadge: Badge = {
-          ...badgeDef,
-          acquiredAt: new Date(),
-          progress: 100
-        };
-        newBadges.push(newBadge);
-      }
-    });
-
+    // TODO: バッジ進捗確認ロジックを実装
+    // 現在はUserProgressにbadgesフィールドがないため仮実装
     return newBadges;
-  }, [userProgress.badges]);
+  }, []);
 
   // レベルの確認
   const checkLevel = useCallback((totalScore: number): Level => {
@@ -88,15 +61,14 @@ export const useProgress = (userId: number) => {
   ) => {
     try {
       const newBadges = checkBadgeProgress(activityType);
-      const newTotalScore = userProgress.totalScore + scoreChange;
+      const newTotalScore = userProgress.points + scoreChange;
       const newLevel = checkLevel(newTotalScore);
 
       const updatedProgress: UserProgress = {
         ...userProgress,
         level: newLevel.number,
-        totalScore: newTotalScore,
-        badges: [...userProgress.badges, ...newBadges],
-        lastActivityDate: new Date()
+        points: newTotalScore,
+        activities: [...userProgress.activities]
       };
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';

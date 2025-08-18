@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getStats } from '@/lib/db';
-import { Stats } from '@/types/quiz';
+import { Stats } from '@/types/common';
 
 // モックデータ
 const getMockSetupData = (stats: Stats) => ({

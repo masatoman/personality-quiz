@@ -1,4 +1,4 @@
-import { PersonalityType, PersonalityDescription } from '@/types/quiz';
+import { PersonalityType, PersonalityDescription } from '@/types/common';
 
 export const getPersonalityDescription = (type: PersonalityType): PersonalityDescription => {
   switch (type) {
@@ -16,6 +16,12 @@ export const getPersonalityDescription = (type: PersonalityType): PersonalityDes
           '完璧主義になりやすい（他者の期待に応えようとする）',
           '自身の学習時間が確保しづらい',
           '他者の理解度に過度に影響される'
+        ],
+        learningTips: [
+          '教えることを通じて学ぶ（ラーニング・バイ・ティーチング）',
+          '学習内容を音声や動画で説明して記録する',
+          '定期的な振り返りセッションを設ける',
+          '教えることと学ぶことの時間配分を意識する（7:3の法則）'
         ],
         learningAdvice: {
           title: 'あなたに合わせた効果的な学習方法',
@@ -48,6 +54,12 @@ export const getPersonalityDescription = (type: PersonalityType): PersonalityDes
           '視野が狭くなりやすい',
           '学習の多様性が不足しがち'
         ],
+        learningTips: [
+          'ポモドーロ・テクニックで集中と休憩のリズムを作る',
+          '没入できる環境を意図的に作る（BGM、照明、温度など）',
+          '定期的な目標設定と振り返り',
+          '週1回は他者との学習機会を設ける'
+        ],
         learningAdvice: {
           title: 'あなたの強みを活かす学習方法',
           tips: [
@@ -78,6 +90,12 @@ export const getPersonalityDescription = (type: PersonalityType): PersonalityDes
           '一つの方法を極めにくい',
           '優先順位の設定が難しい',
           '方法選択に時間がかかる'
+        ],
+        learningTips: [
+          '週単位で異なる学習方法を試す（実験的アプローチ）',
+          '学習ログを付けて効果を検証する',
+          '他者の学習方法を積極的に取り入れる',
+          '定期的な学習方法の見直しと最適化'
         ],
         learningAdvice: {
           title: 'あなたの適応力を活かす学習方法',

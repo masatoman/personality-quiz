@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { PersonalityType, Stats } from '@/types/quiz';
+import { PersonalityType, Stats } from '@/types/common';
 import { createClient } from '@supabase/supabase-js';
 
 // Supabaseクライアントの初期化

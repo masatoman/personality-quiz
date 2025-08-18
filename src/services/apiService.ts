@@ -2,7 +2,7 @@
 // import supabase, { Database } from './supabaseClient';
 import { Database } from '@/types/supabase';
 import { getClient } from '@/lib/supabase/client';
-import { PersonalityType } from '@/types/quiz';
+import { PersonalityType } from '@/types/common';
 
 // APIエンドポイントのベースパス
 export const API_BASE = '/api';

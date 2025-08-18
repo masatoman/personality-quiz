@@ -1,5 +1,5 @@
 import { ActivityType as LearningActivityType } from '@/types/learning';
-import { ActivityType as QuizActivityType, MaterialType } from '@/types/quiz';
+import { ActivityType as QuizActivityType, MaterialType } from '@/types/common';
 
 /**
  * 活動タイプのユニオン型（learning.tsとquiz.tsの活動タイプを統合）

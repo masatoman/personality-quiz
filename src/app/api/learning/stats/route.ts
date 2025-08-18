@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { auth } from '@/lib/auth';
 
 // Dynamic Server Usage エラーを解決するため動的レンダリングを強制

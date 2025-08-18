@@ -6,7 +6,7 @@ import {
   FaChartLine, 
   FaTrophy
 } from 'react-icons/fa';
-import { TabType } from '@/types/quiz';
+import { TabType } from '@/types/common';
 
 // タブのプロパティの型定義
 interface ResultsTabsProps {

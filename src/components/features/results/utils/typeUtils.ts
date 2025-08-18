@@ -1,4 +1,4 @@
-import { LearningType } from '@/types/quiz';
+import { LearningType } from '@/types/common';
 
 export const getSecondaryType = (
   giverScore: number, 

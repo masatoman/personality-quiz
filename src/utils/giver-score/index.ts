@@ -1,4 +1,4 @@
-import { ActivityType, ScoreChange, PersonalityType, MaterialType } from '@/types/quiz';
+import { ActivityType, ScoreChange, PersonalityType, MaterialType } from '@/types/common';
 
 // 活動タイプによるギバースコアへの影響度
 const SCORE_WEIGHTS: Record<ActivityType, ScoreChange> = {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { auth } from '@/lib/auth';
 import { BadgeType, BadgeRequirement } from '@/types/badges';
 import { BADGE_DEFINITIONS } from '@/data/badges';

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { QuizResults } from '@/types/quiz';
+import { QuizResults } from '@/types/common';
 
 // チャートのプロパティ型定義
 interface ResultsChartProps {

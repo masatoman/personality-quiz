@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './useAuth';
 import { getProfile, upsertProfile, UserProfile } from '@/services/apiService';
-import { PersonalityType } from '@/types/quiz';
+import { PersonalityType } from '@/types/common';
 
 export interface ProfileSettings {
   email_notifications: boolean;

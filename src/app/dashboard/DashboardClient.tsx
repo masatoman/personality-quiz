@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/common/atoms/LoadingSpinner';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import type { ErrorInfo } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 
 // ローディングコンポーネント
 const DashboardLoading = () => (
@@ -48,6 +49,7 @@ const DashboardError = ({ error, reset }: { error: Error; reset: () => void }) =
 
 // ダッシュボードコンテンツ
 const DashboardContent = () => {
+  const { user, loading: authLoading } = useAuth();
   const [userData, setUserData] = useState({
     activitySummary: {
       createdMaterials: 0,
@@ -60,20 +62,20 @@ const DashboardContent = () => {
       { type: 'フィードバック', percentage: 0 },
     ],
   });
-  const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const { data: userData } = await supabase.auth.getUser();
-        if (userData.user) {
-          setUserId(userData.user.id);
+        // useAuthフックからユーザー情報を取得
+        if (user) {
+          const userId = user.id;
+          
           // アクティビティデータの取得
           const { data: activityData, error: activityError } = await supabase
             .from('user_activities')
             .select('*')
-            .eq('user_id', userData.user.id);
+            .eq('user_id', userId);
 
           if (activityError) throw activityError;
 
@@ -114,8 +116,29 @@ const DashboardContent = () => {
       }
     };
 
-    fetchUserData();
-  }, []);
+    // 認証の読み込みが完了してからデータを取得
+    if (!authLoading) {
+      fetchUserData();
+    }
+  }, [user, authLoading]);
+
+  // 認証の読み込み中またはユーザーが未認証の場合
+  if (authLoading) return <DashboardLoading />;
+  
+  if (!user) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center max-w-2xl mx-auto">
+          <h2 className="text-lg font-semibold text-gray-600 mb-3">
+            ログインが必要です
+          </h2>
+          <p className="text-sm text-gray-500 mb-4">
+            ダッシュボードを表示するにはログインしてください。
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) return <DashboardLoading />;
 
@@ -135,7 +158,7 @@ const DashboardContent = () => {
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-10">
           <div className="bg-white rounded-lg shadow-sm p-6 sm:p-8">
             <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">ギバースコアの推移</h2>
-            <GiverScoreChart userId={userId || ''} />
+            <GiverScoreChart userId={user.id} />
           </div>
           <div className="bg-white rounded-lg shadow-sm p-6 sm:p-8">
             <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">活動内訳</h2>

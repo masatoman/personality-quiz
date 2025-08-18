@@ -7,7 +7,7 @@ import { dataCollector } from '@/lib/analytics/dataCollector';
  * ページビュートラッキング用Hook
  */
 export const usePageTracking = (materialId?: string) => {
-  const _router = useRouter();
+  // const router = useRouter();
   const previousPath = useRef<string>('');
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { PersonalityType } from '@/types/quiz';
+import { PersonalityType } from '@/types/common';
 import ResultClient from './ResultClient';
 
 export function generateStaticParams() {

@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 // 開発環境でのみプロフィールテーブルに直接テストユーザーを作成するAPI
@@ -11,18 +11,9 @@ export async function GET() {
   }
 
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    // サービスロールキーを優先的に使用（RLSをバイパス）
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-    
-    const supabase = createClient(supabaseUrl, supabaseKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    });
+    const supabase = createClient();
 
-    console.log('使用中のキー:', supabaseKey ? 'サービスロール' : '匿名キー');
+    console.log('使用中のキー: 統一されたクライアント');
 
     // テストユーザーのプロフィールデータ
     const testProfiles = [

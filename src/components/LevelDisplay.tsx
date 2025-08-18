@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Level } from '@/types/quiz';
+import { Level } from '@/types/common';
 import { LEVELS } from '@/data/levels';
 
 interface LevelDisplayProps {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { PersonalityType } from '@/types/quiz';
+import { PersonalityType } from '@/types/common';
 
 interface ResultPageProps {
   results: {

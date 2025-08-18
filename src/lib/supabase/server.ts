@@ -10,6 +10,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 // サーバーサイドでSupabaseクライアントを作成する関数
 export const createClient = () => {
+  const isLocalDevelopment = supabaseUrl?.includes('localhost:3004');
+  
   return createSupabaseClient(
     supabaseUrl!,
     supabaseAnonKey!,
@@ -21,6 +23,9 @@ export const createClient = () => {
       global: {
         headers: {
           'x-client-info': '@supabase/auth-helpers-nextjs',
+          // ローカル開発環境ではJWT検証を回避するため、Authorizationを外しanon鍵のみ送信
+          ...(isLocalDevelopment && { 'Authorization': '' }),
+          ...(isLocalDevelopment && { 'apikey': supabaseAnonKey! }),
         },
       },
     }

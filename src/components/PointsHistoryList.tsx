@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
-import { PointHistoryItem } from '@/types/quiz';
+import { PointHistoryItem } from '@/types/common';
 import { useVirtualizer, VirtualItem } from '@tanstack/react-virtual';
 
 interface PointsHistoryListProps {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { QuizResults } from '@/types/quiz';
+import { QuizResults } from '@/types/common';
 
 export const useResultsSave = () => {
   const [savingResults, setSavingResults] = useState(false);

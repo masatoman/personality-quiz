@@ -3,10 +3,9 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { 
-  FaUsers, FaBalanceScale, FaBook, FaChartLine, 
+  FaUsers, FaBook, FaChartLine, 
   FaLightbulb, FaRocket, FaClock, FaChevronRight,
-  FaUserCircle, FaTrophy, FaCalendarAlt, FaPlusCircle,
-  FaEdit, FaBriefcase, FaGraduationCap
+  FaEdit, FaBriefcase, FaThumbsUp, FaHeart, FaSmile, FaSearch
 } from 'react-icons/fa';
 
 // メインコンポーネント
@@ -49,80 +48,80 @@ const HomePage: React.FC = () => {
           </div>
 
           <div className="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4 mb-16">
-            <Link href="/quiz" className="inline-block px-8 py-4 bg-blue-600 text-white rounded-full text-lg font-bold shadow-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-              診断スタート（5分）
+            <Link href="/materials" className="inline-block px-8 py-4 bg-blue-600 text-white rounded-full text-lg font-bold shadow-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+              教材を探す
             </Link>
-            <a href="#types" className="inline-flex items-center justify-center px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-full hover:bg-blue-600 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-              詳しく見る
-            </a>
+            <Link href="/create" className="inline-flex items-center justify-center px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-full hover:bg-blue-600 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+              教材を作る
+            </Link>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 quiz-info">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 material-info">
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <FaClock className="text-blue-500 w-8 h-8 mb-4 mx-auto" />
-              <div className="text-lg font-medium text-gray-400">質問数</div>
-              <div className="text-3xl font-bold">15問</div>
-              <div className="text-gray-500 mt-2">約5分で完了</div>
+              <FaBook className="text-blue-500 w-8 h-8 mb-4 mx-auto" />
+              <div className="text-lg font-medium text-gray-400">教材数</div>
+              <div className="text-3xl font-bold">50+</div>
+              <div className="text-gray-500 mt-2">豊富な学習コンテンツ</div>
             </div>
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
               <FaChartLine className="text-green-500 w-8 h-8 mb-4 mx-auto" />
-              <div className="text-lg font-medium text-gray-400">TOEIC平均スコア向上</div>
-              <div className="text-3xl font-bold text-success">+120点</div>
-              <div className="text-gray-500 mt-2">3ヶ月の学習効果</div>
+              <div className="text-lg font-medium text-gray-400">学習効果</div>
+              <div className="text-3xl font-bold text-success">90%</div>
+              <div className="text-gray-500 mt-2">記憶定着率向上</div>
             </div>
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
               <FaUsers className="text-purple-500 w-8 h-8 mb-4 mx-auto" />
-              <div className="text-lg font-medium text-gray-400">累計診断者数</div>
-              <div className="text-3xl font-bold">1,200+</div>
-              <div className="text-gray-500 mt-2">診断後の満足度98%</div>
+              <div className="text-lg font-medium text-gray-400">コミュニティ</div>
+              <div className="text-3xl font-bold">500+</div>
+              <div className="text-gray-500 mt-2">教え合い学習者</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 学習タイプセクション */}
-      <section id="types" className="bg-gray-100 py-20" role="region" aria-labelledby="types-heading">
+      {/* 学習方法セクション */}
+      <section id="methods" className="bg-gray-100 py-20" role="region" aria-labelledby="methods-heading">
         <div className="container mx-auto px-4">
-          <h2 id="types-heading" className="text-3xl md:text-4xl font-bold text-center mb-12">あなたの英語学習タイプを発見しよう</h2>
+          <h2 id="methods-heading" className="text-3xl md:text-4xl font-bold text-center mb-12">教え合いで学ぶ英語学習</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="type-card bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <div className="type-icon mb-4">
+            <div className="method-card bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <div className="method-icon mb-4">
                 <FaUsers size={60} className="text-blue-500 mx-auto" aria-hidden="true" />
               </div>
-              <h3 className="type-title text-xl font-semibold mb-2">ギバー型</h3>
-              <p className="type-desc text-gray-600 mb-4">他者へ知識を伝えることで学ぶタイプ。教えることで理解が深まります。</p>
-              <ul className="type-features text-sm text-gray-500 space-y-2">
-                <li className="flex items-center"><FaUserCircle className="mr-2" aria-hidden="true" />グループ学習を好む</li>
-                <li className="flex items-center"><FaEdit className="mr-2" aria-hidden="true" />説明することで記憶定着</li>
-                <li className="flex items-center"><FaUsers className="mr-2" aria-hidden="true" />人とのつながりを大切にする</li>
+              <h3 className="method-title text-xl font-semibold mb-2">教材を作る</h3>
+              <p className="method-desc text-gray-600 mb-4">自分の知識を整理して教材を作成。教えることで理解が深まります。</p>
+              <ul className="method-features text-sm text-gray-500 space-y-2">
+                <li className="flex items-center"><FaEdit className="mr-2" aria-hidden="true" />知識の整理・体系化</li>
+                <li className="flex items-center"><FaLightbulb className="mr-2" aria-hidden="true" />理解度の向上</li>
+                <li className="flex items-center"><FaUsers className="mr-2" aria-hidden="true" />他者への貢献</li>
               </ul>
-              <div className="type-stats text-sm text-gray-500 mt-4">診断受験者の33%</div>
+              <div className="method-stats text-sm text-gray-500 mt-4">記憶定着率90%向上</div>
             </div>
-            <div className="type-card bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <div className="type-icon mb-4">
-                <FaBalanceScale size={60} className="text-green-500 mx-auto" aria-hidden="true" />
+            <div className="method-card bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <div className="method-icon mb-4">
+                <FaBook size={60} className="text-green-500 mx-auto" aria-hidden="true" />
               </div>
-              <h3 className="type-title text-xl font-semibold mb-2">マッチャー型</h3>
-              <p className="type-desc text-gray-600 mb-4">相互学習を通じて成長するタイプ。ディスカッションやペア学習が効果的です。</p>
-              <ul className="type-features text-sm text-gray-500 space-y-2">
-                <li className="flex items-center"><FaBriefcase className="mr-2" aria-hidden="true" />ビジネス英語に強い</li>
-                <li className="flex items-center"><FaEdit className="mr-2" aria-hidden="true" />フィードバックを活かせる</li>
-                <li className="flex items-center"><FaUsers className="mr-2" aria-hidden="true" />コミュニケーション重視</li>
+              <h3 className="method-title text-xl font-semibold mb-2">教材で学ぶ</h3>
+              <p className="method-desc text-gray-600 mb-4">仲間が作った質の高い教材で効率的に学習。実践的な内容で成長。</p>
+              <ul className="method-features text-sm text-gray-500 space-y-2">
+                <li className="flex items-center"><FaBriefcase className="mr-2" aria-hidden="true" />実践的な内容</li>
+                <li className="flex items-center"><FaThumbsUp className="mr-2" aria-hidden="true" />感謝の表現</li>
+                <li className="flex items-center"><FaUsers className="mr-2" aria-hidden="true" />コミュニティ感</li>
               </ul>
-              <div className="type-stats text-sm text-gray-500 mt-4">診断受験者の38%</div>
+              <div className="method-stats text-sm text-gray-500 mt-4">学習効率50%向上</div>
             </div>
-            <div className="type-card bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <div className="type-icon mb-4">
-                <FaBook size={60} className="text-purple-500 mx-auto" aria-hidden="true" />
+            <div className="method-card bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <div className="method-icon mb-4">
+                <FaHeart size={60} className="text-purple-500 mx-auto" aria-hidden="true" />
               </div>
-              <h3 className="type-title text-xl font-semibold mb-2">テイカー型</h3>
-              <p className="type-desc text-gray-600 mb-4">個人学習を好むタイプ。体系的な学習と自己ペースでの進行が効果的です。</p>
-              <ul className="type-features text-sm text-gray-500 space-y-2">
-                <li className="flex items-center"><FaGraduationCap className="mr-2" aria-hidden="true" />体系的な学習が得意</li>
-                <li className="flex items-center"><FaEdit className="mr-2" aria-hidden="true" />自己ペースで学習</li>
-                <li className="flex items-center"><FaChartLine className="mr-2" aria-hidden="true" />目標達成に強い</li>
+              <h3 className="method-title text-xl font-semibold mb-2">感謝を伝える</h3>
+              <p className="method-desc text-gray-600 mb-4">良い教材には感謝を伝える。自然な感謝の循環が生まれます。</p>
+              <ul className="method-features text-sm text-gray-500 space-y-2">
+                <li className="flex items-center"><FaHeart className="mr-2" aria-hidden="true" />自然な感謝表現</li>
+                <li className="flex items-center"><FaSmile className="mr-2" aria-hidden="true" />モチベーション向上</li>
+                <li className="flex items-center"><FaChartLine className="mr-2" aria-hidden="true" />継続的な成長</li>
               </ul>
-              <div className="type-stats text-sm text-gray-500 mt-4">診断受験者の29%</div>
+              <div className="method-stats text-sm text-gray-500 mt-4">継続率80%向上</div>
             </div>
           </div>
         </div>
@@ -165,59 +164,49 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 成長ロードマップ */}
-      <section id="roadmap" className="bg-white py-20" role="region" aria-labelledby="roadmap-heading">
+      {/* 学習ステップ */}
+      <section id="steps" className="bg-white py-20" role="region" aria-labelledby="steps-heading">
         <div className="container mx-auto px-4">
-          <h2 id="roadmap-heading" className="text-3xl md:text-4xl font-bold text-center mb-12">英語学習の成長ロードマップ</h2>
+          <h2 id="steps-heading" className="text-3xl md:text-4xl font-bold text-center mb-12">教え合い学習の3ステップ</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="roadmap-step p-6 bg-blue-50 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="step-card p-6 bg-blue-50 rounded-lg">
               <div className="step-number text-blue-600 text-xl font-bold mb-4">STEP 1</div>
-              <h3 className="text-xl font-semibold mb-3">学習タイプ診断</h3>
-              <p className="text-gray-600 mb-4">5分の診断で自分に合った学習法を発見。効率的な学習の第一歩です。</p>
+              <h3 className="text-xl font-semibold mb-3">教材を探す</h3>
+              <p className="text-gray-600 mb-4">仲間が作った質の高い教材を探して学習。実践的な内容で効率的に成長。</p>
               <ul className="text-sm text-gray-500 space-y-2">
-                <li className="flex items-center"><FaClock className="mr-2" aria-hidden="true" />所要時間：5分</li>
-                <li className="flex items-center"><FaLightbulb className="mr-2" aria-hidden="true" />15の質問に回答</li>
+                <li className="flex items-center"><FaSearch className="mr-2" aria-hidden="true" />豊富な教材から選択</li>
+                <li className="flex items-center"><FaThumbsUp className="mr-2" aria-hidden="true" />評価・レビュー確認</li>
               </ul>
             </div>
 
-            <div className="roadmap-step p-6 bg-green-50 rounded-lg">
+            <div className="step-card p-6 bg-green-50 rounded-lg">
               <div className="step-number text-green-600 text-xl font-bold mb-4">STEP 2</div>
-              <h3 className="text-xl font-semibold mb-3">カスタム学習プラン</h3>
-              <p className="text-gray-600 mb-4">診断結果に基づいて、あなたに最適な学習方法とリソースを提案します。</p>
+              <h3 className="text-xl font-semibold mb-3">教材を作る</h3>
+              <p className="text-gray-600 mb-4">自分の知識を整理して教材を作成。教えることで理解が深まります。</p>
               <ul className="text-sm text-gray-500 space-y-2">
-                <li className="flex items-center"><FaRocket className="mr-2" aria-hidden="true" />目標設定サポート</li>
-                <li className="flex items-center"><FaCalendarAlt className="mr-2" aria-hidden="true" />週間学習スケジュール</li>
+                <li className="flex items-center"><FaEdit className="mr-2" aria-hidden="true" />知識の整理・体系化</li>
+                <li className="flex items-center"><FaLightbulb className="mr-2" aria-hidden="true" />理解度の向上</li>
               </ul>
             </div>
 
-            <div className="roadmap-step p-6 bg-purple-50 rounded-lg">
+            <div className="step-card p-6 bg-purple-50 rounded-lg">
               <div className="step-number text-purple-600 text-xl font-bold mb-4">STEP 3</div>
-              <h3 className="text-xl font-semibold mb-3">実践的トレーニング</h3>
-              <p className="text-gray-600 mb-4">ビジネスシーンを想定した実践的な学習コンテンツで着実に成長。</p>
+              <h3 className="text-xl font-semibold mb-3">感謝を伝える</h3>
+              <p className="text-gray-600 mb-4">良い教材には感謝を伝える。自然な感謝の循環で継続的な成長。</p>
               <ul className="text-sm text-gray-500 space-y-2">
-                <li className="flex items-center"><FaBriefcase className="mr-2" aria-hidden="true" />ビジネス英語対応</li>
-                <li className="flex items-center"><FaTrophy className="mr-2" aria-hidden="true" />達成度トラッキング</li>
-              </ul>
-            </div>
-
-            <div className="roadmap-step p-6 bg-yellow-50 rounded-lg">
-              <div className="step-number text-yellow-600 text-xl font-bold mb-4">STEP 4</div>
-              <h3 className="text-xl font-semibold mb-3">目標達成</h3>
-              <p className="text-gray-600 mb-4">定期的な進捗確認と目標の見直しで、確実な成長を実現します。</p>
-              <ul className="text-sm text-gray-500 space-y-2">
-                <li className="flex items-center"><FaChartLine className="mr-2" aria-hidden="true" />スコア向上保証</li>
-                <li className="flex items-center"><FaPlusCircle className="mr-2" aria-hidden="true" />継続的なサポート</li>
+                <li className="flex items-center"><FaHeart className="mr-2" aria-hidden="true" />自然な感謝表現</li>
+                <li className="flex items-center"><FaSmile className="mr-2" aria-hidden="true" />モチベーション向上</li>
               </ul>
             </div>
           </div>
 
           {/* CTAセクション */}
           <div className="text-center mt-16">
-            <Link href="/quiz" className="inline-flex items-center px-8 py-4 bg-blue-600 text-white rounded-full text-lg font-bold shadow-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-              今すぐ診断を始める <FaChevronRight className="ml-2" aria-hidden="true" />
+            <Link href="/materials" className="inline-flex items-center px-8 py-4 bg-blue-600 text-white rounded-full text-lg font-bold shadow-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+              教材を探す <FaChevronRight className="ml-2" aria-hidden="true" />
             </Link>
-            <p className="text-gray-600 mt-4">所要時間はたった5分。あなたに最適な学習法を見つけましょう。</p>
+            <p className="text-gray-600 mt-4">豊富な教材から始めて、教え合い学習を体験しましょう。</p>
           </div>
         </div>
       </section>
@@ -225,10 +214,10 @@ const HomePage: React.FC = () => {
       {/* CTA */}
       <section className="cta bg-primary text-white py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">今すぐ自分の英語学習タイプを見つけよう</h2>
-          <p className="text-xl opacity-90 mb-8">たった5分の診断で、あなたに最適な英語学習法がわかります。</p>
-          <Link href="/quiz" className="inline-block px-8 py-4 bg-white text-primary font-bold rounded-full text-lg shadow-lg hover:bg-gray-100 transition-colors">
-            無料診断をスタート
+          <h2 className="text-3xl font-bold mb-6">今すぐ教え合い学習を始めよう</h2>
+          <p className="text-xl opacity-90 mb-8">質の高い教材で学び、自分の知識を共有して共に成長しましょう。</p>
+          <Link href="/materials" className="inline-block px-8 py-4 bg-white text-primary font-bold rounded-full text-lg shadow-lg hover:bg-gray-100 transition-colors">
+            教材を探す
           </Link>
         </div>
       </section>
@@ -236,12 +225,12 @@ const HomePage: React.FC = () => {
       {/* フッター */}
       <footer className="bg-blue-600 text-white py-12">
         <div className="container mx-auto text-center">
-          <h2 className="text-2xl font-bold mb-4">今すぐ自分の英語学習タイプを見つけよう</h2>
-          <p className="text-lg mb-8">たった5分の診断で、あなたに最適な英語学習法がわかります。</p>
-          <Link href="/quiz" className="inline-block px-8 py-4 bg-white text-blue-600 font-bold rounded-full text-lg shadow-lg hover:bg-gray-100 transition-colors">
-            無料診断をスタート
+          <h2 className="text-2xl font-bold mb-4">教え合いで学ぶ英語学習コミュニティ</h2>
+          <p className="text-lg mb-8">一人学習の孤独感を解決し、教え合いで共に成長しましょう。</p>
+          <Link href="/materials" className="inline-block px-8 py-4 bg-white text-blue-600 font-bold rounded-full text-lg shadow-lg hover:bg-gray-100 transition-colors">
+            教材を探す
           </Link>
-          <p className="mt-8 text-sm">&copy; 2023 英語学習タイプ診断 All Rights Reserved.</p>
+          <p className="mt-8 text-sm">&copy; 2025 ShiftWith All Rights Reserved.</p>
         </div>
       </footer>
     </div>

@@ -11,12 +11,21 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 // クライアントサイドでSupabaseクライアントを作成する関数
 export const createBrowserClient = () => {
+  const isLocalDevelopment = supabaseUrl?.includes('localhost:3004');
+  
   return createSupabaseClient<Database>(supabaseUrl!, supabaseAnonKey!, {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
       storage: typeof window !== 'undefined' ? window.localStorage : undefined
-    }
+    },
+    global: {
+      headers: {
+        // ローカル開発環境ではJWT検証を回避するため、Authorizationを外しanon鍵のみ送信
+        ...(isLocalDevelopment && { 'Authorization': '' }),
+        ...(isLocalDevelopment && { 'apikey': supabaseAnonKey! }),
+      },
+    },
   });
 };
 

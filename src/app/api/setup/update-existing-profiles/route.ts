@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 // 開発環境でのみ既存の匿名ユーザーをテストユーザーに更新するAPI
@@ -11,10 +11,7 @@ export async function GET() {
   }
 
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-    
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient();
 
     // 現在の匿名ユーザーを取得
     const { data: existingProfiles, error: fetchError } = await supabase

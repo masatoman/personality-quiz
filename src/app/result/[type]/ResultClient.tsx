@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { PersonalityType } from '@/types/quiz';
+import { PersonalityType } from '@/types/common';
 import html2canvas from 'html2canvas';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getPersonalityDescription } from '@/lib/personalities';
-import type { Stats } from '@/types/quiz';
+import type { Stats } from '@/types/common';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useToast } from '@/hooks/useToast';

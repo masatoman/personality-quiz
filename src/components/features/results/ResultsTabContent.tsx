@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { TabType } from '@/types/quiz';
+import { TabType } from '@/types/common';
 
 // タブコンテンツのプロパティ型定義
 interface ResultsTabContentProps {

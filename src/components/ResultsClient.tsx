@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { FaArrowLeft } from 'react-icons/fa';
 import { 
   LearningType, QuizResults
-} from '@/types/quiz';
+} from '@/types/common';
 import { TabType, ResultsData } from '@/types/results';
 import dynamic from 'next/dynamic';
 import type { ComponentType } from 'react';
@@ -391,8 +391,8 @@ export function ResultsClient() {
             診断結果が見つかりません。診断を最初からやり直してください。
           </p>
           <div className="mt-4 text-center">
-            <Link href="/quiz" className="text-blue-600 hover:underline">
-              診断に戻る
+            <Link href="/materials" className="text-blue-600 hover:underline">
+              教材を探す
             </Link>
           </div>
         </div>
@@ -403,11 +403,11 @@ export function ResultsClient() {
   return (
     <div className="container mx-auto px-4 py-4 sm:py-8">
       <Link 
-        href="/quiz" 
+        href="/materials" 
         className="flex items-center text-gray-600 hover:text-gray-800 mb-4 sm:mb-6"
       >
         <FaArrowLeft className="mr-2" />
-        <span>クイズに戻る</span>
+        <span>教材一覧に戻る</span>
       </Link>
       
       <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">

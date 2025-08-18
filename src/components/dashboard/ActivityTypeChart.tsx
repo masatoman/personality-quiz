@@ -9,7 +9,7 @@ import {
   Tooltip, 
   Legend 
 } from 'recharts';
-import { ActivityType } from '@/types/quiz';
+import { ActivityType } from '@/types/common';
 
 // 活動タイプ情報の型定義
 interface ActivityTypeInfo {

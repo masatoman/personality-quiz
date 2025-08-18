@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
-import { ActivityType, ActivityLog, ScoreChange } from '@/types/quiz';
+import { ActivityType, ActivityLog, ScoreChange } from '@/types/common';
 import { calculateScoreChange } from '@/utils/score';
 
-export const useActivityLog = (userId: number) => {
+export const useActivityLog = (userId: string) => {
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [currentScores, setCurrentScores] = useState<ScoreChange>({
     giver: 0,
@@ -13,9 +13,10 @@ export const useActivityLog = (userId: number) => {
   const logActivity = useCallback(async (activityType: ActivityType) => {
     const scoreChange = calculateScoreChange(activityType);
     const newLog: ActivityLog = {
-      id: Date.now(), // 仮のID
-      userId,
+      id: Date.now().toString(), // 仮のID
+      userId: userId.toString(),
       activityType,
+      timestamp: new Date(),
       scoreChange,
       createdAt: new Date()
     };

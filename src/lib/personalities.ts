@@ -1,4 +1,4 @@
-import { PersonalityDescription, PersonalityType } from '@/types/quiz';
+import { PersonalityDescription, PersonalityType } from '@/types/common';
 
 /**
  * 各パーソナリティータイプの詳細説明を取得する
@@ -21,6 +21,13 @@ export function getPersonalityDescription(type: string): PersonalityDescription 
         '完璧主義になりがち',
         '他者の期待に応えようとストレスを感じる',
         '自分のペースで学習できないことがある'
+      ],
+      learningTips: [
+        '教えることを学習法として取り入れる',
+        '言語交換パートナーを見つける',
+        '学習コミュニティに積極的に参加する',
+        '定期的に自分の学習時間も確保する',
+        '他者への説明を通じて理解を深める'
       ],
       learningAdvice: {
         title: '効果的な学習アドバイス',
@@ -57,6 +64,13 @@ export function getPersonalityDescription(type: string): PersonalityDescription 
         '他者との調和を重視しすぎる',
         '時間管理が難しく感じることがある'
       ],
+      learningTips: [
+        '多様な学習リソースをバランスよく組み合わせる',
+        '短期・中期・長期の明確な学習目標を設定する',
+        '個人学習とグループ学習を交互に取り入れる',
+        '定期的に学習方法を評価し最適化する',
+        '言語の4技能をバランスよく練習する'
+      ],
       learningAdvice: {
         title: '効果的な学習アドバイス',
         tips: [
@@ -91,6 +105,13 @@ export function getPersonalityDescription(type: string): PersonalityDescription 
         '完璧主義に陥りやすい',
         '柔軟性に欠けることがある',
         '他者からのフィードバックを受け入れるのが難しい'
+      ],
+      learningTips: [
+        '明確な学習目標と計画を立てる',
+        'スペーシング効果を活用した復習スケジュールを作る',
+        '多読・多聴で大量のインプットを確保する',
+        '文法・語彙・発音などを体系的に学ぶ',
+        '定期的に会話練習の機会も作る'
       ],
       learningAdvice: {
         title: '効果的な学習アドバイス',

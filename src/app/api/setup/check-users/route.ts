@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 // 開発環境でのみ使用可能な既存ユーザー確認API
@@ -11,21 +11,7 @@ export async function GET() {
   }
 
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    
-    if (!supabaseUrl || !supabaseKey) {
-      console.error('Supabase環境変数が設定されていません:', {
-        url: !!supabaseUrl,
-        key: !!supabaseKey
-      });
-      return NextResponse.json(
-        { success: false, error: 'データベース接続設定エラー' },
-        { status: 500 }
-      );
-    }
-    
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient();
 
     // auth.usersテーブルから既存ユーザーを確認
     const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();

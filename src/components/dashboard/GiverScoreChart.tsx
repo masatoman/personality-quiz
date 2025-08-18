@@ -15,7 +15,7 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 import { supabase } from '@/lib/supabase';
-import { GiverScoreHistoryItem } from '@/types/quiz';
+import { GiverScoreHistoryItem } from '@/types/common';
 
 // 表示スパンの型定義
 type TimeSpan = '1週間' | '1ヶ月' | '3ヶ月' | '6ヶ月' | '1年';

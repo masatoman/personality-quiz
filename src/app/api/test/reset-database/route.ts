@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/server';
 
 // 注意: このAPIエンドポイントは開発環境とテスト環境でのみ使用可能
 export async function POST() {
@@ -13,10 +13,7 @@ export async function POST() {
 
   try {
     // Supabaseクライアントの初期化
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-    );
+    const supabase = createClient();
 
     // テスト用テーブルのクリア
     const tables = [

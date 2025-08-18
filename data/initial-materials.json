@@ -105,25 +105,80 @@
         "beginner",
         "student"
       ],
-      "prerequisites": "アルファベットが読める"
+      "prerequisites": "基本的な挨拶ができる"
     },
     "contentSections": [
       {
         "type": "text",
-        "title": "家族に関する単語",
-        "content": "# 家族に関する単語\n\n## 基本の家族\n- family (家族)\n- father (父)\n- mother (母)\n- brother (兄弟)\n- sister (姉妹)\n- grandfather (祖父)\n- grandmother (祖母)\n\n## 例文\n- My family is small. (私の家族は小さいです)\n- I have one brother and one sister. (私には兄弟が一人と姉妹が一人います)",
+        "title": "家族・人物",
+        "content": "# 家族・人物の単語\n\n## 家族\n- mother (母)\n- father (父)\n- sister (姉/妹)\n- brother (兄/弟)\n- grandmother (祖母)\n- grandfather (祖父)\n\n## 職業\n- teacher (先生)\n- doctor (医者)\n- student (学生)\n- worker (労働者)\n- driver (運転手)",
         "order": 0
+      },
+      {
+        "type": "text",
+        "title": "食べ物・飲み物",
+        "content": "# 食べ物・飲み物の単語\n\n## 食べ物\n- bread (パン)\n- rice (ご飯)\n- meat (肉)\n- fish (魚)\n- egg (卵)\n- apple (りんご)\n\n## 飲み物\n- water (水)\n- milk (牛乳)\n- coffee (コーヒー)\n- tea (お茶)\n- juice (ジュース)",
+        "order": 1
       }
     ]
   },
   {
     "basicInfo": {
-      "title": "ビジネス英語：メールの書き方",
-      "description": "ビジネスシーンで使える英語メールの基本的な書き方を学習します。",
+      "title": "中級文法：現在完了形",
+      "description": "現在完了形（have/has + 過去分詞）の使い方を学習します。経験・継続・完了の表現を学びます。",
+      "coverImage": null,
+      "tags": [
+        "文法",
+        "現在完了形",
+        "中級"
+      ]
+    },
+    "settings": {
+      "isPublic": true,
+      "difficulty": "intermediate",
+      "estimatedTime": 35,
+      "allowComments": true,
+      "targetAudience": [
+        "intermediate",
+        "student"
+      ],
+      "prerequisites": "基本的な過去形が理解できる"
+    },
+    "contentSections": [
+      {
+        "type": "text",
+        "title": "現在完了形の基本",
+        "content": "# 現在完了形の基本\n\n現在完了形は「have/has + 過去分詞」の形で表します。\n\n## 3つの用法\n1. **経験**: 今までに〜したことがある\n2. **継続**: 〜し続けている\n3. **完了**: 〜し終わった\n\n## 例文\n- I have been to Paris. (私はパリに行ったことがある) - 経験\n- I have lived here for 5 years. (私はここに5年間住んでいる) - 継続\n- I have finished my homework. (私は宿題を終えた) - 完了",
+        "order": 0
+      },
+      {
+        "type": "quiz",
+        "title": "現在完了形クイズ",
+        "content": "",
+        "options": [
+          {
+            "question": "「私は東京に行ったことがある」を英語で表すと？",
+            "options": [
+              "I went to Tokyo.",
+              "I have been to Tokyo.",
+              "I am going to Tokyo."
+            ],
+            "answer": 1,
+            "explanation": "経験を表す場合は現在完了形を使います。"
+          }
+        ],
+        "order": 1
+      }
+    ]
+  },
+  {
+    "basicInfo": {
+      "title": "ビジネス英語：会議での表現",
+      "description": "ビジネス会議で使える実践的な英語表現を学習します。意見の述べ方、質問の仕方、合意の表現などを学びます。",
       "coverImage": null,
       "tags": [
         "ビジネス",
-        "メール",
+        "会議",
         "中級"
       ]
     },
@@ -133,89 +188,107 @@
       "estimatedTime": 40,
       "allowComments": true,
       "targetAudience": [
-        "professional",
-        "intermediate"
+        "intermediate",
+        "business"
       ],
-      "prerequisites": "基本的な英文法を理解している"
+      "prerequisites": "基本的な会話ができる"
     },
     "contentSections": [
       {
         "type": "text",
-        "title": "メールの基本構造",
-        "content": "# ビジネスメールの基本構造\n\n## 1. 件名 (Subject Line)\n明確で簡潔な件名をつけます。\n例：Meeting Request for Project Discussion\n\n## 2. 宛名 (Salutation)\n- Dear Mr./Ms. [姓]\n- Dear [名前] (親しい場合)\n\n## 3. 本文 (Body)\n- 用件を明確に\n- 丁寧で簡潔に\n\n## 4. 結び (Closing)\n- Best regards,\n- Sincerely,\n\n## サンプルメール\n```\nSubject: Meeting Request for Next Week\n\nDear Mr. Smith,\n\nI hope this email finds you well. I would like to schedule a meeting to discuss our upcoming project.\n\nWould next Tuesday at 2 PM work for you?\n\nBest regards,\nTanaka\n```",
+        "title": "会議の開始",
+        "content": "# 会議の開始表現\n\n## 会議を始める\n- Let's get started. (始めましょう)\n- Thank you all for coming. (お集まりいただき、ありがとうございます)\n- The purpose of today's meeting is... (今日の会議の目的は...)\n\n## 議題の提示\n- The main agenda for today is... (今日の主な議題は...)\n- We have three items to discuss. (議論すべき項目が3つあります)\n- Let's begin with the first item. (最初の項目から始めましょう)",
         "order": 0
+      },
+      {
+        "type": "text",
+        "title": "意見の述べ方",
+        "content": "# 意見の述べ方\n\n## 賛成の表現\n- I agree with that. (それに賛成です)\n- That's a good point. (それは良いポイントですね)\n- I think that's the right approach. (それが正しいアプローチだと思います)\n\n## 反対の表現\n- I'm not sure I agree. (賛成できないかもしれません)\n- I have a different opinion. (異なる意見があります)\n- Let me play devil's advocate. (あえて反対の立場から言わせてください)",
+        "order": 1
       }
     ]
   },
   {
     "basicInfo": {
-      "title": "英語プレゼンテーション基礎",
-      "description": "効果的な英語プレゼンテーションの構成と表現を学習します。",
+      "title": "リスニング練習：日常会話",
+      "description": "ネイティブスピーカーの自然な日常会話を聞いて、リスニング力を向上させます。",
       "coverImage": null,
       "tags": [
-        "プレゼンテーション",
-        "スピーキング",
+        "リスニング",
+        "日常会話",
         "中級"
       ]
     },
     "settings": {
       "isPublic": true,
       "difficulty": "intermediate",
-      "estimatedTime": 45,
-      "allowComments": true,
-      "targetAudience": [
-        "professional",
-        "intermediate"
-      ],
-      "prerequisites": "ビジネス英語の基礎知識"
-    },
-    "contentSections": [
-      {
-        "type": "text",
-        "title": "プレゼンテーションの構成",
-        "content": "# プレゼンテーションの基本構成\n\n## 1. 導入 (Introduction)\n- Good morning/afternoon, everyone.\n- Today, I'm going to talk about...\n- Let me start by...\n\n## 2. 本論 (Main Body)\n- First of all...\n- Secondly...\n- Finally...\n\n## 3. 結論 (Conclusion)\n- In conclusion...\n- To sum up...\n- Thank you for your attention.\n\n## 便利なフレーズ\n- Let me show you... (見せします)\n- As you can see... (ご覧のように)\n- Any questions? (質問はありますか？)",
-        "order": 0
-      }
-    ]
-  },
-  {
-    "basicInfo": {
-      "title": "TOEIC対策：リーディング戦略",
-      "description": "TOEICリーディングセクションで高得点を取るための戦略を学習します。",
-      "coverImage": null,
-      "tags": [
-        "TOEIC",
-        "リーディング",
-        "試験対策"
-      ]
-    },
-    "settings": {
-      "isPublic": true,
-      "difficulty": "intermediate",
-      "estimatedTime": 50,
+      "estimatedTime": 25,
       "allowComments": true,
       "targetAudience": [
         "intermediate",
         "student"
       ],
-      "prerequisites": "TOEIC500点以上"
+      "prerequisites": "基本的な単語が理解できる"
     },
     "contentSections": [
       {
         "type": "text",
-        "title": "スキミング技術",
-        "content": "# スキミング（Skimming）技術\n\nスキミングとは、文章の要点を素早く掴む読み方です。\n\n## コツ\n1. タイトルと見出しに注目\n2. 各段落の最初と最後の文を読む\n3. キーワードを探す\n4. 時間配分を意識する\n\n## 実践方法\n- 1分で全体を見渡す\n- 重要な情報を見つける\n- 詳細は後で読む\n\n## TOEIC Part 7での活用\n- 文書の種類を特定\n- 設問を先に読む\n- 必要な情報だけを探す",
+        "title": "リスニングのコツ",
+        "content": "# リスニングのコツ\n\n## 効果的なリスニング方法\n1. **予測する**: 文脈から内容を予測する\n2. **キーワードを聞く**: 重要な単語に集中する\n3. **文脈を理解する**: 全体の流れを把握する\n4. **繰り返し聞く**: 何度も聞いて慣れる\n\n## 練習のポイント\n- 最初は字幕付きで聞く\n- 徐々に字幕を外す\n- 音声の速度を調整する\n- シャドーイングを試す",
         "order": 0
+      },
+      {
+        "type": "text",
+        "title": "会話例文",
+        "content": "# 日常会話の例文\n\n## 友達との会話\n**A**: Hey, how's it going?\n**B**: Pretty good, thanks. How about you?\n**A**: I'm doing well. Did you finish that project?\n**B**: Almost! I just need to review it one more time.\n\n## 店での会話\n**A**: Excuse me, do you have this in a larger size?\n**B**: Let me check for you. What size are you looking for?\n**A**: I need a medium.\n**B**: Here you go. The fitting room is over there.",
+        "order": 1
       }
     ]
   },
   {
     "basicInfo": {
-      "title": "英語リスニング：ニュース英語入門",
-      "description": "CNNやBBCなどのニュース英語を理解するためのリスニング練習です。",
+      "title": "スピーキング練習：電話での会話",
+      "description": "電話での英語会話に必要な表現とマナーを学習します。",
       "coverImage": null,
       "tags": [
-        "リスニング",
+        "スピーキング",
+        "電話",
+        "中級"
+      ]
+    },
+    "settings": {
+      "isPublic": true,
+      "difficulty": "intermediate",
+      "estimatedTime": 30,
+      "allowComments": true,
+      "targetAudience": [
+        "intermediate",
+        "business"
+      ],
+      "prerequisites": "基本的な会話ができる"
+    },
+    "contentSections": [
+      {
+        "type": "text",
+        "title": "電話の基本表現",
+        "content": "# 電話の基本表現\n\n## 電話をかける\n- Hello, this is [名前] calling. (こんにちは、[名前]と申します)\n- May I speak to [名前]? ([名前]さんはいらっしゃいますか？)\n- Is [名前] available? ([名前]さんはお手すきですか？)\n\n## 電話を受ける\n- Hello, this is [名前]. (こんにちは、[名前]です)\n- Speaking. (私です)\n- Hold on, please. (少々お待ちください)\n- I'll transfer you. (おつなぎします)",
+        "order": 0
+      },
+      {
+        "type": "text",
+        "title": "電話での会話例",
+        "content": "# 電話での会話例\n\n## ビジネス電話\n**A**: Good morning, ABC Company. How may I help you?\n**B**: Hello, this is John Smith from XYZ Corporation. I'd like to speak with Mr. Tanaka.\n**A**: I'm sorry, Mr. Tanaka is in a meeting right now. Can I take a message?\n**B**: Yes, please. Could you ask him to call me back? My number is 555-0123.\n**A**: Certainly. I'll make sure he gets the message.\n**B**: Thank you very much. Goodbye.\n**A**: Goodbye.",
+        "order": 1
+      }
+    ]
+  },
+  {
+    "basicInfo": {
+      "title": "リーディング練習：ニュース記事",
+      "description": "英語のニュース記事を読んで、リーディング力を向上させます。",
+      "coverImage": null,
+      "tags": [
+        "リーディング",
         "ニュース",
         "中級"
       ]
@@ -226,89 +299,34 @@
       "estimatedTime": 35,
       "allowComments": true,
       "targetAudience": [
-        "intermediate"
+        "intermediate",
+        "student"
       ],
-      "prerequisites": "英検準2級程度のリスニング力"
+      "prerequisites": "基本的な文法が理解できる"
     },
     "contentSections": [
       {
         "type": "text",
-        "title": "ニュース英語の特徴",
-        "content": "# ニュース英語の特徴\n\n## 1. 明確な構造\n- Lead（導入）: 最も重要な情報\n- Body（本文）: 詳細な説明\n- Conclusion（結論）: まとめ\n\n## 2. 使用される表現\n- Breaking news (速報)\n- According to sources (情報筋によると)\n- It is reported that... (報道によると...)\n\n## 3. 聞き取りのコツ\n- 5W1H（Who, What, When, Where, Why, How）に注目\n- キーワードを意識\n- 文脈から推測\n- 完璧を求めない\n\n## 練習方法\n1. BBC Learning English を活用\n2. スクリプトと併用する\n3. 毎日5分から始める",
+        "title": "リーディングのコツ",
+        "content": "# リーディングのコツ\n\n## 効果的なリーディング方法\n1. **スキミング**: 全体を素早く読んで概要を把握\n2. **スキャニング**: 特定の情報を探す\n3. **詳細読み**: 重要な部分を詳しく読む\n4. **推測**: 文脈から意味を推測する\n\n## 語彙力向上\n- 新しい単語をメモする\n- 文脈から意味を推測する\n- 辞書で確認する\n- 例文を作って覚える",
         "order": 0
+      },
+      {
+        "type": "text",
+        "title": "ニュース記事例",
+        "content": "# ニュース記事例\n\n## Technology News\n**New Smartphone Features Announced**\n\nApple has announced several new features for its upcoming iPhone model. The company revealed that the new device will include advanced camera technology and improved battery life.\n\nThe new camera system will feature a 48-megapixel main sensor, allowing users to take incredibly detailed photos. Additionally, the battery is expected to last up to 20% longer than previous models.\n\nIndustry experts believe these improvements will help Apple maintain its position in the competitive smartphone market. The new model is scheduled for release in September.\n\n## 重要単語\n- announce (発表する)\n- feature (機能)\n- advanced (高度な)\n- sensor (センサー)\n- competitive (競争的な)",
+        "order": 1
       }
     ]
   },
   {
     "basicInfo": {
-      "title": "中級英文法：仮定法",
-      "description": "仮定法の基本的な使い方と応用を学習します。",
+      "title": "上級文法：仮定法",
+      "description": "仮定法過去・仮定法過去完了の使い方を学習します。現実と異なる状況を表現する方法を学びます。",
       "coverImage": null,
       "tags": [
         "文法",
         "仮定法",
-        "中級"
-      ]
-    },
-    "settings": {
-      "isPublic": true,
-      "difficulty": "intermediate",
-      "estimatedTime": 40,
-      "allowComments": true,
-      "targetAudience": [
-        "intermediate",
-        "student"
-      ],
-      "prerequisites": "基本的な時制を理解している"
-    },
-    "contentSections": [
-      {
-        "type": "text",
-        "title": "仮定法過去",
-        "content": "# 仮定法過去\n\n現在の事実に反する仮定を表現します。\n\n## 基本形\nIf + 主語 + 動詞の過去形, 主語 + would/could/might + 動詞の原形\n\n## 例文\n- If I had money, I would buy a car.\n（もしお金があれば、車を買うのに）\n\n- If I were you, I would study harder.\n（もし私があなたなら、もっと勉強するのに）\n\n## 注意点\n- be動詞は常に \"were\" を使用\n- 現実とは反対のことを表現\n- 願望や後悔を表すことが多い\n\n## 練習問題\n1. If I (be) rich, I (travel) around the world.\n2. If you (know) the answer, you (tell) me.",
-        "order": 0
-      }
-    ]
-  },
-  {
-    "basicInfo": {
-      "title": "Academic Writing: 論文の書き方",
-      "description": "学術的な英語論文の構成と表現技法を学習します。",
-      "coverImage": null,
-      "tags": [
-        "ライティング",
-        "学術論文",
-        "上級"
-      ]
-    },
-    "settings": {
-      "isPublic": true,
-      "difficulty": "advanced",
-      "estimatedTime": 60,
-      "allowComments": true,
-      "targetAudience": [
-        "advanced",
-        "professional"
-      ],
-      "prerequisites": "高度な英文法知識、研究経験"
-    },
-    "contentSections": [
-      {
-        "type": "text",
-        "title": "論文の基本構造",
-        "content": "# Academic Paper の基本構造\n\n## 1. Abstract（要約）\n研究の目的、方法、結果、結論を簡潔にまとめます。\n通常150-250語程度。\n\n## 2. Introduction（序論）\n- Background information\n- Literature review (簡潔に)\n- Research question/hypothesis\n- Thesis statement\n\n## 3. Literature Review（文献レビュー）\n既存研究の分析と評価。研究のギャップを明確にする。\n\n## 4. Methodology（方法論）\n研究手法の詳細な説明。再現可能性を重視。\n\n## 5. Results（結果）\nデータの客観的な報告。表やグラフを効果的に活用。\n\n## 6. Discussion（考察）\n結果の解釈と意味。制限や今後の研究方向も含む。\n\n## 7. Conclusion（結論）\n研究の総括と今後の展望。\n\n## アカデミックな表現例\n- This study aims to...\n- Previous research has shown that...\n- The findings suggest that...\n- Further research is needed to...",
-        "order": 0
-      }
-    ]
-  },
-  {
-    "basicInfo": {
-      "title": "上級英語：慣用表現とスラング",
-      "description": "ネイティブスピーカーがよく使う慣用表現とスラングを学習します。",
-      "coverImage": null,
-      "tags": [
-        "慣用表現",
-        "スラング",
         "上級"
       ]
     },
@@ -318,16 +336,60 @@
       "estimatedTime": 45,
       "allowComments": true,
       "targetAudience": [
-        "advanced"
+        "advanced",
+        "student"
       ],
-      "prerequisites": "上級レベルの英語力"
+      "prerequisites": "現在完了形が理解できる"
     },
     "contentSections": [
       {
         "type": "text",
-        "title": "よく使われる慣用表現",
-        "content": "# よく使われる慣用表現\n\n## ビジネスシーン\n- \"Think outside the box\" (従来の枠にとらわれずに考える)\n- \"Touch base\" (連絡を取る)\n- \"Ball is in your court\" (決定権はあなたにある)\n- \"Move the needle\" (大きな変化をもたらす)\n\n## 日常会話\n- \"Break a leg\" (頑張って)\n- \"Hit the nail on the head\" (的を射る)\n- \"Piece of cake\" (朝飯前)\n- \"When pigs fly\" (ありえない)\n\n## 感情表現\n- \"Over the moon\" (大喜び)\n- \"Down in the dumps\" (落ち込んでいる)\n- \"On cloud nine\" (有頂天)\n- \"Spill the beans\" (秘密をばらす)\n\n## 使用上の注意\n- カジュアルな場面で使用\n- 相手との関係性を考慮\n- 文脈を理解して使用\n- 過度に使用しない",
+        "title": "仮定法過去",
+        "content": "# 仮定法過去\n\n仮定法過去は、現在の事実と反対のことを仮定する表現です。\n\n## 基本形\n- If + 主語 + 動詞の過去形, 主語 + would/could/might + 動詞の原形\n\n## 例文\n- If I had money, I would buy a car. (もしお金があれば、車を買うのに)\n- If I were you, I would study harder. (もし私があなたなら、もっと勉強するのに)\n- If it rained tomorrow, I would stay home. (もし明日雨が降れば、家にいるのに)\n\n## 注意点\n- be動詞はwereを使う（wasでも可だが、wereが正式）\n- 現在の事実と反対のことを表す",
         "order": 0
+      },
+      {
+        "type": "text",
+        "title": "仮定法過去完了",
+        "content": "# 仮定法過去完了\n\n仮定法過去完了は、過去の事実と反対のことを仮定する表現です。\n\n## 基本形\n- If + 主語 + had + 過去分詞, 主語 + would/could/might + have + 過去分詞\n\n## 例文\n- If I had studied harder, I would have passed the exam. (もしもっと勉強していれば、試験に合格していたのに)\n- If I had known about the party, I would have gone. (もしパーティーのことを知っていれば、行っていたのに)\n- If it hadn't rained, we would have gone to the park. (もし雨が降っていなければ、公園に行っていたのに)",
+        "order": 1
+      }
+    ]
+  },
+  {
+    "basicInfo": {
+      "title": "上級語彙：学術英語",
+      "description": "学術論文や研究で使われる高度な英語表現を学習します。",
+      "coverImage": null,
+      "tags": [
+        "語彙",
+        "学術",
+        "上級"
+      ]
+    },
+    "settings": {
+      "isPublic": true,
+      "difficulty": "advanced",
+      "estimatedTime": 50,
+      "allowComments": true,
+      "targetAudience": [
+        "advanced",
+        "academic"
+      ],
+      "prerequisites": "中級レベルの語彙力がある"
+    },
+    "contentSections": [
+      {
+        "type": "text",
+        "title": "学術論文の表現",
+        "content": "# 学術論文の表現\n\n## 研究の目的\n- The purpose of this study is to... (本研究の目的は...)\n- This research aims to... (この研究は...を目指している)\n- The objective of this paper is to... (本論文の目的は...)\n\n## 方法論\n- The data were collected through... (データは...を通じて収集された)\n- A survey was conducted among... (...の間で調査が実施された)\n- Statistical analysis was performed using... (...を使用して統計分析が行われた)\n\n## 結果\n- The results indicate that... (結果は...を示している)\n- It was found that... (...であることが判明した)\n- The analysis revealed that... (分析により...が明らかになった)",
+        "order": 0
+      },
+      {
+        "type": "text",
+        "title": "学術用語",
+        "content": "# 学術用語\n\n## 研究方法\n- methodology (方法論)\n- hypothesis (仮説)\n- variable (変数)\n- correlation (相関)\n- causation (因果関係)\n- validity (妥当性)\n- reliability (信頼性)\n\n## 分析手法\n- quantitative (定量的)\n- qualitative (定性的)\n- statistical significance (統計的有意性)\n- sample size (サンプルサイズ)\n- population (母集団)\n- random sampling (無作為抽出)\n\n## 結論\n- conclusion (結論)\n- implication (含意)\n- limitation (限界)\n- recommendation (推奨)\n- future research (今後の研究)",
+        "order": 1
       }
     ]
   }

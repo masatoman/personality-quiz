@@ -59,9 +59,9 @@ export default function LandingPage() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.6 }}
           >
-            <Link href="/quiz">
+            <Link href="/materials">
               <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300 flex items-center shadow-lg hover:shadow-xl">
-                学習タイプ診断を始める
+                英語教材を見る
                 <FaArrowRight className="ml-2" />
               </button>
             </Link>
@@ -89,7 +89,7 @@ export default function LandingPage() {
               </div>
               <span className="text-white font-medium">
                 {/* TODO: 実際の統計データに置き換える */}
-                学習タイプ診断で最適な学習方法を発見
+                教え合いコミュニティで一人学習の孤独感を解決
               </span>
             </div>
           </motion.div>
@@ -97,7 +97,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 to-slate-800/90"></div>
       </motion.section>
 
-      {/* 診断カードセクション */}
+      {/* コミュニティ紹介セクション */}
       <section className="py-16 md:py-24 px-4 bg-gray-50" role="region">
         <div className="container mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -113,18 +113,18 @@ export default function LandingPage() {
                   <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4">
                     <FaUserFriends className="text-2xl" />
                   </div>
-                  <h3 className="text-2xl font-bold mb-2 text-white">あなたの学習タイプは？</h3>
-                  <p className="text-blue-100 mb-6">科学的根拠に基づく診断で、最適な学習方法を発見</p>
+                  <h3 className="text-2xl font-bold mb-2 text-white">教え合いコミュニティ</h3>
+                  <p className="text-blue-100 mb-6">一人学習の孤独感から解放される新しい学習体験</p>
                   
                   <div className="grid grid-cols-3 gap-2 w-full max-w-xs">
                     <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
-                      <p className="font-semibold text-sm text-white">教える型</p>
+                      <p className="font-semibold text-sm text-white">教材作成</p>
                     </div>
                     <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
-                      <p className="font-semibold text-sm text-white">交流型</p>
+                      <p className="font-semibold text-sm text-white">学習支援</p>
                     </div>
                     <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
-                      <p className="font-semibold text-sm text-white">学習型</p>
+                      <p className="font-semibold text-sm text-white">相互成長</p>
                     </div>
                   </div>
                 </div>
@@ -142,27 +142,27 @@ export default function LandingPage() {
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
                   <FaBrain className="text-blue-600 text-xl" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900">診断でわかること</h3>
+                <h3 className="text-2xl font-bold text-gray-900">コミュニティの価値</h3>
               </div>
               
               <ul className="space-y-3 text-gray-700">
                 <li className="flex items-start">
                   <FaCheckCircle className="text-blue-500 mt-1 mr-3 flex-shrink-0" />
-                  <span>あなたの学習スタイルと最適な教材</span>
+                  <span>一人学習の孤独感から解放される</span>
                 </li>
                 <li className="flex items-start">
                   <FaCheckCircle className="text-blue-500 mt-1 mr-3 flex-shrink-0" />
-                  <span>効果的な貢献方法とコミュニティでの役割</span>
+                  <span>教えることで自分の理解も深まる</span>
                 </li>
                 <li className="flex items-start">
                   <FaCheckCircle className="text-blue-500 mt-1 mr-3 flex-shrink-0" />
-                  <span>学習スコア向上のための具体的アドバイス</span>
+                  <span>感謝されることでモチベーション向上</span>
                 </li>
               </ul>
 
-              <Link href="/quiz">
+              <Link href="/materials">
                 <button className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center">
-                  今すぐ診断を始める
+                  教材を見る
                   <FaArrowRight className="ml-2" />
                 </button>
               </Link>
@@ -185,10 +185,10 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 id="features-heading" className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              なぜ「教えること」が最強の英語学習法なのか
+              一人学習の孤独感を解決する新しい英語学習法
             </h2>
             <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              科学的研究で証明された「教えて学ぶ効果」。人に教えることで、あなたの英語力が飛躍的に向上します。
+              教え合いのコミュニティで、あなたの英語学習が変わる。一人で頑張る必要はありません。
             </p>
           </motion.div>
 
@@ -277,7 +277,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ギバータイプセクション */}
+      {/* 学習方法紹介セクション */}
       <section className="py-16 md:py-24 px-4 bg-gray-50" role="region">
         <div className="container mx-auto">
           <motion.div 
@@ -287,15 +287,15 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              あなたはどの学習タイプ？
+              あなたに合った学習方法
             </h2>
             <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              科学的研究に基づく3つのタイプ。あなたの学習スタイルを診断し、最適な英語学習方法を見つけましょう。
+              一人学習の孤独感から解放され、みんなで成長する3つのアプローチ
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {/* ギバー */}
+            {/* 教材作成 */}
             <motion.div 
               className="bg-white p-8 rounded-xl border border-blue-200 shadow-lg text-center hover:shadow-xl transition-all duration-300"
               initial={{ y: 50, opacity: 0 }}
@@ -306,27 +306,27 @@ export default function LandingPage() {
               <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <FaHeart className="text-3xl text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">教える型（Giver）</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">教材作成</h3>
               <p className="text-gray-700 mb-6">
-                積極的に知識を共有し、他の学習者の成長を支援するタイプ
+                自分の知識を整理して教材を作成し、他の学習者を支援
               </p>
               <ul className="text-left space-y-3 text-sm text-gray-700">
                 <li className="flex items-center">
                   <FaCheckCircle className="text-blue-500 mr-3 flex-shrink-0" />
-                  <span>教材作成でコミュニティに貢献</span>
+                  <span>知識の体系化で理解が深まる</span>
                 </li>
                 <li className="flex items-center">
                   <FaCheckCircle className="text-blue-500 mr-3 flex-shrink-0" />
-                  <span>フィードバック提供で他者を支援</span>
+                  <span>感謝されることでモチベーション向上</span>
                 </li>
                 <li className="flex items-center">
                   <FaCheckCircle className="text-blue-500 mr-3 flex-shrink-0" />
-                  <span>「教える喜び」でモチベーション維持</span>
+                  <span>コミュニティへの貢献実感</span>
                 </li>
               </ul>
             </motion.div>
 
-            {/* マッチャー */}
+            {/* 学習支援 */}
             <motion.div 
               className="bg-white p-8 rounded-xl border border-green-200 shadow-lg text-center hover:shadow-xl transition-all duration-300"
               initial={{ y: 50, opacity: 0 }}
@@ -337,14 +337,14 @@ export default function LandingPage() {
               <div className="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <FaBalanceScale className="text-3xl text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">交流型（Matcher）</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">学習支援</h3>
               <p className="text-gray-700 mb-6">
-                教えることと学ぶことのバランスを重視するタイプ
+                コメントやレビューで他の学習者を支援しながら自分も成長
               </p>
               <ul className="text-left space-y-3 text-sm text-gray-700">
                 <li className="flex items-center">
                   <FaCheckCircle className="text-green-500 mr-3 flex-shrink-0" />
-                  <span>公平な知識交換を好む</span>
+                  <span>多様な視点から学びを深める</span>
                 </li>
                 <li className="flex items-center">
                   <FaCheckCircle className="text-green-500 mr-3 flex-shrink-0" />
@@ -352,12 +352,12 @@ export default function LandingPage() {
                 </li>
                 <li className="flex items-center">
                   <FaCheckCircle className="text-green-500 mr-3 flex-shrink-0" />
-                  <span>コミュニティの調和を大切にする</span>
+                  <span>コミュニティの一員としての実感</span>
                 </li>
               </ul>
             </motion.div>
 
-            {/* テイカー */}
+            {/* 段階的成長 */}
             <motion.div 
               className="bg-white p-8 rounded-xl border border-orange-200 shadow-lg text-center hover:shadow-xl transition-all duration-300"
               initial={{ y: 50, opacity: 0 }}
@@ -368,14 +368,14 @@ export default function LandingPage() {
               <div className="w-20 h-20 bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <FaGraduationCap className="text-3xl text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">学習型（Taker）</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">段階的成長</h3>
               <p className="text-gray-700 mb-6">
-                まずは学ぶことから始めて、徐々に教える側へ成長するタイプ
+                まずは学習から始めて、徐々に支援する側へ成長
               </p>
               <ul className="text-left space-y-3 text-sm text-gray-700">
                 <li className="flex items-center">
                   <FaCheckCircle className="text-orange-500 mr-3 flex-shrink-0" />
-                  <span>まずは質の高い教材で学習</span>
+                  <span>質の高い教材で基礎を固める</span>
                 </li>
                 <li className="flex items-center">
                   <FaCheckCircle className="text-orange-500 mr-3 flex-shrink-0" />
@@ -383,7 +383,7 @@ export default function LandingPage() {
                 </li>
                 <li className="flex items-center">
                   <FaCheckCircle className="text-orange-500 mr-3 flex-shrink-0" />
-                  <span>段階的に教える行動を習得</span>
+                  <span>自然に教える行動を習得</span>
                 </li>
               </ul>
             </motion.div>
@@ -400,16 +400,16 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
-              今すぐShiftWithコミュニティに参加
+              今すぐ教え合いコミュニティに参加
             </h2>
             <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-              あなたの学習タイプを発見し、「教えて学ぶ」新しい英語学習体験を始めましょう！
+              一人学習の孤独感から解放され、みんなで成長する新しい英語学習体験を始めましょう！
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/quiz">
+              <Link href="/materials">
                 <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300 flex items-center shadow-lg hover:shadow-xl">
-                  学習タイプ診断でコミュニティ参加
+                  教材を見てコミュニティ参加
                   <FaArrowRight className="ml-2" />
                 </button>
               </Link>
@@ -434,7 +434,7 @@ export default function LandingPage() {
                 ShiftWith
               </Link>
               <p className="text-slate-400">
-                教えることで学べるオンライン学習プラットフォーム
+                一人学習の孤独感を解決する教え合いコミュニティ
               </p>
             </div>
             
