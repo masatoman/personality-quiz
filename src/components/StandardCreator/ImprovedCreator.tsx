@@ -34,7 +34,7 @@ const ImprovedCreator: React.FC = () => {
   const [material, setMaterial] = useState<MaterialData>({
     title: '',
     description: '',
-    category: 'general',
+    category: 'be_verbs',
     difficulty: 'beginner',
     estimatedTime: 5,
     isPublic: true,
@@ -69,10 +69,10 @@ const ImprovedCreator: React.FC = () => {
     const newSection: ContentSection = {
       id: `section-${Date.now()}`,
       type,
-      title: type === 'text' ? 'テキストセクション' : 
+      title: type === 'text' ? '文法解説セクション' : 
              type === 'image' ? '画像セクション' :
-             type === 'video' ? '動画セクション' : 'クイズ',
-      content: type === 'quiz' ? 'クイズの問題文を入力してください' : '',
+             type === 'video' ? '動画セクション' : '練習問題',
+      content: type === 'quiz' ? '文法問題を入力してください' : '',
       ...(type === 'quiz' ? { options: ['選択肢1', '選択肢2', '選択肢3', '選択肢4'], answer: 0 } : {})
     };
     
@@ -214,10 +214,10 @@ const ImprovedCreator: React.FC = () => {
             <div className="text-center mb-6">
               <div className="text-4xl mb-4" aria-hidden="true">🎨</div>
               <h2 id="help-modal-title" className="text-2xl font-bold text-gray-800 mb-2">
-                初回教材作成へようこそ！
+                初回文法解説作成へようこそ！
               </h2>
               <p id="help-modal-desc" className="text-gray-600">
-                「教えることで学ぶ」体験を一緒に始めましょう
+                「教えることで学ぶ」体験で中学英文法をマスターしましょう
               </p>
             </div>
             
@@ -227,8 +227,8 @@ const ImprovedCreator: React.FC = () => {
                   <span className="text-blue-600 font-bold">1</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800">教材の基本情報を入力</h3>
-                  <p className="text-sm text-gray-600">タイトル、説明、カテゴリを設定します</p>
+                  <h3 className="font-semibold text-gray-800">文法解説の基本情報を入力</h3>
+                  <p className="text-sm text-gray-600">タイトル、説明、文法項目、学年レベルを設定します</p>
                 </div>
               </div>
               
@@ -237,8 +237,8 @@ const ImprovedCreator: React.FC = () => {
                   <span className="text-green-600 font-bold">2</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800">コンテンツセクションを追加</h3>
-                  <p className="text-sm text-gray-600">テキスト、画像、動画、クイズなど様々な形式で作成</p>
+                  <h3 className="font-semibold text-gray-800">解説セクションを追加</h3>
+                  <p className="text-sm text-gray-600">テキスト解説、例文、練習問題など様々な形式で作成</p>
                 </div>
               </div>
               
@@ -256,8 +256,8 @@ const ImprovedCreator: React.FC = () => {
             <div className="bg-blue-50 rounded-lg p-4 mb-6">
               <h4 className="font-semibold text-blue-800 mb-2">💡 初回のコツ</h4>
               <ul className="text-sm text-blue-700 space-y-1">
-                <li>• 簡単なトピックから始めてみましょう</li>
-                <li>• 自分が理解していることを説明してみてください</li>
+                <li>• 自分が理解している文法項目から始めてみましょう</li>
+                <li>• 例文をたくさん使って分かりやすく説明してください</li>
                 <li>• 1-2個のセクションからスタートでも十分です</li>
               </ul>
             </div>
@@ -297,7 +297,7 @@ const ImprovedCreator: React.FC = () => {
               >
                 ←
               </button>
-              <h1 className="text-xl font-semibold">教材作成 (改善版)</h1>
+              <h1 className="text-xl font-semibold">中学英文法解説作成</h1>
               <span className="ml-4 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
                 ステップ 1/2
               </span>
@@ -354,7 +354,7 @@ const ImprovedCreator: React.FC = () => {
             {/* コンテンツ追加ボタン */}
             <div className="bg-white rounded-lg border border-gray-200 p-4">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-medium">コンテンツを追加</h3>
+                <h3 className="font-medium">解説セクションを追加</h3>
                 <span className="text-sm text-gray-500">{material.sections.length}セクション</span>
               </div>
               
@@ -362,20 +362,20 @@ const ImprovedCreator: React.FC = () => {
                 <button
                   onClick={() => addSection('text')}
                   className="flex flex-col items-center p-6 min-h-[120px] border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95 touch-manipulation"
-                  aria-label="テキストセクションを追加 - 文章・説明を追加できます"
+                  aria-label="文法解説セクションを追加 - 文法説明・例文を追加できます"
                 >
                   <span className="text-4xl mb-3" aria-hidden="true">📝</span>
-                  <span className="text-base font-medium">テキスト</span>
-                  <span className="text-sm text-gray-500 mt-2 text-center">文章・説明を追加</span>
+                  <span className="text-base font-medium">文法解説</span>
+                  <span className="text-sm text-gray-500 mt-2 text-center">文法説明・例文を追加</span>
                 </button>
                 
                 <button
                   onClick={() => addSection('quiz')}
                   className="flex flex-col items-center p-6 min-h-[120px] border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 active:scale-95 touch-manipulation"
-                  aria-label="クイズセクションを追加 - 選択式問題を追加できます"
+                  aria-label="練習問題セクションを追加 - 選択式問題を追加できます"
                 >
                   <span className="text-4xl mb-3" aria-hidden="true">❓</span>
-                  <span className="text-base font-medium">クイズ</span>
+                  <span className="text-base font-medium">練習問題</span>
                   <span className="text-sm text-gray-500 mt-2 text-center">選択式問題を追加</span>
                 </button>
               </div>
@@ -474,7 +474,7 @@ const ImprovedCreator: React.FC = () => {
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">カテゴリ</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">文法項目</label>
                   <select
                     value={material.category}
                     onChange={(e) => setMaterial(prev => ({ 
@@ -483,18 +483,19 @@ const ImprovedCreator: React.FC = () => {
                     }))}
                     className="w-full border border-gray-300 rounded-md px-3 py-2"
                   >
-                    <option value="general">一般</option>
-                    <option value="grammar">文法</option>
-                    <option value="vocabulary">語彙</option>
-                    <option value="listening">リスニング</option>
-                    <option value="reading">リーディング</option>
-                    <option value="writing">ライティング</option>
-                    <option value="speaking">スピーキング</option>
+                    <option value="be_verbs">be動詞・一般動詞</option>
+                    <option value="present_progressive">現在進行形・過去形</option>
+                    <option value="future_modal">未来形・助動詞</option>
+                    <option value="present_perfect">現在完了</option>
+                    <option value="passive_voice">受動態</option>
+                    <option value="infinitive_gerund">不定詞・動名詞</option>
+                    <option value="relative_pronouns">関係代名詞</option>
+                    <option value="others">その他</option>
                   </select>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">難易度</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">学年レベル</label>
                   <select
                     value={material.difficulty}
                     onChange={(e) => setMaterial(prev => ({ 
@@ -503,9 +504,9 @@ const ImprovedCreator: React.FC = () => {
                     }))}
                     className="w-full border border-gray-300 rounded-md px-3 py-2"
                   >
-                    <option value="beginner">初心者</option>
-                    <option value="intermediate">中級者</option>
-                    <option value="advanced">上級者</option>
+                    <option value="beginner">中1レベル</option>
+                    <option value="intermediate">中2レベル</option>
+                    <option value="advanced">中3レベル</option>
                   </select>
                 </div>
                 
@@ -572,13 +573,13 @@ const SectionEditor: React.FC<{
           type="text"
           value={section.title}
           onChange={(e) => onUpdate({ title: e.target.value })}
-          placeholder="セクションタイトル"
+          placeholder="セクションタイトル（例：be動詞の基本）"
           className="w-full font-medium border border-gray-300 rounded-md px-3 py-2"
         />
         <textarea
           value={section.content}
           onChange={(e) => onUpdate({ content: e.target.value })}
-          placeholder="テキストを入力してください..."
+          placeholder="文法の説明や例文を入力してください..."
           rows={6}
           className="w-full border border-gray-300 rounded-md px-3 py-2"
         />
@@ -593,13 +594,13 @@ const SectionEditor: React.FC<{
           type="text"
           value={section.title}
           onChange={(e) => onUpdate({ title: e.target.value })}
-          placeholder="クイズタイトル"
+          placeholder="練習問題タイトル（例：be動詞の練習）"
           className="w-full font-medium border border-gray-300 rounded-md px-3 py-2"
         />
         <textarea
           value={section.content}
           onChange={(e) => onUpdate({ content: e.target.value })}
-          placeholder="問題文を入力してください..."
+          placeholder="文法問題を入力してください..."
           rows={3}
           className="w-full border border-gray-300 rounded-md px-3 py-2"
         />

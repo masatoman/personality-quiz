@@ -11,21 +11,25 @@ interface FilterOptions {
 }
 
 export default function MaterialsFilter() {
+  // 中学英文法の文法項目別カテゴリ
   const categories = [
     { id: 'all', name: '全て' },
-    { id: 'grammar', name: '文法' },
-    { id: 'vocabulary', name: '語彙' },
-    { id: 'reading', name: 'リーディング' },
-    { id: 'listening', name: 'リスニング' },
-    { id: 'speaking', name: 'スピーキング' },
-    { id: 'writing', name: 'ライティング' }
+    { id: 'be_verbs', name: 'be動詞・一般動詞' },
+    { id: 'present_progressive', name: '現在進行形・過去形' },
+    { id: 'future_modal', name: '未来形・助動詞' },
+    { id: 'present_perfect', name: '現在完了' },
+    { id: 'passive_voice', name: '受動態' },
+    { id: 'infinitive_gerund', name: '不定詞・動名詞' },
+    { id: 'relative_pronouns', name: '関係代名詞' },
+    { id: 'others', name: 'その他' }
   ];
 
+  // 学年別レベルフィルター
   const levels = [
     { id: 'all', name: '全て' },
-    { id: 'beginner', name: '初級' },
-    { id: 'intermediate', name: '中級' },
-    { id: 'advanced', name: '上級' }
+    { id: 'grade1', name: '中1レベル' },
+    { id: 'grade2', name: '中2レベル' },
+    { id: 'grade3', name: '中3レベル' }
   ];
 
   const sortOptions = [
@@ -38,9 +42,9 @@ export default function MaterialsFilter() {
     <div className="bg-white p-4 rounded-lg shadow">
       <h2 className="text-lg font-bold mb-4">フィルター</h2>
       
-      {/* カテゴリー */}
+      {/* 文法項目 */}
       <div className="mb-6">
-        <h3 className="font-medium mb-2">カテゴリー</h3>
+        <h3 className="font-medium mb-2">文法項目</h3>
         <div className="space-y-2">
           {categories.map(category => (
             <label key={category.id} className="flex items-center">
@@ -56,9 +60,9 @@ export default function MaterialsFilter() {
         </div>
       </div>
 
-      {/* レベル */}
+      {/* 学年レベル */}
       <div className="mb-6">
-        <h3 className="font-medium mb-2">レベル</h3>
+        <h3 className="font-medium mb-2">学年レベル</h3>
         <div className="space-y-2">
           {levels.map(level => (
             <label key={level.id} className="flex items-center">

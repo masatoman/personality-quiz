@@ -6,11 +6,11 @@ import MaterialsFilter from '@/components/features/materials/MaterialsFilter';
 import MaterialsSearch from '@/components/features/materials/MaterialsSearch';
 
 export const metadata: Metadata = {
-  title: '教材一覧 | ShiftWith',
-  description: '英語学習に役立つ教材を探しましょう。レベル別、カテゴリ別に検索でき、ユーザーの評価も参考にできます。',
+  title: '中学英文法教材一覧 | ShiftWith',
+  description: '中学英文法の教材を文法項目別・学年別に検索できます。be動詞から関係代名詞まで、体系的に学習しましょう。',
   openGraph: {
-    title: '教材一覧 | ShiftWith',
-    description: '英語学習に役立つ教材を探しましょう。レベル別、カテゴリ別に検索でき、ユーザーの評価も参考にできます。',
+    title: '中学英文法教材一覧 | ShiftWith',
+    description: '中学英文法の教材を文法項目別・学年別に検索できます。be動詞から関係代名詞まで、体系的に学習しましょう。',
   },
 };
 
@@ -18,7 +18,7 @@ export default function MaterialsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">教材一覧</h1>
+        <h1 className="text-3xl font-bold">中学英文法教材一覧</h1>
         <MaterialsSearch />
       </div>
 
