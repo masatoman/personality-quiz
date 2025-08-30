@@ -6,6 +6,7 @@ import { Bars3Icon } from '@heroicons/react/24/outline';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useToast } from '../../hooks/useToast';
 import ToastContainer from '../ui/ToastContainer';
+import { FaEye, FaPencilAlt, FaQuestion, FaImage, FaVideo, FaMusic, FaStar } from 'react-icons/fa';
 
 // 型定義
 interface ContentSection {
@@ -293,30 +294,31 @@ const ImprovedCreator: React.FC = () => {
             <div className="flex items-center">
               <button 
                 onClick={() => window.history.back()}
-                className="mr-4 text-gray-500 hover:text-gray-700"
+                className="mr-2 sm:mr-4 text-gray-500 hover:text-gray-700 text-lg sm:text-xl"
               >
                 ←
               </button>
-              <h1 className="text-xl font-semibold">中学英文法解説作成</h1>
-              <span className="ml-4 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+              <h1 className="text-base sm:text-lg lg:text-xl font-semibold">中学英文法解説作成</h1>
+              <span className="ml-2 sm:ml-4 px-2 sm:px-3 py-1 bg-blue-100 text-blue-800 text-xs sm:text-sm rounded-full">
                 ステップ 1/2
               </span>
             </div>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <button
                 onClick={() => setPreviewMode(!previewMode)}
-                className={`flex items-center px-3 py-1 rounded-md transition ${
+                className={`flex items-center px-2 sm:px-3 py-1 rounded-md transition text-xs sm:text-sm ${
                   previewMode ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
                 }`}
               >
-                👁️ プレビュー
+                <FaEye className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                プレビュー
               </button>
               
               <button
                 onClick={() => setStep('publish')}
                 disabled={!canProceed}
-                className={`px-6 py-2 rounded-md font-medium transition ${
+                className={`px-3 sm:px-6 py-2 rounded-md font-medium transition text-xs sm:text-sm ${
                   canProceed
                     ? 'bg-blue-600 text-white hover:bg-blue-700'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -329,13 +331,13 @@ const ImprovedCreator: React.FC = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
           {/* メイン編集エリア */}
           <div className="lg:col-span-2 space-y-6">
             {/* タイトル入力 */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                 教材タイトル <span className="text-red-500">*</span>
               </label>
               <input
@@ -343,10 +345,10 @@ const ImprovedCreator: React.FC = () => {
                 value={material.title}
                 onChange={(e) => setMaterial(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="例: 英語の基本文法マスター講座"
-                className="w-full text-xl font-semibold border-none focus:ring-0 p-0 placeholder-gray-400"
-                style={{ fontSize: '1.5rem', outline: 'none' }}
+                className="w-full text-base sm:text-lg lg:text-xl font-semibold border-none focus:ring-0 p-0 placeholder-gray-400"
+                style={{ outline: 'none' }}
               />
-              <div className="mt-2 text-sm text-gray-500">
+              <div className="mt-2 text-xs sm:text-sm text-gray-500">
                 {material.title.length}/100文字
               </div>
             </div>
@@ -354,47 +356,56 @@ const ImprovedCreator: React.FC = () => {
             {/* コンテンツ追加ボタン */}
             <div className="bg-white rounded-lg border border-gray-200 p-4">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-medium">解説セクションを追加</h3>
-                <span className="text-sm text-gray-500">{material.sections.length}セクション</span>
+                <h3 className="text-sm sm:text-base font-medium">解説セクションを追加</h3>
+                <span className="text-xs sm:text-sm text-gray-500">{material.sections.length}セクション</span>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="group" aria-labelledby="content-types">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4" role="group" aria-labelledby="content-types">
                 <button
                   onClick={() => addSection('text')}
-                  className="flex flex-col items-center p-6 min-h-[120px] border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95 touch-manipulation"
+                  className="flex flex-col items-center p-4 sm:p-6 min-h-[100px] sm:min-h-[120px] border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95 touch-manipulation"
                   aria-label="文法解説セクションを追加 - 文法説明・例文を追加できます"
                 >
-                  <span className="text-4xl mb-3" aria-hidden="true">📝</span>
-                  <span className="text-base font-medium">文法解説</span>
-                  <span className="text-sm text-gray-500 mt-2 text-center">文法説明・例文を追加</span>
+                  <FaPencilAlt className="text-2xl sm:text-4xl mb-2 sm:mb-3 text-blue-600" aria-hidden="true" />
+                  <span className="text-sm sm:text-base font-medium">文法解説</span>
+                  <span className="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2 text-center">文法説明・例文を追加</span>
                 </button>
                 
                 <button
                   onClick={() => addSection('quiz')}
-                  className="flex flex-col items-center p-6 min-h-[120px] border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 active:scale-95 touch-manipulation"
+                  className="flex flex-col items-center p-4 sm:p-6 min-h-[100px] sm:min-h-[120px] border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 active:scale-95 touch-manipulation"
                   aria-label="練習問題セクションを追加 - 選択式問題を追加できます"
                 >
-                  <span className="text-4xl mb-3" aria-hidden="true">❓</span>
-                  <span className="text-base font-medium">練習問題</span>
-                  <span className="text-sm text-gray-500 mt-2 text-center">選択式問題を追加</span>
+                  <FaQuestion className="text-2xl sm:text-4xl mb-2 sm:mb-3 text-purple-600" aria-hidden="true" />
+                  <span className="text-sm sm:text-base font-medium">練習問題</span>
+                  <span className="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2 text-center">選択式問題を追加</span>
                 </button>
               </div>
               
               {/* 有料プラン限定機能の案内 */}
-              <div className="mt-4 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg">
+              <div className="mt-4 p-3 sm:p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <div className="flex items-start">
-                  <span className="text-xl mr-3">✨</span>
+                  <FaStar className="text-lg sm:text-xl mr-2 sm:mr-3 text-yellow-600 mt-0.5" />
                   <div>
-                    <h4 className="text-sm font-medium text-yellow-800 mb-1">
+                    <h4 className="text-xs sm:text-sm font-medium text-yellow-800 mb-1">
                       プレミアム機能
                     </h4>
                     <p className="text-xs text-yellow-700 mb-2">
                       有料プランでは画像・動画・音声ファイルの追加も可能になります
                     </p>
-                    <div className="flex space-x-2">
-                      <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">🖼️ 画像</span>
-                      <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">🎥 動画</span>
-                      <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">🎵 音声</span>
+                    <div className="flex flex-wrap gap-1 sm:gap-2">
+                      <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded flex items-center">
+                        <FaImage className="w-3 h-3 mr-1" />
+                        画像
+                      </span>
+                      <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded flex items-center">
+                        <FaVideo className="w-3 h-3 mr-1" />
+                        動画
+                      </span>
+                      <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded flex items-center">
+                        <FaMusic className="w-3 h-3 mr-1" />
+                        音声
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -467,21 +478,21 @@ const ImprovedCreator: React.FC = () => {
           </div>
 
           {/* サイドバー: プレビュー + 設定 */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
             {/* クイック設定 */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="font-medium mb-4">基本設定</h3>
+            <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+              <h3 className="text-sm sm:text-base font-medium mb-3 sm:mb-4">基本設定</h3>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">文法項目</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">文法項目</label>
                   <select
                     value={material.category}
                     onChange={(e) => setMaterial(prev => ({ 
                       ...prev, 
                       category: e.target.value
                     }))}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                    className="w-full border border-gray-300 rounded-md px-2 sm:px-3 py-2 text-xs sm:text-sm"
                   >
                     <option value="be_verbs">be動詞・一般動詞</option>
                     <option value="present_progressive">現在進行形・過去形</option>
@@ -495,14 +506,14 @@ const ImprovedCreator: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">学年レベル</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">学年レベル</label>
                   <select
                     value={material.difficulty}
                     onChange={(e) => setMaterial(prev => ({ 
                       ...prev, 
                       difficulty: e.target.value as MaterialData['difficulty']
                     }))}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                    className="w-full border border-gray-300 rounded-md px-2 sm:px-3 py-2 text-xs sm:text-sm"
                   >
                     <option value="beginner">中1レベル</option>
                     <option value="intermediate">中2レベル</option>
@@ -511,10 +522,10 @@ const ImprovedCreator: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                     推定学習時間
                   </label>
-                  <div className="text-lg font-semibold text-blue-600">
+                  <div className="text-base sm:text-lg font-semibold text-blue-600">
                     約{material.estimatedTime}分
                   </div>
                   <div className="text-xs text-gray-500">自動計算</div>
@@ -528,7 +539,7 @@ const ImprovedCreator: React.FC = () => {
                       onChange={(e) => setMaterial(prev => ({ ...prev, isPublic: e.target.checked }))}
                       className="mr-2"
                     />
-                    <span className="text-sm">公開する</span>
+                    <span className="text-xs sm:text-sm">公開する</span>
                   </label>
                   
                   <label className="flex items-center">
@@ -538,7 +549,7 @@ const ImprovedCreator: React.FC = () => {
                       onChange={(e) => setMaterial(prev => ({ ...prev, allowComments: e.target.checked }))}
                       className="mr-2"
                     />
-                    <span className="text-sm">コメントを許可</span>
+                    <span className="text-xs sm:text-sm">コメントを許可</span>
                   </label>
                 </div>
               </div>
@@ -546,8 +557,8 @@ const ImprovedCreator: React.FC = () => {
 
             {/* ライブプレビュー */}
             {previewMode && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 className="font-medium mb-4">プレビュー</h3>
+              <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                <h3 className="text-sm sm:text-base font-medium mb-3 sm:mb-4">プレビュー</h3>
                 <MaterialPreview material={material} />
               </div>
             )}
@@ -574,14 +585,14 @@ const SectionEditor: React.FC<{
           value={section.title}
           onChange={(e) => onUpdate({ title: e.target.value })}
           placeholder="セクションタイトル（例：be動詞の基本）"
-          className="w-full font-medium border border-gray-300 rounded-md px-3 py-2"
+          className="w-full font-medium border border-gray-300 rounded-md px-2 sm:px-3 py-2 text-xs sm:text-sm"
         />
         <textarea
           value={section.content}
           onChange={(e) => onUpdate({ content: e.target.value })}
           placeholder="文法の説明や例文を入力してください..."
           rows={6}
-          className="w-full border border-gray-300 rounded-md px-3 py-2"
+          className="w-full border border-gray-300 rounded-md px-2 sm:px-3 py-2 text-xs sm:text-sm"
         />
       </div>
     );
