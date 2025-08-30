@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FaHeart, FaRegHeart, FaUser, FaReply } from 'react-icons/fa';
+import { FaHeart, FaRegHeart, FaUser, FaReply, FaLightbulb, FaGift, FaRocket } from 'react-icons/fa';
 import Image from 'next/image';
 
 // モックデータを使ったコメント表示テスト用コンポーネント
@@ -213,32 +213,50 @@ const MockCommentData: React.FC = () => {
       </div>
 
       {/* 新規コメント投稿フォーム */}
-      <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border border-blue-200">
-        <h4 className="font-bold text-gray-800 mb-2">💡 あなたの気づきを共有しませんか？</h4>
-        <p className="text-sm text-gray-600 mb-2">
-          学習中の発見、つまずいたポイント、コツなど、どんな小さなことでも大丈夫です！
-        </p>
-        <div className="flex items-center gap-4 mb-3 p-2 bg-white rounded-lg border border-green-200">
-          <div className="flex items-center gap-1 text-green-600">
-            <span className="text-lg">🎁</span>
-            <span className="font-semibold text-sm">コメント投稿で15ポイント獲得！</span>
-          </div>
-          <div className="flex items-center gap-1 text-red-500">
-            <span className="text-lg">❤️</span>
-            <span className="font-semibold text-sm">ハートをもらうと+5ポイント！</span>
+      <div className="mb-6 bg-white rounded-lg border border-gray-200 shadow-sm">
+        {/* ヘッダー */}
+        <div className="px-6 py-4 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gray-100 rounded-md flex items-center justify-center">
+              <FaLightbulb className="text-gray-600 text-sm" />
+            </div>
+            <div>
+              <h4 className="text-base font-medium text-gray-900">気づきを共有</h4>
+              <p className="text-sm text-gray-500 mt-1">
+                学習中の発見やコツを他の学習者と共有しましょう
+              </p>
+            </div>
           </div>
         </div>
-        <textarea
-          placeholder="例：「この文法のポイントは...」「私はこう覚えました」「ここでつまずきました」"
-          className="w-full p-3 border border-gray-300 rounded-lg resize-none"
-          rows={4}
-          maxLength={2000}
-        />
-        <div className="flex justify-between items-center mt-2">
-          <span className="text-sm text-gray-500">0/2000文字</span>
-          <button className="px-6 py-2 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-lg hover:from-blue-700 hover:to-green-700">
-            ✨ 気づきを共有
-          </button>
+
+        {/* 投稿フォーム */}
+        <div className="p-6">
+          <textarea
+            placeholder="例：「この文法のポイントは...」「私はこう覚えました」「ここでつまずきました」"
+            className="w-full p-4 border border-gray-200 rounded-lg resize-none text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors placeholder-gray-400"
+            rows={4}
+            maxLength={2000}
+          />
+          
+          {/* フッター */}
+          <div className="flex justify-between items-center mt-4">
+            <div className="flex items-center gap-4 text-xs text-gray-400">
+              <span>0/2000文字</span>
+              <div className="flex items-center gap-3">
+                <span className="flex items-center gap-1">
+                  <FaGift className="text-gray-400" />
+                  コメント: +15pt
+                </span>
+                <span className="flex items-center gap-1">
+                  <FaHeart className="text-gray-400" />
+                  いいね: +5pt
+                </span>
+              </div>
+            </div>
+            <button className="px-4 py-2 bg-blue-600 text-white rounded-md font-medium text-sm hover:bg-blue-700 transition-colors">
+              投稿
+            </button>
+          </div>
         </div>
       </div>
 
@@ -253,12 +271,12 @@ const MockCommentData: React.FC = () => {
       </div>
 
       {/* 学習効果を示すバナー */}
-      <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-200">
+      <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-2xl">🚀</span>
-          <h4 className="font-bold text-purple-800">「教えることで学ぶ」効果を実感！</h4>
+          <FaRocket className="text-gray-600 text-lg" />
+          <h4 className="font-medium text-gray-900">「教えることで学ぶ」効果を実感！</h4>
         </div>
-        <p className="text-sm text-purple-700">
+        <p className="text-sm text-gray-700">
           コメント投稿により知識が定着し、他の学習者の気づきから新しい学びを得られます。
           積極的な気づき共有でギバーポイントも獲得しましょう！
         </p>
