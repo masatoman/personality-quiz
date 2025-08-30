@@ -192,12 +192,12 @@ const GiverScoreChart: React.FC<GiverScoreChartProps> = ({ userId }) => {
       <h3 className="text-lg font-bold mb-4">ギバースコア推移</h3>
       
       {/* 期間選択ボタン */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-1 sm:gap-2 mb-4 overflow-x-auto pb-2">
         {(['1週間', '1ヶ月', '3ヶ月', '6ヶ月', '1年'] as TimeSpan[]).map((span) => (
           <button
             key={span}
             onClick={() => setTimeSpan(span)}
-            className={`px-2 py-1 text-sm rounded ${
+            className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded whitespace-nowrap flex-shrink-0 ${
               timeSpan === span 
                 ? 'bg-green-500 text-white' 
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'

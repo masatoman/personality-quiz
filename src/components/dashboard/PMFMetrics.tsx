@@ -101,15 +101,15 @@ export default function PMFMetricsComponent() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-6">PMF指標（起業の科学）</h2>
+    <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+      <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">PMF指標（起業の科学）</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {/* 継続率 */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800">継続率</h3>
+        <div className="space-y-3 sm:space-y-4">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800">継続率</h3>
           
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-gray-700">D7継続率</span>
@@ -143,8 +143,8 @@ export default function PMFMetricsComponent() {
         </div>
 
         {/* 40%ルール */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800">40%ルール</h3>
+        <div className="space-y-3 sm:space-y-4">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800">40%ルール</h3>
           
           <div>
             <div className="flex justify-between items-center mb-2">
@@ -163,8 +163,8 @@ export default function PMFMetricsComponent() {
         </div>
 
         {/* 月間アクティブユーザー */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800">月間アクティブユーザー</h3>
+        <div className="space-y-3 sm:space-y-4">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800">月間アクティブユーザー</h3>
           
           <div>
             <div className="flex justify-between items-center mb-2">
@@ -183,10 +183,10 @@ export default function PMFMetricsComponent() {
         </div>
 
         {/* 教え合い指標 */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800">教え合い指標</h3>
+        <div className="space-y-3 sm:space-y-4">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800">教え合い指標</h3>
           
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-gray-700">教材作成/学習比率</span>
