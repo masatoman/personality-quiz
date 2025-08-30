@@ -192,6 +192,18 @@ const MaterialDetailPage = () => {
                         const lines = section.content.split('\n');
                         const elements: JSX.Element[] = [];
                         let currentList: string[] = [];
+                        let listRendered = false;
+                        
+                        // 太字を処理する関数
+                        const parseBold = (text: string) => {
+                          const parts = text.split(/(\*\*.*?\*\*)/g);
+                          return parts.map((part, index) => {
+                            if (part.startsWith('**') && part.endsWith('**')) {
+                              return <strong key={index} className="font-bold">{part.slice(2, -2)}</strong>;
+                            }
+                            return part;
+                          });
+                        };
                         
                         lines.forEach((line: string, lineIndex: number) => {
                           // リストアイテムの処理
@@ -200,23 +212,26 @@ const MaterialDetailPage = () => {
                             return;
                           }
                           
-                          // リストが終了した場合、リストをレンダリング
-                          if (currentList.length > 0) {
+                          // リストが終了した場合、リストをレンダリング（重複防止）
+                          if (currentList.length > 0 && !listRendered) {
                             elements.push(
                               <ul key={`list-${lineIndex}`} className="list-disc list-inside mb-4 space-y-1">
                                 {currentList.map((item, itemIndex) => (
-                                  <li key={itemIndex} className="text-sm sm:text-base text-gray-700">{item}</li>
+                                  <li key={itemIndex} className="text-sm sm:text-base text-gray-700">
+                                    {parseBold(item)}
+                                  </li>
                                 ))}
                               </ul>
                             );
                             currentList = [];
+                            listRendered = true;
                           }
                           
                           // 見出しの処理
                           if (line.startsWith('# ')) {
                             elements.push(
                               <h1 key={lineIndex} className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-900">
-                                {line.substring(2)}
+                                {parseBold(line.substring(2))}
                               </h1>
                             );
                             return;
@@ -224,7 +239,7 @@ const MaterialDetailPage = () => {
                           if (line.startsWith('## ')) {
                             elements.push(
                               <h2 key={lineIndex} className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-gray-800">
-                                {line.substring(3)}
+                                {parseBold(line.substring(3))}
                               </h2>
                             );
                             return;
@@ -232,7 +247,7 @@ const MaterialDetailPage = () => {
                           if (line.startsWith('### ')) {
                             elements.push(
                               <h3 key={lineIndex} className="text-sm sm:text-base font-medium mb-2 text-gray-700">
-                                {line.substring(4)}
+                                {parseBold(line.substring(4))}
                               </h3>
                             );
                             return;
@@ -247,17 +262,19 @@ const MaterialDetailPage = () => {
                           // 通常のテキスト
                           elements.push(
                             <p key={lineIndex} className="mb-2 text-sm sm:text-base text-gray-700">
-                              {line}
+                              {parseBold(line)}
                             </p>
                           );
                         });
                         
-                        // 最後のリストを処理
-                        if (currentList.length > 0) {
+                        // 最後のリストを処理（重複防止）
+                        if (currentList.length > 0 && !listRendered) {
                           elements.push(
                             <ul key="list-final" className="list-disc list-inside mb-4 space-y-1">
                               {currentList.map((item, itemIndex) => (
-                                <li key={itemIndex} className="text-sm sm:text-base text-gray-700">{item}</li>
+                                <li key={itemIndex} className="text-sm sm:text-base text-gray-700">
+                                  {parseBold(item)}
+                                </li>
                               ))}
                             </ul>
                           );
