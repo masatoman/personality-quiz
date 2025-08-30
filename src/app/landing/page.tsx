@@ -10,7 +10,7 @@ export default function LandingPage() {
     <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       {/* ヒーローセクション */}
       <motion.section 
-        className="relative overflow-hidden py-16 md:py-24 px-4 bg-slate-900 text-white"
+        className="relative overflow-hidden py-12 sm:py-16 md:py-24 px-4 bg-slate-900 text-white"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
@@ -18,7 +18,7 @@ export default function LandingPage() {
         <div className="container mx-auto text-center relative z-10">
           {/* バッジ */}
           <motion.div
-            className="inline-flex items-center px-4 py-2 rounded-full bg-slate-800/60 border border-slate-600 backdrop-blur-sm text-slate-200 mb-6"
+            className="inline-flex items-center px-3 sm:px-4 py-2 rounded-full bg-slate-800/60 border border-slate-600 backdrop-blur-sm text-slate-200 mb-4 sm:mb-6 text-sm sm:text-base"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.1, duration: 0.5 }}
@@ -29,7 +29,7 @@ export default function LandingPage() {
 
           {/* メインタイトル */}
           <motion.h1 
-            className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-white"
+            className="text-2xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6 leading-tight text-white"
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.6 }}
@@ -40,7 +40,7 @@ export default function LandingPage() {
 
           {/* 説明文 */}
           <motion.p 
-            className="text-xl md:text-2xl text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed"
+            className="text-base sm:text-xl md:text-2xl text-slate-300 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed px-2"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.6 }}
@@ -52,20 +52,20 @@ export default function LandingPage() {
 
           {/* CTAボタン */}
           <motion.div 
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-8 sm:mb-12 px-4"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.6 }}
           >
-            <Link href="/">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300 flex items-center shadow-lg hover:shadow-xl">
+            <Link href="/" className="w-full sm:w-auto">
+              <button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl">
                 文法教材を見る
                 <FaArrowRight className="ml-2" />
               </button>
             </Link>
             
-            <Link href="/">
-              <button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center">
+            <Link href="/" className="w-full sm:w-auto">
+              <button className="w-full sm:w-auto bg-transparent border-2 border-white text-white hover:bg-white hover:text-slate-900 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 flex items-center justify-center">
                 <FaSearch className="mr-2" />
                 文法教材を探す
               </button>
@@ -74,7 +74,7 @@ export default function LandingPage() {
 
           {/* 統計情報 */}
           <motion.div 
-            className="flex flex-col sm:flex-row items-center justify-center gap-6 text-slate-400"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 text-slate-400 text-sm sm:text-base"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.6 }}
@@ -95,9 +95,9 @@ export default function LandingPage() {
       </motion.section>
 
       {/* コミュニティ紹介セクション */}
-      <section className="py-16 md:py-24 px-4 bg-gray-50" role="region">
+      <section className="py-12 sm:py-16 md:py-24 px-4 bg-gray-50" role="region">
         <div className="container mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="grid md:grid-cols-2 gap-8 sm:gap-12 items-center">
             <motion.div
               className="relative"
               initial={{ x: -50, opacity: 0 }}
@@ -106,22 +106,22 @@ export default function LandingPage() {
             >
               <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-2xl">
                 <div className="bg-blue-600 absolute inset-0"></div>
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-8 text-center">
-                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4">
-                    <FaUserFriends className="text-2xl" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4 sm:p-8 text-center">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-full flex items-center justify-center mb-3 sm:mb-4">
+                    <FaUserFriends className="text-xl sm:text-2xl" />
                   </div>
-                  <h3 className="text-2xl font-bold mb-2 text-white">文法解説コミュニティ</h3>
-                  <p className="text-blue-100 mb-6">中学英文法をみんなで教え合い、完全マスター</p>
+                  <h3 className="text-lg sm:text-2xl font-bold mb-2 text-white">文法解説コミュニティ</h3>
+                  <p className="text-blue-100 mb-4 sm:mb-6 text-sm sm:text-base">中学英文法をみんなで教え合い、完全マスター</p>
                   
-                  <div className="grid grid-cols-3 gap-2 w-full max-w-xs">
-                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
-                      <p className="font-semibold text-sm text-white">文法解説</p>
+                  <div className="grid grid-cols-3 gap-1 sm:gap-2 w-full max-w-xs">
+                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 sm:p-3 text-center">
+                      <p className="font-semibold text-xs sm:text-sm text-white">文法解説</p>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
-                      <p className="font-semibold text-sm text-white">練習問題</p>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 sm:p-3 text-center">
+                      <p className="font-semibold text-xs sm:text-sm text-white">練習問題</p>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
-                      <p className="font-semibold text-sm text-white">相互理解</p>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 sm:p-3 text-center">
+                      <p className="font-semibold text-xs sm:text-sm text-white">相互理解</p>
                     </div>
                   </div>
                 </div>
@@ -129,36 +129,36 @@ export default function LandingPage() {
             </motion.div>
 
             <motion.div 
-              className="bg-white p-8 rounded-xl border border-gray-200 shadow-lg"
+              className="bg-white p-6 sm:p-8 rounded-xl border border-gray-200 shadow-lg"
               initial={{ x: 50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.4, duration: 0.6 }}
               whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
             >
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                  <FaBrain className="text-blue-600 text-xl" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-3 sm:mr-4">
+                  <FaBrain className="text-blue-600 text-lg sm:text-xl" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900">コミュニティの価値</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900">コミュニティの価値</h3>
               </div>
               
-              <ul className="space-y-3 text-gray-700">
+              <ul className="space-y-2 sm:space-y-3 text-gray-700 text-sm sm:text-base">
                 <li className="flex items-start">
-                  <FaCheckCircle className="text-blue-500 mt-1 mr-3 flex-shrink-0" />
+                  <FaCheckCircle className="text-blue-500 mt-1 mr-2 sm:mr-3 flex-shrink-0" />
                   <span>中学英文法を体系的に学習</span>
                 </li>
                 <li className="flex items-start">
-                  <FaCheckCircle className="text-blue-500 mt-1 mr-3 flex-shrink-0" />
+                  <FaCheckCircle className="text-blue-500 mt-1 mr-2 sm:mr-3 flex-shrink-0" />
                   <span>教えることで自分の理解も深まる</span>
                 </li>
                 <li className="flex items-start">
-                  <FaCheckCircle className="text-blue-500 mt-1 mr-3 flex-shrink-0" />
+                  <FaCheckCircle className="text-blue-500 mt-1 mr-2 sm:mr-3 flex-shrink-0" />
                   <span>学年別・文法項目別の効率的学習</span>
                 </li>
               </ul>
 
               <Link href="/">
-                <button className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center">
+                <button className="w-full mt-4 sm:mt-6 bg-blue-600 hover:bg-blue-700 text-white py-2 sm:py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center text-sm sm:text-base">
                   文法教材を見る
                   <FaArrowRight className="ml-2" />
                 </button>
@@ -170,48 +170,48 @@ export default function LandingPage() {
 
       {/* 機能紹介セクション */}
       <section 
-        className="py-16 md:py-24 px-4 bg-white"
+        className="py-12 sm:py-16 md:py-24 px-4 bg-white"
         role="region"
         aria-labelledby="features-heading"
       >
         <div className="container mx-auto">
           <motion.div 
-            className="text-center mb-16"
+            className="text-center mb-12 sm:mb-16"
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
           >
-            <h2 id="features-heading" className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 id="features-heading" className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
               中学英文法を教え合いで完全マスター
             </h2>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+            <p className="text-base sm:text-xl text-gray-700 max-w-3xl mx-auto px-2">
               文法項目別・学年別の効率的学習で、中学英文法を確実に身につけましょう。
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
             {/* 機能1 */}
             <motion.div 
-              className="bg-blue-50 p-8 rounded-xl border border-blue-200 text-center hover:shadow-lg transition-all duration-300"
+              className="bg-blue-50 p-6 sm:p-8 rounded-xl border border-blue-200 text-center hover:shadow-lg transition-all duration-300"
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1, duration: 0.6 }}
               whileHover={{ y: -5 }}
             >
-              <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <FaBrain className="text-3xl text-white" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <FaBrain className="text-2xl sm:text-3xl text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">文法項目別学習</h3>
-              <p className="text-gray-700 mb-6">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">文法項目別学習</h3>
+              <p className="text-gray-700 mb-4 sm:mb-6 text-sm sm:text-base">
                 be動詞から関係代名詞まで、中学英文法を体系的に学習できます。
               </p>
-              <ul className="text-left space-y-3 text-sm text-gray-700">
+              <ul className="text-left space-y-2 sm:space-y-3 text-sm text-gray-700">
                 <li className="flex items-center">
-                  <FaCheckCircle className="text-blue-500 mr-3 flex-shrink-0" />
+                  <FaCheckCircle className="text-blue-500 mr-2 sm:mr-3 flex-shrink-0" />
                   <span>8つの文法項目に分類</span>
                 </li>
                 <li className="flex items-center">
-                  <FaCheckCircle className="text-blue-500 mr-3 flex-shrink-0" />
+                  <FaCheckCircle className="text-blue-500 mr-2 sm:mr-3 flex-shrink-0" />
                   <span>段階的な学習進度</span>
                 </li>
               </ul>
@@ -219,26 +219,26 @@ export default function LandingPage() {
 
             {/* 機能2 */}
             <motion.div 
-              className="bg-green-50 p-8 rounded-xl border border-green-200 text-center hover:shadow-lg transition-all duration-300"
+              className="bg-green-50 p-6 sm:p-8 rounded-xl border border-green-200 text-center hover:shadow-lg transition-all duration-300"
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.6 }}
               whileHover={{ y: -5 }}
             >
-              <div className="w-16 h-16 bg-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <FaUsers className="text-3xl text-white" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <FaUsers className="text-2xl sm:text-3xl text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">学年別レベル対応</h3>
-              <p className="text-gray-700 mb-6">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">学年別レベル対応</h3>
+              <p className="text-gray-700 mb-4 sm:mb-6 text-sm sm:text-base">
                 中1〜中3の学年レベルに合わせた教材で、無理なく学習を進められます。
               </p>
-              <ul className="text-left space-y-3 text-sm text-gray-700">
+              <ul className="text-left space-y-2 sm:space-y-3 text-sm text-gray-700">
                 <li className="flex items-center">
-                  <FaCheckCircle className="text-green-500 mr-3 flex-shrink-0" />
+                  <FaCheckCircle className="text-green-500 mr-2 sm:mr-3 flex-shrink-0" />
                   <span>学年に応じた難易度調整</span>
                 </li>
                 <li className="flex items-center">
-                  <FaCheckCircle className="text-green-500 mr-3 flex-shrink-0" />
+                  <FaCheckCircle className="text-green-500 mr-2 sm:mr-3 flex-shrink-0" />
                   <span>基礎から応用まで段階的学習</span>
                 </li>
               </ul>
@@ -246,26 +246,26 @@ export default function LandingPage() {
 
             {/* 機能3 */}
             <motion.div 
-              className="bg-yellow-50 p-8 rounded-xl border border-yellow-200 text-center hover:shadow-lg transition-all duration-300"
+              className="bg-yellow-50 p-6 sm:p-8 rounded-xl border border-yellow-200 text-center hover:shadow-lg transition-all duration-300"
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.6 }}
               whileHover={{ y: -5 }}
             >
-              <div className="w-16 h-16 bg-yellow-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <FaTrophy className="text-3xl text-white" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-yellow-600 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <FaTrophy className="text-2xl sm:text-3xl text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">教え合いで理解深化</h3>
-              <p className="text-gray-700 mb-6">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">教え合いで理解深化</h3>
+              <p className="text-gray-700 mb-4 sm:mb-6 text-sm sm:text-base">
                 教えることで自分の理解も深まり、記憶定着率が大幅に向上します。
               </p>
-              <ul className="text-left space-y-3 text-sm text-gray-700">
+              <ul className="text-left space-y-2 sm:space-y-3 text-sm text-gray-700">
                 <li className="flex items-center">
-                  <FaCheckCircle className="text-yellow-600 mr-3 flex-shrink-0" />
+                  <FaCheckCircle className="text-yellow-600 mr-2 sm:mr-3 flex-shrink-0" />
                   <span>説明することで理解が深まる</span>
                 </li>
                 <li className="flex items-center">
-                  <FaCheckCircle className="text-yellow-600 mr-3 flex-shrink-0" />
+                  <FaCheckCircle className="text-yellow-600 mr-2 sm:mr-3 flex-shrink-0" />
                   <span>記憶定着率90%向上</span>
                 </li>
               </ul>

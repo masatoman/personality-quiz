@@ -144,25 +144,25 @@ const DashboardContent = () => {
   if (loading) return <DashboardLoading />;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-      <div className="mb-6 sm:mb-10">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">マイページ</h1>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <div className="mb-4 sm:mb-6 lg:mb-10">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">マイページ</h1>
         <p className="text-gray-600 text-sm sm:text-base">あなたの学習活動の全体像とギバースコアの成長を確認できます</p>
       </div>
-      <div className="space-y-6 sm:space-y-10">
+      <div className="space-y-4 sm:space-y-6 lg:space-y-10">
         <ActivitySummary 
           createdMaterials={userData.activitySummary.createdMaterials}
           earnedPoints={userData.activitySummary.earnedPoints}
           viewedMaterials={userData.activitySummary.viewedMaterials}
         />
         
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-10">
-          <div className="bg-white rounded-lg shadow-sm p-6 sm:p-8">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">ギバースコアの推移</h2>
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 lg:gap-10">
+          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 lg:p-8">
+            <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-800 mb-3 sm:mb-4 lg:mb-6">ギバースコアの推移</h2>
             <GiverScoreChart userId={user.id} />
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-6 sm:p-8">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">活動内訳</h2>
+          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 lg:p-8">
+            <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-800 mb-3 sm:mb-4 lg:mb-6">活動内訳</h2>
             <ActivityPieChart data={userData.activityPie} />
           </div>
         </div>

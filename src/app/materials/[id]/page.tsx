@@ -342,10 +342,10 @@ const MaterialDetailPage = () => {
     <div className="min-h-screen bg-gray-50">
       {/* ヘッダー */}
       <div className="bg-white shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-4">
+        <div className="max-w-4xl mx-auto px-4 py-3 sm:py-4">
           <Link
             href="/"
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4"
+            className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-3 sm:mb-4 text-sm sm:text-base"
           >
             <FaArrowLeft className="mr-2" />
             教材一覧に戻る
@@ -353,44 +353,44 @@ const MaterialDetailPage = () => {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
         {/* 教材ヘッダー */}
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <div className="flex justify-between items-start mb-6">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 md:p-8 mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start mb-4 sm:mb-6 gap-4">
             <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">{material.title}</h1>
-              <p className="text-lg text-gray-600 mb-6">{material.description}</p>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">{material.title}</h1>
+              <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6">{material.description}</p>
               
-              <div className="flex flex-wrap items-center gap-4 mb-6">
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 mb-4 sm:mb-6">
+                <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
                   material.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
                   material.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
                   'bg-red-100 text-red-800'
                 }`}>
                   {getDifficultyText(material.difficulty)}
                 </span>
-                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                <span className="px-2 sm:px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs sm:text-sm font-medium">
                   {material.category}
                 </span>
                 <div className="flex items-center text-yellow-500">
                   {[...Array(5)].map((_, i) => (
-                    <span key={i}>
+                    <span key={i} className="text-sm sm:text-base">
                       {i < Math.floor(material.rating) ? <FaStar /> : <FaRegStar />}
                     </span>
                   ))}
-                  <span className="ml-2 text-gray-700 text-sm">{material.rating}</span>
+                  <span className="ml-1 sm:ml-2 text-gray-700 text-xs sm:text-sm">{material.rating}</span>
                 </div>
-                <div className="flex items-center text-gray-500 text-sm">
+                <div className="flex items-center text-gray-500 text-xs sm:text-sm">
                   <FaUser className="mr-1" />
                   {material.view_count} 閲覧
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-2 mb-6">
+              <div className="flex flex-wrap gap-1 sm:gap-2 mb-4 sm:mb-6">
                 {material.tags.map((tag, index) => (
                   <span
                     key={index}
-                    className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-sm"
+                    className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs sm:text-sm"
                   >
                     #{tag}
                   </span>
