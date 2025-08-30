@@ -146,7 +146,9 @@ export async function POST(request: NextRequest) {
           status: data.status === 'published' || data.is_public ? 'published' : 'draft',
           estimated_time: data.estimated_time || 0,
           allow_comments: data.allow_comments !== false,
-          tags: data.tags || []
+          tags: data.tags || [],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         })
       });
 
