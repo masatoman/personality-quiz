@@ -167,19 +167,19 @@ const MaterialDetailPage = () => {
         <div className="prose prose-lg max-w-none">
           {/* イントロダクション */}
           {parsedContent.introduction && (
-            <div className="mb-8 p-6 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-              <h3 className="text-xl font-semibold mb-3 text-blue-900">はじめに</h3>
+            <div className="mb-6 p-4 sm:p-6 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+              <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-blue-900">はじめに</h3>
               <p className="text-gray-700">{parsedContent.introduction}</p>
             </div>
           )}
 
           {/* セクション */}
           {parsedContent.sections && Array.isArray(parsedContent.sections) && (
-            <div className="space-y-8">
+            <div className="space-y-6">
               {parsedContent.sections.map((section: any, index: number) => (
-                <div key={index} className="border rounded-lg p-6 bg-white shadow-sm">
+                <div key={index} className="border rounded-lg p-4 sm:p-6 bg-white shadow-sm">
                   {section.title && (
-                    <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">
+                    <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-800 border-b pb-2">
                       {section.title}
                     </h3>
                   )}
@@ -191,7 +191,7 @@ const MaterialDetailPage = () => {
                   {/* 例文・フレーズ */}
                   {section.examples && Array.isArray(section.examples) && (
                     <div className="mt-4">
-                      <h4 className="font-medium mb-3 text-gray-800">例文・フレーズ</h4>
+                      <h4 className="text-base sm:text-lg font-medium mb-2 sm:mb-3 text-gray-800">例文・フレーズ</h4>
                       <div className="grid gap-3">
                         {section.examples.map((example: any, exIndex: number) => (
                           <div key={exIndex} className="p-4 bg-gray-50 rounded-lg border-l-4 border-green-500">
@@ -212,7 +212,7 @@ const MaterialDetailPage = () => {
                   {/* クイズ */}
                   {section.type === 'quiz' && section.questions && (
                     <div className="mt-4">
-                      <h4 className="font-medium mb-3 text-gray-800">📝 練習問題</h4>
+                      <h4 className="text-base sm:text-lg font-medium mb-2 sm:mb-3 text-gray-800">📝 練習問題</h4>
                       {section.questions.map((question: any, qIndex: number) => (
                         <div key={qIndex} className="p-4 bg-yellow-50 rounded-lg border border-yellow-200 mb-3">
                           <div className="font-medium mb-3">{question.question}</div>
@@ -276,8 +276,8 @@ const MaterialDetailPage = () => {
 
           {/* 実践的なアドバイス */}
           {parsedContent.practical_tips && Array.isArray(parsedContent.practical_tips) && (
-            <div className="mt-8 p-6 bg-green-50 rounded-lg">
-              <h3 className="text-xl font-semibold mb-4 text-green-900">実践のコツ</h3>
+            <div className="mt-6 p-4 sm:p-6 bg-green-50 rounded-lg">
+              <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-green-900">実践のコツ</h3>
               <ul className="space-y-2">
                 {parsedContent.practical_tips.map((tip: string, index: number) => (
                   <li key={index} className="flex items-start">
@@ -291,8 +291,8 @@ const MaterialDetailPage = () => {
 
           {/* 結論 */}
           {parsedContent.conclusion && (
-            <div className="mt-8 p-6 bg-indigo-50 rounded-lg border-l-4 border-indigo-500">
-              <h3 className="text-xl font-semibold mb-3 text-indigo-900">まとめ</h3>
+            <div className="mt-6 p-4 sm:p-6 bg-indigo-50 rounded-lg border-l-4 border-indigo-500">
+              <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-indigo-900">まとめ</h3>
               <p className="text-gray-700">{parsedContent.conclusion}</p>
             </div>
           )}
@@ -448,7 +448,7 @@ const MaterialDetailPage = () => {
         </div>
 
         {/* 教材コンテンツ */}
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
           {renderContent(material.content)}
         </div>
 
@@ -461,11 +461,11 @@ const MaterialDetailPage = () => {
 
         {/* 関連教材 */}
         {relatedMaterials.length > 0 && (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-xl font-bold mb-6">関連教材</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">関連教材</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
               {relatedMaterials.map((relatedMaterial) => (
-                <div key={relatedMaterial.id} className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
+                <div key={relatedMaterial.id} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:border-blue-300 transition-colors">
                   <Link href={`/materials/${relatedMaterial.id}`} className="block h-full">
                     <h4 className="font-medium mb-2 hover:text-blue-600">{relatedMaterial.title}</h4>
                     <div className="flex items-center text-sm text-gray-600 mb-2">
