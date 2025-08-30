@@ -141,11 +141,11 @@ export async function POST(request: NextRequest) {
           content: typeof data.content === 'string' ? data.content : JSON.stringify(data.content),
           category: data.category,
           description: data.description || '',
-          author_id: user.id,
-          difficulty: data.difficulty || 'beginner',
-          status: data.status === 'published' || data.is_public ? 'published' : 'draft',
-          estimated_time: data.estimated_time || 0,
-          allow_comments: data.allow_comments !== false,
+          user_id: user.id,
+          difficulty_level: data.difficulty === 'beginner' ? 1 : 
+                           data.difficulty === 'intermediate' ? 3 : 
+                           data.difficulty === 'advanced' ? 5 : 2,
+          is_published: data.status === 'published' || data.is_public || false,
           tags: data.tags || [],
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
