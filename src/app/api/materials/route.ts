@@ -26,7 +26,19 @@ export async function POST(request: NextRequest) {
       return response;
     }
 
-    const supabase = createClient();
+    let supabase;
+    try {
+      supabase = createClient();
+      console.log('Supabaseクライアント作成成功');
+    } catch (error) {
+      console.error('Supabaseクライアント作成エラー:', error);
+      const response = NextResponse.json(
+        { error: 'データベース接続エラー', details: error.message },
+        { status: 500 }
+      );
+      setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.CREATE);
+      return response;
+    }
     
     // 開発環境での認証スキップオプション
     const isDevelopment = process.env.NODE_ENV === 'development';
@@ -163,8 +175,17 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('教材作成API例外:', error);
+    console.error('エラーの詳細:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
     const response = NextResponse.json(
-      { error: '教材作成中にエラーが発生しました' },
+      { 
+        error: '教材作成中にエラーが発生しました',
+        details: error.message,
+        type: error.name
+      },
       { status: 500 }
     );
     return response;
