@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
     if (isLocalDocker) {
       console.log('ローカルDocker環境: PostgRESTに直接接続');
       
-      const postgrestUrl = 'http://localhost:3005/rest/v1/materials';
+      const postgrestUrl = 'http://localhost:3005/materials';
       const response = await fetch(postgrestUrl, {
         method: 'POST',
         headers: {
