@@ -205,7 +205,7 @@ const MaterialDetailPage = () => {
                             elements.push(
                               <ul key={`list-${lineIndex}`} className="list-disc list-inside mb-4 space-y-1">
                                 {currentList.map((item, itemIndex) => (
-                                  <li key={itemIndex} className="text-gray-700">{item}</li>
+                                  <li key={itemIndex} className="text-sm sm:text-base text-gray-700">{item}</li>
                                 ))}
                               </ul>
                             );
@@ -215,7 +215,7 @@ const MaterialDetailPage = () => {
                           // 見出しの処理
                           if (line.startsWith('# ')) {
                             elements.push(
-                              <h1 key={lineIndex} className="text-2xl font-bold mb-4 text-gray-900">
+                              <h1 key={lineIndex} className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-900">
                                 {line.substring(2)}
                               </h1>
                             );
@@ -223,7 +223,7 @@ const MaterialDetailPage = () => {
                           }
                           if (line.startsWith('## ')) {
                             elements.push(
-                              <h2 key={lineIndex} className="text-xl font-semibold mb-3 text-gray-800">
+                              <h2 key={lineIndex} className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-gray-800">
                                 {line.substring(3)}
                               </h2>
                             );
@@ -231,7 +231,7 @@ const MaterialDetailPage = () => {
                           }
                           if (line.startsWith('### ')) {
                             elements.push(
-                              <h3 key={lineIndex} className="text-lg font-medium mb-2 text-gray-700">
+                              <h3 key={lineIndex} className="text-sm sm:text-base font-medium mb-2 text-gray-700">
                                 {line.substring(4)}
                               </h3>
                             );
@@ -246,7 +246,7 @@ const MaterialDetailPage = () => {
                           
                           // 通常のテキスト
                           elements.push(
-                            <p key={lineIndex} className="mb-2 text-gray-700">
+                            <p key={lineIndex} className="mb-2 text-sm sm:text-base text-gray-700">
                               {line}
                             </p>
                           );
@@ -257,7 +257,7 @@ const MaterialDetailPage = () => {
                           elements.push(
                             <ul key="list-final" className="list-disc list-inside mb-4 space-y-1">
                               {currentList.map((item, itemIndex) => (
-                                <li key={itemIndex} className="text-gray-700">{item}</li>
+                                <li key={itemIndex} className="text-sm sm:text-base text-gray-700">{item}</li>
                               ))}
                             </ul>
                           );
@@ -448,7 +448,7 @@ const MaterialDetailPage = () => {
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
           <div className="mb-3 sm:mb-4">
             <div className="flex items-start justify-between mb-3">
-              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 flex-1 mr-4">{material.title}</h1>
+              <h1 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 flex-1 mr-4">{material.title}</h1>
               <button
                 onClick={toggleBookmark}
                 className={`p-3 min-w-[40px] min-h-[40px] rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95 touch-manipulation transition-all flex-shrink-0 ${
@@ -463,7 +463,7 @@ const MaterialDetailPage = () => {
               </button>
             </div>
             
-            <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">{material.description}</p>
+            <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">{material.description}</p>
             
             {/* カテゴリと難易度 */}
             <div className="flex flex-wrap gap-2 mb-2 sm:mb-3">
@@ -554,12 +554,12 @@ const MaterialDetailPage = () => {
         {/* 関連教材 */}
         {relatedMaterials.length > 0 && (
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-            <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">関連教材</h3>
+            <h3 className="text-base sm:text-lg font-bold mb-4 sm:mb-6">関連教材</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
               {relatedMaterials.map((relatedMaterial) => (
                 <div key={relatedMaterial.id} className="rounded-lg p-3 sm:p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
                   <Link href={`/materials/${relatedMaterial.id}`} className="block h-full">
-                    <h4 className="font-medium mb-2 hover:text-blue-600">{relatedMaterial.title}</h4>
+                    <h4 className="text-sm sm:text-base font-medium mb-2 hover:text-blue-600">{relatedMaterial.title}</h4>
                     <div className="flex items-center text-sm text-gray-600 mb-2">
                       <span className="mr-3">{relatedMaterial.author_name}</span>
                       <div className="flex text-yellow-500">
