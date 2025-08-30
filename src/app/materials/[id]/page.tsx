@@ -366,65 +366,65 @@ const MaterialDetailPage = () => {
       <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
         {/* 教材ヘッダー */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start mb-3 sm:mb-4 gap-3">
-            <div className="flex-1">
-              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">{material.title}</h1>
-              <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">{material.description}</p>
-              
-              {/* カテゴリと難易度 */}
-              <div className="flex flex-wrap gap-2 mb-2 sm:mb-3">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  material.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
-                  material.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-red-100 text-red-800'
-                }`}>
-                  {getDifficultyText(material.difficulty)}
-                </span>
-                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
-                  {material.category}
-                </span>
-              </div>
+          <div className="mb-3 sm:mb-4">
+            <div className="flex items-start justify-between mb-3">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 flex-1 mr-4">{material.title}</h1>
+              <button
+                onClick={toggleBookmark}
+                className={`p-3 min-w-[40px] min-h-[40px] rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95 touch-manipulation transition-all flex-shrink-0 ${
+                  material.is_bookmarked 
+                    ? 'bg-blue-100 text-blue-600' 
+                    : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                }`}
+                aria-label={material.is_bookmarked ? 'ブックマークを削除' : 'ブックマークに追加'}
+                aria-pressed={material.is_bookmarked}
+              >
+                {material.is_bookmarked ? <FaBookmark size={18} /> : <FaRegBookmark size={18} />}
+              </button>
+            </div>
+            
+            <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">{material.description}</p>
+            
+            {/* カテゴリと難易度 */}
+            <div className="flex flex-wrap gap-2 mb-2 sm:mb-3">
+              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                material.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
+                material.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                'bg-red-100 text-red-800'
+              }`}>
+                {getDifficultyText(material.difficulty)}
+              </span>
+              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                {material.category}
+              </span>
+            </div>
 
-              {/* 評価と閲覧数 */}
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                <div className="flex items-center text-yellow-500">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-sm sm:text-base">
-                      {i < Math.floor(material.rating) ? <FaStar /> : <FaRegStar />}
-                    </span>
-                  ))}
-                  <span className="ml-1 text-gray-700 text-xs">{material.rating}</span>
-                </div>
-                <div className="flex items-center text-gray-500 text-xs">
-                  <FaUser className="mr-1" />
-                  {material.view_count} 閲覧
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-1 mb-3 sm:mb-4">
-                {material.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
-                  >
-                    #{tag}
+            {/* 評価と閲覧数 */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+              <div className="flex items-center text-yellow-500">
+                {[...Array(5)].map((_, i) => (
+                  <span key={i} className="text-sm sm:text-base">
+                    {i < Math.floor(material.rating) ? <FaStar /> : <FaRegStar />}
                   </span>
                 ))}
+                <span className="ml-1 text-gray-700 text-xs">{material.rating}</span>
+              </div>
+              <div className="flex items-center text-gray-500 text-xs">
+                <FaUser className="mr-1" />
+                {material.view_count} 閲覧
               </div>
             </div>
 
-            <button
-              onClick={toggleBookmark}
-              className={`ml-4 p-3 min-w-[40px] min-h-[40px] rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95 touch-manipulation transition-all ${
-                material.is_bookmarked 
-                  ? 'bg-blue-100 text-blue-600' 
-                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-              }`}
-              aria-label={material.is_bookmarked ? 'ブックマークを削除' : 'ブックマークに追加'}
-              aria-pressed={material.is_bookmarked}
-            >
-              {material.is_bookmarked ? <FaBookmark size={18} /> : <FaRegBookmark size={18} />}
-            </button>
+            <div className="flex flex-wrap gap-1 mb-3 sm:mb-4">
+              {material.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
           </div>
 
           {/* 著者情報 */}
