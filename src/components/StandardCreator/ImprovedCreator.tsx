@@ -348,7 +348,7 @@ const ImprovedCreator: React.FC = () => {
                 value={material.title}
                 onChange={(e) => setMaterial(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="例: 英語の基本文法マスター講座"
-                className="w-full text-base sm:text-lg lg:text-xl font-semibold border-none focus:ring-0 p-0 placeholder-gray-400"
+                className="w-full text-base sm:text-lg lg:text-xl font-semibold text-gray-900 border-none focus:ring-0 p-0 placeholder-gray-500 bg-transparent"
                 style={{ outline: 'none' }}
               />
               <div className="mt-2 text-xs sm:text-sm text-gray-500">
