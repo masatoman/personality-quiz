@@ -190,7 +190,7 @@ const MaterialDetailPage = () => {
                     <div className="text-gray-700 mb-4 prose prose-lg max-w-none">
                       {(() => {
                         const lines = section.content.split('\n');
-                        const elements: JSX.Element[] = [];
+                        const elements: React.ReactElement[] = [];
                         let currentList: string[] = [];
                         let listRendered = false;
                         

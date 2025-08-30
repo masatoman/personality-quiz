@@ -261,12 +261,27 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category');
     const difficulty = searchParams.get('difficulty');
     const search = searchParams.get('search');
+    const userId = searchParams.get('user_id');
+    const isPublished = searchParams.get('is_published');
     
     // ローカルDocker環境ではPostgRESTに直接接続
     if (isLocalDocker) {
       console.log('ローカルDocker環境: PostgRESTに直接接続');
       
-      let url = 'http://localhost:3002/rest/v1/materials?select=*&is_published=eq.true&order=created_at.desc';
+      let url = 'http://localhost:3002/rest/v1/materials?select=*&order=created_at.desc';
+      
+      // ユーザーIDによる絞り込み（マイ教材用）
+      if (userId) {
+        url += `&user_id=eq.${userId}`;
+      } else {
+        // ユーザーIDが指定されていない場合は公開済みのみ
+        url += `&is_published=eq.true`;
+      }
+      
+      // 公開状態による絞り込み
+      if (isPublished !== null) {
+        url += `&is_published=eq.${isPublished}`;
+      }
       
       // フィルタリング
       if (category) {
@@ -303,13 +318,51 @@ export async function GET(request: NextRequest) {
       const materials = await response.json();
       console.log('PostgREST レスポンス:', materials);
       
+      // 作者情報を取得
+      const materialsWithAuthors = await Promise.all(
+        (materials || []).map(async (material: any) => {
+          let authorName = '匿名ユーザー';
+          let authorAvatar = '/avatars/default.png';
+
+          if (material.user_id) {
+            try {
+              const profileResponse = await fetch(`http://localhost:3002/rest/v1/profiles?select=*&id=eq.${material.user_id}`, {
+                headers: {
+                  'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.ZopqoUt20nEV9cklpv9jtLgXMv3cJYAYfdv-q2I9t0c'
+                }
+              });
+              
+              if (profileResponse.ok) {
+                const profiles = await profileResponse.json();
+                if (profiles && profiles.length > 0) {
+                  const profile = profiles[0];
+                  authorName = profile.display_name || profile.username || '匿名ユーザー';
+                  authorAvatar = profile.avatar_url || '/avatars/default.png';
+                }
+              }
+            } catch (error) {
+              console.error('プロファイル取得エラー:', error);
+            }
+          }
+
+          return {
+            ...material,
+            author: {
+              id: material.user_id,
+              name: authorName,
+              avatar: authorAvatar
+            }
+          };
+        })
+      );
+      
       return NextResponse.json({
-        materials: materials || [],
+        materials: materialsWithAuthors || [],
         pagination: {
           page,
           limit,
-          total: materials?.length || 0,
-          hasMore: (materials?.length || 0) === limit
+          total: materialsWithAuthors?.length || 0,
+          hasMore: (materialsWithAuthors?.length || 0) === limit
         }
       });
     }
@@ -321,8 +374,20 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('materials')
       .select('*')
-      .eq('is_published', true)
       .order('created_at', { ascending: false });
+
+    // ユーザーIDによる絞り込み（マイ教材用）
+    if (userId) {
+      query = query.eq('user_id', userId);
+    } else {
+      // ユーザーIDが指定されていない場合は公開済みのみ
+      query = query.eq('is_published', true);
+    }
+    
+    // 公開状態による絞り込み
+    if (isPublished !== null) {
+      query = query.eq('is_published', isPublished === 'true');
+    }
 
     // フィルタリング
     if (category) {

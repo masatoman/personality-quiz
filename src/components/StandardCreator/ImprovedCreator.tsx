@@ -6,7 +6,7 @@ import { Bars3Icon } from '@heroicons/react/24/outline';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useToast } from '../../hooks/useToast';
 import ToastContainer from '../ui/ToastContainer';
-import { FaEye, FaPencilAlt, FaQuestion, FaImage, FaVideo, FaMusic, FaStar, FaPalette, FaLightbulb, FaCog } from 'react-icons/fa';
+import { FaEye, FaPencilAlt, FaQuestion, FaImage, FaVideo, FaMusic, FaStar, FaPalette, FaLightbulb } from 'react-icons/fa';
 
 // 型定義
 interface ContentSection {

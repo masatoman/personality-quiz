@@ -16,11 +16,7 @@ import {
   FaStar 
 } from 'react-icons/fa';
 
-interface FilterOptions {
-  category: string[];
-  level: string[];
-  sortBy: string;
-}
+
 
 export default function MaterialsFilter() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);

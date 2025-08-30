@@ -70,6 +70,33 @@ export async function GET(
         return 'advanced';
       };
       
+      // 作者情報を取得
+      let authorName = '匿名ユーザー';
+      let authorAvatar = '/avatars/default.png';
+      let authorGiverScore = 50;
+      let authorType = 'マッチャー';
+
+      if (materialData.user_id) {
+        try {
+          const profileResponse = await fetch(`http://localhost:3002/rest/v1/profiles?select=*&id=eq.${materialData.user_id}`, {
+            headers: {
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.ZopqoUt20nEV9cklpv9jtLgXMv3cJYAYfdv-q2I9t0c'
+            }
+          });
+          
+          if (profileResponse.ok) {
+            const profiles = await profileResponse.json();
+            if (profiles && profiles.length > 0) {
+              const profile = profiles[0];
+              authorName = profile.display_name || profile.username || '匿名ユーザー';
+              authorAvatar = profile.avatar_url || '/avatars/default.png';
+            }
+          }
+        } catch (error) {
+          console.error('プロファイル取得エラー:', error);
+        }
+      }
+
       // レスポンスデータを構築
       const responseData = {
         id: materialData.id,
@@ -80,10 +107,10 @@ export async function GET(
         difficulty: getDifficultyLabel(materialData.difficulty_level),
         author: {
           id: materialData.user_id,
-          name: '匿名ユーザー',
-          avatar: '/avatars/default.png',
-          giverScore: 50,
-          type: 'マッチャー'
+          name: authorName,
+          avatar: authorAvatar,
+          giverScore: authorGiverScore,
+          type: authorType
         },
         created_at: materialData.created_at,
         view_count: (materialData.view_count || 0) + 1,

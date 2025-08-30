@@ -31,35 +31,86 @@ export default function MyMaterialsPage() {
         setLoading(true);
         const supabase = getClient();
         
-        // ユーザー情報を取得
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        // 開発環境でのダミーユーザーID
+        let userId: string | null = process.env.NEXT_PUBLIC_SKIP_AUTH === 'true' 
+          ? '550e8400-e29b-41d4-a716-446655440001' 
+          : null;
         
-        if (userError || !user) {
-          setError('ユーザー情報の取得に失敗しました。ログインしてください。');
-          setLoading(false);
-          return;
+        if (!userId) {
+          // 本番環境では通常の認証を使用
+          const { data: { user }, error: userError } = await supabase.auth.getUser();
+          
+          if (userError || !user) {
+            setError('ユーザー情報の取得に失敗しました。ログインしてください。');
+            setLoading(false);
+            return;
+          }
+          
+          userId = user.id;
         }
         
-        // ユーザーIDに基づいて教材を取得 (user_idを使用)
-        let query = supabase
-          .from('materials')
-          .select('*')
-          .eq('user_id', user.id);
+        // ローカルDocker環境かどうかを判定
+        const isLocalDocker = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('localhost:3002');
         
-        // タブに応じてフィルタリング
-        if (activeTab === 'published') {
-          query = query.eq('status', 'published');
-        } else if (activeTab === 'draft') {
-          query = query.eq('status', 'draft');
+        let data;
+        let materialsError;
+        
+        if (isLocalDocker) {
+          // ローカルDocker環境ではAPIエンドポイントを使用
+          const apiUrl = '/api/materials';
+          let queryParams = `user_id=${userId}`;
+          
+          // タブに応じてフィルタリング
+          if (activeTab === 'published') {
+            queryParams += '&is_published=true';
+          } else if (activeTab === 'draft') {
+            queryParams += '&is_published=false';
+          }
+          
+          const response = await fetch(`${apiUrl}?${queryParams}`);
+          
+          if (!response.ok) {
+            materialsError = new Error(`APIエラー: ${response.status}`);
+          } else {
+            const result = await response.json();
+            data = result.materials || [];
+          }
+        } else {
+          // 通常のSupabase接続
+          let query = supabase
+            .from('materials')
+            .select('*')
+            .eq('user_id', userId);
+          
+          // タブに応じてフィルタリング
+          if (activeTab === 'published') {
+            query = query.eq('is_published', true);
+          } else if (activeTab === 'draft') {
+            query = query.eq('is_published', false);
+          }
+          
+          const result = await query;
+          data = result.data;
+          materialsError = result.error;
         }
-        
-        const { data, error: materialsError } = await query;
         
         if (materialsError) {
           console.error('教材取得エラー:', materialsError);
           setError('教材の取得に失敗しました。');
         } else {
-          setMaterials(data || []);
+          // データを変換してMaterial型に合わせる
+          const convertedMaterials = (data || []).map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            description: item.description || '',
+            thumbnail_url: item.thumbnail_url,
+            status: item.is_published ? 'published' : 'draft',
+            view_count: item.view_count || 0,
+            rating: item.rating || 0,
+            created_at: item.created_at,
+            updated_at: item.updated_at
+          }));
+          setMaterials(convertedMaterials);
         }
       } catch (err) {
         console.error('マイ教材取得エラー:', err);

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Material } from '@/types/material';
-import { FaStar, FaRegStar, FaUser, FaEye, FaClock, FaArrowRight } from 'react-icons/fa';
+import { FaEye, FaClock, FaArrowRight } from 'react-icons/fa';
 
 export default function MaterialsList() {
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -65,8 +65,8 @@ export default function MaterialsList() {
           updatedAt: item.updated_at,
           author: {
             id: item.user_id || 'unknown',
-            name: '匿名ユーザー', // API側で作者情報を含めるよう後で修正
-            avatarUrl: '/avatars/default.png',
+            name: item.author?.name || '匿名ユーザー',
+            avatarUrl: item.author?.avatar || '/avatars/default.png',
             bio: '',
             expertise: []
           },

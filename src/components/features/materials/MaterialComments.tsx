@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { FaHeart, FaRegHeart, FaUser, FaReply, FaLightbulb, FaGift, FaStar } from 'react-icons/fa';
+import { FaHeart, FaRegHeart, FaUser, FaReply, FaLightbulb, FaGift } from 'react-icons/fa';
 import Image from 'next/image';
 
 interface Comment {
@@ -140,7 +140,7 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
                   ギバー
                 </span>
                 <span className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-full">
-                  {comment.profiles.giver_score || 0}pt
+                  50pt
                 </span>
               </div>
               <p className="text-xs text-gray-500">

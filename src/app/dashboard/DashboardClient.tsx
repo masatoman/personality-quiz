@@ -4,7 +4,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import ActivitySummary from '@/components/dashboard/ActivitySummary';
 import GiverScoreChart from '@/components/dashboard/GiverScoreChart';
 import ActivityPieChart from '@/components/dashboard/ActivityPieChart';
-import PMFMetrics from '@/components/dashboard/PMFMetrics';
+
 import LoadingSpinner from '@/components/common/atoms/LoadingSpinner';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import type { ErrorInfo } from 'react';
@@ -167,8 +167,7 @@ const DashboardContent = () => {
           </div>
         </div>
         
-        {/* PMF指標セクション */}
-        <PMFMetrics />
+
       </div>
     </div>
   );
