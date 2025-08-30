@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { FaStar, FaRegStar, FaUser, FaArrowLeft, FaBookmark, FaRegBookmark } from 'react-icons/fa';
+import { FaStar, FaRegStar, FaUser, FaArrowLeft, FaBookmark, FaRegBookmark, FaLightbulb, FaBook, FaEdit } from 'react-icons/fa';
 import Image from 'next/image';
 
 // import MaterialComments from '@/components/features/materials/MaterialComments';
@@ -196,9 +196,15 @@ const MaterialDetailPage = () => {
                         {section.examples.map((example: any, exIndex: number) => (
                           <div key={exIndex} className="p-4 bg-gray-50 rounded-lg border-l-4 border-green-500">
                             <div className="font-medium text-green-800 mb-1">{example.phrase}</div>
-                            <div className="text-gray-600 text-sm mb-1">📖 {example.japanese}</div>
+                            <div className="text-gray-600 text-sm mb-1 flex items-center gap-1">
+                              <FaBook className="text-gray-400 text-xs" />
+                              {example.japanese}
+                            </div>
                             {example.situation && (
-                              <div className="text-gray-500 text-xs">💡 {example.situation}</div>
+                              <div className="text-gray-500 text-xs flex items-center gap-1">
+                                <FaLightbulb className="text-gray-400 text-xs" />
+                                {example.situation}
+                              </div>
                             )}
                             {example.purpose && (
                               <div className="text-gray-500 text-xs">🎯 {example.purpose}</div>
@@ -212,7 +218,10 @@ const MaterialDetailPage = () => {
                   {/* クイズ */}
                   {section.type === 'quiz' && section.questions && (
                     <div className="mt-4">
-                      <h4 className="text-base sm:text-lg font-medium mb-2 sm:mb-3 text-gray-800">📝 練習問題</h4>
+                      <h4 className="text-base sm:text-lg font-medium mb-2 sm:mb-3 text-gray-800 flex items-center gap-2">
+                        <FaEdit className="text-gray-600 text-sm" />
+                        練習問題
+                      </h4>
                       {section.questions.map((question: any, qIndex: number) => (
                         <div key={qIndex} className="p-4 bg-yellow-50 rounded-lg border border-yellow-200 mb-3">
                           <div className="font-medium mb-3">{question.question}</div>
@@ -229,8 +238,9 @@ const MaterialDetailPage = () => {
                             ))}
                           </div>
                           {question.explanation && (
-                            <div className="mt-3 p-3 bg-blue-50 rounded text-sm text-blue-800">
-                              💡 {question.explanation}
+                            <div className="mt-3 p-3 bg-blue-50 rounded text-sm text-blue-800 flex items-start gap-2">
+                              <FaLightbulb className="text-blue-600 text-sm mt-0.5 flex-shrink-0" />
+                              <span>{question.explanation}</span>
                             </div>
                           )}
                         </div>

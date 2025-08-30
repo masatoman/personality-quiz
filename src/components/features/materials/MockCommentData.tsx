@@ -203,12 +203,12 @@ const MockCommentData: React.FC = () => {
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-8">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-bold">💬 コメント・気づき ({mockComments.filter(c => c.depth === 0).length})</h3>
+        <h3 className="text-lg font-medium text-gray-900">コメント・気づき ({mockComments.filter(c => c.depth === 0).length})</h3>
         
         {/* ソート切り替え */}
-        <select className="border border-gray-300 rounded-lg px-3 py-1">
-          <option value="helpful_count">❤️ 役立った順</option>
-          <option value="created_at">🕒 新しい順</option>
+        <select className="border border-gray-200 rounded-md px-3 py-1 text-sm text-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+          <option value="helpful_count">役立った順</option>
+          <option value="created_at">新しい順</option>
         </select>
       </div>
 
