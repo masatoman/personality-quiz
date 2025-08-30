@@ -5,7 +5,7 @@ import MaterialsList from './materials/_components/MaterialsList';
 import LoadingSpinner from '@/components/common/atoms/LoadingSpinner';
 import MaterialsFilter from '@/components/features/materials/MaterialsFilter';
 import MaterialsSearch from '@/components/features/materials/MaterialsSearch';
-import { FaFilter, FaChevronDown, FaChevronUp, FaBookOpen, FaUsers } from 'react-icons/fa';
+import { FaFilter, FaChevronDown, FaChevronUp, FaBookOpen, FaUsers, FaRocket } from 'react-icons/fa';
 
 export default function HomePage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);

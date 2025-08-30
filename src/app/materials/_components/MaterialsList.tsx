@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Material } from '@/types/material';
+import { FaStar, FaRegStar, FaUser, FaEye, FaClock, FaArrowRight } from 'react-icons/fa';
 
 export default function MaterialsList() {
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -218,17 +219,17 @@ export default function MaterialsList() {
             <div className="flex items-center justify-between text-sm text-gray-600">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
-                  <span className="text-gray-400">👁️</span>
+                  <FaEye className="text-gray-400 text-sm" />
                   <span className="font-medium">{material.view_count}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="text-gray-400">⏱️</span>
+                  <FaClock className="text-gray-400 text-sm" />
                   <span className="font-medium">{material.estimatedTime}分</span>
                 </div>
               </div>
               <div className="flex items-center text-blue-600 font-medium text-sm group-hover:text-blue-700 transition-colors">
                 詳細を見る
-                <span className="ml-1 transform group-hover:translate-x-1 transition-transform">→</span>
+                <FaArrowRight className="ml-1 transform group-hover:translate-x-1 transition-transform text-sm" />
               </div>
             </div>
           </div>

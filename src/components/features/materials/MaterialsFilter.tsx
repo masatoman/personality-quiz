@@ -1,5 +1,20 @@
 import React, { useState } from 'react';
-import { FaFilter, FaTimes, FaSort, FaGraduationCap, FaBook } from 'react-icons/fa';
+import { 
+  FaFilter, 
+  FaTimes, 
+  FaSort, 
+  FaGraduationCap, 
+  FaBook, 
+  FaEdit, 
+  FaClock, 
+  FaMagic, 
+  FaCheck, 
+  FaSync, 
+  FaLink, 
+  FaEllipsisH, 
+  FaFire, 
+  FaStar 
+} from 'react-icons/fa';
 
 interface FilterOptions {
   category: string[];
@@ -14,14 +29,14 @@ export default function MaterialsFilter() {
 
   // 中学英文法の文法項目別カテゴリ
   const categories = [
-    { id: 'be_verbs', name: 'be動詞・一般動詞', icon: '📝' },
-    { id: 'present_progressive', name: '現在進行形・過去形', icon: '⏰' },
-    { id: 'future_modal', name: '未来形・助動詞', icon: '🔮' },
-    { id: 'present_perfect', name: '現在完了', icon: '✅' },
-    { id: 'passive_voice', name: '受動態', icon: '🔄' },
-    { id: 'infinitive_gerund', name: '不定詞・動名詞', icon: '📚' },
-    { id: 'relative_pronouns', name: '関係代名詞', icon: '🔗' },
-    { id: 'others', name: 'その他', icon: '📖' }
+    { id: 'be_verbs', name: 'be動詞・一般動詞', icon: <FaEdit /> },
+    { id: 'present_progressive', name: '現在進行形・過去形', icon: <FaClock /> },
+    { id: 'future_modal', name: '未来形・助動詞', icon: <FaMagic /> },
+    { id: 'present_perfect', name: '現在完了', icon: <FaCheck /> },
+    { id: 'passive_voice', name: '受動態', icon: <FaSync /> },
+    { id: 'infinitive_gerund', name: '不定詞・動名詞', icon: <FaBook /> },
+    { id: 'relative_pronouns', name: '関係代名詞', icon: <FaLink /> },
+    { id: 'others', name: 'その他', icon: <FaEllipsisH /> }
   ];
 
   // 学年別レベルフィルター
@@ -32,9 +47,9 @@ export default function MaterialsFilter() {
   ];
 
   const sortOptions = [
-    { id: 'newest', name: '新着順', icon: '🕒' },
-    { id: 'popular', name: '人気順', icon: '🔥' },
-    { id: 'rating', name: '評価順', icon: '⭐' }
+    { id: 'newest', name: '新着順', icon: <FaClock /> },
+    { id: 'popular', name: '人気順', icon: <FaFire /> },
+    { id: 'rating', name: '評価順', icon: <FaStar /> }
   ];
 
   const handleCategoryToggle = (categoryId: string) => {
@@ -101,7 +116,7 @@ export default function MaterialsFilter() {
                     : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <span className="text-lg">{category.icon}</span>
+                                 <span className="text-gray-600">{category.icon}</span>
                 <span className="text-sm font-medium">{category.name}</span>
                 {selectedCategories.includes(category.id) && (
                   <FaTimes className="ml-auto text-blue-600 text-xs" />
@@ -152,7 +167,7 @@ export default function MaterialsFilter() {
           >
             {sortOptions.map(option => (
               <option key={option.id} value={option.id}>
-                {option.icon} {option.name}
+                {option.name}
               </option>
             ))}
           </select>
@@ -166,11 +181,11 @@ export default function MaterialsFilter() {
               {selectedCategories.map(categoryId => {
                 const category = categories.find(c => c.id === categoryId);
                 return (
-                  <span
-                    key={categoryId}
-                    className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs"
-                  >
-                    {category?.icon} {category?.name}
+                                     <span
+                     key={categoryId}
+                     className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs"
+                   >
+                     <span className="text-gray-600">{category?.icon}</span> {category?.name}
                     <button
                       onClick={() => handleCategoryToggle(categoryId)}
                       className="ml-1 hover:text-blue-800"

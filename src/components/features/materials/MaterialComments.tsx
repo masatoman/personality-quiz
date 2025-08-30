@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { FaHeart, FaRegHeart, FaUser, FaReply } from 'react-icons/fa';
+import { FaHeart, FaRegHeart, FaUser, FaReply, FaLightbulb, FaGift, FaStar } from 'react-icons/fa';
 import Image from 'next/image';
 
 interface Comment {
@@ -272,7 +272,7 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
           <div className="px-6 py-5 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <span className="text-blue-600 text-lg">💡</span>
+                <FaLightbulb className="text-blue-600 text-lg" />
               </div>
               <div>
                 <h4 className="text-lg font-semibold text-gray-900">気づきを共有</h4>
@@ -287,11 +287,11 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
           <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
             <div className="flex flex-wrap gap-3">
               <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg border border-blue-100">
-                <span className="text-blue-600 text-sm">🎁</span>
+                <FaGift className="text-blue-600 text-sm" />
                 <span className="text-sm font-medium text-blue-700">投稿で15pt</span>
               </div>
               <div className="flex items-center gap-2 px-3 py-2 bg-red-50 rounded-lg border border-red-100">
-                <span className="text-red-600 text-sm">❤️</span>
+                <FaHeart className="text-red-600 text-sm" />
                 <span className="text-sm font-medium text-red-700">ハートで+5pt</span>
               </div>
             </div>
@@ -325,7 +325,7 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <span className="text-base">✨</span>
+                    <FaStar className="text-base" />
                     <span>気づきを共有</span>
                   </div>
                 )}
