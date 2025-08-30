@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 // ローカルDocker環境でのPostgREST直接接続
-const isLocalDocker = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('localhost:3002');
+const isLocalDocker = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('localhost:3002') || process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('http://localhost:3002');
 
 export async function POST(request: NextRequest) {
   try {
@@ -124,6 +124,9 @@ export async function POST(request: NextRequest) {
     }
 
     // ローカルDocker環境ではPostgRESTに直接接続
+    console.log('isLocalDocker:', isLocalDocker);
+    console.log('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+    
     if (isLocalDocker) {
       console.log('ローカルDocker環境: PostgRESTに直接接続');
       
