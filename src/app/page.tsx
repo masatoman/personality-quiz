@@ -11,38 +11,60 @@ export default function HomePage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">中学英文法教材一覧</h1>
-        <MaterialsSearch />
+    <div className="min-h-screen bg-gray-50">
+      {/* ヘッダー */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-4 py-4">
+          {/* スマホ用タイトル */}
+          <h1 className="text-xl font-bold text-gray-900 lg:hidden mb-4">
+            中学英文法教材一覧
+          </h1>
+          
+          {/* デスクトップ用タイトル */}
+          <div className="hidden lg:flex items-center justify-between">
+            <h1 className="text-3xl font-bold text-gray-900">中学英文法教材一覧</h1>
+            <MaterialsSearch />
+          </div>
+          
+          {/* スマホ用検索バー */}
+          <div className="lg:hidden">
+            <MaterialsSearch />
+          </div>
+        </div>
       </div>
 
-      {/* モバイル用フィルタートグルボタン */}
-      <div className="lg:hidden mb-4">
-        <button
-          onClick={() => setIsFilterOpen(!isFilterOpen)}
-          className="w-full flex items-center justify-between bg-white p-3 rounded-lg shadow border"
-        >
-          <span className="flex items-center">
-            <FaFilter className="mr-2" />
-            フィルター
-          </span>
-          {isFilterOpen ? <FaChevronUp /> : <FaChevronDown />}
-        </button>
-      </div>
+      <div className="container mx-auto px-4 py-6">
+        {/* モバイル用フィルタートグルボタン */}
+        <div className="lg:hidden mb-4">
+          <button
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            className="w-full flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors"
+          >
+            <span className="flex items-center text-gray-700 font-medium">
+              <FaFilter className="mr-2 text-blue-600" />
+              フィルター
+            </span>
+            {isFilterOpen ? (
+              <FaChevronUp className="text-gray-500" />
+            ) : (
+              <FaChevronDown className="text-gray-500" />
+            )}
+          </button>
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-6 gap-8">
-        {/* フィルターサイドバー */}
-        <aside className={`lg:col-span-1 ${isFilterOpen ? 'block' : 'hidden lg:block'}`}>
-          <MaterialsFilter />
-        </aside>
+        <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
+          {/* フィルターサイドバー */}
+          <aside className={`lg:col-span-1 ${isFilterOpen ? 'block' : 'hidden lg:block'}`}>
+            <MaterialsFilter />
+          </aside>
 
-        {/* 教材リスト */}
-        <main className="lg:col-span-5">
-          <Suspense fallback={<LoadingSpinner />}>
-            <MaterialsList />
-          </Suspense>
-        </main>
+          {/* 教材リスト */}
+          <main className="lg:col-span-5">
+            <Suspense fallback={<LoadingSpinner />}>
+              <MaterialsList />
+            </Suspense>
+          </main>
+        </div>
       </div>
     </div>
   );
