@@ -150,41 +150,44 @@ export default function MaterialsList() {
   }
 
   return (
-    <div className="space-y-3 sm:space-y-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {materials.map((material) => (
         <Link
           key={material.id}
           href={`/materials/${material.id}`}
-          className="block bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 overflow-hidden"
+          className="group block bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 overflow-hidden hover:border-blue-200"
         >
-          <div className="p-3 sm:p-4 md:p-6">
-            {/* ヘッダー */}
-            <div className="flex items-start justify-between mb-2 sm:mb-3">
-              <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 line-clamp-2 flex-1 mr-2 sm:mr-3">
+          {/* カードヘッダー */}
+          <div className="p-6 pb-4">
+            {/* タイトルと評価 */}
+            <div className="flex items-start justify-between mb-3">
+              <h3 className="text-lg font-bold text-gray-900 line-clamp-2 flex-1 mr-3 group-hover:text-blue-600 transition-colors">
                 {material.title}
               </h3>
-              <div className="flex items-center text-yellow-500 text-xs sm:text-sm flex-shrink-0">
-                <span>⭐</span>
-                <span className="ml-1">{material.rating}</span>
-              </div>
+              {material.rating > 0 && (
+                <div className="flex items-center text-yellow-500 text-sm flex-shrink-0">
+                  <span className="mr-1">⭐</span>
+                  <span className="font-medium">{material.rating}</span>
+                </div>
+              )}
             </div>
             
-            {/* 説明 */}
+            {/* 説明文 */}
             {material.description && (
-              <p className="text-gray-600 mb-3 sm:mb-4 line-clamp-2 text-xs sm:text-sm md:text-base">
+              <p className="text-gray-600 mb-4 line-clamp-2 text-sm leading-relaxed">
                 {material.description}
               </p>
             )}
             
             {/* カテゴリと難易度 */}
-            <div className="flex flex-wrap gap-1 sm:gap-2 mb-3">
-              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+            <div className="flex flex-wrap gap-2 mb-4">
+              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
                 {material.category}
               </span>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                material.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
-                material.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                'bg-red-100 text-red-800'
+              <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                material.difficulty === 'beginner' ? 'bg-green-100 text-green-700' :
+                material.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-700' :
+                'bg-red-100 text-red-700'
               }`}>
                 {getDifficultyText(material.difficulty)}
               </span>
@@ -192,27 +195,40 @@ export default function MaterialsList() {
 
             {/* タグ */}
             {material.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1 mb-3 overflow-x-auto pb-1">
+              <div className="flex flex-wrap gap-1 mb-4">
                 {material.tags.slice(0, 3).map((tag, index) => (
                   <span 
                     key={index} 
                     className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full whitespace-nowrap flex-shrink-0"
                   >
-                    {tag}
+                    #{tag}
                   </span>
                 ))}
+                {material.tags.length > 3 && (
+                  <span className="px-2 py-1 bg-gray-100 text-gray-500 text-xs rounded-full">
+                    +{material.tags.length - 3}
+                  </span>
+                )}
               </div>
             )}
+          </div>
 
-            {/* 統計情報 */}
-            <div className="flex items-center justify-between text-xs sm:text-sm text-gray-500">
-              <div className="flex items-center">
-                <span className="mr-1">👁️</span>
-                <span>{material.view_count} 閲覧</span>
+          {/* カードフッター */}
+          <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
+            <div className="flex items-center justify-between text-sm text-gray-600">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1">
+                  <span className="text-gray-400">👁️</span>
+                  <span className="font-medium">{material.view_count}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-gray-400">⏱️</span>
+                  <span className="font-medium">{material.estimatedTime}分</span>
+                </div>
               </div>
-              <div className="flex items-center">
-                <span className="mr-1">⏱️</span>
-                <span>{material.estimatedTime}分</span>
+              <div className="flex items-center text-blue-600 font-medium text-sm group-hover:text-blue-700 transition-colors">
+                詳細を見る
+                <span className="ml-1 transform group-hover:translate-x-1 transition-transform">→</span>
               </div>
             </div>
           </div>

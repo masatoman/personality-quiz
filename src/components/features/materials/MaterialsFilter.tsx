@@ -1,99 +1,206 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-unused-vars */
+import React, { useState } from 'react';
+import { FaFilter, FaTimes, FaSort, FaGraduationCap, FaBook } from 'react-icons/fa';
 
-import React from 'react';
-
-// フィルターオプションの型定義
 interface FilterOptions {
-  category: string;
-  level: string;
+  category: string[];
+  level: string[];
   sortBy: string;
 }
 
 export default function MaterialsFilter() {
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState('newest');
+
   // 中学英文法の文法項目別カテゴリ
   const categories = [
-    { id: 'all', name: '全て' },
-    { id: 'be_verbs', name: 'be動詞・一般動詞' },
-    { id: 'present_progressive', name: '現在進行形・過去形' },
-    { id: 'future_modal', name: '未来形・助動詞' },
-    { id: 'present_perfect', name: '現在完了' },
-    { id: 'passive_voice', name: '受動態' },
-    { id: 'infinitive_gerund', name: '不定詞・動名詞' },
-    { id: 'relative_pronouns', name: '関係代名詞' },
-    { id: 'others', name: 'その他' }
+    { id: 'be_verbs', name: 'be動詞・一般動詞', icon: '📝' },
+    { id: 'present_progressive', name: '現在進行形・過去形', icon: '⏰' },
+    { id: 'future_modal', name: '未来形・助動詞', icon: '🔮' },
+    { id: 'present_perfect', name: '現在完了', icon: '✅' },
+    { id: 'passive_voice', name: '受動態', icon: '🔄' },
+    { id: 'infinitive_gerund', name: '不定詞・動名詞', icon: '📚' },
+    { id: 'relative_pronouns', name: '関係代名詞', icon: '🔗' },
+    { id: 'others', name: 'その他', icon: '📖' }
   ];
 
   // 学年別レベルフィルター
   const levels = [
-    { id: 'all', name: '全て' },
-    { id: 'grade1', name: '中1レベル' },
-    { id: 'grade2', name: '中2レベル' },
-    { id: 'grade3', name: '中3レベル' }
+    { id: 'grade1', name: '中1レベル', color: 'bg-green-100 text-green-700' },
+    { id: 'grade2', name: '中2レベル', color: 'bg-blue-100 text-blue-700' },
+    { id: 'grade3', name: '中3レベル', color: 'bg-purple-100 text-purple-700' }
   ];
 
   const sortOptions = [
-    { id: 'newest', name: '新着順' },
-    { id: 'popular', name: '人気順' },
-    { id: 'rating', name: '評価順' }
+    { id: 'newest', name: '新着順', icon: '🕒' },
+    { id: 'popular', name: '人気順', icon: '🔥' },
+    { id: 'rating', name: '評価順', icon: '⭐' }
   ];
 
+  const handleCategoryToggle = (categoryId: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(categoryId) 
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    );
+  };
+
+  const handleLevelToggle = (levelId: string) => {
+    setSelectedLevels(prev => 
+      prev.includes(levelId) 
+        ? prev.filter(id => id !== levelId)
+        : [...prev, levelId]
+    );
+  };
+
+  const handleReset = () => {
+    setSelectedCategories([]);
+    setSelectedLevels([]);
+    setSortBy('newest');
+  };
+
+  const hasActiveFilters = selectedCategories.length > 0 || selectedLevels.length > 0;
+
   return (
-    <div className="bg-white p-4 sm:p-3 rounded-lg shadow-sm border border-gray-200">
-      <h2 className="text-lg sm:text-base font-bold mb-4 sm:mb-3 text-gray-900">フィルター</h2>
-      
-      {/* 文法項目 */}
-      <div className="mb-6 sm:mb-4">
-        <h3 className="font-medium mb-3 sm:mb-2 text-sm text-gray-800">文法項目</h3>
-        <div className="space-y-2 sm:space-y-1">
-          {categories.map(category => (
-            <label key={category.id} className="flex items-center text-sm sm:text-xs cursor-pointer hover:bg-gray-50 p-1 rounded">
-              <input
-                type="radio"
-                name="category"
-                value={category.id}
-                className="mr-3 sm:mr-2 text-blue-600"
-              />
-              <span className="text-gray-700">{category.name}</span>
-            </label>
-          ))}
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      {/* ヘッダー */}
+      <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+              <FaFilter className="text-blue-600 text-sm" />
+            </div>
+            <h2 className="text-lg font-semibold text-gray-900">フィルター</h2>
+          </div>
+          {hasActiveFilters && (
+            <button
+              onClick={handleReset}
+              className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+            >
+              リセット
+            </button>
+          )}
         </div>
       </div>
 
-      {/* 学年レベル */}
-      <div className="mb-6 sm:mb-4">
-        <h3 className="font-medium mb-3 sm:mb-2 text-sm text-gray-800">学年レベル</h3>
-        <div className="space-y-2 sm:space-y-1">
-          {levels.map(level => (
-            <label key={level.id} className="flex items-center text-sm sm:text-xs cursor-pointer hover:bg-gray-50 p-1 rounded">
-              <input
-                type="radio"
-                name="level"
-                value={level.id}
-                className="mr-3 sm:mr-2 text-blue-600"
-              />
-              <span className="text-gray-700">{level.name}</span>
-            </label>
-          ))}
+      <div className="p-6 space-y-6">
+        {/* 文法項目 */}
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <FaBook className="text-gray-500 text-sm" />
+            <h3 className="font-medium text-gray-900">文法項目</h3>
+          </div>
+          <div className="space-y-2">
+            {categories.map(category => (
+              <button
+                key={category.id}
+                onClick={() => handleCategoryToggle(category.id)}
+                className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 text-left ${
+                  selectedCategories.includes(category.id)
+                    ? 'bg-blue-50 border-blue-200 text-blue-700'
+                    : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <span className="text-lg">{category.icon}</span>
+                <span className="text-sm font-medium">{category.name}</span>
+                {selectedCategories.includes(category.id) && (
+                  <FaTimes className="ml-auto text-blue-600 text-xs" />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* 並び替え */}
-      <div className="mb-6 sm:mb-4">
-        <h3 className="font-medium mb-3 sm:mb-2 text-sm text-gray-800">並び替え</h3>
-        <select className="w-full p-2 sm:p-1 border border-gray-300 rounded-md text-sm sm:text-xs bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-          {sortOptions.map(option => (
-            <option key={option.id} value={option.id}>
-              {option.name}
-            </option>
-          ))}
-        </select>
-      </div>
+        {/* 学年レベル */}
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <FaGraduationCap className="text-gray-500 text-sm" />
+            <h3 className="font-medium text-gray-900">学年レベル</h3>
+          </div>
+          <div className="space-y-2">
+            {levels.map(level => (
+              <button
+                key={level.id}
+                onClick={() => handleLevelToggle(level.id)}
+                className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 text-left ${
+                  selectedLevels.includes(level.id)
+                    ? 'bg-blue-50 border-blue-200 text-blue-700'
+                    : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${level.color}`}>
+                  {level.name}
+                </span>
+                {selectedLevels.includes(level.id) && (
+                  <FaTimes className="ml-auto text-blue-600 text-xs" />
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
 
-      {/* フィルターをリセット */}
-      <button className="w-full bg-gray-100 text-gray-700 py-2 sm:py-1 px-3 sm:px-2 rounded-md hover:bg-gray-200 text-sm sm:text-xs font-medium transition-colors">
-        フィルターをリセット
-      </button>
+        {/* 並び替え */}
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <FaSort className="text-gray-500 text-sm" />
+            <h3 className="font-medium text-gray-900">並び替え</h3>
+          </div>
+          <select 
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="w-full p-3 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+          >
+            {sortOptions.map(option => (
+              <option key={option.id} value={option.id}>
+                {option.icon} {option.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* アクティブフィルター表示 */}
+        {(selectedCategories.length > 0 || selectedLevels.length > 0) && (
+          <div className="pt-4 border-t border-gray-100">
+            <div className="text-xs text-gray-500 mb-3">アクティブフィルター</div>
+            <div className="flex flex-wrap gap-2">
+              {selectedCategories.map(categoryId => {
+                const category = categories.find(c => c.id === categoryId);
+                return (
+                  <span
+                    key={categoryId}
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs"
+                  >
+                    {category?.icon} {category?.name}
+                    <button
+                      onClick={() => handleCategoryToggle(categoryId)}
+                      className="ml-1 hover:text-blue-800"
+                    >
+                      <FaTimes className="text-xs" />
+                    </button>
+                  </span>
+                );
+              })}
+              {selectedLevels.map(levelId => {
+                const level = levels.find(l => l.id === levelId);
+                return (
+                  <span
+                    key={levelId}
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs"
+                  >
+                    {level?.name}
+                    <button
+                      onClick={() => handleLevelToggle(levelId)}
+                      className="ml-1 hover:text-green-800"
+                    >
+                      <FaTimes className="text-xs" />
+                    </button>
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 } 
