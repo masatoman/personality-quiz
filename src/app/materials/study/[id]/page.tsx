@@ -44,7 +44,7 @@ export default function StudyMaterialPage({ params }: StudyPageProps) {
       <div className="max-w-4xl mx-auto p-4">
         <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg">
           <p>教材データの取得に失敗しました。もう一度お試しください。</p>
-          <Link href="/materials" className="text-blue-600 hover:underline mt-2 inline-block">
+          <Link href="/" className="text-blue-600 hover:underline mt-2 inline-block">
             教材一覧に戻る
           </Link>
         </div>

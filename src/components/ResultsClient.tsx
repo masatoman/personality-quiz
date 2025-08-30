@@ -391,7 +391,7 @@ export function ResultsClient() {
             診断結果が見つかりません。診断を最初からやり直してください。
           </p>
           <div className="mt-4 text-center">
-            <Link href="/materials" className="text-blue-600 hover:underline">
+            <Link href="/" className="text-blue-600 hover:underline">
               教材を探す
             </Link>
           </div>
@@ -403,7 +403,7 @@ export function ResultsClient() {
   return (
     <div className="container mx-auto px-4 py-4 sm:py-8">
       <Link 
-        href="/materials" 
+        href="/" 
         className="flex items-center text-gray-600 hover:text-gray-800 mb-4 sm:mb-6"
       >
         <FaArrowLeft className="mr-2" />

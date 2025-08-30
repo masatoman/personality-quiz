@@ -151,7 +151,7 @@ const MaterialDetailPage = () => {
     if (typeof content === 'string') {
       try {
         parsedContent = JSON.parse(content);
-      } catch (error) {
+      } catch {
         // JSONパースに失敗した場合は、プレーンテキストとして表示
         return (
           <div className="prose prose-lg max-w-none whitespace-pre-wrap">
@@ -327,7 +327,7 @@ const MaterialDetailPage = () => {
           </h1>
           <p className="text-gray-600 mb-8">指定された教材は存在しないか、削除された可能性があります。</p>
           <Link
-            href="/materials"
+            href="/"
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <FaArrowLeft className="mr-2" />
@@ -344,7 +344,7 @@ const MaterialDetailPage = () => {
       <div className="bg-white shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <Link
-            href="/materials"
+            href="/"
             className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4"
           >
             <FaArrowLeft className="mr-2" />

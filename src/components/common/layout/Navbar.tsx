@@ -1,16 +1,25 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { FaHome, FaSearch, FaEdit, FaUser, FaBell, FaBars, FaSignOutAlt, FaCog, FaUserCircle, FaBook } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
+import { 
+  FaBars, 
+  FaHome, 
+  FaSearch, 
+  FaEdit, 
+  FaBook, 
+  FaUser, 
+  FaBell, 
+  FaCog, 
+  FaSignOutAlt 
+} from 'react-icons/fa';
 
 const Navbar: React.FC = () => {
   // 初期値を明示的にfalseに設定
   const [isOpen, setIsOpen] = useState(false);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const profileMenuRef = useRef<HTMLDivElement>(null);
+  const profileMenuRef = React.useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const router = useRouter();
   
@@ -28,7 +37,7 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
-        setShowProfileMenu(false);
+        // setShowProfileMenu(false); // This state was removed, so this line is removed.
       }
     };
 
@@ -41,7 +50,7 @@ const Navbar: React.FC = () => {
   const handleLogout = async () => {
     try {
       await signOut();
-      setShowProfileMenu(false);
+      // setShowProfileMenu(false); // This state was removed, so this line is removed.
       router.push('/');
     } catch (error) {
       console.error('ログアウトに失敗しました', error);
