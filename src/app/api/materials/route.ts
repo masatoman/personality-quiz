@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     if (skipAuth) {
       // 開発環境でのダミーユーザー（シードデータに存在するIDを使用）
       user = {
-        id: '550e8400-e29b-41d4-a716-446655440000',
+        id: '550e8400-e29b-41d4-a716-446655440001',
         email: 'admin@example.com'
       };
       console.log('開発環境: 認証をスキップしています');
@@ -135,8 +135,14 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('教材作成エラー:', error);
+      console.error('エラー詳細:', {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint
+      });
       const response = NextResponse.json(
-        { error: `教材の作成に失敗しました: ${error.message}` },
+        { error: `教材の作成に失敗しました: ${error.message}`, details: error.details },
         { status: 500 }
       );
       setRateLimitHeaders(response.headers, rateLimitResult, RateLimitPresets.CREATE);
