@@ -428,31 +428,33 @@ const MaterialDetailPage = () => {
           </div>
 
           {/* 著者情報 */}
-          <div className="flex items-center justify-between border-t pt-4">
-            <div className="flex items-center">
+          <div className="border-t pt-4">
+            <div className="flex items-start">
               <Image
                 src={material.author.avatar}
                 alt={material.author.name}
                 width={40}
                 height={40}
-                className="rounded-full mr-3"
+                className="rounded-full mr-3 flex-shrink-0"
               />
-              <div>
-                <h3 className="text-sm font-medium text-gray-900">{material.author.name}</h3>
-                <div className="flex items-center text-xs text-gray-500 mt-1">
-                  <span className={`mr-2 px-2 py-1 rounded text-xs ${
-                    material.author.type === 'ギバー' ? 'bg-green-100 text-green-800' :
-                    material.author.type === 'マッチャー' ? 'bg-blue-100 text-blue-800' :
-                    'bg-red-100 text-red-800'
-                  }`}>
-                    {material.author.type}
-                  </span>
-                  <span>ギバースコア: {material.author.giverScore}</span>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-medium text-gray-900 mb-1">{material.author.name}</h3>
+                <div className="space-y-1">
+                  <div className="flex items-center text-xs text-gray-500">
+                    <span className={`mr-2 px-2 py-1 rounded text-xs ${
+                      material.author.type === 'ギバー' ? 'bg-gray-100 text-gray-700' :
+                      material.author.type === 'マッチャー' ? 'bg-gray-100 text-gray-700' :
+                      'bg-gray-100 text-gray-700'
+                    }`}>
+                      {material.author.type}
+                    </span>
+                    <span>ギバースコア: {material.author.giverScore}</span>
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    公開日: {formatDate(material.created_at)}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="text-xs text-gray-500">
-              公開日: {formatDate(material.created_at)}
             </div>
           </div>
         </div>

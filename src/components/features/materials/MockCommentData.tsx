@@ -239,23 +239,23 @@ const MockCommentData: React.FC = () => {
           />
           
           {/* フッター */}
-          <div className="flex justify-between items-center mt-4">
-            <div className="flex items-center gap-4 text-xs text-gray-400">
-              <span>0/2000文字</span>
-              <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1">
-                  <FaGift className="text-gray-400" />
-                  コメント: +15pt
-                </span>
-                <span className="flex items-center gap-1">
-                  <FaHeart className="text-gray-400" />
-                  いいね: +5pt
-                </span>
-              </div>
+          <div className="mt-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-400">0/2000文字</span>
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-md font-medium text-sm hover:bg-blue-700 transition-colors">
+                投稿
+              </button>
             </div>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-md font-medium text-sm hover:bg-blue-700 transition-colors">
-              投稿
-            </button>
+            <div className="flex items-center gap-4 text-xs text-gray-400">
+              <span className="flex items-center gap-1">
+                <FaGift className="text-gray-400" />
+                コメント: +15pt
+              </span>
+              <span className="flex items-center gap-1">
+                <FaHeart className="text-gray-400" />
+                いいね: +5pt
+              </span>
+            </div>
           </div>
         </div>
       </div>

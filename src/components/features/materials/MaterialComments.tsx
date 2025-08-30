@@ -285,34 +285,34 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
             />
             
             {/* フッター */}
-            <div className="flex justify-between items-center mt-4">
-              <div className="flex items-center gap-4 text-xs text-gray-400">
-                <span>{newComment.length}/2000文字</span>
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center gap-1">
-                    <FaGift className="text-gray-400" />
-                    コメント: +15pt
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <FaHeart className="text-gray-400" />
-                    いいね: +5pt
-                  </span>
-                </div>
+            <div className="mt-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-400">{newComment.length}/2000文字</span>
+                <button
+                  onClick={submitComment}
+                  disabled={!newComment.trim() || submitting}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
+                >
+                  {submitting ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>投稿中...</span>
+                    </div>
+                  ) : (
+                    <span>投稿</span>
+                  )}
+                </button>
               </div>
-              <button
-                onClick={submitComment}
-                disabled={!newComment.trim() || submitting}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
-              >
-                {submitting ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>投稿中...</span>
-                  </div>
-                ) : (
-                  <span>投稿</span>
-                )}
-              </button>
+              <div className="flex items-center gap-4 text-xs text-gray-400">
+                <span className="flex items-center gap-1">
+                  <FaGift className="text-gray-400" />
+                  コメント: +15pt
+                </span>
+                <span className="flex items-center gap-1">
+                  <FaHeart className="text-gray-400" />
+                  いいね: +5pt
+                </span>
+              </div>
             </div>
           </div>
         </div>
