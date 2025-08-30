@@ -187,7 +187,85 @@ const MaterialDetailPage = () => {
                   )}
                   
                   {section.content && (
-                    <p className="text-gray-700 mb-4">{section.content}</p>
+                    <div className="text-gray-700 mb-4 prose prose-lg max-w-none">
+                      {(() => {
+                        const lines = section.content.split('\n');
+                        const elements: JSX.Element[] = [];
+                        let currentList: string[] = [];
+                        
+                        lines.forEach((line: string, lineIndex: number) => {
+                          // リストアイテムの処理
+                          if (line.startsWith('- ')) {
+                            currentList.push(line.substring(2));
+                            return;
+                          }
+                          
+                          // リストが終了した場合、リストをレンダリング
+                          if (currentList.length > 0) {
+                            elements.push(
+                              <ul key={`list-${lineIndex}`} className="list-disc list-inside mb-4 space-y-1">
+                                {currentList.map((item, itemIndex) => (
+                                  <li key={itemIndex} className="text-gray-700">{item}</li>
+                                ))}
+                              </ul>
+                            );
+                            currentList = [];
+                          }
+                          
+                          // 見出しの処理
+                          if (line.startsWith('# ')) {
+                            elements.push(
+                              <h1 key={lineIndex} className="text-2xl font-bold mb-4 text-gray-900">
+                                {line.substring(2)}
+                              </h1>
+                            );
+                            return;
+                          }
+                          if (line.startsWith('## ')) {
+                            elements.push(
+                              <h2 key={lineIndex} className="text-xl font-semibold mb-3 text-gray-800">
+                                {line.substring(3)}
+                              </h2>
+                            );
+                            return;
+                          }
+                          if (line.startsWith('### ')) {
+                            elements.push(
+                              <h3 key={lineIndex} className="text-lg font-medium mb-2 text-gray-700">
+                                {line.substring(4)}
+                              </h3>
+                            );
+                            return;
+                          }
+                          
+                          // 空行の処理
+                          if (line.trim() === '') {
+                            elements.push(<br key={lineIndex} />);
+                            return;
+                          }
+                          
+                          // 通常のテキスト
+                          elements.push(
+                            <p key={lineIndex} className="mb-2 text-gray-700">
+                              {line}
+                            </p>
+                          );
+                        });
+                        
+                        // 最後のリストを処理
+                        if (currentList.length > 0) {
+                          elements.push(
+                            <ul key="list-final" className="list-disc list-inside mb-4 space-y-1">
+                              {currentList.map((item, itemIndex) => (
+                                <li key={itemIndex} className="text-gray-700">{item}</li>
+                              ))}
+                            </ul>
+                          );
+                        }
+                        
+                        return elements;
+                      })()}
+                    </div>
                   )}
 
                   {/* 例文・フレーズ */}
