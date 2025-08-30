@@ -123,13 +123,58 @@ export async function POST(request: NextRequest) {
       return response;
     }
 
-    // 教材作成 - materialsテーブルの実際の構造に合わせて調整
+    // ローカルDocker環境ではPostgRESTに直接接続
+    if (isLocalDocker) {
+      console.log('ローカルDocker環境: PostgRESTに直接接続');
+      
+      const postgrestUrl = 'http://localhost:3005/rest/v1/materials';
+      const response = await fetch(postgrestUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''}`,
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({
+          title: data.title,
+          content: typeof data.content === 'string' ? data.content : JSON.stringify(data.content),
+          category: data.category,
+          description: data.description || '',
+          author_id: user.id,
+          difficulty: data.difficulty || 'beginner',
+          status: data.status === 'published' || data.is_public ? 'published' : 'draft',
+          estimated_time: data.estimated_time || 0,
+          allow_comments: data.allow_comments !== false,
+          tags: data.tags || []
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('PostgRESTエラー:', errorText);
+        throw new Error(`PostgRESTエラー: ${response.status} ${errorText}`);
+      }
+
+      const material = await response.json();
+      console.log('PostgREST成功:', material);
+      
+      const successResponse = NextResponse.json({
+        success: true,
+        material: material[0] // PostgRESTは配列を返す
+      }, { status: 201 });
+      
+      setRateLimitHeaders(successResponse.headers, rateLimitResult, RateLimitPresets.CREATE);
+      return successResponse;
+    }
+
+    // 通常のSupabase接続
     const insertData = {
       title: data.title,
       content: typeof data.content === 'string' ? data.content : JSON.stringify(data.content),
       category: data.category,
       description: data.description || '',
-      author_id: user.id, // materialsテーブルのauthor_idフィールドに保存
+      author_id: user.id,
       difficulty: data.difficulty || 'beginner',
       status: data.status === 'published' || data.is_public ? 'published' : 'draft',
       estimated_time: data.estimated_time || 0,
