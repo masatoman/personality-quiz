@@ -1,0 +1,249 @@
+
+-- 教材データの移行
+-- 既存の教材を削除（オプション）
+-- DELETE FROM materials WHERE user_id = '550e8400-e29b-41d4-a716-446655440001';
+
+-- 新しい教材データを挿入
+INSERT INTO materials (
+      user_id, 
+      title, 
+      description, 
+      content, 
+      category, 
+      tags, 
+      difficulty_level, 
+      is_published,
+      created_at,
+      updated_at
+    ) VALUES (
+      '550e8400-e29b-41d4-a716-446655440001',
+      '英語の基本的な挨拶と自己紹介',
+      '日常的な挨拶と簡単な自己紹介の表現を学習します。初心者向けの基礎的な内容です。',
+      '{"sections":[{"type":"text","title":"基本的な挨拶","content":"# 基本的な挨拶\n\n## 朝の挨拶\n- Good morning! (おはようございます！)\n- How are you? (元気ですか？)\n- I''m fine, thank you. (元気です、ありがとう。)\n\n## 昼間の挨拶\n- Good afternoon! (こんにちは！)\n- Nice to see you. (お会いできて嬉しいです。)\n\n## 夜の挨拶\n- Good evening! (こんばんは！)\n- Good night! (おやすみなさい！)","order":0},{"type":"text","title":"自己紹介","content":"# 自己紹介\n\n## 基本の型\n- My name is [名前]. (私の名前は[名前]です。)\n- I''m from [出身地]. (私は[出身地]出身です。)\n- Nice to meet you. (初めまして。)\n\n## 例文\n- My name is Tanaka. I''m from Japan. Nice to meet you.\n(私の名前は田中です。日本出身です。初めまして。)","order":1}],"introduction":"","conclusion":""}',
+      'general',
+      ARRAY['挨拶', '自己紹介', '基礎'],
+      1,
+      true,
+      NOW(),
+      NOW()
+    );
+
+INSERT INTO materials (
+      user_id, 
+      title, 
+      description, 
+      content, 
+      category, 
+      tags, 
+      difficulty_level, 
+      is_published,
+      created_at,
+      updated_at
+    ) VALUES (
+      '550e8400-e29b-41d4-a716-446655440001',
+      '英語の基本文法：be動詞',
+      'be動詞（am, is, are）の基本的な使い方を学習します。',
+      '{"sections":[{"type":"text","title":"be動詞とは","content":"# be動詞とは\n\nbe動詞は「〜です」「〜である」という意味を表す動詞です。\n\n## be動詞の形\n- I am (私は〜です)\n- You are (あなたは〜です)\n- He/She/It is (彼/彼女/それは〜です)\n\n## 例文\n- I am a student. (私は学生です)\n- You are kind. (あなたは親切です)\n- She is a teacher. (彼女は先生です)","order":0},{"type":"quiz","title":"be動詞クイズ","content":"","order":1,"options":[{"question":"次の文の空欄に入る適切なbe動詞を選んでください：I ___ a student.","options":["am","is","are"],"answer":0,"explanation":"主語がIの時は、be動詞はamを使います。"}]}],"introduction":"","conclusion":""}',
+      'general',
+      ARRAY['文法', 'be動詞', '基礎'],
+      1,
+      true,
+      NOW(),
+      NOW()
+    );
+
+INSERT INTO materials (
+      user_id, 
+      title, 
+      description, 
+      content, 
+      category, 
+      tags, 
+      difficulty_level, 
+      is_published,
+      created_at,
+      updated_at
+    ) VALUES (
+      '550e8400-e29b-41d4-a716-446655440001',
+      '基本単語100選：日常生活編',
+      '日常生活でよく使う基本的な英単語100個を覚えます。',
+      '{"sections":[{"type":"text","title":"家族・人物","content":"# 家族・人物の単語\n\n## 家族\n- mother (母)\n- father (父)\n- sister (姉/妹)\n- brother (兄/弟)\n- grandmother (祖母)\n- grandfather (祖父)\n\n## 職業\n- teacher (先生)\n- doctor (医者)\n- student (学生)\n- worker (労働者)\n- driver (運転手)","order":0},{"type":"text","title":"食べ物・飲み物","content":"# 食べ物・飲み物の単語\n\n## 食べ物\n- bread (パン)\n- rice (ご飯)\n- meat (肉)\n- fish (魚)\n- egg (卵)\n- apple (りんご)\n\n## 飲み物\n- water (水)\n- milk (牛乳)\n- coffee (コーヒー)\n- tea (お茶)\n- juice (ジュース)","order":1}],"introduction":"","conclusion":""}',
+      'general',
+      ARRAY['単語', '日常生活', '基礎'],
+      1,
+      true,
+      NOW(),
+      NOW()
+    );
+
+INSERT INTO materials (
+      user_id, 
+      title, 
+      description, 
+      content, 
+      category, 
+      tags, 
+      difficulty_level, 
+      is_published,
+      created_at,
+      updated_at
+    ) VALUES (
+      '550e8400-e29b-41d4-a716-446655440001',
+      '中級文法：現在完了形',
+      '現在完了形（have/has + 過去分詞）の使い方を学習します。経験・継続・完了の表現を学びます。',
+      '{"sections":[{"type":"text","title":"現在完了形の基本","content":"# 現在完了形の基本\n\n現在完了形は「have/has + 過去分詞」の形で表します。\n\n## 3つの用法\n1. **経験**: 今までに〜したことがある\n2. **継続**: 〜し続けている\n3. **完了**: 〜し終わった\n\n## 例文\n- I have been to Paris. (私はパリに行ったことがある) - 経験\n- I have lived here for 5 years. (私はここに5年間住んでいる) - 継続\n- I have finished my homework. (私は宿題を終えた) - 完了","order":0},{"type":"quiz","title":"現在完了形クイズ","content":"","order":1,"options":[{"question":"「私は東京に行ったことがある」を英語で表すと？","options":["I went to Tokyo.","I have been to Tokyo.","I am going to Tokyo."],"answer":1,"explanation":"経験を表す場合は現在完了形を使います。"}]}],"introduction":"","conclusion":""}',
+      'general',
+      ARRAY['文法', '現在完了形', '中級'],
+      3,
+      true,
+      NOW(),
+      NOW()
+    );
+
+INSERT INTO materials (
+      user_id, 
+      title, 
+      description, 
+      content, 
+      category, 
+      tags, 
+      difficulty_level, 
+      is_published,
+      created_at,
+      updated_at
+    ) VALUES (
+      '550e8400-e29b-41d4-a716-446655440001',
+      'ビジネス英語：会議での表現',
+      'ビジネス会議で使える実践的な英語表現を学習します。意見の述べ方、質問の仕方、合意の表現などを学びます。',
+      '{"sections":[{"type":"text","title":"会議の開始","content":"# 会議の開始表現\n\n## 会議を始める\n- Let''s get started. (始めましょう)\n- Thank you all for coming. (お集まりいただき、ありがとうございます)\n- The purpose of today''s meeting is... (今日の会議の目的は...)\n\n## 議題の提示\n- The main agenda for today is... (今日の主な議題は...)\n- We have three items to discuss. (議論すべき項目が3つあります)\n- Let''s begin with the first item. (最初の項目から始めましょう)","order":0},{"type":"text","title":"意見の述べ方","content":"# 意見の述べ方\n\n## 賛成の表現\n- I agree with that. (それに賛成です)\n- That''s a good point. (それは良いポイントですね)\n- I think that''s the right approach. (それが正しいアプローチだと思います)\n\n## 反対の表現\n- I''m not sure I agree. (賛成できないかもしれません)\n- I have a different opinion. (異なる意見があります)\n- Let me play devil''s advocate. (あえて反対の立場から言わせてください)","order":1}],"introduction":"","conclusion":""}',
+      'general',
+      ARRAY['ビジネス', '会議', '中級'],
+      3,
+      true,
+      NOW(),
+      NOW()
+    );
+
+INSERT INTO materials (
+      user_id, 
+      title, 
+      description, 
+      content, 
+      category, 
+      tags, 
+      difficulty_level, 
+      is_published,
+      created_at,
+      updated_at
+    ) VALUES (
+      '550e8400-e29b-41d4-a716-446655440001',
+      'リスニング練習：日常会話',
+      'ネイティブスピーカーの自然な日常会話を聞いて、リスニング力を向上させます。',
+      '{"sections":[{"type":"text","title":"リスニングのコツ","content":"# リスニングのコツ\n\n## 効果的なリスニング方法\n1. **予測する**: 文脈から内容を予測する\n2. **キーワードを聞く**: 重要な単語に集中する\n3. **文脈を理解する**: 全体の流れを把握する\n4. **繰り返し聞く**: 何度も聞いて慣れる\n\n## 練習のポイント\n- 最初は字幕付きで聞く\n- 徐々に字幕を外す\n- 音声の速度を調整する\n- シャドーイングを試す","order":0},{"type":"text","title":"会話例文","content":"# 日常会話の例文\n\n## 友達との会話\n**A**: Hey, how''s it going?\n**B**: Pretty good, thanks. How about you?\n**A**: I''m doing well. Did you finish that project?\n**B**: Almost! I just need to review it one more time.\n\n## 店での会話\n**A**: Excuse me, do you have this in a larger size?\n**B**: Let me check for you. What size are you looking for?\n**A**: I need a medium.\n**B**: Here you go. The fitting room is over there.","order":1}],"introduction":"","conclusion":""}',
+      'general',
+      ARRAY['リスニング', '日常会話', '中級'],
+      3,
+      true,
+      NOW(),
+      NOW()
+    );
+
+INSERT INTO materials (
+      user_id, 
+      title, 
+      description, 
+      content, 
+      category, 
+      tags, 
+      difficulty_level, 
+      is_published,
+      created_at,
+      updated_at
+    ) VALUES (
+      '550e8400-e29b-41d4-a716-446655440001',
+      'スピーキング練習：電話での会話',
+      '電話での英語会話に必要な表現とマナーを学習します。',
+      '{"sections":[{"type":"text","title":"電話の基本表現","content":"# 電話の基本表現\n\n## 電話をかける\n- Hello, this is [名前] calling. (こんにちは、[名前]と申します)\n- May I speak to [名前]? ([名前]さんはいらっしゃいますか？)\n- Is [名前] available? ([名前]さんはお手すきですか？)\n\n## 電話を受ける\n- Hello, this is [名前]. (こんにちは、[名前]です)\n- Speaking. (私です)\n- Hold on, please. (少々お待ちください)\n- I''ll transfer you. (おつなぎします)","order":0},{"type":"text","title":"電話での会話例","content":"# 電話での会話例\n\n## ビジネス電話\n**A**: Good morning, ABC Company. How may I help you?\n**B**: Hello, this is John Smith from XYZ Corporation. I''d like to speak with Mr. Tanaka.\n**A**: I''m sorry, Mr. Tanaka is in a meeting right now. Can I take a message?\n**B**: Yes, please. Could you ask him to call me back? My number is 555-0123.\n**A**: Certainly. I''ll make sure he gets the message.\n**B**: Thank you very much. Goodbye.\n**A**: Goodbye.","order":1}],"introduction":"","conclusion":""}',
+      'general',
+      ARRAY['スピーキング', '電話', '中級'],
+      3,
+      true,
+      NOW(),
+      NOW()
+    );
+
+INSERT INTO materials (
+      user_id, 
+      title, 
+      description, 
+      content, 
+      category, 
+      tags, 
+      difficulty_level, 
+      is_published,
+      created_at,
+      updated_at
+    ) VALUES (
+      '550e8400-e29b-41d4-a716-446655440001',
+      'リーディング練習：ニュース記事',
+      '英語のニュース記事を読んで、リーディング力を向上させます。',
+      '{"sections":[{"type":"text","title":"リーディングのコツ","content":"# リーディングのコツ\n\n## 効果的なリーディング方法\n1. **スキミング**: 全体を素早く読んで概要を把握\n2. **スキャニング**: 特定の情報を探す\n3. **詳細読み**: 重要な部分を詳しく読む\n4. **推測**: 文脈から意味を推測する\n\n## 語彙力向上\n- 新しい単語をメモする\n- 文脈から意味を推測する\n- 辞書で確認する\n- 例文を作って覚える","order":0},{"type":"text","title":"ニュース記事例","content":"# ニュース記事例\n\n## Technology News\n**New Smartphone Features Announced**\n\nApple has announced several new features for its upcoming iPhone model. The company revealed that the new device will include advanced camera technology and improved battery life.\n\nThe new camera system will feature a 48-megapixel main sensor, allowing users to take incredibly detailed photos. Additionally, the battery is expected to last up to 20% longer than previous models.\n\nIndustry experts believe these improvements will help Apple maintain its position in the competitive smartphone market. The new model is scheduled for release in September.\n\n## 重要単語\n- announce (発表する)\n- feature (機能)\n- advanced (高度な)\n- sensor (センサー)\n- competitive (競争的な)","order":1}],"introduction":"","conclusion":""}',
+      'general',
+      ARRAY['リーディング', 'ニュース', '中級'],
+      3,
+      true,
+      NOW(),
+      NOW()
+    );
+
+INSERT INTO materials (
+      user_id, 
+      title, 
+      description, 
+      content, 
+      category, 
+      tags, 
+      difficulty_level, 
+      is_published,
+      created_at,
+      updated_at
+    ) VALUES (
+      '550e8400-e29b-41d4-a716-446655440001',
+      '上級文法：仮定法',
+      '仮定法過去・仮定法過去完了の使い方を学習します。現実と異なる状況を表現する方法を学びます。',
+      '{"sections":[{"type":"text","title":"仮定法過去","content":"# 仮定法過去\n\n仮定法過去は、現在の事実と反対のことを仮定する表現です。\n\n## 基本形\n- If + 主語 + 動詞の過去形, 主語 + would/could/might + 動詞の原形\n\n## 例文\n- If I had money, I would buy a car. (もしお金があれば、車を買うのに)\n- If I were you, I would study harder. (もし私があなたなら、もっと勉強するのに)\n- If it rained tomorrow, I would stay home. (もし明日雨が降れば、家にいるのに)\n\n## 注意点\n- be動詞はwereを使う（wasでも可だが、wereが正式）\n- 現在の事実と反対のことを表す","order":0},{"type":"text","title":"仮定法過去完了","content":"# 仮定法過去完了\n\n仮定法過去完了は、過去の事実と反対のことを仮定する表現です。\n\n## 基本形\n- If + 主語 + had + 過去分詞, 主語 + would/could/might + have + 過去分詞\n\n## 例文\n- If I had studied harder, I would have passed the exam. (もしもっと勉強していれば、試験に合格していたのに)\n- If I had known about the party, I would have gone. (もしパーティーのことを知っていれば、行っていたのに)\n- If it hadn''t rained, we would have gone to the park. (もし雨が降っていなければ、公園に行っていたのに)","order":1}],"introduction":"","conclusion":""}',
+      'general',
+      ARRAY['文法', '仮定法', '上級'],
+      5,
+      true,
+      NOW(),
+      NOW()
+    );
+
+INSERT INTO materials (
+      user_id, 
+      title, 
+      description, 
+      content, 
+      category, 
+      tags, 
+      difficulty_level, 
+      is_published,
+      created_at,
+      updated_at
+    ) VALUES (
+      '550e8400-e29b-41d4-a716-446655440001',
+      '上級語彙：学術英語',
+      '学術論文や研究で使われる高度な英語表現を学習します。',
+      '{"sections":[{"type":"text","title":"学術論文の表現","content":"# 学術論文の表現\n\n## 研究の目的\n- The purpose of this study is to... (本研究の目的は...)\n- This research aims to... (この研究は...を目指している)\n- The objective of this paper is to... (本論文の目的は...)\n\n## 方法論\n- The data were collected through... (データは...を通じて収集された)\n- A survey was conducted among... (...の間で調査が実施された)\n- Statistical analysis was performed using... (...を使用して統計分析が行われた)\n\n## 結果\n- The results indicate that... (結果は...を示している)\n- It was found that... (...であることが判明した)\n- The analysis revealed that... (分析により...が明らかになった)","order":0},{"type":"text","title":"学術用語","content":"# 学術用語\n\n## 研究方法\n- methodology (方法論)\n- hypothesis (仮説)\n- variable (変数)\n- correlation (相関)\n- causation (因果関係)\n- validity (妥当性)\n- reliability (信頼性)\n\n## 分析手法\n- quantitative (定量的)\n- qualitative (定性的)\n- statistical significance (統計的有意性)\n- sample size (サンプルサイズ)\n- population (母集団)\n- random sampling (無作為抽出)\n\n## 結論\n- conclusion (結論)\n- implication (含意)\n- limitation (限界)\n- recommendation (推奨)\n- future research (今後の研究)","order":1}],"introduction":"","conclusion":""}',
+      'general',
+      ARRAY['語彙', '学術', '上級'],
+      5,
+      true,
+      NOW(),
+      NOW()
+    );
+
+-- 確認用クエリ
+SELECT COUNT(*) as total_materials FROM materials;
+SELECT title, category, difficulty_level, is_published FROM materials ORDER BY created_at DESC;
