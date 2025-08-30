@@ -123,6 +123,8 @@ const MaterialDetailPage = () => {
     if (materialId) {
       fetchMaterial();
       fetchRelatedMaterials();
+      // ページの最上部にスクロール
+      window.scrollTo(0, 0);
     }
   }, [materialId, fetchMaterial, fetchRelatedMaterials]);
 
