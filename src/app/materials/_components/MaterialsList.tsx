@@ -150,44 +150,34 @@ export default function MaterialsList() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {materials.map((material) => (
         <Link
           key={material.id}
           href={`/materials/${material.id}`}
           className="block bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 overflow-hidden"
         >
-          <div className="p-4 sm:p-6">
+          <div className="p-3 sm:p-4 md:p-6">
             {/* ヘッダー */}
-            <div className="flex items-start justify-between mb-3">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 line-clamp-2 flex-1 mr-3">
+            <div className="flex items-start justify-between mb-2 sm:mb-3">
+              <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 line-clamp-2 flex-1 mr-2 sm:mr-3">
                 {material.title}
               </h3>
-              <div className="flex items-center text-yellow-500 text-sm flex-shrink-0">
+              <div className="flex items-center text-yellow-500 text-xs sm:text-sm flex-shrink-0">
                 <span>⭐</span>
                 <span className="ml-1">{material.rating}</span>
               </div>
             </div>
             
             {/* 説明 */}
-            <p className="text-gray-600 mb-4 line-clamp-2 text-sm sm:text-base">
-              {material.description}
-            </p>
+            {material.description && (
+              <p className="text-gray-600 mb-3 sm:mb-4 line-clamp-2 text-xs sm:text-sm md:text-base">
+                {material.description}
+              </p>
+            )}
             
-            {/* タグ */}
-            <div className="flex flex-wrap gap-1 sm:gap-2 mb-4">
-              {material.tags.slice(0, 3).map((tag, index) => (
-                <span 
-                  key={index} 
-                  className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-
             {/* カテゴリと難易度 */}
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="flex flex-wrap gap-1 sm:gap-2 mb-3">
               <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
                 {material.category}
               </span>
@@ -199,6 +189,20 @@ export default function MaterialsList() {
                 {getDifficultyText(material.difficulty)}
               </span>
             </div>
+
+            {/* タグ */}
+            {material.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mb-3 overflow-x-auto pb-1">
+                {material.tags.slice(0, 3).map((tag, index) => (
+                  <span 
+                    key={index} 
+                    className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full whitespace-nowrap flex-shrink-0"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
 
             {/* 統計情報 */}
             <div className="flex items-center justify-between text-xs sm:text-sm text-gray-500">
