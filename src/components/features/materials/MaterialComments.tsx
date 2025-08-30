@@ -262,26 +262,26 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
 
       {/* 新規コメント投稿フォーム */}
       {!replyTo && (
-        <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border border-blue-200">
-          <h4 className="font-bold text-gray-800 mb-2">💡 あなたの気づきを共有しませんか？</h4>
-          <p className="text-sm text-gray-600 mb-2">
+        <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <h4 className="font-semibold text-gray-900 mb-2">💡 あなたの気づきを共有しませんか？</h4>
+          <p className="text-sm text-gray-600 mb-3">
             学習中の発見、つまずいたポイント、コツなど、どんな小さなことでも大丈夫です！
           </p>
-          <div className="flex flex-wrap gap-2 sm:gap-4 mb-3 p-2 sm:p-3 bg-white rounded-lg border border-green-200">
-            <div className="flex items-center gap-1 text-green-600">
+          <div className="flex flex-wrap gap-2 sm:gap-4 mb-3 p-2 sm:p-3 bg-white rounded-lg border border-gray-200">
+            <div className="flex items-center gap-1 text-blue-600">
               <span className="text-base sm:text-lg">🎁</span>
-              <span className="font-semibold text-xs sm:text-sm">コメント投稿で15ポイント獲得！</span>
+              <span className="font-medium text-xs sm:text-sm">コメント投稿で15ポイント獲得！</span>
             </div>
             <div className="flex items-center gap-1 text-red-500">
               <span className="text-base sm:text-lg">❤️</span>
-              <span className="font-semibold text-xs sm:text-sm">ハートをもらうと+5ポイント！</span>
+              <span className="font-medium text-xs sm:text-sm">ハートをもらうと+5ポイント！</span>
             </div>
           </div>
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="例：「この文法のポイントは...」「私はこう覚えました」「ここでつまずきました」"
-            className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg resize-none text-sm sm:text-base"
+            className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg resize-none text-sm sm:text-base focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             rows={3}
             maxLength={2000}
           />
@@ -292,7 +292,7 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
             <button
               onClick={submitComment}
               disabled={!newComment.trim() || submitting}
-              className="px-4 sm:px-6 py-2 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:from-blue-700 hover:to-green-700 text-sm sm:text-base"
+              className="px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 text-sm sm:text-base"
             >
               {submitting ? '投稿中...' : '✨ 気づきを共有'}
             </button>
