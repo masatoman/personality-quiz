@@ -39,15 +39,15 @@ export default function MaterialsFilter() {
   ];
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow">
-      <h2 className="text-lg font-bold mb-4">フィルター</h2>
+    <div className="bg-white p-3 rounded-lg shadow text-sm">
+      <h2 className="text-base font-bold mb-3">フィルター</h2>
       
       {/* 文法項目 */}
-      <div className="mb-6">
-        <h3 className="font-medium mb-2">文法項目</h3>
-        <div className="space-y-2">
+      <div className="mb-4">
+        <h3 className="font-medium mb-2 text-sm">文法項目</h3>
+        <div className="space-y-1">
           {categories.map(category => (
-            <label key={category.id} className="flex items-center">
+            <label key={category.id} className="flex items-center text-xs">
               <input
                 type="radio"
                 name="category"
@@ -61,11 +61,11 @@ export default function MaterialsFilter() {
       </div>
 
       {/* 学年レベル */}
-      <div className="mb-6">
-        <h3 className="font-medium mb-2">学年レベル</h3>
-        <div className="space-y-2">
+      <div className="mb-4">
+        <h3 className="font-medium mb-2 text-sm">学年レベル</h3>
+        <div className="space-y-1">
           {levels.map(level => (
-            <label key={level.id} className="flex items-center">
+            <label key={level.id} className="flex items-center text-xs">
               <input
                 type="radio"
                 name="level"
@@ -79,9 +79,9 @@ export default function MaterialsFilter() {
       </div>
 
       {/* 並び替え */}
-      <div className="mb-6">
-        <h3 className="font-medium mb-2">並び替え</h3>
-        <select className="w-full p-2 border rounded">
+      <div className="mb-4">
+        <h3 className="font-medium mb-2 text-sm">並び替え</h3>
+        <select className="w-full p-1 border rounded text-xs">
           {sortOptions.map(option => (
             <option key={option.id} value={option.id}>
               {option.name}
@@ -91,7 +91,7 @@ export default function MaterialsFilter() {
       </div>
 
       {/* フィルターをリセット */}
-      <button className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded hover:bg-gray-200">
+      <button className="w-full bg-gray-100 text-gray-700 py-1 px-2 rounded hover:bg-gray-200 text-xs">
         フィルターをリセット
       </button>
     </div>

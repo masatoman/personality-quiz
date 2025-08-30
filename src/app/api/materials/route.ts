@@ -6,6 +6,9 @@ import { checkRateLimit, setRateLimitHeaders, RateLimitPresets } from '@/lib/rat
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+// ローカルDocker環境でのPostgREST直接接続
+const isLocalDocker = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('localhost:3002');
+
 export async function POST(request: NextRequest) {
   try {
     // Rate Limiting チェック
@@ -27,7 +30,7 @@ export async function POST(request: NextRequest) {
     
     // 開発環境での認証スキップオプション
     const isDevelopment = process.env.NODE_ENV === 'development';
-    const skipAuth = isDevelopment && process.env.SKIP_AUTH === 'true';
+    const skipAuth = isDevelopment && process.env.NEXT_PUBLIC_SKIP_AUTH === 'true';
     
     let user = null;
     
@@ -184,6 +187,59 @@ export async function GET(request: NextRequest) {
     const difficulty = searchParams.get('difficulty');
     const search = searchParams.get('search');
     
+    // ローカルDocker環境ではPostgRESTに直接接続
+    if (isLocalDocker) {
+      console.log('ローカルDocker環境: PostgRESTに直接接続');
+      
+      let url = 'http://localhost:3002/rest/v1/materials?select=*&is_published=eq.true&order=created_at.desc';
+      
+      // フィルタリング
+      if (category) {
+        url += `&category=eq.${category}`;
+      }
+      
+      if (difficulty) {
+        url += `&difficulty_level=eq.${difficulty}`;
+      }
+      
+      if (search) {
+        url += `&or=(title.ilike.*${search}*,description.ilike.*${search}*)`;
+      }
+      
+      // ページネーション
+      const offset = (page - 1) * limit;
+      url += `&limit=${limit}&offset=${offset}`;
+      
+      console.log('PostgREST URL:', url);
+      
+      const response = await fetch(url, {
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.ZopqoUt20nEV9cklpv9jtLgXMv3cJYAYfdv-q2I9t0c'
+        }
+      });
+      
+      if (!response.ok) {
+        console.error('PostgREST エラー:', response.status, response.statusText);
+        const errorText = await response.text();
+        console.error('PostgREST エラー詳細:', errorText);
+        throw new Error(`PostgREST error: ${response.status}`);
+      }
+      
+      const materials = await response.json();
+      console.log('PostgREST レスポンス:', materials);
+      
+      return NextResponse.json({
+        materials: materials || [],
+        pagination: {
+          page,
+          limit,
+          total: materials?.length || 0,
+          hasMore: (materials?.length || 0) === limit
+        }
+      });
+    }
+    
+    // 通常のSupabase接続
     const supabase = createClient();
     
     // クエリ構築 - JOINエラー回避のため、まずはmaterialsのみ取得

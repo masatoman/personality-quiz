@@ -146,29 +146,37 @@ const MaterialDetailPage = () => {
   };
 
   const renderContent = (content: any) => {
+    // JSON文字列の場合、パースを試行
+    let parsedContent = content;
     if (typeof content === 'string') {
-      return (
-        <div className="prose prose-lg max-w-none whitespace-pre-wrap">
-          {content}
-        </div>
-      );
+      try {
+        parsedContent = JSON.parse(content);
+      } catch (error) {
+        // JSONパースに失敗した場合は、プレーンテキストとして表示
+        return (
+          <div className="prose prose-lg max-w-none whitespace-pre-wrap">
+            {content}
+          </div>
+        );
+      }
     }
 
-    if (content && typeof content === 'object') {
+    // パースされたコンテンツまたはオブジェクトの場合
+    if (parsedContent && typeof parsedContent === 'object') {
       return (
         <div className="prose prose-lg max-w-none">
           {/* イントロダクション */}
-          {content.introduction && (
+          {parsedContent.introduction && (
             <div className="mb-8 p-6 bg-blue-50 rounded-lg border-l-4 border-blue-500">
               <h3 className="text-xl font-semibold mb-3 text-blue-900">はじめに</h3>
-              <p className="text-gray-700">{content.introduction}</p>
+              <p className="text-gray-700">{parsedContent.introduction}</p>
             </div>
           )}
 
           {/* セクション */}
-          {content.sections && Array.isArray(content.sections) && (
+          {parsedContent.sections && Array.isArray(parsedContent.sections) && (
             <div className="space-y-8">
-              {content.sections.map((section: any, index: number) => (
+              {parsedContent.sections.map((section: any, index: number) => (
                 <div key={index} className="border rounded-lg p-6 bg-white shadow-sm">
                   {section.title && (
                     <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">
@@ -267,11 +275,11 @@ const MaterialDetailPage = () => {
           )}
 
           {/* 実践的なアドバイス */}
-          {content.practical_tips && Array.isArray(content.practical_tips) && (
+          {parsedContent.practical_tips && Array.isArray(parsedContent.practical_tips) && (
             <div className="mt-8 p-6 bg-green-50 rounded-lg">
               <h3 className="text-xl font-semibold mb-4 text-green-900">実践のコツ</h3>
               <ul className="space-y-2">
-                {content.practical_tips.map((tip: string, index: number) => (
+                {parsedContent.practical_tips.map((tip: string, index: number) => (
                   <li key={index} className="flex items-start">
                     <span className="text-green-600 mr-2">✓</span>
                     <span className="text-gray-700">{tip}</span>
@@ -282,10 +290,10 @@ const MaterialDetailPage = () => {
           )}
 
           {/* 結論 */}
-          {content.conclusion && (
+          {parsedContent.conclusion && (
             <div className="mt-8 p-6 bg-indigo-50 rounded-lg border-l-4 border-indigo-500">
               <h3 className="text-xl font-semibold mb-3 text-indigo-900">まとめ</h3>
-              <p className="text-gray-700">{content.conclusion}</p>
+              <p className="text-gray-700">{parsedContent.conclusion}</p>
             </div>
           )}
         </div>

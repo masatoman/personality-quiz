@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+// ローカルDocker環境でのPostgREST直接接続
+const isLocalDocker = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('localhost:3002');
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const materialId = params.id;
-    const skipAuth = process.env.SKIP_AUTH === 'true';
+    const skipAuth = process.env.NEXT_PUBLIC_SKIP_AUTH === 'true';
 
     // 認証チェック（開発環境ではスキップ）
     if (skipAuth) {
@@ -22,6 +25,75 @@ export async function GET(
           { status: 401 }
         );
       }
+    }
+
+    // ローカルDocker環境ではPostgRESTに直接接続
+    if (isLocalDocker) {
+      console.log('ローカルDocker環境: PostgRESTに直接接続');
+      
+      const url = `http://localhost:3002/rest/v1/materials?select=*&id=eq.${materialId}&is_published=eq.true`;
+      
+      console.log('PostgREST URL:', url);
+      
+      const response = await fetch(url, {
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.ZopqoUt20nEV9cklpv9jtLgXMv3cJYAYfdv-q2I9t0c'
+        }
+      });
+      
+      if (!response.ok) {
+        console.error('PostgREST エラー:', response.status, response.statusText);
+        const errorText = await response.text();
+        console.error('PostgREST エラー詳細:', errorText);
+        return NextResponse.json(
+          { error: '教材が見つかりませんでした' },
+          { status: 404 }
+        );
+      }
+      
+      const materials = await response.json();
+      console.log('PostgREST レスポンス:', materials);
+      
+      if (!materials || materials.length === 0) {
+        return NextResponse.json(
+          { error: '教材が見つかりませんでした' },
+          { status: 404 }
+        );
+      }
+      
+      const materialData = materials[0];
+      
+      // 難易度ラベルを取得
+      const getDifficultyLabel = (level: number): 'beginner' | 'intermediate' | 'advanced' => {
+        if (level <= 2) return 'beginner';
+        if (level <= 3) return 'intermediate';
+        return 'advanced';
+      };
+      
+      // レスポンスデータを構築
+      const responseData = {
+        id: materialData.id,
+        title: materialData.title,
+        description: materialData.description || '',
+        content: materialData.content || '',
+        category: materialData.category,
+        difficulty: getDifficultyLabel(materialData.difficulty_level),
+        author: {
+          id: materialData.user_id,
+          name: '匿名ユーザー',
+          avatar: '/avatars/default.png',
+          giverScore: 50,
+          type: 'マッチャー'
+        },
+        created_at: materialData.created_at,
+        view_count: (materialData.view_count || 0) + 1,
+        rating: materialData.rating || 0,
+        is_bookmarked: false,
+        is_published: materialData.is_published,
+        tags: materialData.tags || []
+      };
+      
+      return NextResponse.json(responseData);
     }
 
     const supabase = createClient();
