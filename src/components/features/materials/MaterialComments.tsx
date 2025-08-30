@@ -116,30 +116,30 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
 
   const CommentItem: React.FC<{ comment: Comment; depth?: number }> = ({ comment, depth = 0 }) => (
     <div className={`mb-4 ${depth > 0 ? 'ml-6' : ''}`}>
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* ヘッダー */}
-        <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+        <div className="px-4 py-3 border-b border-gray-100">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
               {comment.profiles.avatar_url ? (
                 <Image
                   src={comment.profiles.avatar_url}
                   alt={comment.profiles.display_name}
-                  width={40}
-                  height={40}
+                  width={32}
+                  height={32}
                   className="rounded-full"
                 />
               ) : (
-                <FaUser className="text-gray-500 text-lg" />
+                <FaUser className="text-gray-500 text-sm" />
               )}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <h5 className="font-semibold text-gray-900 text-sm">{comment.profiles.display_name}</h5>
-                <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                <h5 className="font-medium text-gray-900 text-sm">{comment.profiles.display_name}</h5>
+                <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
                   ギバー
                 </span>
-                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                <span className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-full">
                   {comment.profiles.giver_score || 0}pt
                 </span>
               </div>
@@ -161,39 +161,31 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
         </div>
 
         {/* アクションボタン */}
-        <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
+        <div className="px-4 py-3 border-t border-gray-100">
           <div className="flex items-center gap-3">
             {/* ハートボタン */}
             <button
               onClick={() => voteHelpful(comment.id, true)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 group relative
+              className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors
                 ${comment.user_helpful_vote 
-                  ? 'bg-red-100 text-red-600 border border-red-200' 
-                  : 'bg-white text-gray-600 hover:bg-red-50 hover:text-red-500 border border-gray-200 hover:border-red-200'
+                  ? 'bg-gray-100 text-gray-700' 
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-700'
                 }`}
-              title="このコメントが役立ったらハートを押してください！投稿者に5ポイントが贈られます"
+              title="このコメントが役立ったらハートを押してください"
             >
               {comment.user_helpful_vote ? <FaHeart className="text-sm" /> : <FaRegHeart className="text-sm" />}
               <span className="text-sm font-medium">{comment.helpful_count}</span>
-              {!comment.user_helpful_vote && (
-                <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg">
-                  役立った！(+5pt)
-                </span>
-              )}
             </button>
 
             {/* 返信ボタン */}
             {depth < 2 && (
               <button
                 onClick={() => setReplyTo(replyTo === comment.id ? null : comment.id)}
-                className="flex items-center gap-2 px-3 py-2 bg-white text-blue-600 hover:bg-blue-50 border border-gray-200 hover:border-blue-200 rounded-lg transition-all duration-200 group relative"
-                title="返信してさらに議論を深めましょう！返信投稿で10ポイント獲得"
+                className="flex items-center gap-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                title="返信してさらに議論を深めましょう"
               >
                 <FaReply className="text-sm" />
                 <span className="text-sm font-medium">返信</span>
-                <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg">
-                  返信(+10pt)
-                </span>
               </button>
             )}
           </div>
@@ -201,17 +193,15 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
 
         {/* 返信フォーム */}
         {replyTo === comment.id && (
-          <div className="px-4 py-4 bg-blue-50 border-t border-blue-100">
-            <div className="flex items-center gap-2 mb-3 text-blue-700">
-              <span className="text-sm">💬</span>
+          <div className="px-4 py-4 bg-gray-50 border-t border-gray-100">
+            <div className="flex items-center gap-2 mb-3 text-gray-700">
               <span className="text-sm font-medium">{comment.profiles.display_name}さんに返信中</span>
-              <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">返信で10pt</span>
             </div>
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder={`${comment.profiles.display_name}さんに返信...`}
-              className="w-full p-3 border border-blue-200 rounded-lg resize-none text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+              className="w-full p-3 border border-gray-200 rounded-lg resize-none text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
               rows={3}
               maxLength={2000}
             />
@@ -232,7 +222,7 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
                 <button
                   onClick={submitComment}
                   disabled={!newComment.trim() || submitting}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 text-sm font-medium transition-all duration-200"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 text-sm font-medium transition-colors"
                 >
                   {submitting ? '投稿中...' : '返信'}
                 </button>
@@ -252,47 +242,33 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
   return (
     <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-bold">💬 コメント・気づき ({comments.length})</h3>
+        <h3 className="text-lg font-medium text-gray-900">コメント・気づき ({comments.length})</h3>
         
         {/* ソート切り替え */}
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as 'created_at' | 'helpful_count')}
-          className="border border-gray-300 rounded-lg px-3 py-1"
+          className="border border-gray-200 rounded-md px-3 py-1 text-sm text-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
         >
-          <option value="helpful_count">❤️ 役立った順</option>
-          <option value="created_at">🕒 新しい順</option>
+          <option value="helpful_count">役立った順</option>
+          <option value="created_at">新しい順</option>
         </select>
       </div>
 
       {/* 新規コメント投稿フォーム */}
       {!replyTo && (
-        <div className="mb-8 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="mb-8 bg-white rounded-lg border border-gray-200 shadow-sm">
           {/* ヘッダー */}
-          <div className="px-6 py-5 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100">
+          <div className="px-6 py-4 border-b border-gray-100">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <FaLightbulb className="text-blue-600 text-lg" />
+              <div className="w-8 h-8 bg-gray-100 rounded-md flex items-center justify-center">
+                <FaLightbulb className="text-gray-600 text-sm" />
               </div>
               <div>
-                <h4 className="text-lg font-semibold text-gray-900">気づきを共有</h4>
-                <p className="text-sm text-gray-600 mt-1">
+                <h4 className="text-base font-medium text-gray-900">気づきを共有</h4>
+                <p className="text-sm text-gray-500 mt-1">
                   学習中の発見やコツを他の学習者と共有しましょう
                 </p>
-              </div>
-            </div>
-          </div>
-
-          {/* インセンティブカード */}
-          <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
-            <div className="flex flex-wrap gap-3">
-              <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg border border-blue-100">
-                <FaGift className="text-blue-600 text-sm" />
-                <span className="text-sm font-medium text-blue-700">投稿で15pt</span>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-2 bg-red-50 rounded-lg border border-red-100">
-                <FaHeart className="text-red-600 text-sm" />
-                <span className="text-sm font-medium text-red-700">ハートで+5pt</span>
               </div>
             </div>
           </div>
@@ -303,20 +279,30 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="例：「この文法のポイントは...」「私はこう覚えました」「ここでつまずきました」"
-              className="w-full p-4 border border-gray-200 rounded-xl resize-none text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 placeholder-gray-400"
+              className="w-full p-4 border border-gray-200 rounded-lg resize-none text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors placeholder-gray-400"
               rows={4}
               maxLength={2000}
             />
             
             {/* フッター */}
             <div className="flex justify-between items-center mt-4">
-              <span className="text-xs text-gray-500">
-                {newComment.length}/2000文字
-              </span>
+              <div className="flex items-center gap-4 text-xs text-gray-400">
+                <span>{newComment.length}/2000文字</span>
+                <div className="flex items-center gap-3">
+                  <span className="flex items-center gap-1">
+                    <FaGift className="text-gray-400" />
+                    コメント: +15pt
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <FaHeart className="text-gray-400" />
+                    いいね: +5pt
+                  </span>
+                </div>
+              </div>
               <button
                 onClick={submitComment}
                 disabled={!newComment.trim() || submitting}
-                className="px-6 py-3 bg-blue-600 text-white rounded-xl font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 shadow-sm hover:shadow-md"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
               >
                 {submitting ? (
                   <div className="flex items-center gap-2">
@@ -324,10 +310,7 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
                     <span>投稿中...</span>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <FaStar className="text-base" />
-                    <span>気づきを共有</span>
-                  </div>
+                  <span>投稿</span>
                 )}
               </button>
             </div>
