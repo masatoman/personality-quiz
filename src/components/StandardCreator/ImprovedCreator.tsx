@@ -6,7 +6,7 @@ import { Bars3Icon } from '@heroicons/react/24/outline';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useToast } from '../../hooks/useToast';
 import ToastContainer from '../ui/ToastContainer';
-import { FaEye, FaPencilAlt, FaQuestion, FaImage, FaVideo, FaMusic, FaStar } from 'react-icons/fa';
+import { FaEye, FaPencilAlt, FaQuestion, FaImage, FaVideo, FaMusic, FaStar, FaPalette, FaLightbulb, FaCog } from 'react-icons/fa';
 
 // 型定義
 interface ContentSection {
@@ -211,62 +211,65 @@ const ImprovedCreator: React.FC = () => {
             }
           }}
         >
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-8">
-            <div className="text-center mb-6">
-              <div className="text-4xl mb-4" aria-hidden="true">🎨</div>
-              <h2 id="help-modal-title" className="text-2xl font-bold text-gray-800 mb-2">
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-4 sm:p-6 lg:p-8">
+            <div className="text-center mb-4 sm:mb-6">
+              <FaPalette className="text-2xl sm:text-3xl lg:text-4xl mb-3 sm:mb-4 mx-auto text-blue-600" aria-hidden="true" />
+              <h2 id="help-modal-title" className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-2">
                 初回文法解説作成へようこそ！
               </h2>
-              <p id="help-modal-desc" className="text-gray-600">
+              <p id="help-modal-desc" className="text-sm sm:text-base text-gray-600">
                 「教えることで学ぶ」体験で中学英文法をマスターしましょう
               </p>
             </div>
             
-            <div className="space-y-4 mb-8">
-              <div className="flex items-start space-x-3">
-                <div className="bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-blue-600 font-bold">1</span>
+            <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+              <div className="flex items-start space-x-2 sm:space-x-3">
+                <div className="bg-blue-100 rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="text-blue-600 font-bold text-xs sm:text-sm">1</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800">文法解説の基本情報を入力</h3>
-                  <p className="text-sm text-gray-600">タイトル、説明、文法項目、学年レベルを設定します</p>
+                  <h3 className="text-sm sm:text-base font-semibold text-gray-800">文法解説の基本情報を入力</h3>
+                  <p className="text-xs sm:text-sm text-gray-600">タイトル、説明、文法項目、学年レベルを設定します</p>
                 </div>
               </div>
               
-              <div className="flex items-start space-x-3">
-                <div className="bg-green-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-green-600 font-bold">2</span>
+              <div className="flex items-start space-x-2 sm:space-x-3">
+                <div className="bg-green-100 rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="text-green-600 font-bold text-xs sm:text-sm">2</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800">解説セクションを追加</h3>
-                  <p className="text-sm text-gray-600">テキスト解説、例文、練習問題など様々な形式で作成</p>
+                  <h3 className="text-sm sm:text-base font-semibold text-gray-800">解説セクションを追加</h3>
+                  <p className="text-xs sm:text-sm text-gray-600">テキスト解説、例文、練習問題など様々な形式で作成</p>
                 </div>
               </div>
               
-              <div className="flex items-start space-x-3">
-                <div className="bg-purple-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-purple-600 font-bold">3</span>
+              <div className="flex items-start space-x-2 sm:space-x-3">
+                <div className="bg-purple-100 rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="text-purple-600 font-bold text-xs sm:text-sm">3</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800">プレビューして公開</h3>
-                  <p className="text-sm text-gray-600">内容を確認してコミュニティと共有しましょう</p>
+                  <h3 className="text-sm sm:text-base font-semibold text-gray-800">プレビューして公開</h3>
+                  <p className="text-xs sm:text-sm text-gray-600">内容を確認してコミュニティと共有しましょう</p>
                 </div>
               </div>
             </div>
             
-            <div className="bg-blue-50 rounded-lg p-4 mb-6">
-              <h4 className="font-semibold text-blue-800 mb-2">💡 初回のコツ</h4>
-              <ul className="text-sm text-blue-700 space-y-1">
+            <div className="bg-blue-50 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+              <h4 className="text-sm sm:text-base font-semibold text-blue-800 mb-2 flex items-center">
+                <FaLightbulb className="w-4 h-4 mr-2 text-yellow-600" />
+                初回のコツ
+              </h4>
+              <ul className="text-xs sm:text-sm text-blue-700 space-y-1">
                 <li>• 自分が理解している文法項目から始めてみましょう</li>
                 <li>• 例文をたくさん使って分かりやすく説明してください</li>
                 <li>• 1-2個のセクションからスタートでも十分です</li>
               </ul>
             </div>
             
-            <div className="flex space-x-3">
+            <div className="flex space-x-2 sm:space-x-3">
               <button
                 onClick={() => setShowFirstTimeHelp(false)}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 aria-label="教材作成を開始する"
                 autoFocus
               >
@@ -277,7 +280,7 @@ const ImprovedCreator: React.FC = () => {
                   setShowFirstTimeHelp(false);
                   window.history.back();
                 }}
-                className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                className="px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 rounded-lg text-sm sm:text-base text-gray-700 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                 aria-label="後で教材作成する"
               >
                 後で
