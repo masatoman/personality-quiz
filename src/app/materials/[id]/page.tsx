@@ -355,47 +355,47 @@ const MaterialDetailPage = () => {
 
       <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
         {/* 教材ヘッダー */}
-        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 md:p-8 mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start mb-4 sm:mb-6 gap-4">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start mb-3 sm:mb-4 gap-3">
             <div className="flex-1">
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">{material.title}</h1>
-              <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6">{material.description}</p>
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">{material.title}</h1>
+              <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">{material.description}</p>
               
               {/* カテゴリと難易度 */}
-              <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
-                <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
+              <div className="flex flex-wrap gap-2 mb-2 sm:mb-3">
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                   material.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
                   material.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
                   'bg-red-100 text-red-800'
                 }`}>
                   {getDifficultyText(material.difficulty)}
                 </span>
-                <span className="px-2 sm:px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs sm:text-sm font-medium">
+                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
                   {material.category}
                 </span>
               </div>
 
               {/* 評価と閲覧数 */}
-              <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                 <div className="flex items-center text-yellow-500">
                   {[...Array(5)].map((_, i) => (
                     <span key={i} className="text-sm sm:text-base">
                       {i < Math.floor(material.rating) ? <FaStar /> : <FaRegStar />}
                     </span>
                   ))}
-                  <span className="ml-1 sm:ml-2 text-gray-700 text-xs sm:text-sm">{material.rating}</span>
+                  <span className="ml-1 text-gray-700 text-xs">{material.rating}</span>
                 </div>
-                <div className="flex items-center text-gray-500 text-xs sm:text-sm">
+                <div className="flex items-center text-gray-500 text-xs">
                   <FaUser className="mr-1" />
                   {material.view_count} 閲覧
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-1 sm:gap-2 mb-4 sm:mb-6">
+              <div className="flex flex-wrap gap-1 mb-3 sm:mb-4">
                 {material.tags.map((tag, index) => (
                   <span
                     key={index}
-                    className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs sm:text-sm"
+                    className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
                   >
                     #{tag}
                   </span>
@@ -405,7 +405,7 @@ const MaterialDetailPage = () => {
 
             <button
               onClick={toggleBookmark}
-              className={`ml-4 p-4 min-w-[48px] min-h-[48px] rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95 touch-manipulation transition-all ${
+              className={`ml-4 p-3 min-w-[40px] min-h-[40px] rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95 touch-manipulation transition-all ${
                 material.is_bookmarked 
                   ? 'bg-blue-100 text-blue-600' 
                   : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
@@ -413,23 +413,23 @@ const MaterialDetailPage = () => {
               aria-label={material.is_bookmarked ? 'ブックマークを削除' : 'ブックマークに追加'}
               aria-pressed={material.is_bookmarked}
             >
-              {material.is_bookmarked ? <FaBookmark size={24} /> : <FaRegBookmark size={24} />}
+              {material.is_bookmarked ? <FaBookmark size={18} /> : <FaRegBookmark size={18} />}
             </button>
           </div>
 
           {/* 著者情報 */}
-          <div className="flex items-center justify-between border-t pt-6">
+          <div className="flex items-center justify-between border-t pt-4">
             <div className="flex items-center">
               <Image
                 src={material.author.avatar}
                 alt={material.author.name}
-                width={48}
-                height={48}
-                className="rounded-full mr-4"
+                width={40}
+                height={40}
+                className="rounded-full mr-3"
               />
               <div>
-                <h3 className="font-medium text-gray-900">{material.author.name}</h3>
-                <div className="flex items-center text-sm text-gray-500">
+                <h3 className="text-sm font-medium text-gray-900">{material.author.name}</h3>
+                <div className="flex items-center text-xs text-gray-500 mt-1">
                   <span className={`mr-2 px-2 py-1 rounded text-xs ${
                     material.author.type === 'ギバー' ? 'bg-green-100 text-green-800' :
                     material.author.type === 'マッチャー' ? 'bg-blue-100 text-blue-800' :
@@ -441,7 +441,7 @@ const MaterialDetailPage = () => {
                 </div>
               </div>
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-xs text-gray-500">
               公開日: {formatDate(material.created_at)}
             </div>
           </div>
