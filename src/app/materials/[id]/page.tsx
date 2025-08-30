@@ -361,7 +361,8 @@ const MaterialDetailPage = () => {
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">{material.title}</h1>
               <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6">{material.description}</p>
               
-              <div className="flex flex-wrap items-center gap-2 sm:gap-4 mb-4 sm:mb-6">
+              {/* カテゴリと難易度 */}
+              <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
                 <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
                   material.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
                   material.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
@@ -372,6 +373,10 @@ const MaterialDetailPage = () => {
                 <span className="px-2 sm:px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs sm:text-sm font-medium">
                   {material.category}
                 </span>
+              </div>
+
+              {/* 評価と閲覧数 */}
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
                 <div className="flex items-center text-yellow-500">
                   {[...Array(5)].map((_, i) => (
                     <span key={i} className="text-sm sm:text-base">
