@@ -117,11 +117,11 @@ export async function POST(request: NextRequest) {
       content: typeof data.content === 'string' ? data.content : JSON.stringify(data.content),
       category: data.category,
       description: data.description || '',
-      user_id: user.id, // materialsテーブルのuser_idフィールドに保存
-      difficulty_level: data.difficulty === 'beginner' ? 1 : 
-                       data.difficulty === 'intermediate' ? 3 : 
-                       data.difficulty === 'advanced' ? 5 : 2,
-      is_published: data.status === 'published' || data.is_public || false,
+      author_id: user.id, // materialsテーブルのauthor_idフィールドに保存
+      difficulty: data.difficulty || 'beginner',
+      status: data.status === 'published' || data.is_public ? 'published' : 'draft',
+      estimated_time: data.estimated_time || 0,
+      allow_comments: data.allow_comments !== false,
       tags: data.tags || []
     };
 

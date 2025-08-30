@@ -745,11 +745,11 @@ const PublishStep: React.FC<{
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* プレビュー */}
           <div>
-            <h2 className="text-lg font-semibold mb-4">教材プレビュー</h2>
+            <h2 className="text-lg font-semibold mb-2">教材プレビュー</h2>
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <MaterialPreview material={material} />
             </div>
@@ -757,7 +757,7 @@ const PublishStep: React.FC<{
 
           {/* 公開設定 */}
           <div>
-            <h2 className="text-lg font-semibold mb-4">公開設定</h2>
+            <h2 className="text-lg font-semibold mb-2">公開設定</h2>
             <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
               <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
                 <div>
