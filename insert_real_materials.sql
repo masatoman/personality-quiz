@@ -327,7 +327,7 @@ INSERT INTO public.materials (
       jsonb_build_object(
         'type', 'engagement',
         'title', '聴衆エンゲージメント技術',
-        'content', '聴衆を積極的に参加させ、価値のある体験を提供する技術。',
+        'content', '聴衪を積極的に参加させ、価値のある体験を提供する技術。',
         'interactive_elements', jsonb_build_object(
           'reflection_questions', jsonb_build_array(
             'Take a moment to think about...',

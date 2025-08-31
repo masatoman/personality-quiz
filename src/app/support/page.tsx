@@ -197,7 +197,7 @@ export default function SupportPage() {
                   <category.icon className="text-blue-600 mr-3" size={24} />
                   <h3 className="text-lg font-semibold text-gray-900">{category.title}</h3>
                 </div>
-                <p className="text-gray-600 mb-4 text-sm">{category.description}</p>
+                <p className="text-gray-700 mb-4 text-sm">{category.description}</p>
                 <ul className="space-y-2">
                   {category.links.map((link, linkIndex) => (
                     <li key={linkIndex}>

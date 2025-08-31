@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { FaHeart, FaRegHeart, FaUser, FaReply, FaLightbulb, FaGift } from 'react-icons/fa';
+import { FaHeart, FaRegHeart, FaUser, FaReply, FaLightbulb } from 'react-icons/fa';
 import Image from 'next/image';
 
 interface Comment {
@@ -136,12 +136,6 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <h5 className="font-medium text-gray-900 text-sm">{comment.profiles.display_name}</h5>
-                <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
-                  ギバー
-                </span>
-                <span className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-full">
-                  50pt
-                </span>
               </div>
               <p className="text-xs text-gray-500">
                 {new Date(comment.created_at).toLocaleDateString('ja-JP', {
@@ -266,7 +260,7 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
               </div>
               <div>
                 <h4 className="text-base font-medium text-gray-900">気づきを共有</h4>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-gray-700 mt-1">
                   学習中の発見やコツを他の学習者と共有しましょう
                 </p>
               </div>
@@ -285,9 +279,9 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
             />
             
             {/* フッター */}
-            <div className="mt-4 space-y-3">
+            <div className="mt-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">{newComment.length}/2000文字</span>
+                <span className="text-xs text-gray-600">{newComment.length}/2000文字</span>
                 <button
                   onClick={submitComment}
                   disabled={!newComment.trim() || submitting}
@@ -302,16 +296,6 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
                     <span>投稿</span>
                   )}
                 </button>
-              </div>
-              <div className="flex items-center gap-4 text-xs text-gray-400">
-                <span className="flex items-center gap-1">
-                  <FaGift className="text-gray-400" />
-                  コメント: +15pt
-                </span>
-                <span className="flex items-center gap-1">
-                  <FaHeart className="text-gray-400" />
-                  いいね: +5pt
-                </span>
               </div>
             </div>
           </div>
@@ -332,8 +316,8 @@ const MaterialComments: React.FC<MaterialCommentsProps> = ({ materialId, classNa
         </div>
       ) : (
         <div className="text-center py-8 bg-gray-50 rounded-lg">
-          <p className="text-gray-500 mb-2">まだコメントがありません</p>
-          <p className="text-sm text-gray-400">最初のコメントを投稿してみませんか？</p>
+          <p className="text-gray-700 mb-2">まだコメントがありません</p>
+          <p className="text-sm text-gray-600">最初のコメントを投稿してみませんか？</p>
         </div>
       )}
     </div>

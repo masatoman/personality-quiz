@@ -26,7 +26,7 @@ const DashboardError = ({ error, reset }: { error: Error; reset: () => void }) =
         <h2 className="text-lg font-semibold text-red-600 mb-3">
           エラーが発生しました
         </h2>
-        <p className="text-sm text-gray-600 mb-4">
+        <p className="text-sm text-gray-700 mb-4">
           {error.message || 'データの読み込み中にエラーが発生しました。'}
         </p>
         <div className="space-x-4">

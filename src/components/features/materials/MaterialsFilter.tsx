@@ -1,51 +1,50 @@
 import React, { useState } from 'react';
 import { 
   FaFilter, 
-  FaTimes, 
-  FaSort, 
-  FaGraduationCap, 
-  FaBook, 
-  FaEdit, 
-  FaClock, 
-  FaMagic, 
-  FaCheck, 
-  FaSync, 
-  FaLink, 
-  FaEllipsisH, 
-  FaFire, 
-  FaStar 
+  FaTimes
 } from 'react-icons/fa';
 
+interface MaterialsFilterProps {
+  categories: Array<{ id: number; name: string }>;
+  difficulties: Array<{ id: number; name: string }>;
+  selectedCategory: number | null;
+  selectedDifficulty: number | null;
+  onCategoryChange: (categoryId: number | null) => void;
+  onDifficultyChange: (difficultyId: number | null) => void;
+  onClearFilters: () => void;
+}
 
-
-export default function MaterialsFilter() {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+export const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
+  categories,
+  difficulties,
+  selectedCategory,
+  selectedDifficulty,
+  onCategoryChange,
+  onDifficultyChange,
+  onClearFilters,
+}) => {
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('newest');
 
-  // 中学英文法の文法項目別カテゴリ
-  const categories = [
-    { id: 'be_verbs', name: 'be動詞・一般動詞', icon: <FaEdit /> },
-    { id: 'present_progressive', name: '現在進行形・過去形', icon: <FaClock /> },
-    { id: 'future_modal', name: '未来形・助動詞', icon: <FaMagic /> },
-    { id: 'present_perfect', name: '現在完了', icon: <FaCheck /> },
-    { id: 'passive_voice', name: '受動態', icon: <FaSync /> },
-    { id: 'infinitive_gerund', name: '不定詞・動名詞', icon: <FaBook /> },
-    { id: 'relative_pronouns', name: '関係代名詞', icon: <FaLink /> },
-    { id: 'others', name: 'その他', icon: <FaEllipsisH /> }
+  // 学年別レベルフィルター - 色を統一
+  const levels = [
+    { id: 'grade1', name: '中1レベル', icon: <FaUserGraduate /> },
+    { id: 'grade2', name: '中2レベル', icon: <FaUsers /> },
+    { id: 'grade3', name: '中3レベル', icon: <FaGraduationCap /> }
   ];
 
-  // 学年別レベルフィルター
-  const levels = [
-    { id: 'grade1', name: '中1レベル', color: 'bg-green-100 text-green-700' },
-    { id: 'grade2', name: '中2レベル', color: 'bg-blue-100 text-blue-700' },
-    { id: 'grade3', name: '中3レベル', color: 'bg-purple-100 text-purple-700' }
+  // 難易度フィルター（よく使うフィルター） - 色を統一
+  const difficulties = [
+    { id: 'beginner', name: '初級', icon: <FaUserGraduate /> },
+    { id: 'intermediate', name: '中級', icon: <FaUsers /> },
+    { id: 'advanced', name: '上級', icon: <FaGraduationCap /> }
   ];
 
   const sortOptions = [
     { id: 'newest', name: '新着順', icon: <FaClock /> },
     { id: 'popular', name: '人気順', icon: <FaFire /> },
-    { id: 'rating', name: '評価順', icon: <FaStar /> }
+    { id: 'rating', name: '評価順', icon: <FaStar /> },
+    { id: 'recommended', name: 'おすすめ順', icon: <FaHeart /> }
   ];
 
   const handleCategoryToggle = (categoryId: string) => {
@@ -64,16 +63,85 @@ export default function MaterialsFilter() {
     );
   };
 
+  const handleDifficultyToggle = (difficultyId: string) => {
+    setSelectedDifficulties(prev => 
+      prev.includes(difficultyId) 
+        ? prev.filter(id => id !== difficultyId)
+        : [...prev, difficultyId]
+    );
+  };
+
   const handleReset = () => {
     setSelectedCategories([]);
     setSelectedLevels([]);
+    setSelectedDifficulties([]);
     setSortBy('newest');
   };
 
-  const hasActiveFilters = selectedCategories.length > 0 || selectedLevels.length > 0;
+  const hasActiveFilters = selectedCategories.length > 0 || selectedLevels.length > 0 || selectedDifficulties.length > 0;
 
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+  const FilterButton = ({ 
+    item, 
+    isSelected, 
+    onClick
+  }: { 
+    item: any; 
+    isSelected: boolean; 
+    onClick: () => void; 
+  }) => (
+    <button
+      onClick={onClick}
+      className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 text-left ${
+        isSelected
+          ? 'bg-blue-50 border-blue-200 text-blue-700'
+          : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
+      }`}
+    >
+      <span className={`p-2 rounded-lg ${isSelected ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'}`}>
+        {item.icon}
+      </span>
+      <span className="text-sm font-medium">{item.name}</span>
+      {isSelected && (
+        <FaTimes className="ml-auto text-blue-600 text-xs" />
+      )}
+    </button>
+  );
+
+  const FilterSection = ({ 
+    title, 
+    icon, 
+    items, 
+    selectedItems, 
+    onToggle 
+  }: { 
+    title: string; 
+    icon: React.ReactNode; 
+    items: any[]; 
+    selectedItems: string[]; 
+    onToggle: (id: string) => void; 
+  }) => (
+    <div>
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-gray-500 text-sm">{icon}</span>
+        <h3 className="font-medium text-gray-900">{title}</h3>
+      </div>
+      <div className="grid grid-cols-1 gap-2">
+        {items.map(item => (
+          <FilterButton
+            key={item.id}
+            item={item}
+            isSelected={selectedItems.includes(item.id)}
+            onClick={() => onToggle(item.id)}
+          >
+            {item.name}
+          </FilterButton>
+        ))}
+      </div>
+    </div>
+  );
+
+  const content = (
+    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden ${isModal ? 'h-full' : ''}`}>
       {/* ヘッダー */}
       <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
         <div className="flex items-center justify-between">
@@ -83,72 +151,54 @@ export default function MaterialsFilter() {
             </div>
             <h2 className="text-lg font-semibold text-gray-900">フィルター</h2>
           </div>
-          {hasActiveFilters && (
-            <button
-              onClick={handleReset}
-              className="text-xs text-blue-600 hover:text-blue-700 font-medium"
-            >
-              リセット
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {hasActiveFilters && (
+              <button
+                onClick={handleReset}
+                className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+              >
+                リセット
+              </button>
+            )}
+            {isModal && onClose && (
+              <button
+                onClick={onClose}
+                className="p-2 text-gray-500 hover:text-gray-700"
+              >
+                <FaTimes className="text-lg" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="p-6 space-y-6">
+      <div className={`p-6 space-y-6 ${isModal ? 'overflow-y-auto h-full' : ''}`}>
+        {/* よく使うフィルター - 難易度 */}
+        <FilterSection
+          title="難易度"
+          icon={<FaGraduationCap />}
+          items={difficulties}
+          selectedItems={selectedDifficulties}
+          onToggle={handleDifficultyToggle}
+        />
+
         {/* 文法項目 */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <FaBook className="text-gray-500 text-sm" />
-            <h3 className="font-medium text-gray-900">文法項目</h3>
-          </div>
-          <div className="space-y-2">
-            {categories.map(category => (
-              <button
-                key={category.id}
-                onClick={() => handleCategoryToggle(category.id)}
-                className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 text-left ${
-                  selectedCategories.includes(category.id)
-                    ? 'bg-blue-50 border-blue-200 text-blue-700'
-                    : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                                 <span className="text-gray-600">{category.icon}</span>
-                <span className="text-sm font-medium">{category.name}</span>
-                {selectedCategories.includes(category.id) && (
-                  <FaTimes className="ml-auto text-blue-600 text-xs" />
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
+        <FilterSection
+          title="文法項目"
+          icon={<FaBook />}
+          items={categories}
+          selectedItems={selectedCategories}
+          onToggle={handleCategoryToggle}
+        />
 
         {/* 学年レベル */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <FaGraduationCap className="text-gray-500 text-sm" />
-            <h3 className="font-medium text-gray-900">学年レベル</h3>
-          </div>
-          <div className="space-y-2">
-            {levels.map(level => (
-              <button
-                key={level.id}
-                onClick={() => handleLevelToggle(level.id)}
-                className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 text-left ${
-                  selectedLevels.includes(level.id)
-                    ? 'bg-blue-50 border-blue-200 text-blue-700'
-                    : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${level.color}`}>
-                  {level.name}
-                </span>
-                {selectedLevels.includes(level.id) && (
-                  <FaTimes className="ml-auto text-blue-600 text-xs" />
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
+        <FilterSection
+          title="学年レベル"
+          icon={<FaGraduationCap />}
+          items={levels}
+          selectedItems={selectedLevels}
+          onToggle={handleLevelToggle}
+        />
 
         {/* 並び替え */}
         <div>
@@ -170,18 +220,41 @@ export default function MaterialsFilter() {
         </div>
 
         {/* アクティブフィルター表示 */}
-        {(selectedCategories.length > 0 || selectedLevels.length > 0) && (
+        {(selectedCategories.length > 0 || selectedLevels.length > 0 || selectedDifficulties.length > 0) && (
           <div className="pt-4 border-t border-gray-100">
             <div className="text-xs text-gray-500 mb-3">アクティブフィルター</div>
             <div className="flex flex-wrap gap-2">
+              {selectedDifficulties.map(difficultyId => {
+                const difficulty = difficulties.find(d => d.id === difficultyId);
+                return (
+                  <span
+                    key={difficultyId}
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs"
+                  >
+                    <span className="p-1 rounded bg-blue-200 text-blue-600">
+                      {difficulty?.icon}
+                    </span>
+                    {difficulty?.name}
+                    <button
+                      onClick={() => handleDifficultyToggle(difficultyId)}
+                      className="ml-1 hover:text-blue-800"
+                    >
+                      <FaTimes className="text-xs" />
+                    </button>
+                  </span>
+                );
+              })}
               {selectedCategories.map(categoryId => {
                 const category = categories.find(c => c.id === categoryId);
                 return (
-                                     <span
-                     key={categoryId}
-                     className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs"
-                   >
-                     <span className="text-gray-600">{category?.icon}</span> {category?.name}
+                  <span
+                    key={categoryId}
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs"
+                  >
+                    <span className="p-1 rounded bg-blue-200 text-blue-600">
+                      {category?.icon}
+                    </span>
+                    {category?.name}
                     <button
                       onClick={() => handleCategoryToggle(categoryId)}
                       className="ml-1 hover:text-blue-800"
@@ -196,12 +269,15 @@ export default function MaterialsFilter() {
                 return (
                   <span
                     key={levelId}
-                    className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs"
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs"
                   >
+                    <span className="p-1 rounded bg-blue-200 text-blue-600">
+                      {level?.icon}
+                    </span>
                     {level?.name}
                     <button
                       onClick={() => handleLevelToggle(levelId)}
-                      className="ml-1 hover:text-green-800"
+                      className="ml-1 hover:text-blue-800"
                     >
                       <FaTimes className="text-xs" />
                     </button>
@@ -214,4 +290,16 @@ export default function MaterialsFilter() {
       </div>
     </div>
   );
+
+  if (isModal) {
+    return (
+      <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-end sm:items-center justify-center p-4">
+        <div className="bg-white rounded-t-lg sm:rounded-lg w-full max-w-md max-h-[90vh] overflow-hidden">
+          {content}
+        </div>
+      </div>
+    );
+  }
+
+  return content;
 } 

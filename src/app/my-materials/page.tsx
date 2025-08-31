@@ -133,7 +133,7 @@ export default function MyMaterialsPage() {
       <div className="flex justify-between items-start mb-6">
         <div>
           <h1 className="text-2xl font-bold mb-2">マイ教材</h1>
-          <p className="text-gray-600 text-sm">あなたが作成した教材の管理と統計を確認できます</p>
+          <p className="text-gray-700 text-sm">あなたが作成した教材の管理と統計を確認できます</p>
         </div>
         <Link
           href="/create"

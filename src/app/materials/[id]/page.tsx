@@ -6,8 +6,7 @@ import { useParams } from 'next/navigation';
 import { FaStar, FaRegStar, FaUser, FaArrowLeft, FaBookmark, FaRegBookmark, FaLightbulb, FaBook, FaEdit } from 'react-icons/fa';
 import Image from 'next/image';
 
-// import MaterialComments from '@/components/features/materials/MaterialComments';
-import MockCommentData from '@/components/features/materials/MockCommentData';
+import MaterialComments from '@/components/features/materials/MaterialComments';
 
 // 教材データの型定義
 type Material = {
@@ -561,38 +560,34 @@ const MaterialDetailPage = () => {
           {renderContent(material.content)}
         </div>
 
-        {/* コメント・気づき共有セクション - テスト用モックデータ表示 */}
-        <MockCommentData />
-        
-        {/* 実際のコメント機能（一時的に非表示）
+        {/* コメント・気づき共有セクション */}
         <MaterialComments materialId={materialId} className="mb-8" />
-        */}
 
         {/* 関連教材 */}
         {relatedMaterials.length > 0 && (
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-bold mb-4 sm:mb-6">関連教材</h3>
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-4 sm:mb-6">関連教材</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
               {relatedMaterials.map((relatedMaterial) => (
                 <div key={relatedMaterial.id} className="rounded-lg p-3 sm:p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
                   <Link href={`/materials/${relatedMaterial.id}`} className="block h-full">
-                    <h4 className="text-sm sm:text-base font-medium mb-2 hover:text-blue-600">{relatedMaterial.title}</h4>
-                    <div className="flex items-center text-sm text-gray-600 mb-2">
-                      <span className="mr-3">{relatedMaterial.author_name}</span>
+                    <h4 className="text-sm sm:text-base font-medium text-gray-900 mb-2 hover:text-blue-600">{relatedMaterial.title}</h4>
+                    <div className="flex items-center text-sm text-gray-800 mb-2">
+                      <span className="mr-3 font-medium">{relatedMaterial.author_name}</span>
                       <div className="flex text-yellow-500">
                         {[...Array(5)].map((_, i) => (
                           <span key={i} className="text-xs">
                             {i < Math.floor(relatedMaterial.rating) ? <FaStar /> : <FaRegStar />}
                           </span>
                         ))}
-                        <span className="ml-1 text-gray-700 text-xs">{relatedMaterial.rating}</span>
+                        <span className="ml-1 text-gray-900 text-xs font-medium">{relatedMaterial.rating}</span>
                       </div>
                     </div>
                     <div className="mt-2 flex gap-2">
-                      <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                      <span className="px-2 py-1 bg-blue-100 text-blue-900 rounded text-xs font-medium">
                         {relatedMaterial.category}
                       </span>
-                      <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">
+                      <span className="px-2 py-1 bg-purple-100 text-purple-900 rounded text-xs font-medium">
                         {relatedMaterial.difficulty}
                       </span>
                     </div>

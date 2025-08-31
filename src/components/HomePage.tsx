@@ -89,13 +89,13 @@ const HomePage: React.FC = () => {
                 <FaUsers size={60} className="text-blue-500 mx-auto" aria-hidden="true" />
               </div>
               <h3 className="method-title text-xl font-semibold mb-2">教材を作る</h3>
-              <p className="method-desc text-gray-600 mb-4">自分の知識を整理して教材を作成。教えることで理解が深まります。</p>
-              <ul className="method-features text-sm text-gray-500 space-y-2">
-                <li className="flex items-center"><FaEdit className="mr-2" aria-hidden="true" />知識の整理・体系化</li>
-                <li className="flex items-center"><FaLightbulb className="mr-2" aria-hidden="true" />理解度の向上</li>
-                <li className="flex items-center"><FaUsers className="mr-2" aria-hidden="true" />他者への貢献</li>
-              </ul>
-              <div className="method-stats text-sm text-gray-500 mt-4">記憶定着率90%向上</div>
+                          <p className="method-desc text-gray-700 mb-4">自分の知識を整理して教材を作成。教えることで理解が深まります。</p>
+            <ul className="method-features text-sm text-gray-600 space-y-2">
+              <li className="flex items-center"><FaEdit className="mr-2" aria-hidden="true" />知識の整理・体系化</li>
+              <li className="flex items-center"><FaLightbulb className="mr-2" aria-hidden="true" />理解度の向上</li>
+              <li className="flex items-center"><FaUsers className="mr-2" aria-hidden="true" />他者への貢献</li>
+            </ul>
+            <div className="method-stats text-sm text-gray-600 mt-4">記憶定着率90%向上</div>
             </div>
             <div className="method-card bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
               <div className="method-icon mb-4">
@@ -115,13 +115,13 @@ const HomePage: React.FC = () => {
                 <FaHeart size={60} className="text-purple-500 mx-auto" aria-hidden="true" />
               </div>
               <h3 className="method-title text-xl font-semibold mb-2">感謝を伝える</h3>
-              <p className="method-desc text-gray-600 mb-4">良い教材には感謝を伝える。自然な感謝の循環が生まれます。</p>
-              <ul className="method-features text-sm text-gray-500 space-y-2">
-                <li className="flex items-center"><FaHeart className="mr-2" aria-hidden="true" />自然な感謝表現</li>
-                <li className="flex items-center"><FaSmile className="mr-2" aria-hidden="true" />モチベーション向上</li>
-                <li className="flex items-center"><FaChartLine className="mr-2" aria-hidden="true" />継続的な成長</li>
+              <p className="method-desc text-gray-700 mb-4">良い教材には感謝を伝える。自然な感謝の循環が生まれます。</p>
+              <ul className="method-features text-sm text-gray-600 space-y-2">
+                <li>• 感謝の表現</li>
+                <li>• モチベーション向上</li>
+                <li>• 継続的な成長</li>
               </ul>
-              <div className="method-stats text-sm text-gray-500 mt-4">継続率80%向上</div>
+              <div className="method-stats text-sm text-gray-600 mt-4">継続率80%向上</div>
             </div>
           </div>
         </div>

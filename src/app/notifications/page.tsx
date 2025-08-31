@@ -178,7 +178,7 @@ const NotificationsPage: React.FC = () => {
         ) : (
           <div className="text-center py-12 bg-gray-50 rounded-lg">
             <FaBell className="mx-auto text-gray-300" size={48} />
-            <p className="mt-4 text-gray-500">通知はありません</p>
+            <p className="mt-4 text-gray-600">通知はありません</p>
           </div>
         )}
       </div>

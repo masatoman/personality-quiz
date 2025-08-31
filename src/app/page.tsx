@@ -25,7 +25,7 @@ export default function HomePage() {
                 中学英文法教材一覧
               </h1>
             </div>
-            <p className="text-gray-600 text-sm lg:text-base max-w-2xl mx-auto lg:mx-0">
+            <p className="text-gray-700 text-sm lg:text-base max-w-2xl mx-auto lg:mx-0">
               学習中の発見やコツを共有して、みんなで成長しましょう
             </p>
           </div>
