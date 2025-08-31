@@ -50,7 +50,9 @@
     "check:dev": "node scripts/env-check.js dev",
     "check:staging": "node scripts/env-check.js staging",
     "check:production": "node scripts/env-check.js production",
-    "check:all": "node scripts/env-check.js all"
+    "check:all": "node scripts/env-check.js all",
+    "health-check": "node scripts/supabase-health-check.js",
+    "health-check:enhanced": "node scripts/enhanced-health-check.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
