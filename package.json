@@ -52,7 +52,9 @@
     "check:production": "node scripts/env-check.js production",
     "check:all": "node scripts/env-check.js all",
     "health-check": "node scripts/supabase-health-check.js",
-    "health-check:enhanced": "node scripts/enhanced-health-check.js"
+    "health-check:enhanced": "node scripts/enhanced-health-check.js",
+    "fix-materials": "node scripts/fix-materials-table.js",
+    "import-phase1": "node scripts/import-phase1-material.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

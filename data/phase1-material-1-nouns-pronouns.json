@@ -1,0 +1,155 @@
+{
+  "title": "名詞・代名詞の基礎",
+  "description": "英語の品詞の基本を学び、名詞と代名詞の使い方を理解しましょう。これらは英語の文を作る上で最も重要な要素です。",
+  "content": {
+    "sections": [
+      {
+        "title": "名詞とは",
+        "content": "名詞は、人、物、場所、概念を表す言葉です。英語の文では主語や目的語として使われます。",
+        "examples": [
+          {
+            "japanese": "私は犬が好きです。",
+            "english": "I like dogs.",
+            "explanation": "dogs（犬）は名詞で、likeの目的語として使われています。"
+          },
+          {
+            "japanese": "東京は大きな街です。",
+            "english": "Tokyo is a big city.",
+            "explanation": "Tokyo（東京）とcity（街）は名詞です。Tokyoは主語、cityは補語として使われています。"
+          },
+          {
+            "japanese": "彼女は学生です。",
+            "english": "She is a student.",
+            "explanation": "student（学生）は名詞で、補語として使われています。"
+          }
+        ],
+        "key_points": [
+          "名詞は人、物、場所、概念を表す",
+          "主語、目的語、補語として使われる",
+          "単数形と複数形がある"
+        ]
+      },
+      {
+        "title": "代名詞とは",
+        "content": "代名詞は、名詞の代わりに使う言葉です。同じ名詞を繰り返し使うことを避け、文を簡潔にします。",
+        "examples": [
+          {
+            "japanese": "彼は学生です。",
+            "english": "He is a student.",
+            "explanation": "He（彼）は代名詞で、男性の名詞の代わりに使われています。"
+          },
+          {
+            "japanese": "これは私の本です。",
+            "english": "This is my book.",
+            "explanation": "This（これ）は代名詞で、特定の物を指しています。"
+          },
+          {
+            "japanese": "私たちは友達です。",
+            "english": "We are friends.",
+            "explanation": "We（私たち）は代名詞で、複数の人を表しています。"
+          }
+        ],
+        "key_points": [
+          "名詞の代わりに使う",
+          "文を簡潔にする",
+          "人称、数、性によって形が変わる"
+        ]
+      },
+      {
+        "title": "主な代名詞の種類",
+        "content": "代名詞には様々な種類があります。基本的なものを覚えておきましょう。",
+        "examples": [
+          {
+            "japanese": "私は英語を勉強します。",
+            "english": "I study English.",
+            "explanation": "I（私）は一人称単数の主格代名詞です。"
+          },
+          {
+            "japanese": "彼女に本をあげました。",
+            "english": "I gave her a book.",
+            "explanation": "her（彼女に）は三人称単数の目的格代名詞です。"
+          },
+          {
+            "japanese": "これは私の車です。",
+            "english": "This is my car.",
+            "explanation": "my（私の）は所有格代名詞です。"
+          }
+        ],
+        "key_points": [
+          "主格代名詞：主語として使う（I, you, he, she, it, we, they）",
+          "目的格代名詞：目的語として使う（me, you, him, her, it, us, them）",
+          "所有格代名詞：所有を表す（my, your, his, her, its, our, their）"
+        ]
+      },
+      {
+        "title": "実践的な使い方",
+        "content": "名詞と代名詞を組み合わせて、自然な英語の文を作ってみましょう。",
+        "examples": [
+          {
+            "japanese": "田中さんは先生です。彼は英語を教えています。",
+            "english": "Mr. Tanaka is a teacher. He teaches English.",
+            "explanation": "Mr. Tanakaという名詞の後に、heという代名詞を使って繰り返しを避けています。"
+          },
+          {
+            "japanese": "この本は面白いです。私はそれを読みました。",
+            "english": "This book is interesting. I read it.",
+            "explanation": "bookという名詞の後に、itという代名詞を使って簡潔にしています。"
+          },
+          {
+            "japanese": "私たちの学校は大きいです。そこには多くの学生がいます。",
+            "english": "Our school is big. There are many students there.",
+            "explanation": "schoolという名詞の場所を、thereという代名詞で表しています。"
+          }
+        ],
+        "key_points": [
+          "同じ名詞を繰り返すときは代名詞を使う",
+          "文脈から何を指しているかが分かるようにする",
+          "自然で簡潔な文を作る"
+        ]
+      }
+    ],
+    "quiz": {
+      "title": "理解度チェック",
+      "questions": [
+        {
+          "question": "次の文の名詞はどれですか？\n\"I like cats.\"",
+          "options": ["I", "like", "cats", "文に名詞はない"],
+          "correct": 2,
+          "explanation": "cats（猫）が名詞です。Iは代名詞、likeは動詞です。"
+        },
+        {
+          "question": "次の文の代名詞はどれですか？\n\"She is a student.\"",
+          "options": ["She", "is", "a", "student"],
+          "correct": 0,
+          "explanation": "She（彼女）が代名詞です。studentは名詞、isは動詞、aは冠詞です。"
+        },
+        {
+          "question": "次の文で「彼に」を表す代名詞はどれですか？\n\"I gave him a book.\"",
+          "options": ["I", "gave", "him", "book"],
+          "correct": 2,
+          "explanation": "him（彼に）が目的格代名詞です。"
+        },
+        {
+          "question": "次の文で所有を表す代名詞はどれですか？\n\"This is my car.\"",
+          "options": ["This", "is", "my", "car"],
+          "correct": 2,
+          "explanation": "my（私の）が所有格代名詞です。"
+        },
+        {
+          "question": "次の文で「それ」を表す代名詞はどれですか？\n\"I bought a pen. It is blue.\"",
+          "options": ["I", "bought", "It", "blue"],
+          "correct": 2,
+          "explanation": "It（それ）が代名詞で、前の文のpenを指しています。"
+        }
+      ]
+    }
+  },
+  "difficulty": "beginner",
+  "estimated_time": 15,
+  "tags": ["品詞", "名詞", "代名詞", "基礎", "中学英語"],
+  "category": "grammar",
+  "is_published": true,
+  "author_id": null,
+  "created_at": "2025-08-31T07:00:00.000Z",
+  "updated_at": "2025-08-31T07:00:00.000Z"
+}
