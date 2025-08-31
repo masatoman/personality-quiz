@@ -185,7 +185,7 @@ const ImprovedCreator: React.FC = () => {
               </button>
               <div>
                 <h1 className="text-lg font-semibold text-gray-900">教材作成</h1>
-                <p className="text-sm text-gray-500">中学英文法の解説を作成しましょう</p>
+                <p className="text-sm text-gray-700 font-medium">中学英文法の解説を作成しましょう</p>
               </div>
             </div>
             
@@ -236,7 +236,7 @@ const ImprovedCreator: React.FC = () => {
                 <label className="text-sm font-medium text-gray-700">
                   教材タイトル <span className="text-red-500">*</span>
                 </label>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-600 font-medium">
                   {material.title.length}/100文字
                 </span>
               </div>
@@ -254,7 +254,7 @@ const ImprovedCreator: React.FC = () => {
             <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">コンテンツ</h3>
-                <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                <span className="text-sm text-gray-700 bg-gray-100 px-3 py-1 rounded-full font-medium">
                   {material.sections.length}セクション
                 </span>
               </div>
@@ -270,7 +270,7 @@ const ImprovedCreator: React.FC = () => {
                   </div>
                   <div className="text-left">
                     <div className="font-medium text-gray-900">文法解説</div>
-                    <div className="text-sm text-gray-500">説明文や例文を追加</div>
+                    <div className="text-sm text-gray-600 font-medium">説明文や例文を追加</div>
                   </div>
                 </button>
                 
@@ -283,7 +283,7 @@ const ImprovedCreator: React.FC = () => {
                   </div>
                   <div className="text-left">
                     <div className="font-medium text-gray-900">練習問題</div>
-                    <div className="text-sm text-gray-500">選択式問題を追加</div>
+                    <div className="text-sm text-gray-600 font-medium">選択式問題を追加</div>
                   </div>
                 </button>
               </div>
@@ -366,7 +366,7 @@ const ImprovedCreator: React.FC = () => {
                     <PlusIcon className="w-8 h-8 text-gray-400" />
                   </div>
                   <h3 className="text-lg font-medium text-gray-900 mb-2">セクションを追加しましょう</h3>
-                  <p className="text-gray-500 mb-6">上記のボタンから解説や問題を追加してください</p>
+                  <p className="text-gray-600 mb-6 font-medium">上記のボタンから解説や問題を追加してください</p>
                 </div>
               )}
             </div>
@@ -420,7 +420,7 @@ const ImprovedCreator: React.FC = () => {
                   <div className="bg-blue-50 rounded-lg p-4">
                     <div className="text-sm font-medium text-blue-900 mb-1">推定学習時間</div>
                     <div className="text-2xl font-bold text-blue-600">約{material.estimatedTime}分</div>
-                    <div className="text-xs text-blue-700">自動計算</div>
+                    <div className="text-xs text-blue-700 font-medium">自動計算</div>
                   </div>
                   
                   <div className="space-y-3">
@@ -461,7 +461,7 @@ const ImprovedCreator: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">作成進捗</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">タイトル</span>
+                  <span className="text-sm text-gray-700 font-medium">タイトル</span>
                   {material.title.trim() ? (
                     <FaCheck className="w-4 h-4 text-green-500" />
                   ) : (
@@ -469,13 +469,13 @@ const ImprovedCreator: React.FC = () => {
                   )}
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">セクション</span>
+                  <span className="text-sm text-gray-700 font-medium">セクション</span>
                   <span className="text-sm font-medium text-gray-900">
                     {material.sections.length}個
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">設定</span>
+                  <span className="text-sm text-gray-700 font-medium">設定</span>
                   {material.category && material.difficulty ? (
                     <FaCheck className="w-4 h-4 text-green-500" />
                   ) : (
@@ -606,13 +606,13 @@ const MaterialPreview: React.FC<{ material: MaterialData }> = ({ material }) => 
             {material.difficulty === 'beginner' ? '中1' :
              material.difficulty === 'intermediate' ? '中2' : '中3'}
           </span>
-          <span className="text-sm text-gray-500">約{material.estimatedTime}分</span>
+                            <span className="text-sm text-gray-700 font-medium">約{material.estimatedTime}分</span>
         </div>
       </div>
       
       <div className="space-y-2">
         {material.sections.length === 0 ? (
-          <p className="text-gray-400 text-sm">コンテンツが追加されていません</p>
+          <p className="text-gray-600 text-sm font-medium">コンテンツが追加されていません</p>
         ) : (
           material.sections.map((section, index) => (
             <div key={section.id} className="border border-gray-200 rounded-lg p-3">
@@ -666,7 +666,7 @@ const PublishStep: React.FC<{
               </button>
               <div>
                 <h1 className="text-lg font-semibold text-gray-900">公開設定</h1>
-                <p className="text-sm text-gray-500">最終確認と公開設定</p>
+                <p className="text-sm text-gray-700 font-medium">最終確認と公開設定</p>
               </div>
             </div>
             <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full font-medium">
@@ -704,7 +704,7 @@ const PublishStep: React.FC<{
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                  <span className="text-sm text-gray-600">公開状態</span>
+                  <span className="text-sm text-gray-700 font-medium">公開状態</span>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                     material.isPublic ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
                   }`}>
@@ -713,14 +713,14 @@ const PublishStep: React.FC<{
                 </div>
 
                 <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                  <span className="text-sm text-gray-600">コメント</span>
+                  <span className="text-sm text-gray-700 font-medium">コメント</span>
                   <span className="text-sm text-gray-900">
                     {material.allowComments ? '許可' : '不許可'}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                  <span className="text-sm text-gray-600">難易度</span>
+                  <span className="text-sm text-gray-700 font-medium">難易度</span>
                   <span className="text-sm text-gray-900">
                     {material.difficulty === 'beginner' ? '中1レベル' :
                      material.difficulty === 'intermediate' ? '中2レベル' : '中3レベル'}
@@ -728,8 +728,8 @@ const PublishStep: React.FC<{
                 </div>
 
                 <div className="flex items-center justify-between py-3">
-                  <span className="text-sm text-gray-600">学習時間</span>
-                  <span className="text-sm text-gray-900">約{material.estimatedTime}分</span>
+                  <span className="text-sm text-gray-700 font-medium">学習時間</span>
+                  <span className="text-sm text-gray-700 font-medium">約{material.estimatedTime}分</span>
                 </div>
               </div>
 
@@ -747,7 +747,7 @@ const PublishStep: React.FC<{
                    material.isPublic ? '教材を公開する' : '下書きとして保存'}
                 </button>
                 
-                <p className="text-center text-sm text-gray-500 mt-3">
+                <p className="text-center text-sm text-gray-600 mt-3 font-medium">
                   公開後も編集・設定変更が可能です
                 </p>
               </div>
