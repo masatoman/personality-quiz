@@ -3,7 +3,7 @@
 import { Suspense, useState } from 'react';
 import MaterialsList from './materials/_components/MaterialsList';
 import LoadingSpinner from '@/components/common/atoms/LoadingSpinner';
-import MaterialsFilter from '@/components/features/materials/MaterialsFilter';
+// import MaterialsFilter from '@/components/features/materials/MaterialsFilter';
 import MaterialsSearch from '@/components/features/materials/MaterialsSearch';
 import { FaFilter, FaChevronDown, FaChevronUp, FaBookOpen } from 'react-icons/fa';
 
@@ -59,7 +59,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 lg:grid-cols-6 gap-8">
           {/* フィルターサイドバー */}
           <aside className={`lg:col-span-1 ${isFilterOpen ? 'block' : 'hidden lg:block'}`}>
-            <MaterialsFilter />
+            {/* <MaterialsFilter /> */}
           </aside>
 
           {/* 教材リスト */}

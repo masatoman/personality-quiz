@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { 
   FaFilter, 
-  FaTimes
+  FaTimes,
+  FaUserGraduate,
+  FaUsers,
+  FaGraduationCap,
+  FaClock,
+  FaFire,
+  FaStar,
+  FaHeart
 } from 'react-icons/fa';
 
 interface MaterialsFilterProps {
@@ -34,7 +41,7 @@ export const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
   ];
 
   // 難易度フィルター（よく使うフィルター） - 色を統一
-  const difficulties = [
+  const difficultyOptions = [
     { id: 'beginner', name: '初級', icon: <FaUserGraduate /> },
     { id: 'intermediate', name: '中級', icon: <FaUsers /> },
     { id: 'advanced', name: '上級', icon: <FaGraduationCap /> }
