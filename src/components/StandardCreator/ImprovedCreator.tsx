@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { TrashIcon } from '@heroicons/react/24/outline';
+import { TrashIcon, PlusIcon, EyeIcon, CogIcon } from '@heroicons/react/24/outline';
 import { Bars3Icon } from '@heroicons/react/24/outline';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useToast } from '../../hooks/useToast';
 import ToastContainer from '../ui/ToastContainer';
-import { FaEye, FaPencilAlt, FaQuestion, FaImage, FaVideo, FaMusic, FaStar, FaPalette, FaLightbulb } from 'react-icons/fa';
+import { FaPencilAlt, FaQuestion, FaImage, FaVideo, FaMusic, FaStar, FaPalette, FaLightbulb, FaCheck } from 'react-icons/fa';
 
 // 型定義
 interface ContentSection {
@@ -31,7 +31,6 @@ interface MaterialData {
 
 const ImprovedCreator: React.FC = () => {
   const [step, setStep] = useState<'create' | 'publish'>('create');
-  const [showFirstTimeHelp, setShowFirstTimeHelp] = useState(false);
   const [material, setMaterial] = useState<MaterialData>({
     title: '',
     description: '',
@@ -45,6 +44,7 @@ const ImprovedCreator: React.FC = () => {
   
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const { toasts, removeToast, showSuccess, showError } = useToast();
 
   // 学習時間の自動推定
@@ -52,42 +52,27 @@ const ImprovedCreator: React.FC = () => {
     const wordCount = material.sections.reduce((total, section) => {
       return total + (section.content?.length || 0);
     }, 0);
-    const estimatedMinutes = Math.max(3, Math.ceil(wordCount / 200)); // 200文字/分として計算
+    const estimatedMinutes = Math.max(3, Math.ceil(wordCount / 200));
     setMaterial(prev => ({ ...prev, estimatedTime: estimatedMinutes }));
   }, [material.sections]);
 
-  // 初回ユーザーかチェック
-  useEffect(() => {
-    const hasCreatedMaterial = localStorage.getItem('has_created_material');
-    if (!hasCreatedMaterial && material.sections.length === 0) {
-      setShowFirstTimeHelp(true);
-    }
-  }, [material.sections.length]);
-
   // コンテンツセクション追加
   const addSection = (type: ContentSection['type']) => {
-    console.log('addSection called with type:', type);
     const newSection: ContentSection = {
       id: `section-${Date.now()}`,
       type,
-      title: type === 'text' ? '文法解説セクション' : 
+      title: type === 'text' ? '文法解説' : 
              type === 'image' ? '画像セクション' :
              type === 'video' ? '動画セクション' : '練習問題',
       content: type === 'quiz' ? '文法問題を入力してください' : '',
       ...(type === 'quiz' ? { options: ['選択肢1', '選択肢2', '選択肢3', '選択肢4'], answer: 0 } : {})
     };
     
-    console.log('新しいセクション:', newSection);
-    setMaterial(prev => {
-      const updated = {
-        ...prev,
-        sections: [...prev.sections, newSection]
-      };
-      console.log('更新後のmaterial:', updated);
-      return updated;
-    });
+    setMaterial(prev => ({
+      ...prev,
+      sections: [...prev.sections, newSection]
+    }));
     setActiveSection(newSection.id);
-    console.log('activeSection set to:', newSection.id);
   };
 
   // セクション削除
@@ -123,9 +108,6 @@ const ImprovedCreator: React.FC = () => {
   // 公開処理
   const handlePublish = async () => {
     try {
-      console.log('公開データ:', material);
-      
-      // APIデータの形式に変換（データベーススキーマに合わせる）
       const publishData = {
         title: material.title,
         description: material.description || '',
@@ -146,8 +128,6 @@ const ImprovedCreator: React.FC = () => {
         tags: []
       };
       
-      console.log('API送信データ:', publishData);
-      
       const response = await fetch('/api/materials', {
         method: 'POST',
         headers: {
@@ -162,18 +142,13 @@ const ImprovedCreator: React.FC = () => {
       }
       
       const result = await response.json();
-      console.log('保存成功:', result);
-      
-      // 初回作成フラグを設定
-      localStorage.setItem('has_created_material', 'true');
       
       showSuccess(
-        '🎉 初回教材作成完了！',
+        '🎉 教材公開完了！',
         '素晴らしい！教材を公開しました。「教えることで学ぶ」体験はいかがでしたか？',
         3000
       );
       
-      // 少し遅延してから教材一覧ページにリダイレクト
       setTimeout(() => {
         window.location.href = '/my-materials';
       }, 2000);
@@ -197,121 +172,48 @@ const ImprovedCreator: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 初回ヘルプモーダル */}
-      {showFirstTimeHelp && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="help-modal-title"
-          aria-describedby="help-modal-desc"
-          onKeyDown={(e) => {
-            if (e.key === 'Escape') {
-              setShowFirstTimeHelp(false);
-            }
-          }}
-        >
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-4 sm:p-6 lg:p-8">
-            <div className="text-center mb-4 sm:mb-6">
-              <FaPalette className="text-2xl sm:text-3xl lg:text-4xl mb-3 sm:mb-4 mx-auto text-blue-600" aria-hidden="true" />
-              <h2 id="help-modal-title" className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-2">
-                初回文法解説作成へようこそ！
-              </h2>
-              <p id="help-modal-desc" className="text-sm sm:text-base text-gray-700">
-                「教えることで学ぶ」体験で中学英文法をマスターしましょう
-              </p>
-            </div>
-            
-            <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-              <div className="flex items-start space-x-2 sm:space-x-3">
-                <div className="bg-blue-100 rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-blue-600 font-bold text-xs sm:text-sm">1</span>
-                </div>
-                <div>
-                  <h3 className="text-sm sm:text-base font-semibold text-gray-700">文法解説の基本情報を入力</h3>
-                  <p className="text-xs sm:text-sm text-gray-600">タイトル、説明、文法項目、学年レベルを設定します</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-2 sm:space-x-3">
-                <div className="bg-green-100 rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-green-600 font-bold text-xs sm:text-sm">2</span>
-                </div>
-                <div>
-                  <h3 className="text-sm sm:text-base font-semibold text-gray-700">解説セクションを追加</h3>
-                  <p className="text-xs sm:text-sm text-gray-600">テキスト解説、例文、練習問題など様々な形式で作成</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-2 sm:space-x-3">
-                <div className="bg-purple-100 rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-purple-600 font-bold text-xs sm:text-sm">3</span>
-                </div>
-                <div>
-                  <h3 className="text-sm sm:text-base font-semibold text-gray-700">プレビューして公開</h3>
-                  <p className="text-xs sm:text-sm text-gray-600">内容を確認してコミュニティと共有しましょう</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-blue-50 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
-              <h4 className="text-sm sm:text-base font-semibold text-blue-700 mb-2 flex items-center">
-                <FaLightbulb className="w-4 h-4 mr-2 text-yellow-600" />
-                初回のコツ
-              </h4>
-              <ul className="text-xs sm:text-sm text-blue-700 space-y-1">
-                <li>• 自分が理解している文法項目から始めてみましょう</li>
-                <li>• 例文をたくさん使って分かりやすく説明してください</li>
-                <li>• 1-2個のセクションからスタートでも十分です</li>
-              </ul>
-            </div>
-            
-            <div className="flex justify-center">
-              <button
-                onClick={() => setShowFirstTimeHelp(false)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm sm:text-base font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                aria-label="教材作成を開始する"
-                autoFocus
-              >
-                始めましょう！
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* ヘッダー */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
+            <div className="flex items-center space-x-4">
               <button 
                 onClick={() => window.history.back()}
-                className="mr-2 sm:mr-4 text-gray-500 hover:text-gray-700 text-lg sm:text-xl"
+                className="text-gray-500 hover:text-gray-700 text-xl"
               >
                 ←
               </button>
-              <h1 className="text-base sm:text-lg lg:text-xl font-semibold">中学英文法解説作成</h1>
-              <span className="ml-2 sm:ml-4 px-2 sm:px-3 py-1 bg-blue-100 text-blue-800 text-xs sm:text-sm rounded-full">
-                ステップ 1/2
-              </span>
+              <div>
+                <h1 className="text-lg font-semibold text-gray-900">教材作成</h1>
+                <p className="text-sm text-gray-500">中学英文法の解説を作成しましょう</p>
+              </div>
             </div>
             
-            <div className="flex items-center space-x-2 sm:space-x-4">
+            <div className="flex items-center space-x-3">
               <button
                 onClick={() => setPreviewMode(!previewMode)}
-                className={`flex items-center px-2 sm:px-3 py-1 rounded-md transition text-xs sm:text-sm ${
-                  previewMode ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+                className={`flex items-center px-3 py-2 rounded-lg transition ${
+                  previewMode ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                <FaEye className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                <EyeIcon className="w-4 h-4 mr-2" />
                 プレビュー
+              </button>
+              
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                className={`flex items-center px-3 py-2 rounded-lg transition ${
+                  showSettings ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <CogIcon className="w-4 h-4 mr-2" />
+                設定
               </button>
               
               <button
                 onClick={() => setStep('publish')}
                 disabled={!canProceed}
-                className={`px-3 sm:px-6 py-2 rounded-md font-medium transition text-xs sm:text-sm ${
+                className={`px-6 py-2 rounded-lg font-medium transition ${
                   canProceed
                     ? 'bg-blue-600 text-white hover:bg-blue-700'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -324,237 +226,273 @@ const ImprovedCreator: React.FC = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           {/* メイン編集エリア */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="xl:col-span-3 space-y-6">
             {/* タイトル入力 */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
-                教材タイトル <span className="text-red-500">*</span>
-              </label>
+            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <label className="text-sm font-medium text-gray-700">
+                  教材タイトル <span className="text-red-500">*</span>
+                </label>
+                <span className="text-sm text-gray-500">
+                  {material.title.length}/100文字
+                </span>
+              </div>
               <input
                 type="text"
                 value={material.title}
                 onChange={(e) => setMaterial(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="例: 英語の基本文法マスター講座"
-                className="w-full text-base sm:text-lg lg:text-xl font-semibold text-gray-900 border-none focus:ring-0 p-0 placeholder-gray-500 bg-transparent"
+                placeholder="例: be動詞の基本をマスターしよう"
+                className="w-full text-2xl font-bold text-gray-900 border-none focus:ring-0 p-0 placeholder-gray-400 bg-transparent"
                 style={{ outline: 'none' }}
               />
-              <div className="mt-2 text-xs sm:text-sm text-gray-500">
-                {material.title.length}/100文字
-              </div>
             </div>
 
-            {/* コンテンツ追加ボタン */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm sm:text-base font-medium">解説セクションを追加</h3>
-                <span className="text-xs sm:text-sm text-gray-500">{material.sections.length}セクション</span>
+            {/* コンテンツ追加エリア */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">コンテンツ</h3>
+                <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                  {material.sections.length}セクション
+                </span>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4" role="group" aria-labelledby="content-types">
+              {/* セクション追加ボタン */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <button
                   onClick={() => addSection('text')}
-                  className="flex flex-col items-center p-4 sm:p-6 min-h-[100px] sm:min-h-[120px] border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95 touch-manipulation"
-                  aria-label="文法解説セクションを追加 - 文法説明・例文を追加できます"
+                  className="flex items-center p-4 border-2 border-dashed border-blue-300 rounded-xl hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 group"
                 >
-                  <FaPencilAlt className="text-2xl sm:text-4xl mb-2 sm:mb-3 text-blue-600" aria-hidden="true" />
-                  <span className="text-sm sm:text-base font-medium">文法解説</span>
-                  <span className="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2 text-center">文法説明・例文を追加</span>
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4 group-hover:bg-blue-200 transition-colors">
+                    <FaPencilAlt className="text-blue-600 text-xl" />
+                  </div>
+                  <div className="text-left">
+                    <div className="font-medium text-gray-900">文法解説</div>
+                    <div className="text-sm text-gray-500">説明文や例文を追加</div>
+                  </div>
                 </button>
                 
                 <button
                   onClick={() => addSection('quiz')}
-                  className="flex flex-col items-center p-4 sm:p-6 min-h-[100px] sm:min-h-[120px] border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 active:scale-95 touch-manipulation"
-                  aria-label="練習問題セクションを追加 - 選択式問題を追加できます"
+                  className="flex items-center p-4 border-2 border-dashed border-purple-300 rounded-xl hover:border-purple-400 hover:bg-purple-50 transition-all duration-200 group"
                 >
-                  <FaQuestion className="text-2xl sm:text-4xl mb-2 sm:mb-3 text-purple-600" aria-hidden="true" />
-                  <span className="text-sm sm:text-base font-medium">練習問題</span>
-                  <span className="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2 text-center">選択式問題を追加</span>
+                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4 group-hover:bg-purple-200 transition-colors">
+                    <FaQuestion className="text-purple-600 text-xl" />
+                  </div>
+                  <div className="text-left">
+                    <div className="font-medium text-gray-900">練習問題</div>
+                    <div className="text-sm text-gray-500">選択式問題を追加</div>
+                  </div>
                 </button>
               </div>
-              
-              {/* 有料プラン限定機能の案内 */}
-              <div className="mt-4 p-3 sm:p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <div className="flex items-start">
-                  <FaStar className="text-lg sm:text-xl mr-2 sm:mr-3 text-yellow-600 mt-0.5" />
-                  <div>
-                    <h4 className="text-xs sm:text-sm font-medium text-yellow-800 mb-1">
-                      プレミアム機能
-                    </h4>
-                    <p className="text-xs text-yellow-700 mb-2">
-                      有料プランでは画像・動画・音声ファイルの追加も可能になります
-                    </p>
-                    <div className="flex flex-wrap gap-1 sm:gap-2">
-                      <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded flex items-center">
-                        <FaImage className="w-3 h-3 mr-1" />
-                        画像
-                      </span>
-                      <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded flex items-center">
-                        <FaVideo className="w-3 h-3 mr-1" />
-                        動画
-                      </span>
-                      <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded flex items-center">
-                        <FaMusic className="w-3 h-3 mr-1" />
-                        音声
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            {/* コンテンツセクション一覧 */}
-            {material.sections.length > 0 && (
-              <div className="space-y-4">
-                <DragDropContext onDragEnd={handleDragEnd}>
-                  <Droppable droppableId="sections">
-                    {(provided) => (
-                      <div {...provided.droppableProps} ref={provided.innerRef}>
-                        {material.sections.map((section, index) => (
-                          <Draggable key={section.id} draggableId={section.id} index={index}>
-                            {(provided) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                className="bg-white rounded-lg border border-gray-200 overflow-hidden"
-                              >
-                                <div className="flex items-center justify-between p-4 bg-gray-50 border-b border-gray-200">
-                                  <div className="flex items-center">
-                                    <div {...provided.dragHandleProps} className="mr-3 cursor-move">
-                                      <Bars3Icon className="w-5 h-5 text-gray-400" />
+              {/* コンテンツセクション一覧 */}
+              {material.sections.length > 0 && (
+                <div className="space-y-4">
+                  <DragDropContext onDragEnd={handleDragEnd}>
+                    <Droppable droppableId="sections">
+                      {(provided) => (
+                        <div {...provided.droppableProps} ref={provided.innerRef}>
+                          {material.sections.map((section, index) => (
+                            <Draggable key={section.id} draggableId={section.id} index={index}>
+                              {(provided) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  className="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
+                                >
+                                  <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
+                                    <div className="flex items-center space-x-3">
+                                      <div {...provided.dragHandleProps} className="cursor-move">
+                                        <Bars3Icon className="w-5 h-5 text-gray-400" />
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <span className="font-medium text-gray-900">{section.title}</span>
+                                        <span className={`px-2 py-1 text-xs rounded-full ${
+                                          section.type === 'text' ? 'bg-blue-100 text-blue-700' :
+                                          section.type === 'quiz' ? 'bg-purple-100 text-purple-700' :
+                                          'bg-gray-100 text-gray-700'
+                                        }`}>
+                                          {section.type === 'text' ? '解説' : 
+                                           section.type === 'quiz' ? '問題' : section.type}
+                                        </span>
+                                      </div>
                                     </div>
-                                    <span className="font-medium">{section.title}</span>
-                                    <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
-                                      {section.type}
-                                    </span>
+                                    
+                                    <div className="flex items-center space-x-2">
+                                      <button
+                                        onClick={() => setActiveSection(
+                                          activeSection === section.id ? null : section.id
+                                        )}
+                                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                      >
+                                        {activeSection === section.id ? '閉じる' : '編集'}
+                                      </button>
+                                      <button
+                                        onClick={() => removeSection(section.id)}
+                                        className="text-red-600 hover:text-red-800 p-1"
+                                      >
+                                        <TrashIcon className="w-4 h-4" />
+                                      </button>
+                                    </div>
                                   </div>
                                   
-                                  <div className="flex items-center space-x-2">
-                                    <button
-                                      onClick={() => setActiveSection(
-                                        activeSection === section.id ? null : section.id
-                                      )}
-                                      className="text-blue-600 hover:text-blue-800 text-sm"
-                                    >
-                                      {activeSection === section.id ? '閉じる' : '編集'}
-                                    </button>
-                                    <button
-                                      onClick={() => removeSection(section.id)}
-                                      className="text-red-600 hover:text-red-800"
-                                    >
-                                      <TrashIcon className="w-4 h-4" />
-                                    </button>
-                                  </div>
+                                  {activeSection === section.id && (
+                                    <div className="p-6 bg-white">
+                                      <SectionEditor 
+                                        section={section} 
+                                        onUpdate={(updates) => updateSection(section.id, updates)}
+                                      />
+                                    </div>
+                                  )}
                                 </div>
-                                
-                                {activeSection === section.id && (
-                                  <div className="p-4">
-                                    <SectionEditor 
-                                      section={section} 
-                                      onUpdate={(updates) => updateSection(section.id, updates)}
-                                    />
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
-                </DragDropContext>
-              </div>
-            )}
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  </DragDropContext>
+                </div>
+              )}
+
+              {/* 空状態 */}
+              {material.sections.length === 0 && (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <PlusIcon className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">セクションを追加しましょう</h3>
+                  <p className="text-gray-500 mb-6">上記のボタンから解説や問題を追加してください</p>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* サイドバー: プレビュー + 設定 */}
-          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
-            {/* クイック設定 */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
-              <h3 className="text-sm sm:text-base font-medium mb-3 sm:mb-4">基本設定</h3>
-              
-              <div className="space-y-3 sm:space-y-4">
-                <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">文法項目</label>
-                  <select
-                    value={material.category}
-                    onChange={(e) => setMaterial(prev => ({ 
-                      ...prev, 
-                      category: e.target.value
-                    }))}
-                    className="w-full border border-gray-300 rounded-md px-2 sm:px-3 py-2 text-xs sm:text-sm"
-                  >
-                    <option value="be_verbs">be動詞・一般動詞</option>
-                    <option value="present_progressive">現在進行形・過去形</option>
-                    <option value="future_modal">未来形・助動詞</option>
-                    <option value="present_perfect">現在完了</option>
-                    <option value="passive_voice">受動態</option>
-                    <option value="infinitive_gerund">不定詞・動名詞</option>
-                    <option value="relative_pronouns">関係代名詞</option>
-                    <option value="others">その他</option>
-                  </select>
-                </div>
+          {/* サイドバー */}
+          <div className="xl:col-span-1 space-y-6">
+            {/* 設定パネル */}
+            {showSettings && (
+              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">基本設定</h3>
                 
-                <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">学年レベル</label>
-                  <select
-                    value={material.difficulty}
-                    onChange={(e) => setMaterial(prev => ({ 
-                      ...prev, 
-                      difficulty: e.target.value as MaterialData['difficulty']
-                    }))}
-                    className="w-full border border-gray-300 rounded-md px-2 sm:px-3 py-2 text-xs sm:text-sm"
-                  >
-                    <option value="beginner">中1レベル</option>
-                    <option value="intermediate">中2レベル</option>
-                    <option value="advanced">中3レベル</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-                    推定学習時間
-                  </label>
-                  <div className="text-base sm:text-lg font-semibold text-blue-600">
-                    約{material.estimatedTime}分
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">文法項目</label>
+                    <select
+                      value={material.category}
+                      onChange={(e) => setMaterial(prev => ({ 
+                        ...prev, 
+                        category: e.target.value
+                      }))}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="be_verbs">be動詞・一般動詞</option>
+                      <option value="present_progressive">現在進行形・過去形</option>
+                      <option value="future_modal">未来形・助動詞</option>
+                      <option value="present_perfect">現在完了</option>
+                      <option value="passive_voice">受動態</option>
+                      <option value="infinitive_gerund">不定詞・動名詞</option>
+                      <option value="relative_pronouns">関係代名詞</option>
+                      <option value="others">その他</option>
+                    </select>
                   </div>
-                  <div className="text-xs text-gray-500">自動計算</div>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={material.isPublic}
-                      onChange={(e) => setMaterial(prev => ({ ...prev, isPublic: e.target.checked }))}
-                      className="mr-2"
-                    />
-                    <span className="text-xs sm:text-sm">公開する</span>
-                  </label>
                   
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={material.allowComments}
-                      onChange={(e) => setMaterial(prev => ({ ...prev, allowComments: e.target.checked }))}
-                      className="mr-2"
-                    />
-                    <span className="text-xs sm:text-sm">コメントを許可</span>
-                  </label>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">学年レベル</label>
+                    <select
+                      value={material.difficulty}
+                      onChange={(e) => setMaterial(prev => ({ 
+                        ...prev, 
+                        difficulty: e.target.value as MaterialData['difficulty']
+                      }))}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="beginner">中1レベル</option>
+                      <option value="intermediate">中2レベル</option>
+                      <option value="advanced">中3レベル</option>
+                    </select>
+                  </div>
+                  
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <div className="text-sm font-medium text-blue-900 mb-1">推定学習時間</div>
+                    <div className="text-2xl font-bold text-blue-600">約{material.estimatedTime}分</div>
+                    <div className="text-xs text-blue-700">自動計算</div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={material.isPublic}
+                        onChange={(e) => setMaterial(prev => ({ ...prev, isPublic: e.target.checked }))}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">公開する</span>
+                    </label>
+                    
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={material.allowComments}
+                        onChange={(e) => setMaterial(prev => ({ ...prev, allowComments: e.target.checked }))}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">コメントを許可</span>
+                    </label>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* ライブプレビュー */}
+            {/* プレビューパネル */}
             {previewMode && (
-              <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
-                <h3 className="text-sm sm:text-base font-medium mb-3 sm:mb-4">プレビュー</h3>
+              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">プレビュー</h3>
                 <MaterialPreview material={material} />
               </div>
             )}
+
+            {/* 進捗表示 */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">作成進捗</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">タイトル</span>
+                  {material.title.trim() ? (
+                    <FaCheck className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <div className="w-4 h-4 border-2 border-gray-300 rounded-full" />
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">セクション</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {material.sections.length}個
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">設定</span>
+                  {material.category && material.difficulty ? (
+                    <FaCheck className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <div className="w-4 h-4 border-2 border-gray-300 rounded-full" />
+                  )}
+                </div>
+              </div>
+              
+              {canProceed && (
+                <div className="mt-4 p-3 bg-green-50 rounded-lg">
+                  <div className="flex items-center">
+                    <FaCheck className="w-4 h-4 text-green-600 mr-2" />
+                    <span className="text-sm font-medium text-green-800">公開準備完了</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -572,93 +510,86 @@ const SectionEditor: React.FC<{
 }> = ({ section, onUpdate }) => {
   if (section.type === 'text') {
     return (
-      <div className="space-y-3">
-        <input
-          type="text"
-          value={section.title}
-          onChange={(e) => onUpdate({ title: e.target.value })}
-          placeholder="セクションタイトル（例：be動詞の基本）"
-          className="w-full font-medium border border-gray-300 rounded-md px-2 sm:px-3 py-2 text-xs sm:text-sm"
-        />
-        <textarea
-          value={section.content}
-          onChange={(e) => onUpdate({ content: e.target.value })}
-          placeholder="文法の説明や例文を入力してください..."
-          rows={6}
-          className="w-full border border-gray-300 rounded-md px-2 sm:px-3 py-2 text-xs sm:text-sm"
-        />
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">セクションタイトル</label>
+          <input
+            type="text"
+            value={section.title}
+            onChange={(e) => onUpdate({ title: e.target.value })}
+            placeholder="例：be動詞の基本"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">解説内容</label>
+          <textarea
+            value={section.content}
+            onChange={(e) => onUpdate({ content: e.target.value })}
+            placeholder="文法の説明や例文を入力してください..."
+            rows={8}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
       </div>
     );
   }
   
   if (section.type === 'quiz') {
     return (
-      <div className="space-y-3">
-        <input
-          type="text"
-          value={section.title}
-          onChange={(e) => onUpdate({ title: e.target.value })}
-          placeholder="練習問題タイトル（例：be動詞の練習）"
-          className="w-full font-medium border border-gray-300 rounded-md px-3 py-2"
-        />
-        <textarea
-          value={section.content}
-          onChange={(e) => onUpdate({ content: e.target.value })}
-          placeholder="文法問題を入力してください..."
-          rows={3}
-          className="w-full border border-gray-300 rounded-md px-3 py-2"
-        />
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">選択肢</label>
-          {section.options?.map((option, index) => (
-            <div key={index} className="flex items-center space-x-2">
-              <input
-                type="radio"
-                name={`answer-${section.id}`}
-                checked={section.answer === index}
-                onChange={() => onUpdate({ answer: index })}
-              />
-              <input
-                type="text"
-                value={option}
-                onChange={(e) => {
-                  const newOptions = [...(section.options || [])];
-                  newOptions[index] = e.target.value;
-                  onUpdate({ options: newOptions });
-                }}
-                placeholder={`選択肢${index + 1}`}
-                className="flex-1 border border-gray-300 rounded-md px-3 py-1"
-              />
-            </div>
-          ))}
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">問題タイトル</label>
+          <input
+            type="text"
+            value={section.title}
+            onChange={(e) => onUpdate({ title: e.target.value })}
+            placeholder="例：be動詞の練習"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">問題文</label>
+          <textarea
+            value={section.content}
+            onChange={(e) => onUpdate({ content: e.target.value })}
+            placeholder="問題文を入力してください..."
+            rows={4}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-3">選択肢</label>
+          <div className="space-y-3">
+            {section.options?.map((option, index) => (
+              <div key={index} className="flex items-center space-x-3">
+                <input
+                  type="radio"
+                  name={`answer-${section.id}`}
+                  checked={section.answer === index}
+                  onChange={() => onUpdate({ answer: index })}
+                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                />
+                <input
+                  type="text"
+                  value={option}
+                  onChange={(e) => {
+                    const newOptions = [...(section.options || [])];
+                    newOptions[index] = e.target.value;
+                    onUpdate({ options: newOptions });
+                  }}
+                  placeholder={`選択肢${index + 1}`}
+                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
   }
   
-  // 画像・動画セクションは有料プラン限定のため、現在は無効
-  return (
-    <div className="space-y-3">
-      <input
-        type="text"
-        value={section.title}
-        onChange={(e) => onUpdate({ title: e.target.value })}
-        placeholder="セクションタイトル"
-        className="w-full font-medium border border-gray-300 rounded-md px-3 py-2"
-      />
-      
-      <div className="border-2 border-dashed border-yellow-200 bg-yellow-50 rounded-lg p-8 text-center">
-        <span className="text-4xl mb-2 block">🔒</span>
-        <h3 className="text-lg font-medium text-yellow-800 mb-2">プレミアム機能</h3>
-        <p className="text-yellow-700 mb-4">
-          {section.type === 'image' ? '画像' : '動画'}アップロードは有料プランでご利用いただけます
-        </p>
-        <button className="px-6 py-2 bg-yellow-600 text-white rounded-md text-sm hover:bg-yellow-700 transition">
-          プレミアムプランを見る
-        </button>
-      </div>
-    </div>
-  );
+  return null;
 };
 
 // プレビューコンポーネント
@@ -666,13 +597,16 @@ const MaterialPreview: React.FC<{ material: MaterialData }> = ({ material }) => 
   return (
     <div className="space-y-4">
       <div>
-        <h4 className="font-semibold text-lg">{material.title || 'タイトル未設定'}</h4>
-        <div className="flex items-center text-sm text-gray-500 mt-1">
-          <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs mr-2">
-            {material.difficulty === 'beginner' ? '初心者' :
-             material.difficulty === 'intermediate' ? '中級者' : '上級者'}
+        <h4 className="font-semibold text-lg text-gray-900">{material.title || 'タイトル未設定'}</h4>
+        <div className="flex items-center space-x-2 mt-2">
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+            material.difficulty === 'beginner' ? 'bg-green-100 text-green-700' :
+            material.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'
+          }`}>
+            {material.difficulty === 'beginner' ? '中1' :
+             material.difficulty === 'intermediate' ? '中2' : '中3'}
           </span>
-          <span>約{material.estimatedTime}分</span>
+          <span className="text-sm text-gray-500">約{material.estimatedTime}分</span>
         </div>
       </div>
       
@@ -681,16 +615,20 @@ const MaterialPreview: React.FC<{ material: MaterialData }> = ({ material }) => 
           <p className="text-gray-400 text-sm">コンテンツが追加されていません</p>
         ) : (
           material.sections.map((section, index) => (
-            <div key={section.id} className="border border-gray-200 rounded p-3 text-sm">
-              <div className="font-medium">{index + 1}. {section.title}</div>
-              <div className="text-gray-600 mt-1 flex items-center">
-                {section.type === 'text' ? '📝' :
-                 section.type === 'image' ? '🖼️' :
-                 section.type === 'video' ? '🎥' : '❓'} 
-                <span className="ml-1">{section.type}</span>
-                {(section.type === 'image' || section.type === 'video') && (
-                  <span className="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs rounded">プレミアム</span>
-                )}
+            <div key={section.id} className="border border-gray-200 rounded-lg p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-medium text-gray-900">{index + 1}.</span>
+                  <span className="text-sm text-gray-700">{section.title}</span>
+                </div>
+                <span className={`px-2 py-1 text-xs rounded-full ${
+                  section.type === 'text' ? 'bg-blue-100 text-blue-700' :
+                  section.type === 'quiz' ? 'bg-purple-100 text-purple-700' :
+                  'bg-gray-100 text-gray-700'
+                }`}>
+                  {section.type === 'text' ? '解説' : 
+                   section.type === 'quiz' ? '問題' : section.type}
+                </span>
               </div>
             </div>
           ))
@@ -718,74 +656,80 @@ const PublishStep: React.FC<{
   };
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-50 min-h-screen">
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-12">
-            <div className="flex items-center">
-              <button onClick={onBack} className="mr-4 text-gray-500 hover:text-gray-700">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <button onClick={onBack} className="text-gray-500 hover:text-gray-700 text-xl">
                 ←
               </button>
-              <h1 className="text-xl font-semibold">公開設定</h1>
-              <span className="ml-4 px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
-                ステップ 2/2
-              </span>
+              <div>
+                <h1 className="text-lg font-semibold text-gray-900">公開設定</h1>
+                <p className="text-sm text-gray-500">最終確認と公開設定</p>
+              </div>
             </div>
+            <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full font-medium">
+              ステップ 2/2
+            </span>
           </div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* プレビュー */}
           <div>
-            <h2 className="text-lg font-semibold mb-2">教材プレビュー</h2>
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">教材プレビュー</h2>
+            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
               <MaterialPreview material={material} />
             </div>
           </div>
 
           {/* 公開設定 */}
           <div>
-            <h2 className="text-lg font-semibold mb-2">公開設定</h2>
-            <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
-              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-                <div>
-                  <h3 className="font-medium">🎉 公開準備完了！</h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    この教材を公開すると、他のユーザーが学習できるようになります
-                  </p>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">公開設定</h2>
+            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm space-y-6">
+              <div className="bg-blue-50 rounded-lg p-4">
+                <div className="flex items-center">
+                  <FaCheck className="w-5 h-5 text-blue-600 mr-3" />
+                  <div>
+                    <h3 className="font-medium text-blue-900">🎉 公開準備完了！</h3>
+                    <p className="text-sm text-blue-700 mt-1">
+                      この教材を公開すると、他のユーザーが学習できるようになります
+                    </p>
+                  </div>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span>公開状態</span>
-                  <span className={`px-3 py-1 rounded-full text-sm ${
+                <div className="flex items-center justify-between py-3 border-b border-gray-100">
+                  <span className="text-sm text-gray-600">公開状態</span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                     material.isPublic ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
                   }`}>
                     {material.isPublic ? '公開' : '下書き'}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span>コメント</span>
-                  <span className="text-sm text-gray-600">
+                <div className="flex items-center justify-between py-3 border-b border-gray-100">
+                  <span className="text-sm text-gray-600">コメント</span>
+                  <span className="text-sm text-gray-900">
                     {material.allowComments ? '許可' : '不許可'}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span>難易度</span>
-                  <span className="text-sm text-gray-600">
-                    {material.difficulty === 'beginner' ? '初心者向け' :
-                     material.difficulty === 'intermediate' ? '中級者向け' : '上級者向け'}
+                <div className="flex items-center justify-between py-3 border-b border-gray-100">
+                  <span className="text-sm text-gray-600">難易度</span>
+                  <span className="text-sm text-gray-900">
+                    {material.difficulty === 'beginner' ? '中1レベル' :
+                     material.difficulty === 'intermediate' ? '中2レベル' : '中3レベル'}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span>学習時間</span>
-                  <span className="text-sm text-gray-600">約{material.estimatedTime}分</span>
+                <div className="flex items-center justify-between py-3">
+                  <span className="text-sm text-gray-600">学習時間</span>
+                  <span className="text-sm text-gray-900">約{material.estimatedTime}分</span>
                 </div>
               </div>
 
@@ -795,7 +739,7 @@ const PublishStep: React.FC<{
                   disabled={isPublishing}
                   className={`w-full py-3 rounded-lg font-medium transition ${
                     isPublishing
-                      ? 'bg-gray-300 text-gray-500'
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : 'bg-blue-600 text-white hover:bg-blue-700'
                   }`}
                 >
